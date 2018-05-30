@@ -6,8 +6,18 @@ describe('ravelinjs', function() {
         suite(browser);
     });
 
+    it('can be used minified with a script tag', function() {
+        browser.url('/pages/scripttag-min/index.html');
+        suite(browser);
+    });
+
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
         browser.url('/pages/amd/index.html');
+        suite(browser);
+    });
+
+    usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
+        browser.url('/pages/amd-min/index.html');
         suite(browser);
     });
 

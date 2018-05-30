@@ -4,9 +4,10 @@
   "description": "Some browser things.",
   "main": "index.js",
   "scripts": {
+    "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",
     "test": "mocha -C test/test.js",
-    "test-appium": "wdio ./test/appium.conf.js",
-    "test-crossbrowser": "wdio ./test/crossbrowser.conf.js",
+    "test-appium": "npm run minify && wdio ./test/appium.conf.js",
+    "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",
     "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'"
   },
   "repository": {
