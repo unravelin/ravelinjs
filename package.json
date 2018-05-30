@@ -1,0 +1,37 @@
+{
+  "name": "xbrowser",
+  "version": "1.0.0",
+  "description": "Some browser things.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -C test/test.js",
+    "test-appium": "wdio ./test/appium.conf.js",
+    "test-crossbrowser": "wdio ./test/crossbrowser.conf.js",
+    "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/icio/xbrowser.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/icio/xbrowser/issues"
+  },
+  "homepage": "https://github.com/icio/xbrowser#readme",
+  "devDependencies": {
+    "appium": "^1.8.0",
+    "appium-doctor": "^1.4.3",
+    "cbt_tunnels": "^0.9.4",
+    "chai": "^4.1.2",
+    "request": "^2.85.0",
+    "uglify-js": "^2.8.29",
+    "wait-port": "^0.2.2",
+    "wdio-appium-service": "^0.2.3",
+    "wdio-junit-reporter": "^0.4.2",
+    "wdio-mocha-framework": "^0.5.13",
+    "wdio-spec-reporter": "^0.1.4",
+    "webdriverio": "^4.12.0",
+    "webpack": "^4.8.3"
+  }
+}
