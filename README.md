@@ -86,7 +86,6 @@ Once the cipher is received by your server, the API request to Ravelin in which 
 /* Server-side */
 
 var card = JSON.parse(form.getValue('ravelinCipherText'));
-card.paymentMethodId = '...';
 card.methodType = 'paymentMethodCipher';
 
 var action = request("https://api.ravelin.com/v2/checkout?score=true", {
