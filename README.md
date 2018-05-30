@@ -4,7 +4,7 @@
 PCI-compliant data. The library is intended to work on web pages where you have
 access to the PAN that the customer has entered. Note that storing this data in
 any form on your servers opens them to the PCI compliance requirements. Passing
-through the encrypted values provided by this library avoid your servers
+through the encrypted values provided by this library avoids your servers
 handling any sensitive data.
 
 ## Usage Guide
