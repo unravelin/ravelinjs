@@ -991,7 +991,9 @@
       throw new Error("RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard");
     }
 
-    // TODO: Validate details.
+    details.month += '';
+    details.year += '';
+
     var aesResult = aesEncrypt(JSON.stringify(details));
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
