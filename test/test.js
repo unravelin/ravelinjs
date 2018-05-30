@@ -60,7 +60,7 @@ describe('ravelinjs', function() {
                     c.cipher != "" && c.cipher.length > 10 &&
                     c.aesKeyCipher != "" && c.aesKeyCipher.length > 10 &&
                     c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.1"
+                    c.ravelinjsVersion == "0.0.2"
                 );
             }
 
