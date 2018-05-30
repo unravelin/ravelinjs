@@ -1,6 +1,11 @@
 # ravelinjs
 
-`ravelinjs` provides a means of vaulting cards inside Ravelin without having to handle PCI-compliant data. The library is intended to work on web pages where you have access to the PAN that the customer has used. Note that storing this data in any form on your servers opens them to the PCI compliance requirements. Passing through the encrypted values provided by this library avoid your servers handling any sensitive data.
+`ravelinjs` provides a means of adding cards to Ravelin without having to handle
+PCI-compliant data. The library is intended to work on web pages where you have
+access to the PAN that the customer has entered. Note that storing this data in
+any form on your servers opens them to the PCI compliance requirements. Passing
+through the encrypted values provided by this library avoid your servers
+handling any sensitive data.
 
 ## Usage Guide
 
