@@ -951,6 +951,10 @@
       throw new Error("RavelinJS Key has not been set");
     }
 
+    if (!details) {
+      throw new Error("RavelinJS validation: no details provided");
+    }
+
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
