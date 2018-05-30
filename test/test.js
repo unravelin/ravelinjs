@@ -57,8 +57,8 @@ describe('ravelinjs', function() {
             function validCipher(c) {
                 c = JSON.parse(c);
                 return (
-                    c.cipher != "" && c.cipher.length > 10 &&
-                    c.aesKeyCipher != "" && c.aesKeyCipher.length > 10 &&
+                    c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
+                    c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
                     c.algorithm == "RSA_WITH_AES_256_GCM" &&
                     c.ravelinjsVersion == "0.0.2"
                 );

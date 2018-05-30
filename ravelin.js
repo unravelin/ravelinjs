@@ -998,8 +998,8 @@
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
     return JSON.stringify({
-      cipher: aesResult.ciphertextB64,
-      aesKeyCipher: rsaResultB64,
+      cardCiphertext: aesResult.ciphertextB64,
+      aesKeyCiphertext: rsaResultB64,
       algorithm: "RSA_WITH_AES_256_GCM",
       ravelinjsVersion: version,
     });
