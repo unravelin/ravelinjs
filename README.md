@@ -12,9 +12,9 @@ into your web page.
 
 Examples:
 
-* [Loading from a `<script>` as `ravelinjs`](test/pages/scripttag)
-* [Loading into requirejs](test/pages/amd)
-* [Bundling with webpack](test/pages/webpack)
+* [Loading from a `<script>` as `ravelinjs`](test/pages/scripttag) (just use it)
+* [Loading into requirejs](test/pages/amd) (just list it as a dependency)
+* [Bundling with webpack](test/pages/webpack) (just import it)
 
 ### Encrypting Cards
 
