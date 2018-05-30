@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.1';
+  var version = '0.0.2';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -951,6 +951,10 @@
       throw new Error("RavelinJS Key has not been set");
     }
 
+    if (!details) {
+      throw new Error("RavelinJS validation: no details provided");
+    }
+
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
@@ -987,13 +991,15 @@
       throw new Error("RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard");
     }
 
-    // TODO: Validate details.
+    details.month += '';
+    details.year += '';
+
     var aesResult = aesEncrypt(JSON.stringify(details));
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
     return JSON.stringify({
-      cipher: aesResult.ciphertextB64,
-      aesKeyCipher: rsaResultB64,
+      cardCiphertext: aesResult.ciphertextB64,
+      aesKeyCiphertext: rsaResultB64,
       algorithm: "RSA_WITH_AES_256_GCM",
       ravelinjsVersion: version,
     });
