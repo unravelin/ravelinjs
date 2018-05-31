@@ -61,3 +61,4 @@ typings/
 .env
 
 ravelin.min.js
+*.min.js
