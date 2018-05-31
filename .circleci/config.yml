@@ -37,7 +37,7 @@ jobs:
           name: "Encryption E2E tests: npm run test-crossbrowser-e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            env E2E_CIPHER_FILE=~/repo/cipher.txt npm run test-crossbrowser-e2e
+            env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test-crossbrowser-e2e
 
       - run:
           name: "Cross-browser integration tests: npm run test-crossbrowser"
