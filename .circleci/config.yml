@@ -52,6 +52,6 @@ jobs:
       - store_test_results:
           path: ~/repo/test/junit
       - store_artifacts:
-          path:
-            - ~/repo/test/shots
-            - ~/repo/cipher.txt
+          path: ~/repo/test/shots
+      - store_artifacts:
+          path: ~/repo/cipher.txt
