@@ -78,7 +78,7 @@ describe('ravelinjs', function() {
 
             expect(ravelin.encrypt({
                 pan: '4111 1111 1111 1111',
-                month: "10",
+                month: "12",
                 year: "20",
             })).to.satisfy(validCipher);
         });
