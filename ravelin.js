@@ -913,7 +913,6 @@
 
     RavelinJS.prototype.setPublicAPIKey = function(apiKey) {
       this._ravelin('setApiKey', this.apiKey = apiKey)
-      this.trackPage();
     }
 
     RavelinJS.prototype._ravelin = function() {
