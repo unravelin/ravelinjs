@@ -60,7 +60,7 @@ describe('ravelinjs', function() {
                     c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
                     c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
                     c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.2"
+                    c.ravelinjsVersion == "0.0.3"
                 );
             }
 
@@ -78,7 +78,7 @@ describe('ravelinjs', function() {
 
             expect(ravelin.encrypt({
                 pan: '4111 1111 1111 1111',
-                month: "10",
+                month: "12",
                 year: "20",
             })).to.satisfy(validCipher);
         });

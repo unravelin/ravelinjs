@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.2';
+  var version = '0.0.3';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -965,7 +965,7 @@
     if (typeof details.month == 'string') {
       details.month = parseInt(details.month, 10);
     }
-    if (!(details.month > 0 && details.month < 12)) {
+    if (!(details.month > 0 && details.month < 13)) {
       throw new Error("RavelinJS validation: month should be in the range 1-12");
     }
 
