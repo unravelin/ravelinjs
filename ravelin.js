@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.3';
+  var version = '0.0.4';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -913,7 +913,6 @@
 
     RavelinJS.prototype.setPublicAPIKey = function(apiKey) {
       this._ravelin('setApiKey', this.apiKey = apiKey)
-      this.trackPage();
     }
 
     RavelinJS.prototype._ravelin = function() {
