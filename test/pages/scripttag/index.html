@@ -7,10 +7,16 @@
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-    <h1>Test</h1>
+    <h1><code>ravelinjs</code> Demo</h1>
 
     <h2>User Agent</h2>
     <pre id="useragent"></pre>
+
+    <h2>Encryption Public Key</h2>
+    <form id="key-form">
+        RSA Public Key: <textarea id="rsa-key" rows="5">10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601</textarea>
+        <br /><input type="submit" value="Set" /> <input type="reset" />
+    </form>
 
     <h2>Payment Information</h2>
     <form method="get" id="form">
@@ -31,7 +37,8 @@
             <option value="12">December</option>
         </select><br />
         Year: <input type="number" id="year" />
-        <input type="submit" id="update" />
+
+        <br /> <input type="submit" id="update" value="Encrypt" />
     </form>
 
     <h2>Output</h2>
@@ -42,7 +49,19 @@
     <script src="../common.js"></script>
     <script src="./ravelin.js"></script>
     <script>
-        ravelinjs.setRSAKey('10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601');
+        document.getElementById('key-form').onsubmit = function() {
+            setRSAKey();
+            return false;
+        };
+
+        function setRSAKey() {
+            output(function() {
+                ravelinjs.setRSAKey(document.getElementById('rsa-key').value);
+                return 'Key set // ' + (new Date);
+            });
+        }
+        setRSAKey();
+
         document.getElementById('form').onsubmit = function() {
             var month = document.getElementById('month');
             output(function() {
