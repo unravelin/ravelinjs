@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.4';
+  var version = '0.0.5';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -909,6 +909,13 @@
 
     RavelinJS.prototype.trackPage = function() {
       this._ravelin('trackPage');
+    }
+
+    /**
+     * trackFingerprint sends device information back to Ravelin.
+     */
+    RavelinJS.prototype.trackFingerprint = function() {
+      this._ravelin('fingerprint');
     }
 
     RavelinJS.prototype.setPublicAPIKey = function(apiKey) {
