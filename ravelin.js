@@ -911,6 +911,13 @@
       this._ravelin('trackPage');
     }
 
+    /**
+     * trackFingerprint sends device information back to Ravelin.
+     */
+    RavelinJS.prototype.trackFingerprint = function() {
+      this._ravelin('fingerprint');
+    }
+
     RavelinJS.prototype.setPublicAPIKey = function(apiKey) {
       this._ravelin('setApiKey', this.apiKey = apiKey)
     }
