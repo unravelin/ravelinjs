@@ -47,7 +47,7 @@ describe('ravelinjs', function() {
 
         it('validates no unknown attributes are present', function() {
             ravelin.setRSAKey(dummyRSAKey);
-    
+
             const err = "RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard";
             expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 1, year: "18", "cvv": "123"})).to.throw(err);
         });
@@ -60,7 +60,7 @@ describe('ravelinjs', function() {
                     c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
                     c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
                     c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.5"
+                    c.ravelinjsVersion == "0.0.6"
                 );
             }
 
@@ -83,4 +83,5 @@ describe('ravelinjs', function() {
             })).to.satisfy(validCipher);
         });
     });
+
 });

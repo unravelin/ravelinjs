@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.5';
+  var version = '0.0.6';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -956,16 +956,27 @@
     }
 
     /**
-     * Set the customerId submitted with requests. This is not required to tie
-     * together tracking.
+     * Set the customerId submitted with requests. This is used to associate device activity
+     * with a specific user.
      *
      * @param {String} customerId
      */
     RavelinJS.prototype.setCustomerId = function() {
+      console.info('what?')
       this._ravelin(['setCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
     }
 
-    RavelinJS.prototype._ravelin = function() {
+    /**
+     * Set the orderId submitted with requests. This is used to associate session-activity
+     * with a specific user.
+     *
+     * @param {String} orderId
+     */
+    RavelinJS.prototype.setOrderId = function() {
+      this._ravelin(['setOrderId'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    RavelinJS.prototype._ravelin = function(args) {
       if (typeof this.apiKey !== 'string') {
         throw new Error("No tracking API key set. See RavelinJS.setPublicAPIKey");
       }
@@ -973,7 +984,8 @@
         // https://developer.ravelin.com/v2/#device-tracking.
         (function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window, document, 'script', 'https://cdn.ravelin.net/js/rvn-beta.min.js', 'ravelin');
       }
-      window.ravelin.apply(window, arguments)
+
+      window.ravelin.apply(window, args);
     }
   }
 
