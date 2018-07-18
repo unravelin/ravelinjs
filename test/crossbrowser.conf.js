@@ -29,13 +29,13 @@ exports.config = Object.assign(base, {
             version: 'latest',
             platform: 'Windows 10',
         },
-        {
-            build: 'ravelinjs 1.0',
-            name: 'osx chromeLatest',
-            browserName: 'Chrome',
-            version: 'latest',
-            platform: 'Mac OSX 10.12',
-        },
+        // {
+        //     build: 'ravelinjs 1.0',
+        //     name: 'osx chromeLatest',
+        //     browserName: 'Chrome',
+        //     version: 'latest',
+        //     platform: 'Mac OSX 10.12',
+        // },
         {
             build: 'ravelinjs 1.0',
             name: 'win8 chrome18',
@@ -51,13 +51,13 @@ exports.config = Object.assign(base, {
         //     version: '11',
         //     platform: 'Mac OSX 10.13',
         // },
-        {
-            build: 'ravelinjs 1.0',
-            name: 'osx safari10',
-            browserName: 'Safari',
-            version: '10',
-            platform: 'Mac OSX 10.12',
-        },
+        // {
+        //     build: 'ravelinjs 1.0',
+        //     name: 'osx safari10',
+        //     browserName: 'Safari',
+        //     version: '10',
+        //     platform: 'Mac OSX 10.12',
+        // },
         {
             build: 'ravelinjs 1.0',
             name: 'osx safari6',

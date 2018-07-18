@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.5';
+  var version = '0.0.6';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -893,6 +893,10 @@
     return aesKeyAndIVCiphertextBase64;
   }
 
+  /**
+   * RavelinJS provides card encryption and wraps Ravelin's tracking library.
+   * @param {String} key The RSA Key to be provided to setRSAKey
+   */
   function RavelinJS(key) {
     if (key) this.setRSAKey(key);
   }
@@ -902,27 +906,96 @@
      * track invokes the Ravelin client-side tracking script. You must have set
      * the public API key in advance of calling track, so that it can submit the
      * data directly to Ravelin. Its execution is asynchronous.
+     *
+     * See https://developer.ravelin.com/v2/#tracking
+     *
+     * @param {String} eventName A description of what has occurred.
+     * @param {Object} meta Any additional metadata you wish to use to describe the page.
      */
     RavelinJS.prototype.track = function() {
-      this._ravelin('track');
-    }
-
-    RavelinJS.prototype.trackPage = function() {
-      this._ravelin('trackPage');
+      this._ravelin(['track'].concat(Array.prototype.slice.call(arguments, 0)));
     }
 
     /**
-     * trackFingerprint sends device information back to Ravelin.
+     * trackPage logs the page view. Call this from as many pages as possible.
+     *
+     * @param {Object} meta Any additional metadata you wish to use to describe the page.
+     */
+    RavelinJS.prototype.trackPage = function() {
+      this._ravelin(['trackPage'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
+     *
+     * @param {Object} meta Any additional metadata you wish to use to describe the event.
+     */
+    RavelinJS.prototype.trackLogout = function() {
+      this._ravelin(['trackLogout'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * trackFingerprint sends device information back to Ravelin. Invoke from
+     * the checkout page of your payment flow.
      */
     RavelinJS.prototype.trackFingerprint = function() {
-      this._ravelin('fingerprint');
+      this._ravelin(['fingerprint']);
     }
 
-    RavelinJS.prototype.setPublicAPIKey = function(apiKey) {
-      this._ravelin('setApiKey', this.apiKey = apiKey)
+    /**
+     * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It
+     * should be called before anything else.
+     *
+     * @param {String} apiKey
+     */
+    RavelinJS.prototype.setPublicAPIKey = function() {
+      this.apiKey = arguments[0];
+      this._ravelin(['setApiKey'].concat(Array.prototype.slice.call(arguments, 0)));
     }
 
-    RavelinJS.prototype._ravelin = function() {
+    /**
+     * setCookieDomain configures where Ravelin will store any cookies on your
+     * domain. Set as high as possible, e.g. ".mysite.com" rather than
+     * ".www.uk.mysite.com".
+     *
+     * @param {String} domain
+     */
+    RavelinJS.prototype.setCookieDomain = function() {
+      this._ravelin(['setCookieDomain'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * Set the customerId submitted with requests. This is used to associate device activity
+     * with a specific user.
+     *
+     * @param {String} customerId
+     */
+    RavelinJS.prototype.setCustomerId = function() {
+      this._ravelin(['setCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * Set the tempCustomerId submitted with requests. This is used as a temporary association between device/
+     * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a 
+     * customerId is available
+     *
+     * @param {String} customerId
+     */
+    RavelinJS.prototype.setTempCustomerId = function() {
+      this._ravelin(['setTempCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * Set the orderId submitted with requests. This is used to associate session-activity
+     * with a specific user.
+     *
+     * @param {String} orderId
+     */
+    RavelinJS.prototype.setOrderId = function() {
+      this._ravelin(['setOrderId'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    RavelinJS.prototype._ravelin = function(args) {
       if (typeof this.apiKey !== 'string') {
         throw new Error("No tracking API key set. See RavelinJS.setPublicAPIKey");
       }
@@ -930,13 +1003,16 @@
         // https://developer.ravelin.com/v2/#device-tracking.
         (function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window, document, 'script', 'https://cdn.ravelin.net/js/rvn-beta.min.js', 'ravelin');
       }
-      window.ravelin.apply(window, arguments)
+
+      window.ravelin.apply(window, args);
     }
   }
 
   /**
    * setKey configures RavelinJS with the given public key, it the format that
    * Ravelin provides it.
+   *
+   * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
    */
   RavelinJS.prototype.setRSAKey = function(rawPubKey) {
     if (typeof rawPubKey !== "string") {
@@ -952,6 +1028,14 @@
     this.rsaKey.setPublic(split[1], split[0]);
   }
 
+  /**
+   * encrypt takes the encrypted card details and prepares them to be sent
+   * to Ravelin.
+   *
+   * @param {Object} details An object containing properties pan, month, year,
+   *                         month, and nameOnCard (optional).
+   * @return {String} The encrypted paylaod to be sent to Ravelin.
+   */
   RavelinJS.prototype.encrypt = function(details) {
     if (!this.rsaKey) {
       throw new Error("RavelinJS Key has not been set");
