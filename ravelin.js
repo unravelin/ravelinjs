@@ -926,6 +926,15 @@
     }
 
     /**
+     * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
+     *
+     * @param {Object} meta Any additional metadata you wish to use to describe the event.
+     */
+    RavelinJS.prototype.trackLogout = function() {
+      this._ravelin(['trackLogout'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
      * trackFingerprint sends device information back to Ravelin. Invoke from
      * the checkout page of your payment flow.
      */
@@ -962,8 +971,18 @@
      * @param {String} customerId
      */
     RavelinJS.prototype.setCustomerId = function() {
-      console.info('what?')
       this._ravelin(['setCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
+    }
+
+    /**
+     * Set the tempCustomerId submitted with requests. This is used as a temporary association between device/
+     * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a 
+     * customerId is available
+     *
+     * @param {String} customerId
+     */
+    RavelinJS.prototype.setTempCustomerId = function() {
+      this._ravelin(['setTempCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
     }
 
     /**
