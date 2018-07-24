@@ -937,9 +937,11 @@
     /**
      * trackFingerprint sends device information back to Ravelin. Invoke from
      * the checkout page of your payment flow.
+     *
+     * @param {Object} meta Any additional metadata you wish to use to describe the event.
      */
     RavelinJS.prototype.trackFingerprint = function() {
-      this._ravelin(['fingerprint']);
+      this._ravelin(['fingerprint'].concat(Array.prototype.slice.call(arguments, 0)));
     }
 
     /**
