@@ -937,9 +937,13 @@
     /**
      * trackFingerprint sends device information back to Ravelin. Invoke from
      * the checkout page of your payment flow.
+     *
+     * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
+     * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
      */
-    RavelinJS.prototype.trackFingerprint = function() {
-      this._ravelin(['fingerprint']);
+    RavelinJS.prototype.trackFingerprint = function(customerId) {
+      if (customerId) this.setCustomerId(customerId);
+      this._ravelin(['fingerprint'].concat(Array.prototype.slice.call(arguments, 1)));
     }
 
     /**
@@ -976,7 +980,7 @@
 
     /**
      * Set the tempCustomerId submitted with requests. This is used as a temporary association between device/
-     * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a 
+     * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a
      * customerId is available
      *
      * @param {String} customerId
