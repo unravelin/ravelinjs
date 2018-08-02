@@ -135,6 +135,17 @@ exports.config = Object.assign(base, {
 
             webpackTestDisabled: true,
         },
+
+        // Android
+        {
+          build: 'ravelinjs 1.0',
+          name: 'android chrome57',
+          browserName: 'Chrome',
+          deviceName: 'Nexus 6P',
+          platformVersion: '6.0',
+          platformName: 'Android',
+          deviceOrientation: 'portrait'
+        },
     ].filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
         !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
