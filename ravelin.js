@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.7';
+  var version = '0.0.8';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -93,7 +93,7 @@
         for(t = 0; t < 32; ++t)
           rng_pool[rng_pptr++] = ua[t];
       }
-      if(typeof navigator !== 'undefined' && navigator.appName == "Netscape" && navigator.appVersion < "5" && window.crypto) {
+      if(typeof navigator !== 'undefined' && navigator.appName == "Netscape" && navigator.appVersion < "5" && window.crypto && window.crypto.random) {
         // Extract entropy (256 bits) from NS4 RNG if available
         var z = window.crypto.random(32);
         for(t = 0; t < z.length; ++t)
