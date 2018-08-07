@@ -145,7 +145,7 @@ exports.config = Object.assign(base, {
           platformName: 'Android',
           deviceOrientation: 'portrait',
 
-          requireJSTestDisabled: true,
+          //requireJSTestDisabled: true,
           webpackTestDisabled: true,
         },
     ].filter(
