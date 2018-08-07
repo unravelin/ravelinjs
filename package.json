@@ -26,6 +26,7 @@
     "appium-doctor": "^1.4.3",
     "cbt_tunnels": "^0.9.4",
     "chai": "^4.1.2",
+    "circle-wait": "^1.0.2",
     "request": "^2.85.0",
     "uglify-js": "^2.8.29",
     "wait-port": "^0.2.2",
