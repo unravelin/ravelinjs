@@ -145,8 +145,7 @@ exports.config = Object.assign(base, {
           platformName: 'Android',
           deviceOrientation: 'portrait',
 
-          //requireJSTestDisabled: true,
-          webpackTestDisabled: true,
+          //webpackTestDisabled: true,
         },
     ].filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
