@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.8';
+  var version = '0.0.9';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -1092,6 +1092,7 @@
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
     return JSON.stringify({
+      methodType: 'paymentMethodCipher',
       cardCiphertext: aesResult.ciphertextB64,
       aesKeyCiphertext: rsaResultB64,
       algorithm: "RSA_WITH_AES_256_GCM",
