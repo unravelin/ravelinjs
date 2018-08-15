@@ -1,10 +1,11 @@
 {
   "name": "ravelinjs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Ravelin Browser Card Encryption Library.",
   "main": "ravelin.js",
   "scripts": {
     "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",
+    "minify-latest": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js && cp ravelin.min.js ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
     "test": "mocha -C test/test.js",
     "test-appium": "npm run minify && wdio ./test/appium.conf.js",
     "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",

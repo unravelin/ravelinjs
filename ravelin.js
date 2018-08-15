@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.8';
+  var version = '0.0.9';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -1033,14 +1033,14 @@
   }
 
   /**
-   * encrypt takes the encrypted card details and prepares them to be sent
-   * to Ravelin.
+   * encryptAsObject takes the encrypted card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as an object.
    *
    * @param {Object} details An object containing properties pan, month, year,
    *                         month, and nameOnCard (optional).
-   * @return {String} The encrypted paylaod to be sent to Ravelin.
+   * @return {Object} The encrypted payload to be sent to Ravelin.
    */
-  RavelinJS.prototype.encrypt = function(details) {
+  RavelinJS.prototype.encryptAsObject = function(details) {
     if (!this.rsaKey) {
       throw new Error("RavelinJS Key has not been set");
     }
@@ -1091,13 +1091,26 @@
     var aesResult = aesEncrypt(JSON.stringify(details));
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
-    return JSON.stringify({
+    return {
+      methodType: 'paymentMethodCipher',
       cardCiphertext: aesResult.ciphertextB64,
       aesKeyCiphertext: rsaResultB64,
       algorithm: "RSA_WITH_AES_256_GCM",
       ravelinjsVersion: version,
-    });
+    };
   };
+
+  /**
+   * encrypt takes the encrypted card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as a string.
+   *
+   * @param {Object} details An object containing properties pan, month, year,
+   *                         month, and nameOnCard (optional).
+   * @return {String} The encrypted payload to be sent to Ravelin.
+   */
+  RavelinJS.prototype.encrypt = function(details) {
+    return JSON.stringify(this.encryptAsObject(details));
+  }
 
   if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {
     sjcl.random.startCollectors();

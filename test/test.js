@@ -57,10 +57,11 @@ describe('ravelinjs', function() {
             function validCipher(c) {
                 c = JSON.parse(c);
                 return (
+                    c.methodType == 'paymentMethodCipher' &&
                     c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
                     c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
                     c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.8"
+                    c.ravelinjsVersion == "0.0.9"
                 );
             }
 
@@ -80,6 +81,25 @@ describe('ravelinjs', function() {
                 pan: '4111 1111 1111 1111',
                 month: "12",
                 year: "20",
+            })).to.satisfy(validCipher);
+        });
+
+        it('can return payload as object', function() {
+            ravelin.setRSAKey(dummyRSAKey);
+            function validCipher(c) {
+                return (
+                    c.methodType == 'paymentMethodCipher' &&
+                    c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
+                    c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
+                    c.algorithm == "RSA_WITH_AES_256_GCM" &&
+                    c.ravelinjsVersion == "0.0.9"
+                );
+            }
+
+            expect(ravelin.encryptAsObject({
+                pan: '4111 1111 1111 1111',
+                month: 10,
+                year: 2020,
             })).to.satisfy(validCipher);
         });
     });
