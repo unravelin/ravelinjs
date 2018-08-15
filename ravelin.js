@@ -1101,14 +1101,14 @@
   };
 
   /**
-   * encryptToObject takes the encrypted card details and prepares them to be sent
+   * encryptAsObject takes the encrypted card details and prepares them to be sent
    * to Ravelin, with the resulting payload returned as an object.
    *
    * @param {Object} details An object containing properties pan, month, year,
    *                         month, and nameOnCard (optional).
    * @return {Object} The encrypted payload to be sent to Ravelin.
    */
-  RavelinJS.prototype.encryptToObject = function(details) {
+  RavelinJS.prototype.encryptAsObject = function(details) {
     return JSON.parse(this.encrypt(details));
   }
 

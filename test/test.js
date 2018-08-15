@@ -96,7 +96,7 @@ describe('ravelinjs', function() {
                 );
             }
 
-            expect(ravelin.encryptToObject({
+            expect(ravelin.encryptAsObject({
                 pan: '4111 1111 1111 1111',
                 month: 10,
                 year: 2020,
