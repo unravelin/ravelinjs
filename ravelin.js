@@ -1034,11 +1034,11 @@
 
   /**
    * encrypt takes the encrypted card details and prepares them to be sent
-   * to Ravelin.
+   * to Ravelin, with the resulting payload returned as a JSON string.
    *
    * @param {Object} details An object containing properties pan, month, year,
    *                         month, and nameOnCard (optional).
-   * @return {String} The encrypted paylaod to be sent to Ravelin.
+   * @return {String} The encrypted payload to be sent to Ravelin.
    */
   RavelinJS.prototype.encrypt = function(details) {
     if (!this.rsaKey) {
@@ -1099,6 +1099,18 @@
       ravelinjsVersion: version,
     });
   };
+
+  /**
+   * encryptToObject takes the encrypted card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as an object.
+   *
+   * @param {Object} details An object containing properties pan, month, year,
+   *                         month, and nameOnCard (optional).
+   * @return {Object} The encrypted payload to be sent to Ravelin.
+   */
+  RavelinJS.prototype.encryptToObject = function(details) {
+    return JSON.parse(this.encrypt(details));
+  }
 
   if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {
     sjcl.random.startCollectors();
