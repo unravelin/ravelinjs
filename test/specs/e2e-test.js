@@ -45,7 +45,7 @@ describe('ravelinjs returns the encrypted card details', function() {
         raise(browser.getText('#output-error'));
 
         ciphertext = browser.getText('#output');
-        if (!ciphertext.match(/^\{"cardCiphertext".+\}$/)) {
+        if (!ciphertext.match(/^\{.+\}$/) || !ciphertext.includes("cardCiphertext")) {
             throw new Error("Doesn't look like we got a valid ciphertext: " + ciphertext);
         }
     });
