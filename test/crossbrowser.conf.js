@@ -145,6 +145,16 @@ exports.config = Object.assign(base, {
           platformName: 'Android',
           deviceOrientation: 'portrait',
         },
+        // iOS
+        {
+          build: 'ravelinjs 1.0',
+          name: 'iOS11 safari8',
+          browserName: 'Safari',
+          deviceName: 'iPhone 8 Simulator',
+          platformVersion: '11.0',
+          platformName: 'iOS',
+          deviceOrientation: 'portrait',
+        },
     ].filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
         !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
