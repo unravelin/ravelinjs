@@ -866,6 +866,10 @@
   b){var c={},d;for(d=0;d<b.length;d++)void 0!==a[b[d]]&&(c[b[d]]=a[b[d]]);return c}};sjcl.encrypt=sjcl.json.encrypt;sjcl.decrypt=sjcl.json.decrypt;sjcl.misc.pa={};sjcl.misc.cachedPbkdf2=function(a,b){var c=sjcl.misc.pa,d;b=b||{};d=b.iter||1E3;c=c[a]=c[a]||{};d=c[d]=c[d]||{firstSalt:b.salt&&b.salt.length?b.salt.slice(0):sjcl.random.randomWords(2,0)};c=void 0===b.salt?d.firstSalt:b.salt;d[c]=d[c]||sjcl.misc.pbkdf2(a,c,b.iter);return{key:d[c].slice(0),salt:c.slice(0)}};
   "undefined"!==typeof module&&module.exports&&(module.exports=sjcl);"function"===typeof define&&define([],function(){return sjcl});
 
+  // ========================================================================================================
+  //
+  // ravelin.js
+  //
   function aesEncrypt(plaintext) {
     var aesKeyLength = 256;
     var wordCount = aesKeyLength/32;
@@ -886,7 +890,7 @@
   }
 
   function rsaEncrypt(rsa, aesKeyB64, ivB64) {
-    var encryptedHex = rsa.encrypt(aesKeyB64 + "|" + ivB64);
+    var encryptedHex = rsa.encrypt(aesKeyB64 + '|' + ivB64);
     var encryptedBits = sjcl.codec.hex.toBits(encryptedHex);
     var aesKeyAndIVCiphertextBase64 = sjcl.codec.base64.fromBits(encryptedBits);
 
@@ -895,137 +899,57 @@
 
   /**
    * RavelinJS provides card encryption and wraps Ravelin's tracking library.
+   *
    * @param {String} key The RSA Key to be provided to setRSAKey
    */
   function RavelinJS(key) {
     if (key) this.setRSAKey(key);
   }
 
-  if (typeof window !== 'undefined') {
-    /**
-     * track invokes the Ravelin client-side tracking script. You must have set
-     * the public API key in advance of calling track, so that it can submit the
-     * data directly to Ravelin. Its execution is asynchronous.
-     *
-     * See https://developer.ravelin.com/v2/#tracking
-     *
-     * @param {String} eventName A description of what has occurred.
-     * @param {Object} meta Any additional metadata you wish to use to describe the page.
-     */
-    RavelinJS.prototype.track = function() {
-      this._ravelin(['track'].concat(Array.prototype.slice.call(arguments, 0)));
+  RavelinJS.prototype._ravelin = function(args) {
+    if (typeof this.apiKey !== 'string') {
+      throw new Error('No tracking API key set. See RavelinJS.setPublicAPIKey');
+    }
+    if (!window) {
+      return;
+    }
+    if (!window.ravelin) {
+      // https://developer.ravelin.com/v2/#device-tracking.
+      (function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window, document, 'script', 'https://cdn.ravelin.net/js/rvn-beta.min.js', 'ravelin');
     }
 
-    /**
-     * trackPage logs the page view. Call this from as many pages as possible.
-     *
-     * @param {Object} meta Any additional metadata you wish to use to describe the page.
-     */
-    RavelinJS.prototype.trackPage = function() {
-      this._ravelin(['trackPage'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
-     *
-     * @param {Object} meta Any additional metadata you wish to use to describe the event.
-     */
-    RavelinJS.prototype.trackLogout = function() {
-      this._ravelin(['trackLogout'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * trackFingerprint sends device information back to Ravelin. Invoke from
-     * the checkout page of your payment flow.
-     *
-     * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
-     * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
-     */
-    RavelinJS.prototype.trackFingerprint = function(customerId) {
-      if (customerId) this.setCustomerId(customerId);
-      this._ravelin(['fingerprint'].concat(Array.prototype.slice.call(arguments, 1)));
-    }
-
-    /**
-     * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It
-     * should be called before anything else.
-     *
-     * @param {String} apiKey
-     */
-    RavelinJS.prototype.setPublicAPIKey = function() {
-      this.apiKey = arguments[0];
-      this._ravelin(['setApiKey'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * setCookieDomain configures where Ravelin will store any cookies on your
-     * domain. Set as high as possible, e.g. ".mysite.com" rather than
-     * ".www.uk.mysite.com".
-     *
-     * @param {String} domain
-     */
-    RavelinJS.prototype.setCookieDomain = function() {
-      this._ravelin(['setCookieDomain'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * Set the customerId submitted with requests. This is used to associate device activity
-     * with a specific user.
-     *
-     * @param {String} customerId
-     */
-    RavelinJS.prototype.setCustomerId = function() {
-      this._ravelin(['setCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * Set the tempCustomerId submitted with requests. This is used as a temporary association between device/
-     * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a
-     * customerId is available
-     *
-     * @param {String} customerId
-     */
-    RavelinJS.prototype.setTempCustomerId = function() {
-      this._ravelin(['setTempCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    /**
-     * Set the orderId submitted with requests. This is used to associate session-activity
-     * with a specific user.
-     *
-     * @param {String} orderId
-     */
-    RavelinJS.prototype.setOrderId = function() {
-      this._ravelin(['setOrderId'].concat(Array.prototype.slice.call(arguments, 0)));
-    }
-
-    RavelinJS.prototype._ravelin = function(args) {
-      if (typeof this.apiKey !== 'string') {
-        throw new Error("No tracking API key set. See RavelinJS.setPublicAPIKey");
-      }
-      if (!window.ravelin) {
-        // https://developer.ravelin.com/v2/#device-tracking.
-        (function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window, document, 'script', 'https://cdn.ravelin.net/js/rvn-beta.min.js', 'ravelin');
-      }
-
-      window.ravelin.apply(window, args);
-    }
+    window.ravelin.apply(window, args);
   }
 
   /**
-   * setKey configures RavelinJS with the given public key, it the format that
-   * Ravelin provides it.
+   * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It should be called
+   * before anything else. You can find your publishable API key inside the Ravelin dashboard.
+   *
+   * @param {String} apiKey Your publishable API key
+   * @example
+   * ravelinjs.setPublicAPIKey('live_publishable_key_abc123');
+   */
+  RavelinJS.prototype.setPublicAPIKey = function() {
+    this.apiKey = arguments[0];
+    this._ravelin(['setApiKey'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * setRSAKey configures RavelinJS with the given public encryption key, in the format that
+   * Ravelin provides it. You can find your public RSA key inside the Ravelin dashboard.
    *
    * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
+   * @example
+   * ravelinjs.setRSAKey('10010|abc123...xyz789');
    */
   RavelinJS.prototype.setRSAKey = function(rawPubKey) {
-    if (typeof rawPubKey !== "string") {
-      throw new Error("Invalid value provided to RavelinJS.setRSAKey");
+    if (typeof rawPubKey !== 'string') {
+      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
     }
 
-    var split = rawPubKey.split("|");
+    var split = rawPubKey.split('|');
     if (split.length != 2) {
-      throw new Error("Invalid value provided to RavelinJS.setRSAKey");
+      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
     }
 
     this.rsaKey = new RSAKey();
@@ -1033,34 +957,85 @@
   }
 
   /**
-   * encryptAsObject takes the encrypted card details and prepares them to be sent
+   * setCustomerId sets the customerId for all requests submitted by ravelinjs. This is needed to associate device activity
+   * with a specific user. This value should be the same that you are providing to Ravelin in your server-side
+   * API requests. If this value is not yet know, perhaps because the customer has not yet logged in or provided
+   * any user details, please refer to setTempCustomerId instead.
+   *
+   * @param {String} customerId customerId unique to the current user
+   * @example
+   * ravelinjs.setCustomerId('123321');
+   */
+  RavelinJS.prototype.setCustomerId = function() {
+    this._ravelin(['setCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * setTempCustomerId sets the tempCustomerId for all requests submitted by ravelinjs. This is used as a temporary association between device/
+   * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a
+   * customerId is available.
+   *
+   * @param {String} tempCustomerId A placeholder id for when customerId is not known
+   * @example
+   * ravelinjs.setTempCustomerId('session_abcdef1234567'); // a session id is often a good temporary customerId
+   */
+  RavelinJS.prototype.setTempCustomerId = function() {
+    this._ravelin(['setTempCustomerId'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * encrypt performs the encrypt process for the provided card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as a string.
+   *
+   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
+   * @return {String} The encrypted payload to be sent to Ravelin.
+   * @example
+   * var encrypted = ravelinjs.encrypt({pan: "4111 1111 1111 1111", month: 1, year: 18});
+   * console.log(encrypted);
+   * > "{methodType:"paymentMethodCipher",cardCiphertext:"abc.....xyz==",aesKeyCiphertext:"def....tuv==",algorithm:"RSA_WITH_AES_256_GCM",ravelinjsVersion: "0.0.1"}"
+   */
+  RavelinJS.prototype.encrypt = function(details) {
+    return JSON.stringify(this.encryptAsObject(details));
+  }
+
+  /**
+   * encryptAsObject performs the encrypt process for the provided card details and prepares them to be sent
    * to Ravelin, with the resulting payload returned as an object.
    *
-   * @param {Object} details An object containing properties pan, month, year,
-   *                         month, and nameOnCard (optional).
+   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
    * @return {Object} The encrypted payload to be sent to Ravelin.
+   * @example
+   * var encrypted = ravelinjs.encryptAsObject({pan: "4111 1111 1111 1111", month: 1, year: 18});
+   * console.log(encrypted);
+   * > {
+   * >  methodType: "paymentMethodCipher",
+   * >  cardCiphertext: "abc.....xyz==",
+   * >  aesKeyCiphertext: "def....tuv==",
+   * >  algorithm: "RSA_WITH_AES_256_GCM",
+   * >  ravelinjsVersion: "0.0.1",
+   * > }
    */
   RavelinJS.prototype.encryptAsObject = function(details) {
     if (!this.rsaKey) {
-      throw new Error("RavelinJS Key has not been set");
+      throw new Error('RavelinJS Key has not been set');
     }
 
     if (!details) {
-      throw new Error("RavelinJS validation: no details provided");
+      throw new Error('RavelinJS validation: no details provided');
     }
 
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
     if (!details.pan || details.pan.length < 13) {
-      throw new Error("RavelinJS validation: pan should have at least 13 digits");
+      throw new Error('RavelinJS validation: pan should have at least 13 digits');
     }
 
     if (typeof details.month == 'string') {
       details.month = parseInt(details.month, 10);
     }
     if (!(details.month > 0 && details.month < 13)) {
-      throw new Error("RavelinJS validation: month should be in the range 1-12");
+      throw new Error('RavelinJS validation: month should be in the range 1-12');
     }
 
     if (typeof details.year === 'string') {
@@ -1070,19 +1045,19 @@
       details.year += 2000;
     }
     if (!(details.year > 2000)) {
-      throw new Error("RavelinJS validation: year should be in the 21st century");
+      throw new Error('RavelinJS validation: year should be in the 21st century');
     }
 
     for (prop in details) {
       if (!details.hasOwnProperty(prop)) continue;
       switch (prop) {
-        case "pan":
-        case "year":
-        case "month":
-        case "nameOnCard":
+        case 'pan':
+        case 'year':
+        case 'month':
+        case 'nameOnCard':
           continue;
       }
-      throw new Error("RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard");
+      throw new Error('RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard');
     }
 
     details.month += '';
@@ -1095,21 +1070,103 @@
       methodType: 'paymentMethodCipher',
       cardCiphertext: aesResult.ciphertextB64,
       aesKeyCiphertext: rsaResultB64,
-      algorithm: "RSA_WITH_AES_256_GCM",
+      algorithm: 'RSA_WITH_AES_256_GCM',
       ravelinjsVersion: version,
     };
   };
 
   /**
-   * encrypt takes the encrypted card details and prepares them to be sent
-   * to Ravelin, with the resulting payload returned as a string.
+   * track invokes the Ravelin client-side tracking script. You must have set
+   * the public API key in advance of calling track, so that it can submit the
+   * data directly to Ravelin. Its execution is asynchronous.
    *
-   * @param {Object} details An object containing properties pan, month, year,
-   *                         month, and nameOnCard (optional).
-   * @return {String} The encrypted payload to be sent to Ravelin.
+   * @param {String} eventName A description of what has occurred.
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // track when a customer uses search functionality
+   * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
+   *
+   * // track without any additional metadata
+   * ravelinjs.track('CUSTOMER_SEARCHED');
    */
-  RavelinJS.prototype.encrypt = function(details) {
-    return JSON.stringify(this.encryptAsObject(details));
+  RavelinJS.prototype.track = function() {
+    this._ravelin(['track'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * trackPage logs the page view. Call this from as many pages as possible.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // Call from landing page after page load
+   * ravelinjs.trackPage(); // www.ravelintest.com
+   *
+   * // Identical calls should be made on all subsequent page loads
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-1
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   * ...
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-3
+   * ..
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   */
+  RavelinJS.prototype.trackPage = function() {
+    this._ravelin(['trackPage'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
+   * Call this function immediately before your own logout logic is executed.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @example
+   * ravelinjs.trackPage(); // Called before you begin your logout process
+   */
+  RavelinJS.prototype.trackLogout = function() {
+    this._ravelin(['trackLogout'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * trackFingerprint sends device information back to Ravelin. Invoke from
+   * the checkout page of your payment flow.
+   *
+   * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
+   * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
+   * @example
+   * // if setCustomerId was already called
+   * ravelinjs.trackFingerprint();
+   * // else, you must inform Ravelin of the customerId explicitly
+   * ravelinjs.trackFingerprint('customer123');
+   */
+  RavelinJS.prototype.trackFingerprint = function(customerId) {
+    if (customerId) this.setCustomerId(customerId);
+    this._ravelin(['fingerprint'].concat(Array.prototype.slice.call(arguments, 1)));
+  }
+
+  /**
+   * setCookieDomain configures where Ravelin will store any cookies on your
+   * domain. Set as high as possible, e.g. ".mysite.com" rather than
+   * ".www.uk.mysite.com".
+   *
+   * @param {String} domain Domain under which Ravelin generated cookies should be stored
+   * @example
+   * ravelinjs.setCookieDomain('.mysite.com');
+   */
+  RavelinJS.prototype.setCookieDomain = function() {
+    this._ravelin(['setCookieDomain'].concat(Array.prototype.slice.call(arguments, 0)));
+  }
+
+  /**
+   * Set the orderId submitted with requests. This is used to associate session-activity
+   * with a specific user.
+   *
+   * @param {String} orderId Current orderId for the order
+   * @example
+   * ravelinjs.setOrderId('order123');
+   */
+  RavelinJS.prototype.setOrderId = function() {
+    this._ravelin(['setOrderId'].concat(Array.prototype.slice.call(arguments, 0)));
   }
 
   if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {

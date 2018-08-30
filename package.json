@@ -1,7 +1,7 @@
 {
   "name": "ravelinjs",
   "version": "0.0.9",
-  "description": "Ravelin Browser Card Encryption Library.",
+  "description": "Ravelin Client-side Card Encryption Library.",
   "main": "ravelin.js",
   "scripts": {
     "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",

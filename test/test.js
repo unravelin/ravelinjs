@@ -19,37 +19,37 @@ describe('ravelinjs', function() {
 
     describe('encrypt', function() {
         it('checks rsa key has been set', function() {
-            expect(() => ravelin.encrypt({})).to.throw("RavelinJS Key has not been set");
+            expect(() => ravelin.encrypt({})).to.throw('RavelinJS Key has not been set');
         });
 
         it('validates pan has at least 13 digits', function() {
             ravelin.setRSAKey(dummyRSAKey);
-            const err = "RavelinJS validation: pan should have at least 13 digits";
+            const err = 'RavelinJS validation: pan should have at least 13 digits';
             expect(() => ravelin.encrypt({})).to.throw(err);
-            expect(() => ravelin.encrypt({pan: "4111 1111"})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111'})).to.throw(err);
         });
 
         it('validates month is in the range 1-12', function() {
             ravelin.setRSAKey(dummyRSAKey);
             const err = 'RavelinJS validation: month should be in the range 1-12';
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111"})).to.throw(err);
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 0})).to.throw(err);
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 13})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111'})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 0})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 13})).to.throw(err);
         });
 
         it('validates year is in the 21st century', function() {
             ravelin.setRSAKey(dummyRSAKey);
             const err = 'RavelinJS validation: year should be in the 21st century';
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 1})).to.throw(err);
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 1, year: -1})).to.throw(err);
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 1, year: "yesteryear"})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 1})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 1, year: -1})).to.throw(err);
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 1, year: 'yesteryear'})).to.throw(err);
         });
 
         it('validates no unknown attributes are present', function() {
             ravelin.setRSAKey(dummyRSAKey);
 
-            const err = "RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard";
-            expect(() => ravelin.encrypt({pan: "4111 1111 1111 1111", month: 1, year: "18", "cvv": "123"})).to.throw(err);
+            const err = 'RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard';
+            expect(() => ravelin.encrypt({pan: '4111 1111 1111 1111', month: 1, year: '18', 'cvv': '123'})).to.throw(err);
         });
 
         it('generates ciphers', function() {
@@ -58,10 +58,10 @@ describe('ravelinjs', function() {
                 c = JSON.parse(c);
                 return (
                     c.methodType == 'paymentMethodCipher' &&
-                    c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
-                    c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
-                    c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.9"
+                    c.cardCiphertext != '' && c.cardCiphertext.length > 10 &&
+                    c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
+                    c.algorithm == 'RSA_WITH_AES_256_GCM' &&
+                    c.ravelinjsVersion == '0.0.9'
                 );
             }
 
@@ -73,14 +73,14 @@ describe('ravelinjs', function() {
 
             expect(ravelin.encrypt({
                 pan: '4111 1111 1111 1111',
-                month: "10",
-                year: "20",
+                month: '10',
+                year: '20',
             })).to.satisfy(validCipher);
 
             expect(ravelin.encrypt({
                 pan: '4111 1111 1111 1111',
-                month: "12",
-                year: "20",
+                month: '12',
+                year: '20',
             })).to.satisfy(validCipher);
         });
 
@@ -89,10 +89,10 @@ describe('ravelinjs', function() {
             function validCipher(c) {
                 return (
                     c.methodType == 'paymentMethodCipher' &&
-                    c.cardCiphertext != "" && c.cardCiphertext.length > 10 &&
-                    c.aesKeyCiphertext != "" && c.aesKeyCiphertext.length > 10 &&
-                    c.algorithm == "RSA_WITH_AES_256_GCM" &&
-                    c.ravelinjsVersion == "0.0.9"
+                    c.cardCiphertext != '' && c.cardCiphertext.length > 10 &&
+                    c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
+                    c.algorithm == 'RSA_WITH_AES_256_GCM' &&
+                    c.ravelinjsVersion == '0.0.9'
                 );
             }
 
