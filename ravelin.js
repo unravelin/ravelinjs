@@ -1121,7 +1121,7 @@
    *
    * @param {Object} meta Any additional metadata you wish to use to describe the event.
    * @example
-   * ravelinjs.trackPage(); // Called before you begin your logout process
+   * ravelinjs.trackLogout(); // Called before you begin your logout process
    */
   RavelinJS.prototype.trackLogout = function() {
     this._ravelin(['trackLogout'].concat(Array.prototype.slice.call(arguments, 0)));
