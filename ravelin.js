@@ -910,7 +910,7 @@
     if (typeof this.apiKey !== 'string') {
       throw new Error('No tracking API key set. See RavelinJS.setPublicAPIKey');
     }
-    if (!window) {
+    if (typeof(window) === 'undefined') {
       return;
     }
     if (!window.ravelin) {
