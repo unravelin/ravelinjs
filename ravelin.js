@@ -992,7 +992,7 @@
    * @example
    * var encrypted = ravelinjs.encrypt({pan: "4111 1111 1111 1111", month: 1, year: 18});
    * console.log(encrypted);
-   * > "{methodType:"paymentMethodCipher",cardCiphertext:"abc.....xyz==",aesKeyCiphertext:"def....tuv==",algorithm:"RSA_WITH_AES_256_GCM",ravelinjsVersion: "0.0.1"}"
+   * > '{"methodType":"paymentMethodCipher","cardCiphertext":"abc.....xyz==","aesKeyCiphertext":"def....tuv==","algorithm":"RSA_WITH_AES_256_GCM","ravelinjsVersion": "0.0.1"}'
    */
   RavelinJS.prototype.encrypt = function(details) {
     return JSON.stringify(this.encryptAsObject(details));
