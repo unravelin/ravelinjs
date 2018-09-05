@@ -57,11 +57,11 @@ and send that encrypted values (the cipher) back to your server.
 <script src="ravelin.min.js"></script>
 <script>
     // Tracking.
-    ravelinjs.setPublicAPIKey("pk_live_...");
+    ravelinjs.setPublicAPIKey('pk_live_...');
     ravelinjs.trackPage();
 
     // Encryption.
-    ravelinjs.setRSAKey("..|.....")
+    ravelinjs.setRSAKey('..|.....')
     document.getElementById('form-payment-card').onsubmit = function() {
         // When the #form-payment-card is submitted, we set the value of the
         // <input type="hidden" name="ravelinCipherText" /> is set to the
@@ -74,7 +74,7 @@ and send that encrypted values (the cipher) back to your server.
             year: this.year.value,
             nameOnCard: this.nameOnCard.value,
         });
-        
+
         // TODO Save the card elsewhere. Might be a PSP API call.
         // Might be some more encryption to be sent to your server too.
         saveCardElsewhere(...);
@@ -93,9 +93,9 @@ Once the cipher is received by your server, the API request to Ravelin in which 
 var card = JSON.parse(form.getValue('ravelinCipherText'));
 card.methodType = 'paymentMethodCipher';
 
-var action = request("https://api.ravelin.com/v2/checkout?score=true", {
+var action = request('https://api.ravelin.com/v2/checkout?score=true', {
     // ...
-    "paymentMethod": card,
+    'paymentMethod': card,
 });
 ```
 
