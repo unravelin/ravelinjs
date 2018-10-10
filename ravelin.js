@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.9';
+  var version = '0.0.10';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -948,12 +948,18 @@
     }
 
     var split = rawPubKey.split('|');
-    if (split.length != 2) {
+    if (split.length < 2 || split.length > 3) {
       throw new Error('Invalid value provided to RavelinJS.setRSAKey');
     }
 
     this.rsaKey = new RSAKey();
-    this.rsaKey.setPublic(split[1], split[0]);
+    if (split.length === 2) {
+      this.keyIndex = 0;
+      this.rsaKey.setPublic(split[1], split[0]);
+    } else {
+      this.keyIndex = +split[0];
+      this.rsaKey.setPublic(split[2], split[1]);
+    }
   }
 
   /**
@@ -1072,6 +1078,7 @@
       aesKeyCiphertext: rsaResultB64,
       algorithm: 'RSA_WITH_AES_256_GCM',
       ravelinjsVersion: version,
+      keyIndex: this.keyIndex
     };
   };
 
