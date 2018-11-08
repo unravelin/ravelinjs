@@ -58,13 +58,13 @@ exports.config = Object.assign(base, {
         //     version: '10',
         //     platform: 'Mac OSX 10.12',
         // },
-        {
-            build: 'ravelinjs 1.0',
-            name: 'osx safari6',
-            browserName: 'Safari',
-            version: '6.2',
-            platform: 'Mac OSX 10.8',
-        },
+        // {
+        //     build: 'ravelinjs 1.0',
+        //     name: 'osx safari6',
+        //     browserName: 'Safari',
+        //     version: '6.2',
+        //     platform: 'Mac OSX 10.8',
+        // },
         // Firefox.
         {
             build: 'ravelinjs 1.0',
