@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.10';
+  var version = '0.0.11';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -998,7 +998,7 @@
    * @example
    * var encrypted = ravelinjs.encrypt({pan: "4111 1111 1111 1111", month: 1, year: 18});
    * console.log(encrypted);
-   * > '{"methodType":"paymentMethodCipher","cardCiphertext":"abc.....xyz==","aesKeyCiphertext":"def....tuv==","algorithm":"RSA_WITH_AES_256_GCM","ravelinjsVersion": "0.0.1"}'
+   * > '{"methodType":"paymentMethodCipher","cardCiphertext":"abc.....xyz==","aesKeyCiphertext":"def....tuv==","algorithm":"RSA_WITH_AES_256_GCM","ravelinSDKVersion": "0.0.1-ravelinjs"}'
    */
   RavelinJS.prototype.encrypt = function(details) {
     return JSON.stringify(this.encryptAsObject(details));
@@ -1018,7 +1018,7 @@
    * >  cardCiphertext: "abc.....xyz==",
    * >  aesKeyCiphertext: "def....tuv==",
    * >  algorithm: "RSA_WITH_AES_256_GCM",
-   * >  ravelinjsVersion: "0.0.1",
+   * >  ravelinSDKVersion: "0.0.1-ravelinjs",
    * > }
    */
   RavelinJS.prototype.encryptAsObject = function(details) {
@@ -1077,7 +1077,7 @@
       cardCiphertext: aesResult.ciphertextB64,
       aesKeyCiphertext: rsaResultB64,
       algorithm: 'RSA_WITH_AES_256_GCM',
-      ravelinjsVersion: version,
+      ravelinSDKVersion: version+'-ravelinjs',
       keyIndex: this.keyIndex
     };
   };
