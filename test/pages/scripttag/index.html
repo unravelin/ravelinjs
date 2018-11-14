@@ -63,6 +63,7 @@
         setRSAKey();
 
         document.getElementById('form').onsubmit = function() {
+            ravelinjs.trackFingerprint();
             var month = document.getElementById('month');
             output(function() {
                 return ravelinjs.encrypt({
