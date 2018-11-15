@@ -10,6 +10,741 @@
 }(typeof self !== 'undefined' ? self : this, function () {
 
   var RAVELINJS_VERSION = '1.0.0';
+  var API_URL = 'https://api.ravelin.com';
+  var FINGERPRINT_URL = API_URL + '/v2/fingerprint?source=browser';
+  var DEVICEID_COOKIE_NAME = 'ravelinDeviceId';
+  var SESSIONID_COOKIE_NAME = 'ravelinSessionId';
+  var COOKIE_NAMES = [DEVICEID_COOKIE_NAME, SESSIONID_COOKIE_NAME];
+
+  /**
+   * RavelinJS provides card encryption and wraps Ravelin's tracking library.
+   *
+   * @param {String} key The RSA Key to be provided to setRSAKey
+   */
+  function RavelinJS(key) {
+    if (key) this.setRSAKey(key);
+
+    // Seed our UUID lookup table
+    this.lut = [];
+
+    for (var i=0; i<256; i++) {
+      this.lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
+    }
+
+    this.setDeviceId();
+    this.setSessionId();
+  }
+
+  /**
+   * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It should be called
+   * before anything else. You can find your publishable API key inside the Ravelin dashboard.
+   *
+   * @param {String} apiKey Your publishable API key
+   * @example
+   * ravelinjs.setPublicAPIKey('live_publishable_key_abc123');
+   */
+  RavelinJS.prototype.setPublicAPIKey = function(pubKey) {
+    this.apiKey = pubKey;
+  }
+
+  /**
+   * setRSAKey configures RavelinJS with the given public encryption key, in the format that
+   * Ravelin provides it. You can find your public RSA key inside the Ravelin dashboard.
+   *
+   * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
+   * @example
+   * ravelinjs.setRSAKey('10010|abc123...xyz789');
+   */
+  RavelinJS.prototype.setRSAKey = function(rawPubKey) {
+    if (typeof rawPubKey !== 'string') {
+      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
+    }
+
+    var split = rawPubKey.split('|');
+    if (split.length < 2 || split.length > 3) {
+      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
+    }
+
+    this.rsaKey = new RSAKey();
+    if (split.length === 2) {
+      this.keyIndex = 0;
+      this.rsaKey.setPublic(split[1], split[0]);
+    } else {
+      this.keyIndex = +split[0];
+      this.rsaKey.setPublic(split[2], split[1]);
+    }
+  }
+
+  /**
+   * setCustomerId sets the customerId for all requests submitted by ravelinjs. This is needed to associate device activity
+   * with a specific user. This value should be the same that you are providing to Ravelin in your server-side
+   * API requests. If this value is not yet know, perhaps because the customer has not yet logged in or provided
+   * any user details, please refer to setTempCustomerId instead.
+   *
+   * @param {String} customerId customerId unique to the current user
+   * @example
+   * ravelinjs.setCustomerId('123321');
+   */
+  RavelinJS.prototype.setCustomerId = function(custId) {
+    if (!custId) {
+      return;
+    }
+
+    if (typeof(custId) === 'string' && custId.indexOf('@') != -1) {
+      custId = custId.toLowerCase();
+    }
+
+    this.customerId = '' + custId;
+  }
+
+  /**
+   * setTempCustomerId sets the tempCustomerId for all requests submitted by ravelinjs. This is used as a temporary association between device/
+   * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a
+   * customerId is available.
+   *
+   * @param {String} tempCustomerId A placeholder id for when customerId is not known
+   * @example
+   * ravelinjs.setTempCustomerId('session_abcdef1234567'); // a session id is often a good temporary customerId
+   */
+  RavelinJS.prototype.setTempCustomerId = function(tempCustId) {
+    if (!tempCustId) {
+      return;
+    }
+
+    if (typeof(tempCustId) === 'string' && tempCustId.indexOf('@') != -1) {
+      tempCustId = tempCustId.toLowerCase();
+    }
+
+    this.tempCustomerId = '' + tempCustId;
+  }
+
+  /**
+   * encrypt performs the encrypt process for the provided card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as a string.
+   *
+   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
+   * @return {String} The encrypted payload to be sent to Ravelin.
+   * @example
+   * var encrypted = ravelinjs.encrypt({pan: "4111 1111 1111 1111", month: 1, year: 18});
+   * console.log(encrypted);
+   * > '{"methodType":"paymentMethodCipher","cardCiphertext":"abc.....xyz==","aesKeyCiphertext":"def....tuv==","algorithm":"RSA_WITH_AES_256_GCM","ravelinSDKVersion": "0.0.1-ravelinjs"}'
+   */
+  RavelinJS.prototype.encrypt = function(details) {
+    return JSON.stringify(this.encryptAsObject(details));
+  }
+
+  /**
+   * encryptAsObject performs the encrypt process for the provided card details and prepares them to be sent
+   * to Ravelin, with the resulting payload returned as an object.
+   *
+   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
+   * @return {Object} The encrypted payload to be sent to Ravelin.
+   * @example
+   * var encrypted = ravelinjs.encryptAsObject({pan: "4111 1111 1111 1111", month: 1, year: 18});
+   * console.log(encrypted);
+   * > {
+   * >  methodType: "paymentMethodCipher",
+   * >  cardCiphertext: "abc.....xyz==",
+   * >  aesKeyCiphertext: "def....tuv==",
+   * >  algorithm: "RSA_WITH_AES_256_GCM",
+   * >  ravelinSDKVersion: "0.0.1-ravelinjs",
+   * > }
+   */
+  RavelinJS.prototype.encryptAsObject = function(details) {
+    if (!this.rsaKey) {
+      throw new Error('RavelinJS Key has not been set');
+    }
+
+    if (!details) {
+      throw new Error('RavelinJS validation: no details provided');
+    }
+
+    if (details.pan) {
+      details.pan = details.pan.toString().replace(/[^0-9]/g, '');
+    }
+    if (!details.pan || details.pan.length < 13) {
+      throw new Error('RavelinJS validation: pan should have at least 13 digits');
+    }
+
+    if (typeof details.month == 'string') {
+      details.month = parseInt(details.month, 10);
+    }
+    if (!(details.month > 0 && details.month < 13)) {
+      throw new Error('RavelinJS validation: month should be in the range 1-12');
+    }
+
+    if (typeof details.year === 'string') {
+      details.year = parseInt(details.year, 10);
+    }
+    if (details.year > 0 && details.year < 100) {
+      details.year += 2000;
+    }
+    if (!(details.year > 2000)) {
+      throw new Error('RavelinJS validation: year should be in the 21st century');
+    }
+
+    for (prop in details) {
+      if (!details.hasOwnProperty(prop)) continue;
+      switch (prop) {
+        case 'pan':
+        case 'year':
+        case 'month':
+        case 'nameOnCard':
+          continue;
+      }
+      throw new Error('RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard');
+    }
+
+    details.month += '';
+    details.year += '';
+
+    var aesResult = aesEncrypt(JSON.stringify(details));
+    var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
+
+    return {
+      methodType: 'paymentMethodCipher',
+      cardCiphertext: aesResult.ciphertextB64,
+      aesKeyCiphertext: rsaResultB64,
+      algorithm: 'RSA_WITH_AES_256_GCM',
+      ravelinSDKVersion: RAVELINJS_VERSION+'-ravelinjs',
+      keyIndex: this.keyIndex
+    };
+  };
+
+  /**
+   * track invokes the Ravelin client-side tracking script. You must have set
+   * the public API key in advance of calling track, so that it can submit the
+   * data directly to Ravelin. Its execution is asynchronous.
+   *
+   * @param {String} eventName A description of what has occurred.
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // track when a customer uses search functionality
+   * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
+   *
+   * // track without any additional metadata
+   * ravelinjs.track('CUSTOMER_SEARCHED');
+   */
+  RavelinJS.prototype.track = function() {
+    throw "not implemented";
+  }
+
+  /**
+   * trackPage logs the page view. Call this from as many pages as possible.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // Call from landing page after page load
+   * ravelinjs.trackPage(); // www.ravelintest.com
+   *
+   * // Identical calls should be made on all subsequent page loads
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-1
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   * ...
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-3
+   * ..
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   */
+  RavelinJS.prototype.trackPage = function() {
+    throw "not implemented";
+  }
+
+  /**
+   * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
+   * Call this function immediately before your own logout logic is executed.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @example
+   * ravelinjs.trackLogout(); // Called before you begin your logout process
+   */
+  RavelinJS.prototype.trackLogout = function() {
+    throw "not implemented";
+  }
+
+  /**
+   * trackFingerprint sends device information back to Ravelin. Invoke from
+   * the checkout page of your payment flow.
+   *
+   * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
+   * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
+   * @example
+   * // if setCustomerId was already called
+   * ravelinjs.trackFingerprint();
+   * // else, you must inform Ravelin of the customerId explicitly
+   * ravelinjs.trackFingerprint('customer123');
+   */
+  RavelinJS.prototype.trackFingerprint = function(custId) {
+    if (custId) {
+      this.setCustomerId(custId);
+    }
+
+    payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
+    payload.fingerprintSource = 'browser';
+
+    var browserData = {
+      sessionId: this.sessionId,
+      url: location.href,
+    };
+
+    // Store API key in scope external from .get callback
+    var apiKey = this.apiKey;
+    try {
+      Fingerprint2.get(null, function(components) {
+        for (var i = 0, len = components.length; i < len; i++) {
+          var sanitizedKey = components[i].key.replace(/_([a-z])/gi, function(c) {return c[1].toUpperCase()});
+          browserData[sanitizedKey] = components[i].value;
+        }
+
+        browserData.fonts = x64hash128(browserData.fonts.toString());
+        browserData.canvas = x64hash128(browserData.canvas[1]);
+        browserData.wegbl = x64hash128(browserData.webgl[0]);
+        browserData.browser = getBrowser();
+        payload.browser = browserData;
+        sendToRavelin(apiKey, FINGERPRINT_URL, payload, null);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  /**
+   * setCookieDomain configures where Ravelin will store any cookies on your
+   * domain. Set as high as possible, e.g. ".mysite.com" rather than
+   * ".www.uk.mysite.com".
+   *
+   * @param {String} domain Domain under which Ravelin generated cookies should be stored
+   * @example
+   * ravelinjs.setCookieDomain('.mysite.com');
+   */
+  RavelinJS.prototype.setCookieDomain = function(domain) {
+    // Clear all cookies set to the current cookie domain.
+    cleanCookies(this.cookieDomain);
+
+    this.cookieDomain = domain;
+
+    // Maintain the same device/sessionIds, but store them now under the new domain.
+    var expireAt = new Date((new Date()).setDate(10000));
+    writeCookie(DEVICEID_COOKIE_NAME, this.deviceId, expireAt, null, this.cookieDomain);
+    writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
+  }
+
+  /**
+   * Set the orderId submitted with requests. This is used to associate session-activity
+   * with a specific user.
+   *
+   * @param {String} orderId Current orderId for the order
+   * @example
+   * ravelinjs.setOrderId('order123');
+   */
+  RavelinJS.prototype.setOrderId = function(orderId) {
+    if (!orderId) {
+      return;
+    }
+
+    this.orderId = '' + orderId;
+  }
+
+  RavelinJS.prototype.setDeviceId = function() {
+    storedDeviceId = readCookie(DEVICEID_COOKIE_NAME);
+
+    if (storedDeviceId) {
+      this.deviceId = storedDeviceId;
+      return;
+    }
+
+    newDeviceId = this.uuid();
+    this.deviceId = newDeviceId;
+    var expireAt = new Date((new Date()).setDate(10000));
+    writeCookie(DEVICEID_COOKIE_NAME, newDeviceId, expireAt, null);
+  }
+
+  RavelinJS.prototype.setSessionId = function() {
+    storedSessionId = readCookie(SESSIONID_COOKIE_NAME);
+
+    // There is a chance the lib was reloaded during the session. If so, assume the session is still valid
+    if (storedSessionId) {
+      this.sessionId = storedSessionId;
+      return;
+    }
+
+    newSessionId = this.uuid();
+    this.sessionId = newSessionId;
+
+    // Set session with zero expiry, meaning the cookie with sessionId will expire on browser session exit
+    writeCookie(SESSIONID_COOKIE_NAME, newSessionId, null, null);
+  }
+
+  RavelinJS.prototype.uuid = function() {
+    var d0, d1, d2, d3;
+
+    // try to use the newer, randomer crypto.getRandomValues if available.
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
+      var d = new Int32Array(4);
+      window.crypto.getRandomValues(d);
+      d0 = d[0];
+      d1 = d[1];
+      d2 = d[2];
+      d3 = d[3];
+    } else {
+      d0 = Math.random()*0xffffffff|0;
+      d1 = Math.random()*0xffffffff|0;
+      d2 = Math.random()*0xffffffff|0;
+      d3 = Math.random()*0xffffffff|0;
+    }
+
+    return this.lut[d0&0xff]+this.lut[d0>>8&0xff]+this.lut[d0>>16&0xff]+this.lut[d0>>24&0xff]+'-'+
+      this.lut[d1&0xff]+this.lut[d1>>8&0xff]+'-'+this.lut[d1>>16&0x0f|0x40]+this.lut[d1>>24&0xff]+'-'+
+      this.lut[d2&0x3f|0x80]+this.lut[d2>>8&0xff]+'-'+this.lut[d2>>16&0xff]+this.lut[d2>>24&0xff]+
+      this.lut[d3&0xff]+this.lut[d3>>8&0xff]+this.lut[d3>>16&0xff]+this.lut[d3>>24&0xff];
+  }
+
+  // ========================================================================================================
+  //
+  // private functions
+  //
+  function aesEncrypt(plaintext) {
+    var aesKeyLength = 256;
+    var wordCount = aesKeyLength/32;
+    var paranoiaCount = 4; // 128 bits of entropy
+
+    var sessionKey = sjcl.random.randomWords(wordCount, paranoiaCount);
+    var iv = sjcl.random.randomWords(wordCount, paranoiaCount);
+
+    var aesBlockCipher = new sjcl.cipher.aes(sessionKey);
+    var bits = sjcl.codec.utf8String.toBits(plaintext);
+    var cipher = sjcl.mode.gcm.encrypt(aesBlockCipher, bits, iv, null, 128);
+
+    return {
+      ciphertextB64: sjcl.codec.base64.fromBits(cipher),
+      aesKeyB64: sjcl.codec.base64.fromBits(sessionKey),
+      ivB64: sjcl.codec.base64.fromBits(iv)
+    };
+  }
+
+  function rsaEncrypt(rsa, aesKeyB64, ivB64) {
+    var encryptedHex = rsa.encrypt(aesKeyB64 + '|' + ivB64);
+    var encryptedBits = sjcl.codec.hex.toBits(encryptedHex);
+    var aesKeyAndIVCiphertextBase64 = sjcl.codec.base64.fromBits(encryptedBits);
+
+    return aesKeyAndIVCiphertextBase64;
+  }
+
+  function getBrowser() {
+    // Extract the browser from the user agent (respect the order of the tests)
+    var browser;
+    var userAgent = navigator.userAgent.toLowerCase();
+    if(userAgent.indexOf("firefox") >= 0){
+      browser = "Firefox";
+    } else if(userAgent.indexOf("opera") >= 0 || userAgent.indexOf("opr") >= 0){
+      browser = "Opera";
+    } else if(userAgent.indexOf("chrome") >= 0){
+      browser = "Chrome";
+    } else if(userAgent.indexOf("safari") >= 0){
+      browser = "Safari";
+    } else if(userAgent.indexOf("trident") >= 0){
+      browser = "Internet Explorer";
+    } else{
+      browser = "Other";
+    }
+
+    return browser;
+  }
+
+  function basicPayload(custId, tempCustId, orderId, deviceId, sessionId) {
+    var payload = {
+      libVer: RAVELINJS_VERSION + '-ravelinjs',
+      deviceId: deviceId,
+    };
+
+    if (custId) {
+      payload.customerId = custId;
+    }
+
+    if (tempCustId) {
+      payload.tempCustomerId = tempCustId;
+    }
+
+    if (orderId) {
+      payload.orderId = orderId;
+    }
+
+    if (sessionId) {
+      payload.sessionId = sessionId;
+    }
+
+    return payload;
+  }
+
+  function cleanCookies(domain) {
+    var expired = new Date(0);
+    for (var i = 0; i < COOKIE_NAMES.length; i++) {
+      writeCookie(COOKIE_NAMES[i], '', expired, null, domain);
+    }
+  }
+
+  function readCookie(cookieName){
+    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+      return;
+    }
+
+    var cookies = document.cookie.split('; ');
+    for (var i = cookies.length-1; i >= 0; i--) {
+      var x = cookies[i].split('=');
+      if (x[0] === cookieName) {
+        return x[1];
+      }
+    }
+  }
+
+  function writeCookie(name, value, expires, path, domain) {
+    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+      return;
+    }
+
+    document.cookie = name + '=' + value + ';path=' + (path || '/') +
+      (expires ? ';expires=' + expires.toUTCString() : '') +
+      (domain ? ';domain=' + domain : '');
+  }
+
+  function sendToRavelin(apiKey, url, payload, callback) {
+    if (!apiKey) {
+      throw new TypeError('"apiKey" is null or undefined');
+    }
+
+    if (typeof payload === 'object') {
+      payload = JSON.stringify(payload);
+      console.log(payload);
+    }
+
+    var xhr = new XMLHttpRequest();
+
+    if ('withCredentials' in xhr) {
+      xhr.open('POST', url);
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      xhr.setRequestHeader('Authorization', 'token ' + apiKey);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300 && callback) {
+          callback(xhr.responseText);
+        }
+      };
+      xhr.send(payload);
+    }
+  }
+
+  // ========================================================================================================
+  //
+  // MurmurHash3 related functions
+  //
+
+  // We've copied these out from fingerprint2 so we can use them externally after the fingerprint has
+  // completed to compress down the size of the canvas/webgl/fontlists we send to the server
+
+  //
+  // Given two 64bit ints (as an array of two 32bit ints) returns the two
+  // added together as a 64bit int (as an array of two 32bit ints).
+  //
+  function x64Add(m, n) {
+    m = [m[0] >>> 16, m[0] & 0xffff, m[1] >>> 16, m[1] & 0xffff]
+    n = [n[0] >>> 16, n[0] & 0xffff, n[1] >>> 16, n[1] & 0xffff]
+    var o = [0, 0, 0, 0]
+    o[3] += m[3] + n[3]
+    o[2] += o[3] >>> 16
+    o[3] &= 0xffff
+    o[2] += m[2] + n[2]
+    o[1] += o[2] >>> 16
+    o[2] &= 0xffff
+    o[1] += m[1] + n[1]
+    o[0] += o[1] >>> 16
+    o[1] &= 0xffff
+    o[0] += m[0] + n[0]
+    o[0] &= 0xffff
+    return [(o[0] << 16) | o[1], (o[2] << 16) | o[3]]
+  }
+
+  //
+  // Given two 64bit ints (as an array of two 32bit ints) returns the two
+  // multiplied together as a 64bit int (as an array of two 32bit ints).
+  //
+  function x64Multiply(m, n) {
+    m = [m[0] >>> 16, m[0] & 0xffff, m[1] >>> 16, m[1] & 0xffff]
+    n = [n[0] >>> 16, n[0] & 0xffff, n[1] >>> 16, n[1] & 0xffff]
+    var o = [0, 0, 0, 0]
+    o[3] += m[3] * n[3]
+    o[2] += o[3] >>> 16
+    o[3] &= 0xffff
+    o[2] += m[2] * n[3]
+    o[1] += o[2] >>> 16
+    o[2] &= 0xffff
+    o[2] += m[3] * n[2]
+    o[1] += o[2] >>> 16
+    o[2] &= 0xffff
+    o[1] += m[1] * n[3]
+    o[0] += o[1] >>> 16
+    o[1] &= 0xffff
+    o[1] += m[2] * n[2]
+    o[0] += o[1] >>> 16
+    o[1] &= 0xffff
+    o[1] += m[3] * n[1]
+    o[0] += o[1] >>> 16
+    o[1] &= 0xffff
+    o[0] += (m[0] * n[3]) + (m[1] * n[2]) + (m[2] * n[1]) + (m[3] * n[0])
+    o[0] &= 0xffff
+    return [(o[0] << 16) | o[1], (o[2] << 16) | o[3]]
+  }
+  //
+  // Given a 64bit int (as an array of two 32bit ints) and an int
+  // representing a number of bit positions, returns the 64bit int (as an
+  // array of two 32bit ints) rotated left by that number of positions.
+  //
+  function x64Rotl(m, n) {
+    n %= 64
+    if (n === 32) {
+      return [m[1], m[0]]
+    } else if (n < 32) {
+      return [(m[0] << n) | (m[1] >>> (32 - n)), (m[1] << n) | (m[0] >>> (32 - n))]
+    } else {
+      n -= 32
+      return [(m[1] << n) | (m[0] >>> (32 - n)), (m[0] << n) | (m[1] >>> (32 - n))]
+    }
+  }
+  //
+  // Given a 64bit int (as an array of two 32bit ints) and an int
+  // representing a number of bit positions, returns the 64bit int (as an
+  // array of two 32bit ints) shifted left by that number of positions.
+  //
+  function x64LeftShift(m, n) {
+    n %= 64
+    if (n === 0) {
+      return m
+    } else if (n < 32) {
+      return [(m[0] << n) | (m[1] >>> (32 - n)), m[1] << n]
+    } else {
+      return [m[1] << (n - 32), 0]
+    }
+  }
+  //
+  // Given two 64bit ints (as an array of two 32bit ints) returns the two
+  // xored together as a 64bit int (as an array of two 32bit ints).
+  //
+  function x64Xor(m, n) {
+    return [m[0] ^ n[0], m[1] ^ n[1]]
+  }
+  //
+  // Given a block, returns murmurHash3's final x64 mix of that block.
+  // (`[0, h[0] >>> 1]` is a 33 bit unsigned right shift. This is the
+  // only place where we need to right shift 64bit ints.)
+  //
+  function x64Fmix(h) {
+    h = x64Xor(h, [0, h[0] >>> 1])
+    h = x64Multiply(h, [0xff51afd7, 0xed558ccd])
+    h = x64Xor(h, [0, h[0] >>> 1])
+    h = x64Multiply(h, [0xc4ceb9fe, 0x1a85ec53])
+    h = x64Xor(h, [0, h[0] >>> 1])
+    return h
+  }
+
+  //
+  // Given a string and an optional seed as an int, returns a 128 bit
+  // hash using the x64 flavor of MurmurHash3, as an unsigned hex.
+  //
+  function x64hash128(key, seed) {
+    key = key || ''
+    seed = seed || 0
+    var remainder = key.length % 16
+    var bytes = key.length - remainder
+    var h1 = [0, seed]
+    var h2 = [0, seed]
+    var k1 = [0, 0]
+    var k2 = [0, 0]
+    var c1 = [0x87c37b91, 0x114253d5]
+    var c2 = [0x4cf5ad43, 0x2745937f]
+    for (var i = 0; i < bytes; i = i + 16) {
+      k1 = [((key.charCodeAt(i + 4) & 0xff)) | ((key.charCodeAt(i + 5) & 0xff) << 8) | ((key.charCodeAt(i + 6) & 0xff) << 16) | ((key.charCodeAt(i + 7) & 0xff) << 24), ((key.charCodeAt(i) & 0xff)) | ((key.charCodeAt(i + 1) & 0xff) << 8) | ((key.charCodeAt(i + 2) & 0xff) << 16) | ((key.charCodeAt(i + 3) & 0xff) << 24)]
+      k2 = [((key.charCodeAt(i + 12) & 0xff)) | ((key.charCodeAt(i + 13) & 0xff) << 8) | ((key.charCodeAt(i + 14) & 0xff) << 16) | ((key.charCodeAt(i + 15) & 0xff) << 24), ((key.charCodeAt(i + 8) & 0xff)) | ((key.charCodeAt(i + 9) & 0xff) << 8) | ((key.charCodeAt(i + 10) & 0xff) << 16) | ((key.charCodeAt(i + 11) & 0xff) << 24)]
+      k1 = x64Multiply(k1, c1)
+      k1 = x64Rotl(k1, 31)
+      k1 = x64Multiply(k1, c2)
+      h1 = x64Xor(h1, k1)
+      h1 = x64Rotl(h1, 27)
+      h1 = x64Add(h1, h2)
+      h1 = x64Add(x64Multiply(h1, [0, 5]), [0, 0x52dce729])
+      k2 = x64Multiply(k2, c2)
+      k2 = x64Rotl(k2, 33)
+      k2 = x64Multiply(k2, c1)
+      h2 = x64Xor(h2, k2)
+      h2 = x64Rotl(h2, 31)
+      h2 = x64Add(h2, h1)
+      h2 = x64Add(x64Multiply(h2, [0, 5]), [0, 0x38495ab5])
+    }
+    k1 = [0, 0]
+    k2 = [0, 0]
+    switch (remainder) {
+      case 15:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 14)], 48))
+      // fallthrough
+      case 14:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 13)], 40))
+      // fallthrough
+      case 13:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 12)], 32))
+      // fallthrough
+      case 12:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 11)], 24))
+      // fallthrough
+      case 11:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 10)], 16))
+      // fallthrough
+      case 10:
+        k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 9)], 8))
+      // fallthrough
+      case 9:
+        k2 = x64Xor(k2, [0, key.charCodeAt(i + 8)])
+        k2 = x64Multiply(k2, c2)
+        k2 = x64Rotl(k2, 33)
+        k2 = x64Multiply(k2, c1)
+        h2 = x64Xor(h2, k2)
+      // fallthrough
+      case 8:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 7)], 56))
+      // fallthrough
+      case 7:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 6)], 48))
+      // fallthrough
+      case 6:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 5)], 40))
+      // fallthrough
+      case 5:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 4)], 32))
+      // fallthrough
+      case 4:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 3)], 24))
+      // fallthrough
+      case 3:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 2)], 16))
+      // fallthrough
+      case 2:
+        k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 1)], 8))
+      // fallthrough
+      case 1:
+        k1 = x64Xor(k1, [0, key.charCodeAt(i)])
+        k1 = x64Multiply(k1, c1)
+        k1 = x64Rotl(k1, 31)
+        k1 = x64Multiply(k1, c2)
+        h1 = x64Xor(h1, k1)
+      // fallthrough
+    }
+    h1 = x64Xor(h1, [0, key.length])
+    h2 = x64Xor(h2, [0, key.length])
+    h1 = x64Add(h1, h2)
+    h2 = x64Add(h2, h1)
+    h1 = x64Fmix(h1)
+    h2 = x64Fmix(h2)
+    h1 = x64Add(h1, h2)
+    h2 = x64Add(h2, h1)
+    return ('00000000' + (h1[0] >>> 0).toString(16)).slice(-8) + ('00000000' + (h1[1] >>> 0).toString(16)).slice(-8) + ('00000000' + (h2[0] >>> 0).toString(16)).slice(-8) + ('00000000' + (h2[1] >>> 0).toString(16)).slice(-8)
+  }
 
   /*
   * Fingerprintjs2 2.0.0 - Modern & flexible browser fingerprint library v2
@@ -34,213 +769,6 @@
     if (typeof window !== 'undefined' && typeof window.define === 'function' && window.define.amd) { window.define(definition) } else if (typeof module !== 'undefined' && module.exports) { module.exports = definition() } else if (context.exports) { context.exports = definition() } else { context[name] = definition() }
   })('Fingerprint2', this, function () {
     'use strict'
-
-  /// MurmurHash3 related functions
-
-  //
-  // Given two 64bit ints (as an array of two 32bit ints) returns the two
-  // added together as a 64bit int (as an array of two 32bit ints).
-  //
-    var x64Add = function (m, n) {
-      m = [m[0] >>> 16, m[0] & 0xffff, m[1] >>> 16, m[1] & 0xffff]
-      n = [n[0] >>> 16, n[0] & 0xffff, n[1] >>> 16, n[1] & 0xffff]
-      var o = [0, 0, 0, 0]
-      o[3] += m[3] + n[3]
-      o[2] += o[3] >>> 16
-      o[3] &= 0xffff
-      o[2] += m[2] + n[2]
-      o[1] += o[2] >>> 16
-      o[2] &= 0xffff
-      o[1] += m[1] + n[1]
-      o[0] += o[1] >>> 16
-      o[1] &= 0xffff
-      o[0] += m[0] + n[0]
-      o[0] &= 0xffff
-      return [(o[0] << 16) | o[1], (o[2] << 16) | o[3]]
-    }
-
-  //
-  // Given two 64bit ints (as an array of two 32bit ints) returns the two
-  // multiplied together as a 64bit int (as an array of two 32bit ints).
-  //
-    var x64Multiply = function (m, n) {
-      m = [m[0] >>> 16, m[0] & 0xffff, m[1] >>> 16, m[1] & 0xffff]
-      n = [n[0] >>> 16, n[0] & 0xffff, n[1] >>> 16, n[1] & 0xffff]
-      var o = [0, 0, 0, 0]
-      o[3] += m[3] * n[3]
-      o[2] += o[3] >>> 16
-      o[3] &= 0xffff
-      o[2] += m[2] * n[3]
-      o[1] += o[2] >>> 16
-      o[2] &= 0xffff
-      o[2] += m[3] * n[2]
-      o[1] += o[2] >>> 16
-      o[2] &= 0xffff
-      o[1] += m[1] * n[3]
-      o[0] += o[1] >>> 16
-      o[1] &= 0xffff
-      o[1] += m[2] * n[2]
-      o[0] += o[1] >>> 16
-      o[1] &= 0xffff
-      o[1] += m[3] * n[1]
-      o[0] += o[1] >>> 16
-      o[1] &= 0xffff
-      o[0] += (m[0] * n[3]) + (m[1] * n[2]) + (m[2] * n[1]) + (m[3] * n[0])
-      o[0] &= 0xffff
-      return [(o[0] << 16) | o[1], (o[2] << 16) | o[3]]
-    }
-  //
-  // Given a 64bit int (as an array of two 32bit ints) and an int
-  // representing a number of bit positions, returns the 64bit int (as an
-  // array of two 32bit ints) rotated left by that number of positions.
-  //
-    var x64Rotl = function (m, n) {
-      n %= 64
-      if (n === 32) {
-        return [m[1], m[0]]
-      } else if (n < 32) {
-        return [(m[0] << n) | (m[1] >>> (32 - n)), (m[1] << n) | (m[0] >>> (32 - n))]
-      } else {
-        n -= 32
-        return [(m[1] << n) | (m[0] >>> (32 - n)), (m[0] << n) | (m[1] >>> (32 - n))]
-      }
-    }
-  //
-  // Given a 64bit int (as an array of two 32bit ints) and an int
-  // representing a number of bit positions, returns the 64bit int (as an
-  // array of two 32bit ints) shifted left by that number of positions.
-  //
-    var x64LeftShift = function (m, n) {
-      n %= 64
-      if (n === 0) {
-        return m
-      } else if (n < 32) {
-        return [(m[0] << n) | (m[1] >>> (32 - n)), m[1] << n]
-      } else {
-        return [m[1] << (n - 32), 0]
-      }
-    }
-  //
-  // Given two 64bit ints (as an array of two 32bit ints) returns the two
-  // xored together as a 64bit int (as an array of two 32bit ints).
-  //
-    var x64Xor = function (m, n) {
-      return [m[0] ^ n[0], m[1] ^ n[1]]
-    }
-  //
-  // Given a block, returns murmurHash3's final x64 mix of that block.
-  // (`[0, h[0] >>> 1]` is a 33 bit unsigned right shift. This is the
-  // only place where we need to right shift 64bit ints.)
-  //
-    var x64Fmix = function (h) {
-      h = x64Xor(h, [0, h[0] >>> 1])
-      h = x64Multiply(h, [0xff51afd7, 0xed558ccd])
-      h = x64Xor(h, [0, h[0] >>> 1])
-      h = x64Multiply(h, [0xc4ceb9fe, 0x1a85ec53])
-      h = x64Xor(h, [0, h[0] >>> 1])
-      return h
-    }
-
-  //
-  // Given a string and an optional seed as an int, returns a 128 bit
-  // hash using the x64 flavor of MurmurHash3, as an unsigned hex.
-  //
-    var x64hash128 = function (key, seed) {
-      key = key || ''
-      seed = seed || 0
-      var remainder = key.length % 16
-      var bytes = key.length - remainder
-      var h1 = [0, seed]
-      var h2 = [0, seed]
-      var k1 = [0, 0]
-      var k2 = [0, 0]
-      var c1 = [0x87c37b91, 0x114253d5]
-      var c2 = [0x4cf5ad43, 0x2745937f]
-      for (var i = 0; i < bytes; i = i + 16) {
-        k1 = [((key.charCodeAt(i + 4) & 0xff)) | ((key.charCodeAt(i + 5) & 0xff) << 8) | ((key.charCodeAt(i + 6) & 0xff) << 16) | ((key.charCodeAt(i + 7) & 0xff) << 24), ((key.charCodeAt(i) & 0xff)) | ((key.charCodeAt(i + 1) & 0xff) << 8) | ((key.charCodeAt(i + 2) & 0xff) << 16) | ((key.charCodeAt(i + 3) & 0xff) << 24)]
-        k2 = [((key.charCodeAt(i + 12) & 0xff)) | ((key.charCodeAt(i + 13) & 0xff) << 8) | ((key.charCodeAt(i + 14) & 0xff) << 16) | ((key.charCodeAt(i + 15) & 0xff) << 24), ((key.charCodeAt(i + 8) & 0xff)) | ((key.charCodeAt(i + 9) & 0xff) << 8) | ((key.charCodeAt(i + 10) & 0xff) << 16) | ((key.charCodeAt(i + 11) & 0xff) << 24)]
-        k1 = x64Multiply(k1, c1)
-        k1 = x64Rotl(k1, 31)
-        k1 = x64Multiply(k1, c2)
-        h1 = x64Xor(h1, k1)
-        h1 = x64Rotl(h1, 27)
-        h1 = x64Add(h1, h2)
-        h1 = x64Add(x64Multiply(h1, [0, 5]), [0, 0x52dce729])
-        k2 = x64Multiply(k2, c2)
-        k2 = x64Rotl(k2, 33)
-        k2 = x64Multiply(k2, c1)
-        h2 = x64Xor(h2, k2)
-        h2 = x64Rotl(h2, 31)
-        h2 = x64Add(h2, h1)
-        h2 = x64Add(x64Multiply(h2, [0, 5]), [0, 0x38495ab5])
-      }
-      k1 = [0, 0]
-      k2 = [0, 0]
-      switch (remainder) {
-        case 15:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 14)], 48))
-        // fallthrough
-        case 14:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 13)], 40))
-        // fallthrough
-        case 13:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 12)], 32))
-        // fallthrough
-        case 12:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 11)], 24))
-        // fallthrough
-        case 11:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 10)], 16))
-        // fallthrough
-        case 10:
-          k2 = x64Xor(k2, x64LeftShift([0, key.charCodeAt(i + 9)], 8))
-        // fallthrough
-        case 9:
-          k2 = x64Xor(k2, [0, key.charCodeAt(i + 8)])
-          k2 = x64Multiply(k2, c2)
-          k2 = x64Rotl(k2, 33)
-          k2 = x64Multiply(k2, c1)
-          h2 = x64Xor(h2, k2)
-        // fallthrough
-        case 8:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 7)], 56))
-        // fallthrough
-        case 7:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 6)], 48))
-        // fallthrough
-        case 6:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 5)], 40))
-        // fallthrough
-        case 5:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 4)], 32))
-        // fallthrough
-        case 4:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 3)], 24))
-        // fallthrough
-        case 3:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 2)], 16))
-        // fallthrough
-        case 2:
-          k1 = x64Xor(k1, x64LeftShift([0, key.charCodeAt(i + 1)], 8))
-        // fallthrough
-        case 1:
-          k1 = x64Xor(k1, [0, key.charCodeAt(i)])
-          k1 = x64Multiply(k1, c1)
-          k1 = x64Rotl(k1, 31)
-          k1 = x64Multiply(k1, c2)
-          h1 = x64Xor(h1, k1)
-        // fallthrough
-      }
-      h1 = x64Xor(h1, [0, key.length])
-      h2 = x64Xor(h2, [0, key.length])
-      h1 = x64Add(h1, h2)
-      h2 = x64Add(h2, h1)
-      h1 = x64Fmix(h1)
-      h2 = x64Fmix(h2)
-      h1 = x64Add(h1, h2)
-      h2 = x64Add(h2, h1)
-      return ('00000000' + (h1[0] >>> 0).toString(16)).slice(-8) + ('00000000' + (h1[1] >>> 0).toString(16)).slice(-8) + ('00000000' + (h2[0] >>> 0).toString(16)).slice(-8) + ('00000000' + (h2[1] >>> 0).toString(16)).slice(-8)
-    }
 
     var defaultOptions = {
       preprocessor: null,
@@ -2116,23 +2644,6 @@
       return new BigInteger(str,r);
     }
 
-    function linebrk(s,n) {
-      var ret = "";
-      var i = 0;
-      while(i + n < s.length) {
-        ret += s.substring(i,i+n) + "\n";
-        i += n;
-      }
-      return ret + s.substring(i,s.length);
-    }
-
-    function byte2Hex(b) {
-      if(b < 0x10)
-        return "0" + b.toString(16);
-      else
-        return b.toString(16);
-    }
-
     // PKCS#1 (type 2, random) pad input string s to n bytes, and return a bigint
     function pkcs1pad2(s,n) {
       if(n < s.length + 11) { // TODO: fix for utf-8
@@ -2280,461 +2791,8 @@
 
   // ========================================================================================================
   //
-  // ravelin.js
+  // initialisation
   //
-
-
-  var DEVICEID_COOKIE_NAME = 'ravelinDeviceId';
-  var SESSIONID_COOKIE_NAME = 'ravelinSessionId';
-  var COOKIE_NAMES = [DEVICEID_COOKIE_NAME, SESSIONID_COOKIE_NAME];
-
-  function aesEncrypt(plaintext) {
-    var aesKeyLength = 256;
-    var wordCount = aesKeyLength/32;
-    var paranoiaCount = 4; // 128 bits of entropy
-
-    var sessionKey = sjcl.random.randomWords(wordCount, paranoiaCount);
-    var iv = sjcl.random.randomWords(wordCount, paranoiaCount);
-
-    var aesBlockCipher = new sjcl.cipher.aes(sessionKey);
-    var bits = sjcl.codec.utf8String.toBits(plaintext);
-    var cipher = sjcl.mode.gcm.encrypt(aesBlockCipher, bits, iv, null, 128);
-
-    return {
-      ciphertextB64: sjcl.codec.base64.fromBits(cipher),
-      aesKeyB64: sjcl.codec.base64.fromBits(sessionKey),
-      ivB64: sjcl.codec.base64.fromBits(iv)
-    };
-  }
-
-  function rsaEncrypt(rsa, aesKeyB64, ivB64) {
-    var encryptedHex = rsa.encrypt(aesKeyB64 + '|' + ivB64);
-    var encryptedBits = sjcl.codec.hex.toBits(encryptedHex);
-    var aesKeyAndIVCiphertextBase64 = sjcl.codec.base64.fromBits(encryptedBits);
-
-    return aesKeyAndIVCiphertextBase64;
-  }
-
-  function basicPayload(custId, tempCustId, orderId, deviceId, sessionId) {
-    var payload = {
-      libVer: RAVELINJS_VERSION + '-ravelinjs',
-      deviceId: deviceId,
-    };
-
-    if (custId) {
-      payload.customerId = custId;
-    }
-
-    if (tempCustId) {
-      payload.tempCustomerId = tempCustId;
-    }
-
-    if (orderId) {
-      payload.orderId = orderId;
-    }
-
-    if (sessionId) {
-      payload.sessionId = sessionId;
-    }
-
-    return payload;
-  }
-
-  function cleanCookies() {
-    var expired = new Date(0);
-    for (var i = 0; i < COOKIE_NAMES.length; i++) {
-      writeCookie(COOKIE_NAMES[i], '', expired, null, this.cookieDomain);
-    }
-  }
-
-  function readCookie(cookieName){
-    var cookies = document.cookie.split('; ');
-    for (var i = cookies.length-1; i >= 0; i--) {
-      var x = cookies[i].split('=');
-      if (x[0] === cookieName) {
-        return x[1];
-      }
-    }
-  }
-
-  function writeCookie(name, value, expires, path, domain) {
-    document.cookie = name + '=' + value + ';path=' + (path || '/') +
-      (expires ? ';expires=' + expires.toUTCString() : '') +
-      (domain ? ';domain=' + domain : '');
-  }
-
-  /**
-   * RavelinJS provides card encryption and wraps Ravelin's tracking library.
-   *
-   * @param {String} key The RSA Key to be provided to setRSAKey
-   */
-  function RavelinJS(key) {
-    if (key) this.setRSAKey(key);
-
-    // Seed our UUID lookup table
-    this.lut = [];
-
-    for (var i=0; i<256; i++) {
-      this.lut[i] = (i<16?'0':'') + (i).toString(16);
-    }
-
-    this.setDeviceId();
-    this.setSessionId();
-  }
-
-  /**
-   * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It should be called
-   * before anything else. You can find your publishable API key inside the Ravelin dashboard.
-   *
-   * @param {String} apiKey Your publishable API key
-   * @example
-   * ravelinjs.setPublicAPIKey('live_publishable_key_abc123');
-   */
-  RavelinJS.prototype.setPublicAPIKey = function(pubKey) {
-    this.apiKey = pubKey;
-  }
-
-  /**
-   * setRSAKey configures RavelinJS with the given public encryption key, in the format that
-   * Ravelin provides it. You can find your public RSA key inside the Ravelin dashboard.
-   *
-   * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
-   * @example
-   * ravelinjs.setRSAKey('10010|abc123...xyz789');
-   */
-  RavelinJS.prototype.setRSAKey = function(rawPubKey) {
-    if (typeof rawPubKey !== 'string') {
-      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
-    }
-
-    var split = rawPubKey.split('|');
-    if (split.length < 2 || split.length > 3) {
-      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
-    }
-
-    this.rsaKey = new RSAKey();
-    if (split.length === 2) {
-      this.keyIndex = 0;
-      this.rsaKey.setPublic(split[1], split[0]);
-    } else {
-      this.keyIndex = +split[0];
-      this.rsaKey.setPublic(split[2], split[1]);
-    }
-  }
-
-  /**
-   * setCustomerId sets the customerId for all requests submitted by ravelinjs. This is needed to associate device activity
-   * with a specific user. This value should be the same that you are providing to Ravelin in your server-side
-   * API requests. If this value is not yet know, perhaps because the customer has not yet logged in or provided
-   * any user details, please refer to setTempCustomerId instead.
-   *
-   * @param {String} customerId customerId unique to the current user
-   * @example
-   * ravelinjs.setCustomerId('123321');
-   */
-  RavelinJS.prototype.setCustomerId = function(custId) {
-    if (!custId) {
-      return
-    }
-
-    if (typeof(custId) === 'string' && custId.indexOf('@') != -1) {
-      custId = custId.toLowerCase();
-    }
-
-    this.customerId = '' + custId;
-  }
-
-  /**
-   * setTempCustomerId sets the tempCustomerId for all requests submitted by ravelinjs. This is used as a temporary association between device/
-   * session data and a user, and should be followed with a v2/login request to Ravelin as soon as a
-   * customerId is available.
-   *
-   * @param {String} tempCustomerId A placeholder id for when customerId is not known
-   * @example
-   * ravelinjs.setTempCustomerId('session_abcdef1234567'); // a session id is often a good temporary customerId
-   */
-  RavelinJS.prototype.setTempCustomerId = function(tempCustId) {
-    if (!tempCustId) {
-      return
-    }
-
-    if (typeof(tempCustId) === 'string' && tempCustId.indexOf('@') != -1) {
-      tempCustId = tempCustId.toLowerCase();
-    }
-
-    this.tempCustomerId = '' + tempCustId;
-  }
-
-  /**
-   * encrypt performs the encrypt process for the provided card details and prepares them to be sent
-   * to Ravelin, with the resulting payload returned as a string.
-   *
-   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
-   * @return {String} The encrypted payload to be sent to Ravelin.
-   * @example
-   * var encrypted = ravelinjs.encrypt({pan: "4111 1111 1111 1111", month: 1, year: 18});
-   * console.log(encrypted);
-   * > '{"methodType":"paymentMethodCipher","cardCiphertext":"abc.....xyz==","aesKeyCiphertext":"def....tuv==","algorithm":"RSA_WITH_AES_256_GCM","ravelinSDKVersion": "0.0.1-ravelinjs"}'
-   */
-  RavelinJS.prototype.encrypt = function(details) {
-    return JSON.stringify(this.encryptAsObject(details));
-  }
-
-  /**
-   * encryptAsObject performs the encrypt process for the provided card details and prepares them to be sent
-   * to Ravelin, with the resulting payload returned as an object.
-   *
-   * @param {Object} details An object containing properties pan, month, year and nameOnCard (optional).
-   * @return {Object} The encrypted payload to be sent to Ravelin.
-   * @example
-   * var encrypted = ravelinjs.encryptAsObject({pan: "4111 1111 1111 1111", month: 1, year: 18});
-   * console.log(encrypted);
-   * > {
-   * >  methodType: "paymentMethodCipher",
-   * >  cardCiphertext: "abc.....xyz==",
-   * >  aesKeyCiphertext: "def....tuv==",
-   * >  algorithm: "RSA_WITH_AES_256_GCM",
-   * >  ravelinSDKVersion: "0.0.1-ravelinjs",
-   * > }
-   */
-  RavelinJS.prototype.encryptAsObject = function(details) {
-    if (!this.rsaKey) {
-      throw new Error('RavelinJS Key has not been set');
-    }
-
-    if (!details) {
-      throw new Error('RavelinJS validation: no details provided');
-    }
-
-    if (details.pan) {
-      details.pan = details.pan.toString().replace(/[^0-9]/g, '');
-    }
-    if (!details.pan || details.pan.length < 13) {
-      throw new Error('RavelinJS validation: pan should have at least 13 digits');
-    }
-
-    if (typeof details.month == 'string') {
-      details.month = parseInt(details.month, 10);
-    }
-    if (!(details.month > 0 && details.month < 13)) {
-      throw new Error('RavelinJS validation: month should be in the range 1-12');
-    }
-
-    if (typeof details.year === 'string') {
-      details.year = parseInt(details.year, 10);
-    }
-    if (details.year > 0 && details.year < 100) {
-      details.year += 2000;
-    }
-    if (!(details.year > 2000)) {
-      throw new Error('RavelinJS validation: year should be in the 21st century');
-    }
-
-    for (prop in details) {
-      if (!details.hasOwnProperty(prop)) continue;
-      switch (prop) {
-        case 'pan':
-        case 'year':
-        case 'month':
-        case 'nameOnCard':
-          continue;
-      }
-      throw new Error('RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard');
-    }
-
-    details.month += '';
-    details.year += '';
-
-    var aesResult = aesEncrypt(JSON.stringify(details));
-    var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
-
-    return {
-      methodType: 'paymentMethodCipher',
-      cardCiphertext: aesResult.ciphertextB64,
-      aesKeyCiphertext: rsaResultB64,
-      algorithm: 'RSA_WITH_AES_256_GCM',
-      ravelinSDKVersion: RAVELINJS_VERSION+'-ravelinjs',
-      keyIndex: this.keyIndex
-    };
-  };
-
-  /**
-   * track invokes the Ravelin client-side tracking script. You must have set
-   * the public API key in advance of calling track, so that it can submit the
-   * data directly to Ravelin. Its execution is asynchronous.
-   *
-   * @param {String} eventName A description of what has occurred.
-   * @param {Object} meta Any additional metadata you wish to use to describe the page.
-   * @example
-   * // track when a customer uses search functionality
-   * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
-   *
-   * // track without any additional metadata
-   * ravelinjs.track('CUSTOMER_SEARCHED');
-   */
-  RavelinJS.prototype.track = function() {
-    throw "not implemented";
-  }
-
-  /**
-   * trackPage logs the page view. Call this from as many pages as possible.
-   *
-   * @param {Object} meta Any additional metadata you wish to use to describe the page.
-   * @example
-   * // Call from landing page after page load
-   * ravelinjs.trackPage(); // www.ravelintest.com
-   *
-   * // Identical calls should be made on all subsequent page loads
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-1
-   * ...
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
-   * ...
-   * ...
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-3
-   * ..
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
-   */
-  RavelinJS.prototype.trackPage = function() {
-    throw "not implemented";
-  }
-
-  /**
-   * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
-   * Call this function immediately before your own logout logic is executed.
-   *
-   * @param {Object} meta Any additional metadata you wish to use to describe the event.
-   * @example
-   * ravelinjs.trackLogout(); // Called before you begin your logout process
-   */
-  RavelinJS.prototype.trackLogout = function() {
-    throw "not implemented";
-  }
-
-  /**
-   * trackFingerprint sends device information back to Ravelin. Invoke from
-   * the checkout page of your payment flow.
-   *
-   * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
-   * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
-   * @example
-   * // if setCustomerId was already called
-   * ravelinjs.trackFingerprint();
-   * // else, you must inform Ravelin of the customerId explicitly
-   * ravelinjs.trackFingerprint('customer123');
-   */
-  RavelinJS.prototype.trackFingerprint = function(custId) {
-    if (custId) this.setCustomerId(custId);
-
-    payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
-    payload.fingerprintSource = 'browser';
-
-    var browserData = {
-      sessionId: this.sessionId,
-      url: location.href,
-    };
-
-    try {
-      Fingerprint2.get(null, function(components) {
-        for (var i = 0, len = components.length; i < len; i++) {
-          browserData[components[i].key] = components[i].value;
-        }
-        payload.browser = browserData;
-        console.log(payload);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  /**
-   * setCookieDomain configures where Ravelin will store any cookies on your
-   * domain. Set as high as possible, e.g. ".mysite.com" rather than
-   * ".www.uk.mysite.com".
-   *
-   * @param {String} domain Domain under which Ravelin generated cookies should be stored
-   * @example
-   * ravelinjs.setCookieDomain('.mysite.com');
-   */
-  RavelinJS.prototype.setCookieDomain = function(domain) {
-    // Clear all cookies set to the current cookie domain.
-    cleanCookies();
-
-    this.cookieDomain = domain;
-
-    // Maintain the same device/sessionIds, but store them now under the new domain.
-    var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_COOKIE_NAME, this.deviceId, expireAt, null, this.cookieDomain)
-    writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain)
-  }
-
-  /**
-   * Set the orderId submitted with requests. This is used to associate session-activity
-   * with a specific user.
-   *
-   * @param {String} orderId Current orderId for the order
-   * @example
-   * ravelinjs.setOrderId('order123');
-   */
-  RavelinJS.prototype.setOrderId = function(orderId) {
-    if (!orderId) {
-      return
-    }
-
-    this.orderId = '' + orderId;
-  }
-
-  RavelinJS.prototype.setDeviceId = function() {
-    storedDeviceId = readCookie(DEVICEID_COOKIE_NAME)
-
-    if (storedDeviceId) {
-      this.deviceId = storedDeviceId;
-      return;
-    }
-
-    newDeviceId = this.uuid();
-    this.deviceId = newDeviceId;
-    var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_COOKIE_NAME, newDeviceId, expireAt, null);
-  }
-
-  RavelinJS.prototype.setSessionId = function() {
-    storedSessionId = readCookie(SESSIONID_COOKIE_NAME)
-
-    // There is a chance the lib was reloaded during the session. If so, assume the session is still valid
-    if (storedSessionId) {
-      this.sessionId = storedSessionId;
-      return;
-    }
-
-    newSessionId = this.uuid();
-    this.sessionId = newSessionId;
-    // Set session with zero expiry, meaning the cookie with sessionId will expire on browser session exit
-    writeCookie(SESSIONID_COOKIE_NAME, newSessionId, null, null);
-  }
-
-  RavelinJS.prototype.uuid = function() {
-    var d0, d1, d2, d3;
-
-    // try to use the newer, randomer crypto.getRandomValues if available.
-    if (window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
-      var d = new Int32Array(4);
-      window.crypto.getRandomValues(d);
-      d0 = d[0];
-      d1 = d[1];
-      d2 = d[2];
-      d3 = d[3];
-    } else {
-      d0 = Math.random()*0xffffffff|0;
-      d1 = Math.random()*0xffffffff|0;
-      d2 = Math.random()*0xffffffff|0;
-      d3 = Math.random()*0xffffffff|0;
-    }
-
-    return this.lut[d0&0xff]+this.lut[d0>>8&0xff]+this.lut[d0>>16&0xff]+this.lut[d0>>24&0xff]+'-'+
-      this.lut[d1&0xff]+this.lut[d1>>8&0xff]+'-'+this.lut[d1>>16&0x0f|0x40]+this.lut[d1>>24&0xff]+'-'+
-      this.lut[d2&0x3f|0x80]+this.lut[d2>>8&0xff]+'-'+this.lut[d2>>16&0xff]+this.lut[d2>>24&0xff]+
-      this.lut[d3&0xff]+this.lut[d3>>8&0xff]+this.lut[d3>>16&0xff]+this.lut[d3>>24&0xff];
-  }
 
   if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {
     sjcl.random.startCollectors();

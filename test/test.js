@@ -105,6 +105,6 @@ function validateCipher(c) {
          c.cardCiphertext != '' && c.cardCiphertext.length > 10 &&
          c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
          c.algorithm == 'RSA_WITH_AES_256_GCM' &&
-         c.ravelinSDKVersion == '0.0.11-ravelinjs' &&
+         c.ravelinSDKVersion == '1.0.0-ravelinjs' &&
          typeof(c.keyIndex) === 'number';
 }
