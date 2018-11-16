@@ -14,7 +14,7 @@
 
     <h2>Publishable API Key</h2>
     <form id="token-form">
-        Publishable Token: <input id="pub-token" type="text">
+        Publishable Token: <input id="pub-token" type="text" value="a">
         <br /><input type="submit" value="Set" />
     </form>
 
@@ -62,32 +62,16 @@
     <script src="../common.js"></script>
     <script src="./ravelin.js"></script>
     <script>
-        document.getElementById('token-form').onsubmit = function() {
-            ravelinjs.setPublicAPIKey(document.getElementById('pub-token').value);
-            return false;
-        };
+        var setPublicAPIKey = () => ravelinjs.setPublicAPIKey(document.getElementById('pub-token').value);
+        var setRSAKey = () => ravelinjs.setRSAKey(document.getElementById('rsa-key').value);
+        var setCustomerId = () => ravelinjs.setCustomerId(document.getElementById('customer-id').value);
 
-        document.getElementById('customerid-form').onsubmit = function() {
-            ravelinjs.setCustomerId(document.getElementById('customer-id').value);
-            return false;
-        };
+        document.getElementById('token-form').onsubmit = () => { setPublicAPIKey(); return false; }
+        document.getElementById('customerid-form').onsubmit = () => { setCustomerId(); return false; }
+        document.getElementById('fingerprint-button').onclick = () => { ravelinjs.trackFingerprint(); return false; }
+        document.getElementById('key-form').onsubmit = () => { setRSAKey(); return false; }
 
-        document.getElementById('fingerprint-button').onclick = function() {
-            ravelinjs.trackFingerprint();
-            return false;
-        };
-
-        document.getElementById('key-form').onsubmit = function() {
-            setRSAKey();
-            return false;
-        };
-
-        function setRSAKey() {
-            output(function() {
-                ravelinjs.setRSAKey(document.getElementById('rsa-key').value);
-                return 'Key set // ' + (new Date);
-            });
-        }
+        setPublicAPIKey();
         setRSAKey();
 
         document.getElementById('form').onsubmit = function() {

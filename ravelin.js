@@ -291,15 +291,44 @@
     // Store API key in scope external from .get callback
     var apiKey = this.apiKey;
     try {
-      Fingerprint2.get(null, function(components) {
+      var options = {
+        excludes: {
+          touchSupport: true
+        }
+      };
+
+      Fingerprint2.get(options, function(components) {
         for (var i = 0, len = components.length; i < len; i++) {
           var sanitizedKey = components[i].key.replace(/_([a-z])/gi, function(c) {return c[1].toUpperCase()});
-          browserData[sanitizedKey] = components[i].value;
+
+          // Ensure we only add values which we successfully acquired.
+          var val = components[i].value;
+
+          // Some keys have changed types between Fingerprint2 version 1.8 and 2.0
+          // Convert them back to their 1.8 version (which is what our backend expects)
+          // Start with fields that went from int => bool. Convert them back to ints.
+          if (['sessionStorage', 'localStorage', 'indexedDb', 'openDatabase'].indexOf(sanitizedKey) !== -1) {
+            if (val === 'error') {
+              val = 0; // false
+            } else {
+              val = val + 0; // bool => int
+            }
+          }
+
+          // Screen resolution fields have changed to specifically include the word 'screen' in 2.0.
+          // Let's change them back to their 1.8 values.
+          if (sanitizedKey === 'screenResolution') {
+            sanitizedKey = 'resolution';
+          } else if (sanitizedKey === 'availableScreenResolution') {
+            sanitizedKey = 'availableResolution';
+          }
+
+          browserData[sanitizedKey] = val;
         }
 
         browserData.fonts = x64hash128(browserData.fonts.toString());
         browserData.canvas = x64hash128(browserData.canvas[1]);
-        browserData.wegbl = x64hash128(browserData.webgl[0]);
+        browserData.webgl = x64hash128(browserData.webgl[0]);
         browserData.browser = getBrowser();
         payload.browser = browserData;
         sendToRavelin(apiKey, FINGERPRINT_URL, payload, null);
