@@ -464,18 +464,18 @@
     // Extract the browser from the user agent (respect the order of the tests)
     var browser;
     var userAgent = navigator.userAgent.toLowerCase();
-    if(userAgent.indexOf("firefox") >= 0){
-      browser = "Firefox";
-    } else if(userAgent.indexOf("opera") >= 0 || userAgent.indexOf("opr") >= 0){
-      browser = "Opera";
-    } else if(userAgent.indexOf("chrome") >= 0){
-      browser = "Chrome";
-    } else if(userAgent.indexOf("safari") >= 0){
-      browser = "Safari";
-    } else if(userAgent.indexOf("trident") >= 0){
-      browser = "Internet Explorer";
+    if(userAgent.indexOf('firefox') >= 0){
+      browser = 'Firefox';
+    } else if(userAgent.indexOf('opera') >= 0 || userAgent.indexOf('opr') >= 0){
+      browser = 'Opera';
+    } else if(userAgent.indexOf('chrome') >= 0){
+      browser = 'Chrome';
+    } else if(userAgent.indexOf('safari') >= 0){
+      browser = 'Safari';
+    } else if(userAgent.indexOf('trident') >= 0){
+      browser = 'Internet Explorer';
     } else{
-      browser = "Other";
+      browser = 'Other';
     }
 
     return browser;
@@ -539,12 +539,11 @@
 
   function sendToRavelin(apiKey, url, payload, callback) {
     if (!apiKey) {
-      throw new TypeError('"apiKey" is null or undefined');
+      throw new TypeError('[ravelinjs] "apiKey" is null or undefined');
     }
 
     if (typeof payload === 'object') {
       payload = JSON.stringify(payload);
-      console.log(payload);
     }
 
     var xhr = new XMLHttpRequest();
@@ -567,7 +566,7 @@
   // MurmurHash3 related functions
   //
 
-  // We've copied these out from fingerprint2 so we can use them externally after the fingerprint has
+  // We've copied these out from fingerprint2 so we can use them inside ravelinjs after the fingerprint has
   // completed to compress down the size of the canvas/webgl/fontlists we send to the server
 
   //
