@@ -15,23 +15,54 @@ pre {
     background-color: #ECC;
 }
 
-form {
+form, .block {
     margin-left: 20px;
     border: 1px solid black;
     padding: 20px;
     max-width: 300px;
     line-height: 2em;
 }
+
 input {
     width: 100%;
 }
+
 input[type=submit], input[type=reset] {
     width: auto;
 }
+
 textarea {
     width: 100%;
     font-family: 'Courier New', Courier, monospace;
 }
+
+button {
+    width: 60px;
+    max-width: 100px;
+    max-height: 100px;
+    height: 30px;
+}
+
 #year {
     width: 50%;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    max-width: 33%;
 }

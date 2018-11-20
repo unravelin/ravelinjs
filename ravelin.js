@@ -10,11 +10,23 @@
 }(typeof self !== 'undefined' ? self : this, function () {
 
   var RAVELINJS_VERSION = '1.0.0';
+  var FULL_VERSION_STRING = RAVELINJS_VERSION + '-ravelinjs';
+
   var API_URL = 'https://api.ravelin.com';
   var FINGERPRINT_URL = API_URL + '/v2/fingerprint?source=browser';
-  var DEVICEID_COOKIE_NAME = 'ravelinDeviceId';
+  var FINGERPRINT_ERROR_URL = API_URL + '/v2/fingerprinterror?source=browser';
+  var CLICKSTREAM_URL = API_URL + '/v2/click';
+
+  var DEVICEID_STORAGE_NAME = 'ravelinDeviceId';
   var SESSIONID_COOKIE_NAME = 'ravelinSessionId';
-  var COOKIE_NAMES = [DEVICEID_COOKIE_NAME, SESSIONID_COOKIE_NAME];
+  var COOKIE_NAMES = [DEVICEID_STORAGE_NAME, SESSIONID_COOKIE_NAME];
+
+  var GENERIC_TRACK_EVENT_TYPE = 'track';
+  var RESIZE_EVENT = 'resize';
+  var UNKNOWN_EVENT_NAME = 'UNNAMED';
+  var PAGE_EVENT_NAME = 'PAGE_LOADED';
+  var LOGIN_EVENT_NAME = 'LOGIN';
+  var LOGOUT_EVENT_NAME = 'LOGOUT';
 
   /**
    * RavelinJS provides card encryption and wraps Ravelin's tracking library.
@@ -57,12 +69,12 @@
    */
   RavelinJS.prototype.setRSAKey = function(rawPubKey) {
     if (typeof rawPubKey !== 'string') {
-      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
+      throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
     }
 
     var split = rawPubKey.split('|');
     if (split.length < 2 || split.length > 3) {
-      throw new Error('Invalid value provided to RavelinJS.setRSAKey');
+      throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
     }
 
     this.rsaKey = new RSAKey();
@@ -152,25 +164,25 @@
    */
   RavelinJS.prototype.encryptAsObject = function(details) {
     if (!this.rsaKey) {
-      throw new Error('RavelinJS Key has not been set');
+      throw new Error('[ravelinjs] Encryption Key has not been set');
     }
 
     if (!details) {
-      throw new Error('RavelinJS validation: no details provided');
+      throw new Error('[ravelinjs] Encryption validation: no details provided');
     }
 
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
     if (!details.pan || details.pan.length < 13) {
-      throw new Error('RavelinJS validation: pan should have at least 13 digits');
+      throw new Error('[ravelinjs] Encryption validation: pan should have at least 13 digits');
     }
 
     if (typeof details.month == 'string') {
       details.month = parseInt(details.month, 10);
     }
     if (!(details.month > 0 && details.month < 13)) {
-      throw new Error('RavelinJS validation: month should be in the range 1-12');
+      throw new Error('[ravelinjs] Encryption validation: month should be in the range 1-12');
     }
 
     if (typeof details.year === 'string') {
@@ -180,7 +192,7 @@
       details.year += 2000;
     }
     if (!(details.year > 2000)) {
-      throw new Error('RavelinJS validation: year should be in the 21st century');
+      throw new Error('[ravelinjs] Encryption validation: year should be in the 21st century');
     }
 
     for (prop in details) {
@@ -192,7 +204,7 @@
         case 'nameOnCard':
           continue;
       }
-      throw new Error('RavelinJS validation: encrypt only allows properties pan, year, month, nameOnCard');
+      throw new Error('[ravelinjs] Encryption validation: encrypt only allows properties pan, year, month, nameOnCard');
     }
 
     details.month += '';
@@ -206,69 +218,16 @@
       cardCiphertext: aesResult.ciphertextB64,
       aesKeyCiphertext: rsaResultB64,
       algorithm: 'RSA_WITH_AES_256_GCM',
-      ravelinSDKVersion: RAVELINJS_VERSION+'-ravelinjs',
+      ravelinSDKVersion: FULL_VERSION_STRING,
       keyIndex: this.keyIndex
     };
   };
-
-  /**
-   * track invokes the Ravelin client-side tracking script. You must have set
-   * the public API key in advance of calling track, so that it can submit the
-   * data directly to Ravelin. Its execution is asynchronous.
-   *
-   * @param {String} eventName A description of what has occurred.
-   * @param {Object} meta Any additional metadata you wish to use to describe the page.
-   * @example
-   * // track when a customer uses search functionality
-   * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
-   *
-   * // track without any additional metadata
-   * ravelinjs.track('CUSTOMER_SEARCHED');
-   */
-  RavelinJS.prototype.track = function() {
-    throw "not implemented";
-  }
-
-  /**
-   * trackPage logs the page view. Call this from as many pages as possible.
-   *
-   * @param {Object} meta Any additional metadata you wish to use to describe the page.
-   * @example
-   * // Call from landing page after page load
-   * ravelinjs.trackPage(); // www.ravelintest.com
-   *
-   * // Identical calls should be made on all subsequent page loads
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-1
-   * ...
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
-   * ...
-   * ...
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-3
-   * ..
-   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
-   */
-  RavelinJS.prototype.trackPage = function() {
-    throw "not implemented";
-  }
-
-  /**
-   * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
-   * Call this function immediately before your own logout logic is executed.
-   *
-   * @param {Object} meta Any additional metadata you wish to use to describe the event.
-   * @example
-   * ravelinjs.trackLogout(); // Called before you begin your logout process
-   */
-  RavelinJS.prototype.trackLogout = function() {
-    throw "not implemented";
-  }
 
   /**
    * trackFingerprint sends device information back to Ravelin. Invoke from
    * the checkout page of your payment flow.
    *
    * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
-   * @param {Function} callback Optional callback to check the fingerprint has completed. Prefer calling trackFingerprint on page load.
    * @example
    * // if setCustomerId was already called
    * ravelinjs.trackFingerprint();
@@ -276,7 +235,7 @@
    * ravelinjs.trackFingerprint('customer123');
    */
   RavelinJS.prototype.trackFingerprint = function(custId) {
-    if (custId) {
+    if (custId && typeof(custId) === 'string') {
       this.setCustomerId(custId);
     }
 
@@ -299,9 +258,9 @@
 
       Fingerprint2.get(options, function(components) {
         for (var i = 0, len = components.length; i < len; i++) {
+          // We took the liberty of camelCasing all our expected keys server-side. Ensure they match up here.
           var sanitizedKey = components[i].key.replace(/_([a-z])/gi, function(c) {return c[1].toUpperCase()});
 
-          // Ensure we only add values which we successfully acquired.
           var val = components[i].value;
 
           // Some keys have changed types between Fingerprint2 version 1.8 and 2.0
@@ -330,12 +289,88 @@
         browserData.canvas = x64hash128(browserData.canvas[1]);
         browserData.webgl = x64hash128(browserData.webgl[0]);
         browserData.browser = getBrowser();
+
         payload.browser = browserData;
-        sendToRavelin(apiKey, FINGERPRINT_URL, payload, null);
+
+        sendToRavelin(apiKey, FINGERPRINT_URL, payload);
       });
     } catch (e) {
-      console.log(e);
+      try {
+        sendErrorToRavelin(apiKey, e, payload);
+      } catch {
+        // Give up
+      }
     }
+  }
+
+   /**
+   * track invokes the Ravelin client-side tracking script. You must have set
+   * the public API key in advance of calling track, so that it can submit the
+   * data directly to Ravelin. Its execution is asynchronous.
+   *
+   * @param {String} eventName A description of what has occurred.
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // track when a customer uses search functionality
+   * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
+   *
+   * // track without any additional metadata
+   * ravelinjs.track('CUSTOMER_SEARCHED');
+   */
+  RavelinJS.prototype.track = function(eventName, eventMeta) {
+    var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
+
+    var eventType = '';
+    if (eventName === RESIZE_EVENT) {
+      eventType = RESIZE_EVENT;
+    } else {
+      eventType = GENERIC_TRACK_EVENT_TYPE;
+    }
+
+    var trackingPayload = trackPayload(payload, eventType, eventName, eventMeta);
+
+    try {
+      sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload);
+    } catch (e) {
+      // Ignore errors sending clickstream data.
+    }
+  }
+
+  /**
+   * trackPage logs the page view. Call this from as many pages as possible.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @example
+   * // Call from landing page after page load
+   * ravelinjs.trackPage(); // www.ravelintest.com
+   *
+   * // Identical calls should be made on all subsequent page loads
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-1
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   * ...
+   * ...
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-3
+   * ..
+   * ravelinjs.trackPage(); // www.ravelintest.com/page-2
+   */
+  RavelinJS.prototype.trackPage = function(meta) {
+    this.track(PAGE_EVENT_NAME, meta);
+  }
+
+  /**
+   * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
+   * Call this function immediately before your own logout logic is executed.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @example
+   * ravelinjs.trackLogout(); // Called before you begin your logout process
+   */
+  RavelinJS.prototype.trackLogout = function(meta) {
+    this.track(LOGOUT_EVENT_NAME, meta);
+    this.customerId = undefined;
+    this.tempCustomerId = undefined;
+    this.orderId = undefined;
   }
 
   /**
@@ -355,7 +390,7 @@
 
     // Maintain the same device/sessionIds, but store them now under the new domain.
     var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_COOKIE_NAME, this.deviceId, expireAt, null, this.cookieDomain);
+    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expireAt, null, this.cookieDomain);
     writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
   }
 
@@ -375,18 +410,48 @@
     this.orderId = '' + orderId;
   }
 
+  /**
+   * Return the deviceId currently assigned by ravelinjs
+   *
+   * @example
+   * var deviceId = ravelinjs.getDeviceId();
+   */
+  RavelinJS.prototype.getDeviceId = function() {
+    return this.deviceId;
+  };
+
   RavelinJS.prototype.setDeviceId = function() {
-    storedDeviceId = readCookie(DEVICEID_COOKIE_NAME);
+    var storedDeviceId = readCookie(DEVICEID_STORAGE_NAME);
 
     if (storedDeviceId) {
       this.deviceId = storedDeviceId;
+
+      if (typeof window !== 'undefined' && window.localStorage && !window.localStorage.getItem(DEVICEID_STORAGE_NAME)) {
+        // DeviceId was inside cookies, but wiped from localStorage. Reset localStorage.
+        window.localStorage.setItem(DEVICEID_STORAGE_NAME, storedDeviceId);
+      }
+
+      return;
+    }
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      var expireAt = new Date((new Date()).setDate(10000));
+      storedDeviceId = window.localStorage.getItem(DEVICEID_STORAGE_NAME);
+
+      if (storedDeviceId) {
+        // DeviceId was inside localStorage, but wiped from cookies. Reset cookie.
+        this.deviceId = storedDeviceId;
+        writeCookie(DEVICEID_STORAGE_NAME, storedDeviceId, expireAt, null);
+      }
+
       return;
     }
 
     newDeviceId = this.uuid();
     this.deviceId = newDeviceId;
     var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_COOKIE_NAME, newDeviceId, expireAt, null);
+    writeCookie(DEVICEID_STORAGE_NAME, newDeviceId, expireAt, null);
+    window.localStorage.setItem(DEVICEID_STORAGE_NAME, newDeviceId);
   }
 
   RavelinJS.prototype.setSessionId = function() {
@@ -402,7 +467,7 @@
     this.sessionId = newSessionId;
 
     // Set session with zero expiry, meaning the cookie with sessionId will expire on browser session exit
-    writeCookie(SESSIONID_COOKIE_NAME, newSessionId, null, null);
+    writeCookie(SESSIONID_COOKIE_NAME, newSessionId, 0, null);
   }
 
   RavelinJS.prototype.uuid = function() {
@@ -464,17 +529,17 @@
     // Extract the browser from the user agent (respect the order of the tests)
     var browser;
     var userAgent = navigator.userAgent.toLowerCase();
-    if(userAgent.indexOf('firefox') >= 0){
+    if (userAgent.indexOf('firefox') >= 0) {
       browser = 'Firefox';
-    } else if(userAgent.indexOf('opera') >= 0 || userAgent.indexOf('opr') >= 0){
+    } else if (userAgent.indexOf('opera') >= 0 || userAgent.indexOf('opr') >= 0) {
       browser = 'Opera';
-    } else if(userAgent.indexOf('chrome') >= 0){
+    } else if (userAgent.indexOf('chrome') >= 0) {
       browser = 'Chrome';
-    } else if(userAgent.indexOf('safari') >= 0){
+    } else if (userAgent.indexOf('safari') >= 0) {
       browser = 'Safari';
-    } else if(userAgent.indexOf('trident') >= 0){
+    } else if (userAgent.indexOf('trident') >= 0) {
       browser = 'Internet Explorer';
-    } else{
+    } else {
       browser = 'Other';
     }
 
@@ -483,15 +548,16 @@
 
   function basicPayload(custId, tempCustId, orderId, deviceId, sessionId) {
     var payload = {
-      libVer: RAVELINJS_VERSION + '-ravelinjs',
+      libVer: FULL_VERSION_STRING,
       deviceId: deviceId,
     };
 
     if (custId) {
       payload.customerId = custId;
+      delete payload.tempCustomerId;
     }
 
-    if (tempCustId) {
+    if (tempCustId && !payload.customerId) {
       payload.tempCustomerId = tempCustId;
     }
 
@@ -504,6 +570,70 @@
     }
 
     return payload;
+  }
+
+  function trackPayload(basicPayload, eventType, eventName, eventProperties) {
+    if (!eventName || typeof eventName !== 'string') {
+      eventName = UNKNOWN_EVENT_NAME;
+    }
+
+    if (eventProperties && typeof eventProperties !== 'object') {
+      eventProperties = null;
+    }
+
+    var now = Date.now ? Date.now() : +new Date;
+
+    // newer browsers support microsecond timings rounded to the nearest 5us.
+    var nowMicro = 0;
+    if (typeof performance !== 'undefined' && performance.now && performance.timing) {
+      nowMicro = (performance.timing.navigationStart + performance.now())*1000 || 0;
+    }
+
+    var e = {
+      eventType: eventType,
+      customerId: basicPayload.customerId,
+      tempCustomerId: basicPayload.tempCustomerId,
+      orderId: basicPayload.orderId,
+      eventData: {
+        eventName: eventName,
+        properties: eventProperties,
+      },
+      eventMeta: {
+        trackingSource: 'browser',
+        ravelinDeviceId: basicPayload.deviceId,
+        ravelinSessionId: basicPayload.sessionId,
+        url: window.location.href,
+        canonicalUrl: getCanonicalUrl(),
+        pageTitle: document.title,
+        referrer: document.referrer || undefined,
+        clientEventTimeMilliseconds: now,
+        clientEventTimeMicroseconds: nowMicro,
+      },
+    };
+
+    var trackPayload = {
+      events: [e],
+    }
+
+    return trackPayload;
+  }
+
+  function getCanonicalUrl() {
+    var element;
+
+    if (document.querySelector) {
+      element = document.querySelector("link[rel='canonical']");
+    } else {
+      var links = document.getElementsByTagName("link");
+      for (var i = 0; i < links.length; i++) {
+        if (links[i].getAttribute("rel") === "canonical") {
+          element = links[i];
+          break;
+        }
+      }
+    }
+
+    return element ? element.href : undefined;
   }
 
   function cleanCookies(domain) {
@@ -537,7 +667,7 @@
       (domain ? ';domain=' + domain : '');
   }
 
-  function sendToRavelin(apiKey, url, payload, callback) {
+  function sendToRavelin(apiKey, url, payload) {
     if (!apiKey) {
       throw new TypeError('[ravelinjs] "apiKey" is null or undefined');
     }
@@ -552,13 +682,19 @@
       xhr.open('POST', url);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
       xhr.setRequestHeader('Authorization', 'token ' + apiKey);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300 && callback) {
-          callback(xhr.responseText);
-        }
-      };
       xhr.send(payload);
     }
+  }
+
+  function sendErrorToRavelin(apiKey, err, payload) {
+    // Capture the stack trace if it is supported in the browser.
+    if (err.stack) {
+      payload.error = err.stack.toString();
+    } else {
+      payload.error = err.toString();
+    }
+
+    sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload);
   }
 
   // ========================================================================================================
@@ -2827,5 +2963,39 @@
   }
 
   RavelinJS.RavelinJS = RavelinJS;
-  return new RavelinJS();
+  var rjs = new RavelinJS();
+
+  // Add resize trigger for session-tracking
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('resize', onResizeDebounce);
+  } else if (typeof window !== 'undefined' && window.attachEvent) {
+    window.attachEvent('resize', onResizeDebounce);
+  }
+
+  // Add paste trigger for session-tracking
+  // if (typeof document !== 'undefined' && document.addEventListener) {
+  //   document.addEventListener('paste', onPaste);
+  // } else if (typeof document !== 'undefined' && document.attachEvent) {
+  //   document.attachEvent('paste', onPaste);
+  // }
+
+  var resizeTimer, windowWidth, windowHeight;
+  function onResizeDebounce(e) {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() { rjs.track(RESIZE_EVENT, resizeEventData(e)); }, 250);
+  }
+
+  function resizeEventData() {
+    var meta = {
+      resolutionOld: { w: windowWidth, h: windowHeight },
+      resolutionNew: { w: window.innerWidth, h: window.innerHeight }
+    };
+
+    windowWidth = window.innerWidth;
+    windowHeight = window.innerHeight;
+
+    return meta;
+  }
+
+  return rjs;
 }));
