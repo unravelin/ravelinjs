@@ -28,6 +28,10 @@
   var LOGIN_EVENT_NAME = 'LOGIN';
   var LOGOUT_EVENT_NAME = 'LOGOUT';
 
+  // These bools help protect us against accessing APIs that are not available in our env
+  var wndw = typeof window !== 'undefined';
+  var doc = typeof document !== 'undefined';
+
   /**
    * RavelinJS provides card encryption and wraps Ravelin's tracking library.
    *
@@ -425,16 +429,12 @@
 
     if (storedDeviceId) {
       this.deviceId = storedDeviceId;
-
-      if (typeof window !== 'undefined' && window.localStorage && !window.localStorage.getItem(DEVICEID_STORAGE_NAME)) {
-        // DeviceId was inside cookies, but wiped from localStorage. Reset localStorage.
-        window.localStorage.setItem(DEVICEID_STORAGE_NAME, storedDeviceId);
-      }
+      writeLocalStorage(DEVICEID_STORAGE_NAME, storedDeviceId);
 
       return;
     }
 
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (readLocalStorage(DEVICEID_STORAGE_NAME)) {
       var expireAt = new Date((new Date()).setDate(10000));
       storedDeviceId = window.localStorage.getItem(DEVICEID_STORAGE_NAME);
 
@@ -451,7 +451,7 @@
     this.deviceId = newDeviceId;
     var expireAt = new Date((new Date()).setDate(10000));
     writeCookie(DEVICEID_STORAGE_NAME, newDeviceId, expireAt, null);
-    window.localStorage.setItem(DEVICEID_STORAGE_NAME, newDeviceId);
+    writeLocalStorage(DEVICEID_STORAGE_NAME, newDeviceId);
   }
 
   RavelinJS.prototype.setSessionId = function() {
@@ -474,7 +474,7 @@
     var d0, d1, d2, d3;
 
     // try to use the newer, randomer crypto.getRandomValues if available.
-    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
+    if (wndw && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
       var d = new Int32Array(4);
       window.crypto.getRandomValues(d);
       d0 = d[0];
@@ -644,7 +644,7 @@
   }
 
   function readCookie(cookieName){
-    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+    if (!doc || !document.cookie) {
       return;
     }
 
@@ -658,13 +658,29 @@
   }
 
   function writeCookie(name, value, expires, path, domain) {
-    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+    if (!doc || !document.cookie) {
       return;
     }
 
     document.cookie = name + '=' + value + ';path=' + (path || '/') +
       (expires ? ';expires=' + expires.toUTCString() : '') +
       (domain ? ';domain=' + domain : '');
+  }
+
+  function readLocalStorage(key) {
+    if (!wndw || !window.localStorage) {
+      return;
+    }
+
+    return window.localStorage.getItem(key)
+  }
+
+  function writeLocalStorage(key, value) {
+    if (!wndw || !window.localStorage) {
+      return;
+    }
+
+    window.localStorage.setItem(key, value);
   }
 
   function sendToRavelin(apiKey, url, payload) {
@@ -2958,7 +2974,7 @@
   // initialisation
   //
 
-  if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {
+  if ((wndw && window.addEventListener) || (doc && document.attachEvent)) {
     sjcl.random.startCollectors();
   }
 
@@ -2966,16 +2982,16 @@
   var rjs = new RavelinJS();
 
   // Add resize trigger for session-tracking
-  if (typeof window !== 'undefined' && window.addEventListener) {
+  if (wndw && window.addEventListener) {
     window.addEventListener('resize', onResizeDebounce);
-  } else if (typeof window !== 'undefined' && window.attachEvent) {
+  } else if (wndw && window.attachEvent) {
     window.attachEvent('resize', onResizeDebounce);
   }
 
   // Add paste trigger for session-tracking
-  // if (typeof document !== 'undefined' && document.addEventListener) {
+  // if (doc && document.addEventListener) {
   //   document.addEventListener('paste', onPaste);
-  // } else if (typeof document !== 'undefined' && document.attachEvent) {
+  // } else if (doc && document.attachEvent) {
   //   document.attachEvent('paste', onPaste);
   // }
 
