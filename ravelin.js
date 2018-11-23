@@ -21,11 +21,14 @@
   var SESSIONID_COOKIE_NAME = 'ravelinSessionId';
   var COOKIE_NAMES = [DEVICEID_STORAGE_NAME, SESSIONID_COOKIE_NAME];
 
+  // Event types
   var GENERIC_TRACK_EVENT_TYPE = 'track';
-  var RESIZE_EVENT = 'resize';
+  var RESIZE_EVENT_TYPE = 'resize';
+  var PASTE_EVENT_TYPE = 'paste';
+
+  // Event names
   var UNKNOWN_EVENT_NAME = 'UNNAMED';
   var PAGE_EVENT_NAME = 'PAGE_LOADED';
-  var LOGIN_EVENT_NAME = 'LOGIN';
   var LOGOUT_EVENT_NAME = 'LOGOUT';
 
   // These bools help protect us against accessing APIs that are not available in our env
@@ -254,11 +257,7 @@
     // Store API key in scope external from .get callback
     var apiKey = this.apiKey;
     try {
-      var options = {
-        excludes: {
-          touchSupport: true
-        }
-      };
+      var options = { excludes: { touchSupport: true}};
 
       Fingerprint2.get(options, function(components) {
         for (var i = 0, len = components.length; i < len; i++) {
@@ -325,8 +324,10 @@
     var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
 
     var eventType = '';
-    if (eventName === RESIZE_EVENT) {
-      eventType = RESIZE_EVENT;
+    if (eventName === RESIZE_EVENT_TYPE) {
+      eventType = RESIZE_EVENT_TYPE;
+    } else if (eventName === PASTE_EVENT_TYPE) {
+      eventType = PASTE_EVENT_TYPE;
     } else {
       eventType = GENERIC_TRACK_EVENT_TYPE;
     }
@@ -618,15 +619,58 @@
     return trackPayload;
   }
 
+  function sensitiveElement(elem) {
+    if (elem) {
+      if (elem.type === 'password') {
+        return true;
+      }
+
+      var noTrackAttr = (elem.dataset && elem.dataset.rvnSensitive) || elem.getAttribute('data-rvn-sensitive');
+
+      if (noTrackAttr !== undefined && noTrackAttr !== null && noTrackAttr !== 'false') {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function cleanPan(str) {
+    var regex = /\b(?:\d[ -]*){12,16}\d\b/g;
+
+    if (regex.test(str)) {
+      return str.replace(regex, function(match) {
+        var bin = match.substr(0, 6);
+        var lastFour = match.substr(match.length - 4);
+        var redact = match.substring(6, match.length - 4).replace(/./g, "X");
+        return bin + redact + lastFour;
+      });
+    }
+
+    return str;
+  }
+
+  function getSelectionPosition(input) {
+    var selectionPos = null;
+    if (input && (typeof input.selectionStart === 'number') && (typeof input.selectionEnd === 'number')) {
+      selectionPos = {
+        start: input.selectionStart,
+        end: input.selectionEnd,
+      };
+    }
+
+    return selectionPos;
+  }
+
   function getCanonicalUrl() {
     var element;
 
     if (document.querySelector) {
       element = document.querySelector("link[rel='canonical']");
     } else {
-      var links = document.getElementsByTagName("link");
+      var links = document.getElementsByTagName('link');
       for (var i = 0; i < links.length; i++) {
-        if (links[i].getAttribute("rel") === "canonical") {
+        if (links[i].getAttribute('rel') === 'canonical') {
           element = links[i];
           break;
         }
@@ -643,7 +687,7 @@
     }
   }
 
-  function readCookie(cookieName){
+  function readCookie(cookieName) {
     if (!doc || !document.cookie) {
       return;
     }
@@ -668,19 +712,27 @@
   }
 
   function readLocalStorage(key) {
-    if (!wndw || !window.localStorage) {
-      return;
-    }
+    try {
+      if (!wndw || !window.localStorage) {
+        return;
+      }
 
-    return window.localStorage.getItem(key)
+      return window.localStorage.getItem(key)
+    } catch (e) {
+      this.localStorageUnavailable = true;
+    }
   }
 
   function writeLocalStorage(key, value) {
-    if (!wndw || !window.localStorage) {
-      return;
-    }
+    try {
+      if (!wndw || !window.localStorage) {
+        return;
+      }
 
-    window.localStorage.setItem(key, value);
+      window.localStorage.setItem(key, value);
+    } catch (e) {
+      this.localStorageUnavailable = true;
+    }
   }
 
   function sendToRavelin(apiKey, url, payload) {
@@ -2989,16 +3041,16 @@
   }
 
   // Add paste trigger for session-tracking
-  // if (doc && document.addEventListener) {
-  //   document.addEventListener('paste', onPaste);
-  // } else if (doc && document.attachEvent) {
-  //   document.attachEvent('paste', onPaste);
-  // }
+  if (doc && document.addEventListener) {
+    document.addEventListener('paste', onPaste);
+  } else if (doc && document.attachEvent) {
+    document.attachEvent('paste', onPaste);
+  }
 
   var resizeTimer, windowWidth, windowHeight;
   function onResizeDebounce(e) {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() { rjs.track(RESIZE_EVENT, resizeEventData(e)); }, 250);
+    resizeTimer = setTimeout(function() { rjs.track(RESIZE_EVENT_TYPE, resizeEventData(e)); }, 250);
   }
 
   function resizeEventData() {
@@ -3011,6 +3063,47 @@
     windowHeight = window.innerHeight;
 
     return meta;
+  }
+
+  function onPaste(e) {
+    var meta = {};
+
+    if (e.target) {
+      if (e.target.name) {
+        meta.fieldName = e.target.name;
+      }
+      if (e.target.form) {
+        meta.formName = e.target.form.name || e.target.form.id;
+        meta.formAction = e.target.form.action;
+      }
+    }
+
+    // Don't track pastes into password fields, or if the element has a 'no-track' attribute.
+    if (!sensitiveElement(e.target)) {
+      var clipboardData = e.clipboardData || window.clipboardData;
+      if (clipboardData) {
+        var pastedData = clipboardData.getData("Text");
+
+        if (pastedData) {
+          meta.pastedValue = cleanPan(pastedData);
+          if (meta.pastedValue !== pastedData) {
+            meta.panCleaned = true;
+          }
+        }
+      }
+
+      if (e.target && e.target.value) {
+        meta.fieldValue = cleanPan(e.target.value);
+      }
+
+      var selectionPos = getSelectionPosition(e.target);
+      if (selectionPos) {
+        meta.selectionStart = selectionPos.start;
+        meta.selectionEnd = selectionPos.end;
+      }
+    }
+
+    rjs.track(PASTE_EVENT_TYPE, meta);
   }
 
   return rjs;
