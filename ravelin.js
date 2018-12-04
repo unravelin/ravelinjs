@@ -29,6 +29,7 @@
   // Event names
   var UNKNOWN_EVENT_NAME = 'UNNAMED';
   var PAGE_EVENT_NAME = 'PAGE_LOADED';
+  var LOGIN_EVENT_NAME = 'LOGIN';
   var LOGOUT_EVENT_NAME = 'LOGOUT';
 
   // These bools help protect us against accessing APIs that are not available in our env
@@ -41,7 +42,9 @@
    * @param {String} key The RSA Key to be provided to setRSAKey
    */
   function RavelinJS(key) {
-    if (key) this.setRSAKey(key);
+    if (key) {
+      this.setRSAKey(key);
+    }
 
     // Seed our UUID lookup table
     this.lut = [];
@@ -50,6 +53,7 @@
       this.lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
     }
 
+    // Initialise our ids
     this.setDeviceId();
     this.setSessionId();
   }
@@ -256,6 +260,7 @@
 
     // Store API key in scope external from .get callback
     var apiKey = this.apiKey;
+
     try {
       var options = { excludes: { touchSupport: true}};
 
@@ -337,6 +342,7 @@
     try {
       sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload);
     } catch (e) {
+      console.log(e);
       // Ignore errors sending clickstream data.
     }
   }
@@ -361,6 +367,21 @@
    */
   RavelinJS.prototype.trackPage = function(meta) {
     this.track(PAGE_EVENT_NAME, meta);
+  }
+
+  /**
+   * trackLogin informs Ravelin of customers logging into your site.
+   *
+   * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @example
+   * ravelinjs.trackLogin('cust123', {...}); // Called immediately after your login logic.
+   */
+  RavelinJS.prototype.trackLogin = function(customerId, meta) {
+    if (customerId) {
+      this.setCustomerId(customerId);
+    }
+
+    this.track(LOGIN_EVENT_NAME, meta);
   }
 
   /**
@@ -425,6 +446,12 @@
     return this.deviceId;
   };
 
+  /**
+   * Allows the manual setting of a deviceId for scenarios in which you believe the value may have been reset.
+   *
+   * @example
+   * ravelinjs.setDeviceId();
+   */
   RavelinJS.prototype.setDeviceId = function() {
     var storedDeviceId = readCookie(DEVICEID_STORAGE_NAME);
 
@@ -448,13 +475,19 @@
       return;
     }
 
-    newDeviceId = this.uuid();
+    newDeviceId = 'rjs-' + this.uuid();
     this.deviceId = newDeviceId;
     var expireAt = new Date((new Date()).setDate(10000));
     writeCookie(DEVICEID_STORAGE_NAME, newDeviceId, expireAt, null);
     writeLocalStorage(DEVICEID_STORAGE_NAME, newDeviceId);
   }
 
+  /**
+   * Allows the manual setting of a sessionId for scenarios in which you believe the value may have been reset.
+   *
+   * @example
+   * ravelinjs.setSessionId();
+   */
   RavelinJS.prototype.setSessionId = function() {
     storedSessionId = readCookie(SESSIONID_COOKIE_NAME);
 
@@ -471,6 +504,12 @@
     writeCookie(SESSIONID_COOKIE_NAME, newSessionId, 0, null);
   }
 
+  /**
+   * Univerally unique identifier generation, used internally by ravelinjs to set device/session ids.
+   *
+   * @example
+   * var id = ravelinjs.uuid();
+   */
   RavelinJS.prototype.uuid = function() {
     var d0, d1, d2, d3;
 
@@ -603,14 +642,20 @@
         trackingSource: 'browser',
         ravelinDeviceId: basicPayload.deviceId,
         ravelinSessionId: basicPayload.sessionId,
-        url: window.location.href,
-        canonicalUrl: getCanonicalUrl(),
-        pageTitle: document.title,
-        referrer: document.referrer || undefined,
         clientEventTimeMilliseconds: now,
         clientEventTimeMicroseconds: nowMicro,
       },
     };
+
+    if (wndw && window.location) {
+      e.url = window.location.href;
+    }
+
+    if (doc) {
+      e.canonicalUrl = getCanonicalUrl();
+      e.pageTitle = document.title;
+      e.referrer = document.referrer || undefined;
+    }
 
     var trackPayload = {
       events: [e],
@@ -3033,14 +3078,14 @@
   RavelinJS.RavelinJS = RavelinJS;
   var rjs = new RavelinJS();
 
-  // Add resize trigger for session-tracking
+  // Add resize listener for session-tracking
   if (wndw && window.addEventListener) {
     window.addEventListener('resize', onResizeDebounce);
   } else if (wndw && window.attachEvent) {
     window.attachEvent('resize', onResizeDebounce);
   }
 
-  // Add paste trigger for session-tracking
+  // Add paste listener for session-tracking
   if (doc && document.addEventListener) {
     document.addEventListener('paste', onPaste);
   } else if (doc && document.attachEvent) {

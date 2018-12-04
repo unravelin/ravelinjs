@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
+
     <pre id="useragent"></pre>
     <div style="display:flex; flex-direction:row">
         <pre style="display:inline-block" id="deviceid"><b>DeviceId: </b></pre>
@@ -46,7 +47,10 @@
 
             <div class="block column">
                 <button id="trackFingerprint" style="width:100px;">Fingerprint</button>
+                <button id="track" style="width:100px;">Track</button>
+                <button id="trackPage" style="width:100px;">Track Page</button>
                 <button id="trackLogin" style="width:100px;">Track Login</button>
+                <button id="trackLogout" style="width:100px;">Track Logout</button>
             </div>
         </div>
     </div>
@@ -87,7 +91,12 @@
         var setCustomerId = () => ravelinjs.setCustomerId(document.getElementById('customer-id').value);
         var setTempCustomerId = () => ravelinjs.setTempCustomerId(document.getElementById('temp-customer-id').value);
         var setOrderId = () => ravelinjs.setOrderId(document.getElementById('order-id').value);
+
         var trackFingerprint = () => ravelinjs.trackFingerprint();
+        var track = () => ravelinjs.track('RANDOM', { rand: ravelinjs.uuid() });
+        var trackPage = () => ravelinjs.trackPage();
+        var trackLogin = () => ravelinjs.trackLogin();
+        var trackLogout = () => ravelinjs.trackLogout();
 
         document.getElementById('setRSAKey').onclick = setRSAKey;
         document.getElementById('setPublicAPIKey').onclick = setPublicAPIKey;
@@ -96,6 +105,10 @@
         document.getElementById('setOrderId').onclick = setOrderId;
 
         document.getElementById('trackFingerprint').onclick = trackFingerprint;
+        document.getElementById('track').onclick = track;
+        document.getElementById('trackPage').onclick = trackPage;
+        document.getElementById('trackLogin').onclick = trackLogin;
+        document.getElementById('trackLogout').onclick = trackLogout;
 
         document.getElementById('encrypt').onclick = function() {
             var month = document.getElementById('month');
@@ -111,7 +124,6 @@
 
         setPublicAPIKey();
         setRSAKey();
-
     </script>
 </body>
 </html>
