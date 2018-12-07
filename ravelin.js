@@ -306,7 +306,7 @@
     } catch (e) {
       try {
         sendErrorToRavelin(apiKey, e, payload);
-      } catch {
+      } catch (e) {
         // Give up
       }
     }
