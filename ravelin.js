@@ -56,6 +56,7 @@
     // Initialise our ids
     this.setDeviceId();
     this.setSessionId();
+    this.windowId = this.uuid();
   }
 
   /**
@@ -250,7 +251,7 @@
       this.setCustomerId(custId);
     }
 
-    payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
+    var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId, this.windowId);
     payload.fingerprintSource = 'browser';
 
     var browserData = {
@@ -325,19 +326,15 @@
    * // track without any additional metadata
    * ravelinjs.track('CUSTOMER_SEARCHED');
    */
-  RavelinJS.prototype.track = function(eventName, eventMeta) {
-    var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId);
+  RavelinJS.prototype.track = function(eventName, eventProperties) {
+    var payload = basicPayload(this.customerId,
+                               this.tempCustomerId,
+                               this.orderId,
+                               this.deviceId,
+                               this.sessionId,
+                               this.windowId);
 
-    var eventType = '';
-    if (eventName === RESIZE_EVENT_TYPE) {
-      eventType = RESIZE_EVENT_TYPE;
-    } else if (eventName === PASTE_EVENT_TYPE) {
-      eventType = PASTE_EVENT_TYPE;
-    } else {
-      eventType = GENERIC_TRACK_EVENT_TYPE;
-    }
-
-    var trackingPayload = trackPayload(payload, eventType, eventName, eventMeta);
+    var trackingPayload = trackPayload(payload, eventName, eventProperties);
 
     try {
       sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload);
@@ -364,8 +361,8 @@
    * ..
    * ravelinjs.trackPage(); // www.ravelintest.com/page-2
    */
-  RavelinJS.prototype.trackPage = function(meta) {
-    this.track(PAGE_EVENT_NAME, meta);
+  RavelinJS.prototype.trackPage = function(eventProperties) {
+    this.track(PAGE_EVENT_NAME, eventProperties);
   }
 
   /**
@@ -375,12 +372,12 @@
    * @example
    * ravelinjs.trackLogin('cust123', {...}); // Called immediately after your login logic.
    */
-  RavelinJS.prototype.trackLogin = function(customerId, meta) {
+  RavelinJS.prototype.trackLogin = function(customerId, eventProperties) {
     if (customerId) {
       this.setCustomerId(customerId);
     }
 
-    this.track(LOGIN_EVENT_NAME, meta);
+    this.track(LOGIN_EVENT_NAME, eventProperties);
   }
 
   /**
@@ -391,8 +388,8 @@
    * @example
    * ravelinjs.trackLogout(); // Called before you begin your logout process
    */
-  RavelinJS.prototype.trackLogout = function(meta) {
-    this.track(LOGOUT_EVENT_NAME, meta);
+  RavelinJS.prototype.trackLogout = function(eventProperties) {
+    this.track(LOGOUT_EVENT_NAME, eventProperties);
     this.customerId = undefined;
     this.tempCustomerId = undefined;
     this.orderId = undefined;
@@ -552,12 +549,33 @@
       d2 = d[2];
       d3 = d[3];
     } else {
+      // Generate a random float between 0-1, multiple by 4294967295 (0xffffffff) then round down via
+      // bitwise or (|0) so we are left with a random 32bit number. These 4 values are then bitshifted
+      // around to produce additional random values.
       d0 = Math.random()*0xffffffff|0;
       d1 = Math.random()*0xffffffff|0;
       d2 = Math.random()*0xffffffff|0;
       d3 = Math.random()*0xffffffff|0;
     }
 
+    // Earlier, when we instantiated the lib, we prepopulated our lookup table (this.lut) sequentially with
+    // hexidecimal strings starting from 00 all the way through to ff, covering the entire 256 hex range.
+
+    // From our 4 random 32 bit values, we take the first 8 bits via bitwise AND against 255 (&0xff),
+    // then the next 8 bits via bitwise shift right (>>8) and repeat that 4 times through to get 4 random,
+    // 8 bit numbers, which are used to look up the sequentially generated hex characters in our lookup table.
+    // There are two interesting numbers here though:
+    //
+    // - the 15th character will always be a 4, because we bitwise AND against 15 rather than 255
+    //   and we bitwise OR against 64 (0x40), producing values in the range of 64-79, which is the 16 hex
+    //   values prefixed with a 4 (40 through to 4f)
+    //
+    // - the 20th character will always be one of 8,9,a or b because we bitwise AND against 63 and
+    //   bitwise OR against 128, producing values in the range of 128-191, which is the 64 hex values ranging
+    //   from 80 through to bf
+    //
+    // I reckon we have this special logic for those two values because we copy-pasted the code direct from
+    // this stackoverflow answer https://stackoverflow.com/a/21963136 :)
     return this.lut[d0&0xff]+this.lut[d0>>8&0xff]+this.lut[d0>>16&0xff]+this.lut[d0>>24&0xff]+'-'+
       this.lut[d1&0xff]+this.lut[d1>>8&0xff]+'-'+this.lut[d1>>16&0x0f|0x40]+this.lut[d1>>24&0xff]+'-'+
       this.lut[d2&0x3f|0x80]+this.lut[d2>>8&0xff]+'-'+this.lut[d2>>16&0xff]+this.lut[d2>>24&0xff]+
@@ -616,7 +634,7 @@
     return browser;
   }
 
-  function basicPayload(custId, tempCustId, orderId, deviceId, sessionId) {
+  function basicPayload(custId, tempCustId, orderId, deviceId, sessionId, windowId) {
     var payload = {
       libVer: FULL_VERSION_STRING,
       deviceId: deviceId,
@@ -624,10 +642,9 @@
 
     if (custId) {
       payload.customerId = custId;
-      delete payload.tempCustomerId;
     }
 
-    if (tempCustId && !payload.customerId) {
+    if (tempCustId) {
       payload.tempCustomerId = tempCustId;
     }
 
@@ -639,10 +656,23 @@
       payload.sessionId = sessionId;
     }
 
+    if (windowId) {
+      payload.windowId = windowId;
+    }
+
     return payload;
   }
 
-  function trackPayload(basicPayload, eventType, eventName, eventProperties) {
+  function trackPayload(basicPayload, eventName, eventProperties) {
+    var eventType = '';
+    if (eventName === RESIZE_EVENT_TYPE) {
+      eventType = RESIZE_EVENT_TYPE;
+    } else if (eventName === PASTE_EVENT_TYPE) {
+      eventType = PASTE_EVENT_TYPE;
+    } else {
+      eventType = GENERIC_TRACK_EVENT_TYPE;
+    }
+
     if (!eventName || typeof eventName !== 'string') {
       eventName = UNKNOWN_EVENT_NAME;
     }
@@ -659,11 +689,8 @@
       nowMicro = (performance.timing.navigationStart + performance.now())*1000 || 0;
     }
 
-    var e = {
+    var e = Object.assign(basicPayload, {
       eventType: eventType,
-      customerId: basicPayload.customerId,
-      tempCustomerId: basicPayload.tempCustomerId,
-      orderId: basicPayload.orderId,
       eventData: {
         eventName: eventName,
         properties: eventProperties,
@@ -672,20 +699,27 @@
         trackingSource: 'browser',
         ravelinDeviceId: basicPayload.deviceId,
         ravelinSessionId: basicPayload.sessionId,
+        ravelinWindowId: basicPayload.windowId,
         clientEventTimeMilliseconds: now,
         clientEventTimeMicroseconds: nowMicro,
       },
-    };
+    });
 
+    // Enrich eventMeta with additional data from browser
     if (wndw && window.location) {
-      e.url = window.location.href;
+      e.eventMeta.url = window.location.href;
     }
 
     if (doc) {
-      e.canonicalUrl = getCanonicalUrl();
-      e.pageTitle = document.title;
-      e.referrer = document.referrer || undefined;
+      e.eventMeta.canonicalUrl = getCanonicalUrl();
+      e.eventMeta.pageTitle = document.title;
+      e.eventMeta.referrer = document.referrer || undefined;
     }
+
+    // Track payloads have the uuids as properties on the eventMeta obj, not the top level
+    delete e.deviceId;
+    delete e.sessionId;
+    delete e.windowId;
 
     var trackPayload = {
       events: [e],
