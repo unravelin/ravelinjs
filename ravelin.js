@@ -342,7 +342,6 @@
     try {
       sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload);
     } catch (e) {
-      console.log(e);
       // Ignore errors sending clickstream data.
     }
   }
@@ -410,6 +409,7 @@
    */
   RavelinJS.prototype.setCookieDomain = function(domain) {
     // Clear all cookies set to the current cookie domain.
+    // We can still get device/sessionIds from our proto variables.
     cleanCookies(this.cookieDomain);
 
     this.cookieDomain = domain;
@@ -503,6 +503,36 @@
     // Set session with zero expiry, meaning the cookie with sessionId will expire on browser session exit
     writeCookie(SESSIONID_COOKIE_NAME, newSessionId, 0, null);
   }
+
+  /**
+   * Returns the customerId currently assigned to ravelinjs
+   *
+   * @example
+   * var customerId = ravelinjs.getCustomerId();
+   */
+  RavelinJS.prototype.getCustomerId = function() {
+    return this.customerId;
+  };
+
+  /**
+   * Returns the orderId currently assigned to ravelinjs
+   *
+   * @example
+   * var orderId = ravelinjs.getOrderId();
+   */
+  RavelinJS.prototype.getOrderId = function() {
+    return this.orderId;
+  };
+
+    /**
+   * Returns the temporary customerId currently assigned to ravelinjs
+   *
+   * @example
+   * var tempCustId = ravelinjs.getTempCustomerId();
+   */
+  RavelinJS.prototype.getTempCustomerId = function() {
+    return this.tempCustomerId;
+  };
 
   /**
    * Univerally unique identifier generation, used internally by ravelinjs to set device/session ids.
