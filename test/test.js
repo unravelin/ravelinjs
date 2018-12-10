@@ -88,6 +88,22 @@ describe('ravelinjs', function() {
       expect(() => ravelin.encrypt({})).to.throw('[ravelinjs] Encryption Key has not been set');
     });
 
+    it('validates card details exist', function() {
+      ravelin.setRSAKey(dummyRSAKey);
+      const err = '[ravelinjs] Encryption validation: no details provided';
+      expect(() => ravelin.encrypt(null)).to.throw(err);
+      expect(() => ravelin.encrypt(undefined)).to.throw(err);
+      expect(() => ravelin.encrypt(false)).to.throw(err);
+    });
+
+    it('ignores card details exist', function() {
+      ravelin.setRSAKey(dummyRSAKey);
+      const err = '[ravelinjs] Encryption validation: no details provided';
+      expect(() => ravelin.encrypt(null)).to.throw(err);
+      expect(() => ravelin.encrypt(undefined)).to.throw(err);
+      expect(() => ravelin.encrypt(false)).to.throw(err);
+    });
+
     it('validates pan has at least 13 digits', function() {
       ravelin.setRSAKey(dummyRSAKey);
       const err = '[ravelinjs] Encryption validation: pan should have at least 13 digits';
@@ -121,33 +137,32 @@ describe('ravelinjs', function() {
     it('generates ciphers', function() {
       ravelin.setRSAKey(dummyRSAKey);
 
-      expect(JSON.parse(ravelin.encrypt({
-        pan: '4111 1111 1111 1111',
-        month: 10,
-        year: 2020,
-      }))).to.satisfy(validateCipher);
+      var testCases = [
+        { pan: 4111111111111111, month: 10, year: 2020 },
+        { pan: '4111-1111-1111-1111', month: 10, year: 2020 },
+        { pan: '4111111111111111', month: 10, year: 2020 },
+        { pan: '4111 1111 1111 1111', month: 10, year: 2020 },
+        { pan: '4111 1111 1111 1111', month: 10, year: '20' },
+        { pan: '4111 1111 1111 1111', month: '12', year: '20' }
+      ];
 
-      expect(JSON.parse(ravelin.encrypt({
-        pan: '4111 1111 1111 1111',
-        month: '10',
-        year: '20',
-      }))).to.satisfy(validateCipher);
+      for (var testCase of testCases) {
+        result = ravelin.encrypt(testCase);
 
-      expect(JSON.parse(ravelin.encrypt({
-        pan: '4111 1111 1111 1111',
-        month: '12',
-        year: '20',
-      }))).to.satisfy(validateCipher);
+        expect(result).to.satisfy(validateJSONCipher);
+      }
     });
 
     it('can return payload as object', function() {
       ravelin.setRSAKey(dummyRSAKey);
 
-      expect(ravelin.encryptAsObject({
+      var result = ravelin.encryptAsObject({
           pan: '4111 1111 1111 1111',
           month: 10,
           year: 2020,
-      })).to.satisfy(validateCipher);
+      });
+
+      expect(result).to.satisfy(validateCipher);
     });
 
     it('can parse key index and include in payload', function() {
@@ -159,12 +174,12 @@ describe('ravelinjs', function() {
       });
 
       expect(result.keyIndex).to.eq(2);
+      expect(result).to.satisfy(validateCipher);
     });
   });
 
   describe('track', function() {
     let server;
-    let pageTitle;
     let reqs = [];
 
     beforeEach(() => {
@@ -192,6 +207,9 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
       const body = JSON.parse(trackReq.requestBody).events[0];
 
       assertTrackRequestBody(body, {
@@ -212,7 +230,47 @@ describe('ravelinjs', function() {
         }
       });
     });
+  });
 
+  describe('track fingerprint', function() {
+    let server;
+    let reqs = [];
+
+    beforeEach(() => {
+      server = sinon.fakeServer.create();
+      server.respondImmediately = true;
+      global.XMLHttpRequest = sinon.useFakeXMLHttpRequest();
+      global.XMLHttpRequest.onCreate = req => {
+        req.withCredentials = true;
+        reqs.push(req)
+      };
+      ravelin.setPublicAPIKey('testAPIKey');
+    });
+
+    afterEach(() => {
+      global.XMLHttpRequest.restore();
+      reqs = [];
+    });
+
+    it('fails gracefully and sends error to ravelin', () => {
+      ravelin.trackFingerprint(123456789);
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/fingerprinterror?source=browser');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody);
+
+      assertDeviceId(body.deviceId);
+      assertUuid(body.sessionId);
+      assertUuid(body.windowId);
+      expect(body.libVer).to.equal(expectedVersion);
+      expect(body.fingerprintSource).to.equal('browser');
+      expect(body.customerId).to.equal('123456789');
+      expect(body.error).to.contain('ReferenceError: Fingerprint2 is not defined\n');
+    });
   });
 
 });
@@ -274,4 +332,8 @@ function validateCipher(c) {
          c.algorithm == 'RSA_WITH_AES_256_GCM' &&
          c.ravelinSDKVersion == '1.0.0-ravelinjs' &&
          typeof(c.keyIndex) === 'number';
+}
+
+function validateJSONCipher(j) {
+  return validateCipher(JSON.parse(j));
 }

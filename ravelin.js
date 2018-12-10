@@ -36,16 +36,7 @@
   var wndw = typeof window !== 'undefined';
   var doc = typeof document !== 'undefined';
 
-  /**
-   * RavelinJS provides card encryption and wraps Ravelin's tracking library.
-   *
-   * @param {String} key The RSA Key to be provided to setRSAKey
-   */
-  function RavelinJS(key) {
-    if (key) {
-      this.setRSAKey(key);
-    }
-
+  function RavelinJS() {
     // Seed our UUID lookup table
     this.lut = [];
 
@@ -247,17 +238,18 @@
    * ravelinjs.trackFingerprint('customer123');
    */
   RavelinJS.prototype.trackFingerprint = function(custId) {
-    if (custId && typeof(custId) === 'string') {
+    if (custId) {
       this.setCustomerId(custId);
     }
 
     var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId, this.windowId);
     payload.fingerprintSource = 'browser';
 
-    var browserData = {
-      sessionId: this.sessionId,
-      url: location.href,
-    };
+    var browserData = { sessionId: this.sessionId };
+
+    if (wndw && location) {
+      browserData.url = location.href;
+    }
 
     // Store API key in scope external from .get callback
     var apiKey = this.apiKey;
