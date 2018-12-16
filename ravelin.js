@@ -9,14 +9,17 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
+  // Versioning
   var RAVELINJS_VERSION = '1.0.0';
   var FULL_VERSION_STRING = RAVELINJS_VERSION + '-ravelinjs';
 
+  // URLS
   var API_URL = 'https://api.ravelin.com';
   var FINGERPRINT_URL = API_URL + '/v2/fingerprint?source=browser';
   var FINGERPRINT_ERROR_URL = API_URL + '/v2/fingerprinterror?source=browser';
   var CLICKSTREAM_URL = API_URL + '/v2/click';
 
+  // Cookies
   var DEVICEID_STORAGE_NAME = 'ravelinDeviceId';
   var SESSIONID_COOKIE_NAME = 'ravelinSessionId';
   var COOKIE_NAMES = [DEVICEID_STORAGE_NAME, SESSIONID_COOKIE_NAME];
@@ -32,10 +35,13 @@
   var LOGIN_EVENT_NAME = 'LOGIN';
   var LOGOUT_EVENT_NAME = 'LOGOUT';
 
-  // These bools help protect us against accessing APIs that are not available in our env
-  var wndw = typeof window !== 'undefined';
-  var doc = typeof document !== 'undefined';
+  // Misc
+  var NO_EXPIRE = new Date((new Date()).setDate(10000));
 
+  /**
+   * Default constructor for a ravelinjs instance. Not exported. Instead, it is invoked during script loading
+   * and the resulting instance is exported. Initialises uuids and lookup-table.
+   */
   function RavelinJS() {
     // Seed our UUID lookup table
     this.lut = [];
@@ -105,7 +111,7 @@
       return;
     }
 
-    if (typeof(custId) === 'string' && custId.indexOf('@') != -1) {
+    if (typeof custId === 'string' && custId.indexOf('@') != -1) {
       custId = custId.toLowerCase();
     }
 
@@ -126,7 +132,7 @@
       return;
     }
 
-    if (typeof(tempCustId) === 'string' && tempCustId.indexOf('@') != -1) {
+    if (typeof tempCustId === 'string' && tempCustId.indexOf('@') != -1) {
       tempCustId = tempCustId.toLowerCase();
     }
 
@@ -247,7 +253,7 @@
 
     var browserData = { sessionId: this.sessionId };
 
-    if (wndw && location) {
+    if (typeof location !== 'undefined') {
       browserData.url = location.href;
     }
 
@@ -404,8 +410,7 @@
     this.cookieDomain = domain;
 
     // Maintain the same device/sessionIds, but store them now under the new domain.
-    var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expireAt, null, this.cookieDomain);
+    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null, this.cookieDomain);
     writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
   }
 
@@ -445,31 +450,31 @@
     var storedDeviceId = readCookie(DEVICEID_STORAGE_NAME);
 
     if (storedDeviceId) {
+      // If deviceId is present in cookies, ensure it is also assigned to our instance
       this.deviceId = storedDeviceId;
-      writeLocalStorage(DEVICEID_STORAGE_NAME, storedDeviceId);
-
       return;
     }
 
-    if (readLocalStorage(DEVICEID_STORAGE_NAME)) {
-      var expireAt = new Date((new Date()).setDate(10000));
-      storedDeviceId = window.localStorage.getItem(DEVICEID_STORAGE_NAME);
-
-      if (storedDeviceId) {
-        // DeviceId was inside localStorage, but wiped from cookies. Reset cookie.
-        this.deviceId = storedDeviceId;
-        writeCookie(DEVICEID_STORAGE_NAME, storedDeviceId, expireAt, null);
-      }
-
+    if (this.deviceId) {
+      // If deviceId is present in instance but not cookies, ensure it is also assigned to our cookies
+      writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null);
       return;
     }
 
-    newDeviceId = 'rjs-' + this.uuid();
-    this.deviceId = newDeviceId;
-    var expireAt = new Date((new Date()).setDate(10000));
-    writeCookie(DEVICEID_STORAGE_NAME, newDeviceId, expireAt, null);
-    writeLocalStorage(DEVICEID_STORAGE_NAME, newDeviceId);
+    // If no deviceId located, instantiate one and write to cookies
+    this.deviceId = 'rjs-' + this.uuid();
+    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null);
   }
+
+  /**
+   * Return the sessionId currently assigned by ravelinjs
+   *
+   * @example
+   * var sessionId = ravelinjs.getSessionId();
+   */
+  RavelinJS.prototype.getSessionId = function() {
+    return this.sessionId;
+  };
 
   /**
    * Allows the manual setting of a sessionId for scenarios in which you believe the value may have been reset.
@@ -478,7 +483,7 @@
    * ravelinjs.setSessionId();
    */
   RavelinJS.prototype.setSessionId = function() {
-    storedSessionId = readCookie(SESSIONID_COOKIE_NAME);
+    var storedSessionId = readCookie(SESSIONID_COOKIE_NAME);
 
     // There is a chance the lib was reloaded during the session. If so, assume the session is still valid
     if (storedSessionId) {
@@ -486,11 +491,10 @@
       return;
     }
 
-    newSessionId = this.uuid();
-    this.sessionId = newSessionId;
+    this.sessionId = this.uuid();
 
-    // Set session with zero expiry, meaning the cookie with sessionId will expire on browser session exit
-    writeCookie(SESSIONID_COOKIE_NAME, newSessionId, 0, null);
+    // Set session with zero expiry, meaning the sessionId cookie will expire on browser exit
+    writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, 0, null);
   }
 
   /**
@@ -533,7 +537,7 @@
     var d0, d1, d2, d3;
 
     // try to use the newer, randomer crypto.getRandomValues if available.
-    if (wndw && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
       var d = new Int32Array(4);
       window.crypto.getRandomValues(d);
       d0 = d[0];
@@ -562,12 +566,15 @@
     //   and we bitwise OR against 64 (0x40), producing values in the range of 64-79, which is the 16 hex
     //   values prefixed with a 4 (40 through to 4f)
     //
-    // - the 20th character will always be one of 8,9,a or b because we bitwise AND against 63 and
+    // - the 20th character will always be one of 8, 9, a or b because we bitwise AND against 63 and
     //   bitwise OR against 128, producing values in the range of 128-191, which is the 64 hex values ranging
     //   from 80 through to bf
     //
-    // I reckon we have this special logic for those two values because we copy-pasted the code direct from
-    // this stackoverflow answer https://stackoverflow.com/a/21963136 :)
+    // This logic almost mirrors the specification of v4 RFC 4122 UUIDs, but omits the `clock_seq_hi_and_reserved`
+    // requirement https://tools.ietf.org/html/rfc4122.
+    //
+    // The result are identifiers of 36 characters, 34 of which are randomly assigned.
+
     return this.lut[d0&0xff]+this.lut[d0>>8&0xff]+this.lut[d0>>16&0xff]+this.lut[d0>>24&0xff]+'-'+
       this.lut[d1&0xff]+this.lut[d1>>8&0xff]+'-'+this.lut[d1>>16&0x0f|0x40]+this.lut[d1>>24&0xff]+'-'+
       this.lut[d2&0x3f|0x80]+this.lut[d2>>8&0xff]+'-'+this.lut[d2>>16&0xff]+this.lut[d2>>24&0xff]+
@@ -698,11 +705,11 @@
     });
 
     // Enrich eventMeta with additional data from browser
-    if (wndw && window.location) {
+    if (typeof window !== 'undefined' && window.location) {
       e.eventMeta.url = window.location.href;
     }
 
-    if (doc) {
+    if (typeof document !== 'undefined') {
       e.eventMeta.canonicalUrl = getCanonicalUrl();
       e.eventMeta.pageTitle = document.title;
       e.eventMeta.referrer = document.referrer || undefined;
@@ -789,8 +796,8 @@
   }
 
   function readCookie(cookieName) {
-    if (!doc || !document.cookie) {
-      return;
+    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+      return
     }
 
     var cookies = document.cookie.split('; ');
@@ -803,37 +810,13 @@
   }
 
   function writeCookie(name, value, expires, path, domain) {
-    if (!doc || !document.cookie) {
+    if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
       return;
     }
 
     document.cookie = name + '=' + value + ';path=' + (path || '/') +
       (expires ? ';expires=' + expires.toUTCString() : '') +
       (domain ? ';domain=' + domain : '');
-  }
-
-  function readLocalStorage(key) {
-    try {
-      if (!wndw || !window.localStorage) {
-        return;
-      }
-
-      return window.localStorage.getItem(key)
-    } catch (e) {
-      this.localStorageUnavailable = true;
-    }
-  }
-
-  function writeLocalStorage(key, value) {
-    try {
-      if (!wndw || !window.localStorage) {
-        return;
-      }
-
-      window.localStorage.setItem(key, value);
-    } catch (e) {
-      this.localStorageUnavailable = true;
-    }
   }
 
   function sendToRavelin(apiKey, url, payload) {
@@ -3127,7 +3110,7 @@
   // initialisation
   //
 
-  if ((wndw && window.addEventListener) || (doc && document.attachEvent)) {
+  if ((typeof window !== 'undefined' && window.addEventListener) || (typeof document !== 'undefined' && document.attachEvent)) {
     sjcl.random.startCollectors();
   }
 
@@ -3135,16 +3118,16 @@
   var rjs = new RavelinJS();
 
   // Add resize listener for session-tracking
-  if (wndw && window.addEventListener) {
+  if (typeof window !== 'undefined' && window.addEventListener) {
     window.addEventListener('resize', onResizeDebounce);
-  } else if (wndw && window.attachEvent) {
+  } else if (typeof window !== 'undefined' && window.attachEvent) {
     window.attachEvent('resize', onResizeDebounce);
   }
 
   // Add paste listener for session-tracking
-  if (doc && document.addEventListener) {
+  if (typeof document !== 'undefined' && document.addEventListener) {
     document.addEventListener('paste', onPaste);
-  } else if (doc && document.attachEvent) {
+  } else if (typeof document !== 'undefined' && document.attachEvent) {
     document.attachEvent('paste', onPaste);
   }
 

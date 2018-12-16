@@ -7,9 +7,83 @@ const expectedVersion = '1.0.0-ravelinjs';
 
 describe('ravelinjs', function() {
   var ravelin;
+
   beforeEach('reset the ravelin library', function() {
+    // Ensure we always start tests without access to document/window (some tests will be stubbing them)
+    document = undefined;
+    window = undefined;
+
+    // reinstantiate a fresh ravelinjs instance at the start of every test in every suite
     delete require.cache[require.resolve('../ravelin')];
     ravelin = require('../ravelin');
+  });
+
+  describe('tracking IDs', function() {
+    it('should set ids on instantiation', function() {
+      assertDeviceId(ravelin.getDeviceId());
+      assertUuid(ravelin.getSessionId());
+    });
+
+    it('should load deviceId from cookie', function() {
+      document = {
+        cookie: 'notDeviceId=not; ravelinDeviceId=rjs-123-abc'
+      };
+
+      // reset instance so we can instantiate from cookie
+      delete require.cache[require.resolve('../ravelin')];
+      ravelin = require('../ravelin');
+
+      expect(ravelin.getDeviceId()).to.equal('rjs-123-abc');
+    });
+
+    it('should store deviceId in instance and write back to cookies if absent', function() {
+      // deviceId is set during instantiation, read the value our before we clear our cookies
+      var pre = ravelin.getDeviceId();
+
+      // clear our cookies
+      document = { cookie: '' };
+
+      // assert that the deviceId hasn't changed despite clearing cookies
+      var post = ravelin.getDeviceId();
+      assertDeviceId(pre);
+      assertDeviceId(post);
+      expect(pre).to.equal(post);
+
+      // assert that setting our deviceId again updates our cookies
+      ravelin.setDeviceId();
+      expect(document.cookie).to.contain('ravelinDeviceId=rjs-');
+    });
+
+    it('should load sessionId from cookie', function() {
+      document = {
+        cookie: 'notDeviceId=not; ravelinDeviceId=rjs-123-abc; ravelinSessionId=345-zyx'
+      };
+
+      // reset instance so we can instantiate from cookie
+      delete require.cache[require.resolve('../ravelin')];
+      ravelin = require('../ravelin');
+
+      expect(ravelin.getSessionId()).to.equal('345-zyx');
+    });
+
+    it('should store session in instance and write back to cookies if absent', function() {
+      // session is set during instantiation, read the value our before we clear our cookies
+      var pre = ravelin.getSessionId();
+
+      // clear our cookies
+      document = { cookie: '' };
+
+      var post = ravelin.getSessionId();
+
+      // assert that the sessionId hasn't changed despite clearing cookies
+      assertUuid(pre);
+      assertUuid(post);
+      expect(pre).to.equal(post);
+
+      // assert that setting our sessionId again updates our cookies
+      ravelin.setSessionId();
+      expect(document.cookie).to.contain('ravelinSessionId=');
+    });
   });
 
   describe('setRSAKey', function() {
@@ -337,3 +411,4 @@ function validateCipher(c) {
 function validateJSONCipher(j) {
   return validateCipher(JSON.parse(j));
 }
+

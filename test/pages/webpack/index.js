@@ -3,7 +3,7 @@ import output from '../common.js';
 
 document.getElementById('encrypt').onclick = function() {
   var month = document.getElementById('month');
-  output(function() {
+  output('encryption-output', function() {
     return ravelin.encrypt({
       nameOnCard: document.getElementById('name').value,
       pan: document.getElementById('number').value,
