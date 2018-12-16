@@ -204,7 +204,7 @@
       throw new Error('[ravelinjs] Encryption validation: year should be in the 21st century');
     }
 
-    for (prop in details) {
+    for (var prop in details) {
       if (!details.hasOwnProperty(prop)) continue;
       switch (prop) {
         case 'pan':
@@ -230,7 +230,7 @@
       ravelinSDKVersion: FULL_VERSION_STRING,
       keyIndex: this.keyIndex
     };
-  };
+  }
 
   /**
    * trackFingerprint sends device information back to Ravelin. Invoke from
@@ -266,7 +266,7 @@
       Fingerprint2.get(options, function(components) {
         for (var i = 0, len = components.length; i < len; i++) {
           // We took the liberty of camelCasing all our expected keys server-side. Ensure they match up here.
-          var sanitizedKey = components[i].key.replace(/_([a-z])/gi, function(c) {return c[1].toUpperCase()});
+          var sanitizedKey = components[i].key.replace(/_([a-z])/gi, function(c) {return c[1].toUpperCase();});
 
           var val = components[i].value;
 
@@ -636,7 +636,7 @@
   function basicPayload(custId, tempCustId, orderId, deviceId, sessionId, windowId) {
     var payload = {
       libVer: FULL_VERSION_STRING,
-      deviceId: deviceId,
+      deviceId: deviceId
     };
 
     if (custId) {
@@ -662,7 +662,7 @@
     return payload;
   }
 
-  function trackPayload(basicPayload, eventName, eventProperties) {
+  function trackPayload(payload, eventName, eventProperties) {
     var eventType = '';
     if (eventName === RESIZE_EVENT_TYPE) {
       eventType = RESIZE_EVENT_TYPE;
@@ -680,7 +680,7 @@
       eventProperties = null;
     }
 
-    var now = Date.now ? Date.now() : +new Date;
+    var now = Date.now ? Date.now() : +new Date();
 
     // newer browsers support microsecond timings rounded to the nearest 5us.
     var nowMicro = 0;
@@ -688,40 +688,38 @@
       nowMicro = (performance.timing.navigationStart + performance.now())*1000 || 0;
     }
 
-    var e = Object.assign(basicPayload, {
-      eventType: eventType,
-      eventData: {
-        eventName: eventName,
-        properties: eventProperties,
-      },
-      eventMeta: {
-        trackingSource: 'browser',
-        ravelinDeviceId: basicPayload.deviceId,
-        ravelinSessionId: basicPayload.sessionId,
-        ravelinWindowId: basicPayload.windowId,
-        clientEventTimeMilliseconds: now,
-        clientEventTimeMicroseconds: nowMicro,
-      },
-    });
+    payload.eventType = eventType;
+    payload.eventData = {
+      eventName: eventName,
+      properties: eventProperties
+    };
+    payload.eventMeta = {
+      trackingSource: 'browser',
+      ravelinDeviceId: payload.deviceId,
+      ravelinSessionId: payload.sessionId,
+      ravelinWindowId: payload.windowId,
+      clientEventTimeMilliseconds: now,
+      clientEventTimeMicroseconds: nowMicro
+    };
 
     // Enrich eventMeta with additional data from browser
     if (typeof window !== 'undefined' && window.location) {
-      e.eventMeta.url = window.location.href;
+      payload.eventMeta.url = window.location.href;
     }
 
     if (typeof document !== 'undefined') {
-      e.eventMeta.canonicalUrl = getCanonicalUrl();
-      e.eventMeta.pageTitle = document.title;
-      e.eventMeta.referrer = document.referrer || undefined;
+      payload.eventMeta.canonicalUrl = getCanonicalUrl();
+      payload.eventMeta.pageTitle = document.title;
+      payload.eventMeta.referrer = document.referrer || undefined;
     }
 
     // Track payloads have the uuids as properties on the eventMeta obj, not the top level
-    delete e.deviceId;
-    delete e.sessionId;
-    delete e.windowId;
+    delete payload.deviceId;
+    delete payload.sessionId;
+    delete payload.windowId;
 
     var trackPayload = {
-      events: [e],
+      events: [payload]
     }
 
     return trackPayload;
@@ -763,7 +761,7 @@
     if (input && (typeof input.selectionStart === 'number') && (typeof input.selectionEnd === 'number')) {
       selectionPos = {
         start: input.selectionStart,
-        end: input.selectionEnd,
+        end: input.selectionEnd
       };
     }
 
@@ -1178,9 +1176,7 @@
           return 'id=' + device.deviceId + ';gid=' + device.groupId + ';' + device.kind + ';' + device.label
         }))
       })
-        .catch(function (error) {
-          done(error)
-        })
+      setTimeout(done, 150);
     }
 
     var isEnumerateDevicesSupported = function () {

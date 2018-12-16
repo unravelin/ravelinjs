@@ -8,23 +8,23 @@ document.getElementById('encrypt').onclick = function() {
       nameOnCard: document.getElementById('name').value,
       pan: document.getElementById('number').value,
       month: month.options[month.selectedIndex].value,
-      year: document.getElementById('year').value,
+      year: document.getElementById('year').value
     });
   });
   return false;
 };
 
-var setRSAKey = () => ravelin.setRSAKey(document.getElementById('rsa-key').value);
-var setPublicAPIKey = () => ravelin.setPublicAPIKey(document.getElementById('pub-token').value);
-var setCustomerId = () => ravelin.setCustomerId(document.getElementById('customer-id').value);
-var setTempCustomerId = () => ravelin.setTempCustomerId(document.getElementById('temp-customer-id').value);
-var setOrderId = () => ravelin.setOrderId(document.getElementById('order-id').value);
+var setRSAKey = function() { ravelin.setRSAKey(document.getElementById('rsa-key').value); };
+var setPublicAPIKey = function() { ravelin.setPublicAPIKey(document.getElementById('pub-token').value); };
+var setCustomerId = function() { ravelin.setCustomerId(document.getElementById('customer-id').value); };
+var setTempCustomerId = function() { ravelin.setTempCustomerId(document.getElementById('temp-customer-id').value); };
+var setOrderId = function() { ravelin.setOrderId(document.getElementById('order-id').value); };
 
-var trackFingerprint = () => ravelin.trackFingerprint();
-var track = () => ravelin.track('RANDOM', { rand: ravelin.uuid() });
-var trackPage = () => ravelin.trackPage();
-var trackLogin = () => ravelin.trackLogin();
-var trackLogout = () => ravelin.trackLogout();
+var trackFingerprint = function() { ravelin.trackFingerprint(); };
+var track = function() { ravelin.track('RANDOM', { rand: ravelin.uuid() }); };
+var trackPage = function() { ravelin.trackPage(); };
+var trackLogin = function() { ravelin.trackLogin(); };
+var trackLogout = function() { ravelin.trackLogout(); };
 
 document.getElementById('setRSAKey').onclick = setRSAKey;
 document.getElementById('setPublicAPIKey').onclick = setPublicAPIKey;

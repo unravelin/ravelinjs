@@ -86,17 +86,17 @@
     <script src="../common.js"></script>
     <script src="./ravelin.js"></script>
     <script>
-        var setRSAKey = () => ravelinjs.setRSAKey(document.getElementById('rsa-key').value);
-        var setPublicAPIKey = () => ravelinjs.setPublicAPIKey(document.getElementById('pub-token').value);
-        var setCustomerId = () => ravelinjs.setCustomerId(document.getElementById('customer-id').value);
-        var setTempCustomerId = () => ravelinjs.setTempCustomerId(document.getElementById('temp-customer-id').value);
-        var setOrderId = () => ravelinjs.setOrderId(document.getElementById('order-id').value);
+        var setRSAKey = function() { ravelinjs.setRSAKey(document.getElementById('rsa-key').value); };
+        var setPublicAPIKey = function() { ravelinjs.setPublicAPIKey(document.getElementById('pub-token').value); };
+        var setCustomerId = function() {ravelinjs.setCustomerId(document.getElementById('customer-id').value); };
+        var setTempCustomerId = function() {ravelinjs.setTempCustomerId(document.getElementById('temp-customer-id').value); };
+        var setOrderId = function() { ravelinjs.setOrderId(document.getElementById('order-id').value); };
 
-        var trackFingerprint = () => ravelinjs.trackFingerprint();
-        var track = () => ravelinjs.track('RANDOM', { rand: ravelinjs.uuid() });
-        var trackPage = () => ravelinjs.trackPage();
-        var trackLogin = () => ravelinjs.trackLogin();
-        var trackLogout = () => ravelinjs.trackLogout();
+        var trackFingerprint = function() { ravelinjs.trackFingerprint(); };
+        var track = function() { ravelinjs.track('RANDOM', { rand: ravelinjs.uuid() }); };
+        var trackPage = function() { ravelinjs.trackPage(); };
+        var trackLogin = function() { ravelinjs.trackLogin(); };
+        var trackLogout = function() { ravelinjs.trackLogout(); };
 
         document.getElementById('setRSAKey').onclick = setRSAKey;
         document.getElementById('setPublicAPIKey').onclick = setPublicAPIKey;

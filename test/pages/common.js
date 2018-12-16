@@ -9,20 +9,23 @@
 }(typeof self !== 'undefined' ? self : this, function () {
 
   document.getElementById("useragent").appendChild(document.createTextNode(navigator.userAgent));
-  document.addEventListener("DOMContentLoaded", function() {
-    var cookies = document.cookie.split('; ');
-    for (var i = cookies.length-1; i >= 0; i--) {
-      var x = cookies[i].split('=');
-      var cookieName = x[0];
-      var cookieVal = x[1];
 
-      if (cookieName === 'ravelinDeviceId') {
-        document.getElementById("deviceid").appendChild(document.createTextNode(cookieVal));
-      } else if (cookieName === 'ravelinSessionId'){
-        document.getElementById("sessionid").appendChild(document.createTextNode(cookieVal));
-      }
-    };
-  });
+  if (document.addEventListener) {
+    document.addEventListener("DOMContentLoaded", function() {
+      var cookies = document.cookie.split('; ');
+      for (var i = cookies.length-1; i >= 0; i--) {
+        var x = cookies[i].split('=');
+        var cookieName = x[0];
+        var cookieVal = x[1];
+
+        if (cookieName === 'ravelinDeviceId') {
+          document.getElementById("deviceid").appendChild(document.createTextNode(cookieVal));
+        } else if (cookieName === 'ravelinSessionId'){
+          document.getElementById("sessionid").appendChild(document.createTextNode(cookieVal));
+        }
+      };
+    });
+  }
 
   return function output(outputId, action) {
     // Reset the output.
