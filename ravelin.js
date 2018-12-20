@@ -13,7 +13,7 @@
   var RAVELINJS_VERSION = '1.0.0';
   var FULL_VERSION_STRING = RAVELINJS_VERSION + '-ravelinjs';
 
-  // URLS
+  // URLs
   var API_URL = 'https://api.ravelin.com';
   var FINGERPRINT_URL = API_URL + '/v2/fingerprint?source=browser';
   var FINGERPRINT_ERROR_URL = API_URL + '/v2/fingerprinterror?source=browser';
@@ -87,6 +87,20 @@
     }
 
     this.rsaKey = new RSAKey();
+
+    // A client's public RSA key has a structure of either 'exponent|modulus' or 'keyIndex|exponent|modulus'.
+    // The index of a key is roughly equivalent to the version, with each new RSA key pair we
+    // generate for a client having an index of n+1. A single client can have multiple active RSA key pairs,
+    // and we can decomission a key pair as required while allowing all other active versions to operate.
+    //
+    // The first key we issue a client is of index 0. For keys of index 0, we omit this value from the key.
+    // e.g '10001|AA1C1C1EC...`
+    //
+    // For all keys beyond the first, the index is prefixed to key definition.
+    // e.g '1|10001|BB2D2D2FD...'
+    //
+    // For all keys (including those of index 0), the index must be returned from 'encrypt' calls;
+    // the value is needed server-side to determine which private key should be used for decryption.
     if (split.length === 2) {
       this.keyIndex = 0;
       this.rsaKey.setPublic(split[1], split[0]);
@@ -409,7 +423,7 @@
 
     this.cookieDomain = domain;
 
-    // Maintain the same device/sessionIds, but store them now under the new domain.
+    // Maintain the same device/sessionIds, but store them now under the new domain
     writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null, this.cookieDomain);
     writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
   }
@@ -536,7 +550,7 @@
   RavelinJS.prototype.uuid = function() {
     var d0, d1, d2, d3;
 
-    // try to use the newer, randomer crypto.getRandomValues if available.
+    // try to use the newer, randomer crypto.getRandomValues if available
     if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues && typeof Int32Array !== 'undefined') {
       var d = new Int32Array(4);
       window.crypto.getRandomValues(d);
@@ -651,13 +665,9 @@
       payload.orderId = orderId;
     }
 
-    if (sessionId) {
-      payload.sessionId = sessionId;
-    }
-
-    if (windowId) {
-      payload.windowId = windowId;
-    }
+    // We should always have a session and window id
+    payload.sessionId = sessionId;
+    payload.windowId = windowId;
 
     return payload;
   }

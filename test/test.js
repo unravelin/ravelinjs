@@ -13,12 +13,30 @@ describe('ravelinjs', function() {
     document = undefined;
     window = undefined;
 
-    // reinstantiate a fresh ravelinjs instance at the start of every test in every suite
+    // Reinstantiate a fresh ravelinjs instance at the start of every test in every suite
     delete require.cache[require.resolve('../ravelin')];
     ravelin = require('../ravelin');
   });
 
   describe('tracking IDs', function() {
+    beforeEach('mimic document.cookie behaviour', function() {
+      document = { cookie: '' };
+
+      // document.cookie is not simply a string, it has a custom setters that appends rather than overwrites.
+      //
+      // document.cookie = 'cookie1=a';
+      // document.cookie = 'cookie2=b';
+      // document.cookie == 'cookie1=a;cookie2=b'; // true
+
+      // We mirror this behaviour via sinon stubs and an innerCookies property to maintain state
+      document.innerCookies = '';
+
+      sinon.stub(document, 'cookie').get(() => document.innerCookies);
+      sinon.stub(document, 'cookie').set((s) => {
+        document.innerCookies = !document.innerCookies ? s : document.innerCookies += '; ' + s;
+      });
+    });
+
     it('should set ids on instantiation', function() {
       assertDeviceId(ravelin.getDeviceId());
       assertUuid(ravelin.getSessionId());
@@ -29,7 +47,7 @@ describe('ravelinjs', function() {
         cookie: 'notDeviceId=not; ravelinDeviceId=rjs-123-abc'
       };
 
-      // reset instance so we can instantiate from cookie
+      // Reset instance so we can instantiate from cookie
       delete require.cache[require.resolve('../ravelin')];
       ravelin = require('../ravelin');
 
@@ -37,19 +55,19 @@ describe('ravelinjs', function() {
     });
 
     it('should store deviceId in instance and write back to cookies if absent', function() {
-      // deviceId is set during instantiation, read the value our before we clear our cookies
+      // DeviceId is set during instantiation, read the value our before we clear our cookies
       var pre = ravelin.getDeviceId();
 
-      // clear our cookies
+      // Clear our cookies
       document = { cookie: '' };
 
-      // assert that the deviceId hasn't changed despite clearing cookies
+      // Assert that the deviceId hasn't changed despite clearing cookies
       var post = ravelin.getDeviceId();
       assertDeviceId(pre);
       assertDeviceId(post);
       expect(pre).to.equal(post);
 
-      // assert that setting our deviceId again updates our cookies
+      // Assert that setting our deviceId again updates our cookies
       ravelin.setDeviceId();
       expect(document.cookie).to.contain('ravelinDeviceId=rjs-');
     });
@@ -59,7 +77,7 @@ describe('ravelinjs', function() {
         cookie: 'notDeviceId=not; ravelinDeviceId=rjs-123-abc; ravelinSessionId=345-zyx'
       };
 
-      // reset instance so we can instantiate from cookie
+      // Reset instance so we can instantiate from cookie
       delete require.cache[require.resolve('../ravelin')];
       ravelin = require('../ravelin');
 
@@ -67,22 +85,43 @@ describe('ravelinjs', function() {
     });
 
     it('should store session in instance and write back to cookies if absent', function() {
-      // session is set during instantiation, read the value our before we clear our cookies
+      // Session is set during instantiation, read the value out before we clear our cookies
       var pre = ravelin.getSessionId();
 
-      // clear our cookies
+      // Clear our cookies
       document = { cookie: '' };
 
       var post = ravelin.getSessionId();
 
-      // assert that the sessionId hasn't changed despite clearing cookies
+      // Assert that the sessionId hasn't changed despite clearing cookies
       assertUuid(pre);
       assertUuid(post);
       expect(pre).to.equal(post);
 
-      // assert that setting our sessionId again updates our cookies
+      // Assert that setting our sessionId again updates our cookies
       ravelin.setSessionId();
       expect(document.cookie).to.contain('ravelinSessionId=');
+    });
+
+    it('should persist ids when setCookieDomain is called', function() {
+      var deviceId = ravelin.getDeviceId();
+      var sessionId = ravelin.getSessionId();
+
+      ravelin.setCookieDomain('newdomain.com');
+
+      // Assert that our instance still maintains the same device and session ids
+      expect(ravelin.getDeviceId()).to.equal(deviceId);
+      expect(ravelin.getSessionId()).to.equal(sessionId);
+
+      // Assert our pre-existing cookie value to be cleared
+      expect(document.cookie).to.contain('ravelinDeviceId=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT;');
+      expect(document.cookie).to.contain('ravelinSessionId=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT;');
+
+      // Assert the same ids we were originally assigned are now stored as cookies under the specified domain
+      assertCookies(document.cookie, [
+        new RegExp(`ravelinDeviceId=${deviceId};path=/;(expires=.{10,});domain=newdomain.com`),
+        new RegExp(`ravelinSessionId=${sessionId};path=/;domain=newdomain.com`)
+      ]);
     });
   });
 
@@ -223,7 +262,7 @@ describe('ravelinjs', function() {
       for (var testCase of testCases) {
         result = ravelin.encrypt(testCase);
 
-        expect(result).to.satisfy(validateJSONCipher);
+        expect(result).to.satisfy(assertJSONCipher);
       }
     });
 
@@ -236,19 +275,35 @@ describe('ravelinjs', function() {
           year: 2020,
       });
 
-      expect(result).to.satisfy(validateCipher);
+      expect(result).to.satisfy(assertCipher);
     });
 
     it('can parse key index and include in payload', function() {
       ravelin.setRSAKey(dummyRSAKeyWithIndex);
-      result = ravelin.encryptAsObject({
+      var result = ravelin.encryptAsObject({
         pan: '4111 1111 1111 1111',
         month: 10,
         year: 2020,
       });
 
       expect(result.keyIndex).to.eq(2);
-      expect(result).to.satisfy(validateCipher);
+      expect(result).to.satisfy(assertCipher);
+    });
+
+    it('returns unique ciphertexts each call to encrypt', function() {
+      ravelin.setRSAKey(dummyRSAKey);
+      var input = {
+        pan: '4111 1111 1111 1111',
+        month: 10,
+        year: 2020,
+      };
+
+      var outputA = ravelin.encryptAsObject(input);
+      var outputB = ravelin.encryptAsObject(input);
+
+      expect(outputA).to.satisfy(assertCipher);
+      expect(outputB).to.satisfy(assertCipher);
+      expect(outputA).not.to.equal(outputB);
     });
   });
 
@@ -272,7 +327,123 @@ describe('ravelinjs', function() {
       reqs = [];
     });
 
-    it('sends full tracking data to Ravelin for custom track event', () => {
+    it('track page event', () => {
+      ravelin.setCustomerId(123456789);
+      ravelin.trackPage({extra: 'stuff', things: 2});
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        customerId: '123456789',
+        eventType: 'track',
+        eventData: {
+          eventName: 'PAGE_LOADED',
+          properties: {
+            extra: 'stuff',
+            things: 2
+          },
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
+
+    it('track login event (pre-set customerId)', () => {
+      ravelin.setCustomerId(123456789);
+      ravelin.trackLogin(null, {extra: 'stuff', things: 2});
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        customerId: '123456789',
+        eventType: 'track',
+        eventData: {
+          eventName: 'LOGIN',
+          properties: {
+            extra: 'stuff',
+            things: 2
+          },
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
+
+    it('track login event (explicit customerId)', () => {
+      ravelin.trackLogin(12345);
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        customerId: '12345',
+        eventType: 'track',
+        eventData: {
+          eventName: 'LOGIN'
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
+
+    it('track login event (explicit customerId)', () => {
+      ravelin.setCustomerId('cust123');
+      ravelin.setTempCustomerId('tempcust123');
+      ravelin.setOrderId('order123');
+      ravelin.trackLogout();
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        customerId: 'cust123',
+        tempCustomerId: 'tempcust123',
+        orderId: 'order123',
+        eventType: 'track',
+        eventData: {
+          eventName: 'LOGOUT'
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+
+      // Assert that our logout track has also reset all internal ids for our instance
+      expect(ravelin.getCustomerId()).to.be.undefined;
+      expect(ravelin.getTempCustomerId()).to.be.undefined;
+      expect(ravelin.getOrderId()).to.be.undefined;
+    });
+
+    it('custom track event', () => {
       ravelin.setCustomerId(123456789);
       ravelin.setTempCustomerId('foobar');
       ravelin.setOrderId('fooOrder');
@@ -304,7 +475,79 @@ describe('ravelinjs', function() {
         }
       });
     });
+
+    it('custom track (paste) event', () => {
+      ravelin.track('paste', { pasteStuff: "yep" });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        eventType: 'paste',
+        eventData: {
+          eventName: 'paste',
+          properties: { pasteStuff: "yep" }
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
+
+    it('custom track (resize) event', () => {
+      ravelin.track('resize', { resizeStuff: "yep" });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        eventType: 'resize',
+        eventData: {
+          eventName: 'resize',
+          properties: { resizeStuff: "yep" }
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
+
+    it('custom track (unnamed) event', () => {
+      ravelin.track();
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.method).to.equal('POST');
+
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        eventType: 'track',
+        eventData: {
+          eventName: 'UNNAMED'
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
+    });
   });
+
 
   describe('track fingerprint', function() {
     let server;
@@ -352,11 +595,11 @@ describe('ravelinjs', function() {
 function assertDeviceId(deviceId) {
   expect(deviceId).to.have.lengthOf(40);
 
-    // We have special logic around 2 specific values in our ids, reference the uuid() func comments
+  // We have special logic around 2 specific values in our ids, reference the uuid() func comments
   expect(deviceId.charAt(18)).to.equal('4');
   expect(deviceId.charAt(23)).to.be.oneOf(['8', '9', 'a', 'b']);
 
-  // this one is taken :)
+  // This one is taken :)
   expect(deviceId).not.to.equal('rjs-83791e77-610c-4285-b196-da07b2cc4a18');
 }
 
@@ -367,7 +610,7 @@ function assertUuid(uuid) {
   expect(uuid.charAt(14)).to.equal('4');
   expect(uuid.charAt(19)).to.be.oneOf(['8', '9', 'a', 'b']);
 
-  // this one is taken :)
+  // This one is taken :)
   expect(uuid).not.to.equal('83791e77-610c-4285-b196-da07b2cc4a18');
 }
 
@@ -399,7 +642,26 @@ function assertTrackRequestBody(body, expected) {
   expect(body).to.eql(expected);
 }
 
-function validateCipher(c) {
+// assertCookies accepts the cookies, and an array of regexes and asserts that at least one
+// cookie matches that
+function assertCookies(cookies, expected) {
+  var splitCookies = cookies.split('; ');
+  var passed = [];
+
+  for (var i = 0; i < expected.length; i++) {
+    passed[i] = false; // default to fail
+
+    for (var ii = 0; ii < splitCookies.length; ii++) {
+      if (splitCookies[ii].match(expected[i])) {
+        passed[i] = true; // found a cookie that matched a regex in list provided
+      }
+    }
+
+    expect(passed[i], 'Did not find cookie that matches regex ' + expected[i]).to.be.true;
+  }
+}
+
+function assertCipher(c) {
   return c.methodType == 'paymentMethodCipher' &&
          c.cardCiphertext != '' && c.cardCiphertext.length > 10 &&
          c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
@@ -408,7 +670,6 @@ function validateCipher(c) {
          typeof(c.keyIndex) === 'number';
 }
 
-function validateJSONCipher(j) {
-  return validateCipher(JSON.parse(j));
+function assertJSONCipher(j) {
+  return assertCipher(JSON.parse(j));
 }
-
