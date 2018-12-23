@@ -28,6 +28,11 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
+  // Ensure that deviceId/sessionId are set upon lib instantiation
+  browser.getValue('#deviceId').should.not.be.empty;
+  browser.getValue('#sessionId').should.not.be.empty;
+  browser.getValue('#cookies').should.not.be.empty;
+
   // Do the form.
   browser.setValue('#name', 'John');
   browser.setValue('#number', '4111 1111 1111 1111');

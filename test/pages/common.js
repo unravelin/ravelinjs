@@ -12,6 +12,8 @@
 
   if (document.addEventListener) {
     document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("cookies").appendChild(document.createTextNode(document.cookie));
+
       var cookies = document.cookie.split('; ');
       for (var i = cookies.length-1; i >= 0; i--) {
         var x = cookies[i].split('=');

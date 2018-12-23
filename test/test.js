@@ -356,6 +356,32 @@ describe('ravelinjs', function() {
       });
     });
 
+    it('track page event (with callback, no error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackPage(null, function(err) {
+        callbackTrigged = true;
+        expect(err).to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('track page event (with callback with error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackPage(null, function(err) {
+        callbackTrigged = true;
+        expect(err).not.to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(401);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
     it('track login event (pre-set customerId)', () => {
       ravelin.setCustomerId(123456789);
       ravelin.trackLogin(null, {extra: 'stuff', things: 2});
@@ -409,7 +435,33 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('track login event (explicit customerId)', () => {
+    it('track login event (with callback, no error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackLogin(null, null, function(err) {
+        callbackTrigged = true;
+        expect(err).to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('track login event (with callback with error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackLogin(null, null, function(err) {
+        callbackTrigged = true;
+        expect(err).not.to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(401);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('track logout event', () => {
       ravelin.setCustomerId('cust123');
       ravelin.setTempCustomerId('tempcust123');
       ravelin.setOrderId('order123');
@@ -441,6 +493,32 @@ describe('ravelinjs', function() {
       expect(ravelin.getCustomerId()).to.be.undefined;
       expect(ravelin.getTempCustomerId()).to.be.undefined;
       expect(ravelin.getOrderId()).to.be.undefined;
+    });
+
+    it('track logout event (with callback, no error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackLogout(null, function(err) {
+        callbackTrigged = true;
+        expect(err).to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('track logout event (with callback with error)', () => {
+      var callbackTrigged = false;
+      ravelin.trackLogout(null, function(err) {
+        callbackTrigged = true;
+        expect(err).not.to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(401);
+
+      expect(callbackTrigged).to.be.true;
     });
 
     it('custom track event', () => {
@@ -546,8 +624,33 @@ describe('ravelinjs', function() {
         }
       });
     });
-  });
 
+    it('track custom event (with callback, no error)', () => {
+      var callbackTrigged = false;
+      ravelin.track(null, null, function(err) {
+        callbackTrigged = true;
+        expect(err).to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200);
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('track custom event (with callback with error)', () => {
+      var callbackTrigged = false;
+      ravelin.track(null, null, function(err) {
+        callbackTrigged = true;
+        expect(err).not.to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(401);
+
+      expect(callbackTrigged).to.be.true;
+    });
+  });
 
   describe('track fingerprint', function() {
     let server;
@@ -581,8 +684,6 @@ describe('ravelinjs', function() {
       const body = JSON.parse(trackReq.requestBody);
 
       assertDeviceId(body.deviceId);
-      assertUuid(body.sessionId);
-      assertUuid(body.windowId);
       expect(body.libVer).to.equal(expectedVersion);
       expect(body.fingerprintSource).to.equal('browser');
       expect(body.customerId).to.equal('123456789');
@@ -625,17 +726,13 @@ function assertTimestamp(mills) {
 function assertTrackRequestBody(body, expected) {
   assertDeviceId(body.eventMeta.ravelinDeviceId);
   assertUuid(body.eventMeta.ravelinSessionId);
-  assertUuid(body.eventMeta.ravelinWindowId);
   expect(body.eventMeta.ravelinDeviceId).not.to.equal(body.eventMeta.ravelinSessionId);
-  expect(body.eventMeta.ravelinDeviceId).not.to.equal(body.eventMeta.ravelinWindowId);
-  expect(body.eventMeta.ravelinWindowId).not.to.equal(body.eventMeta.ravelinSessionId);
 
   assertTimestamp(body.eventMeta.clientEventTimeMilliseconds);
 
   // Delete uuids and timestamps so we can assert on the rest of it.
   delete body.eventMeta.ravelinDeviceId;
   delete body.eventMeta.ravelinSessionId;
-  delete body.eventMeta.ravelinWindowId;
   delete body.eventMeta.clientEventTimeMilliseconds;
   delete body.eventMeta.clientEventTimeMicroseconds;
 

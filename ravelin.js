@@ -201,13 +201,19 @@
       throw new Error('[ravelinjs] Encryption validation: pan should have at least 13 digits');
     }
 
+    // We accept the month as an int or string, specified as one or two digits.
+    // We error if an invalid month is specified.
     if (typeof details.month == 'string') {
       details.month = parseInt(details.month, 10);
     }
+    // Months in Javascript start at zero ;)
     if (!(details.month > 0 && details.month < 13)) {
       throw new Error('[ravelinjs] Encryption validation: month should be in the range 1-12');
     }
 
+    // We accept year as an int or string, specified as either 2 digits (18) or 4 digits (2018).
+    // We standardise the input to be 4 digits, erroring if after standardisation the 4 digit
+    // year is not in the 21st century.
     if (typeof details.year === 'string') {
       details.year = parseInt(details.year, 10);
     }
@@ -233,9 +239,15 @@
     details.month += '';
     details.year += '';
 
+    // AES encrypt the card details, using a freshly generated session key and IV.
+    // This key and IV are returned from this call as well, all as base64.
     var aesResult = aesEncrypt(JSON.stringify(details));
+
+    // RSA encrypt the key and IV from the previous step, as a single pipe-delimited string.
+    // The GCM auth tag is appended to the ciphertext.
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
+    // This payload identically matches the structure we expect to be sent to the Ravelin API
     return {
       methodType: 'paymentMethodCipher',
       cardCiphertext: aesResult.ciphertextB64,
@@ -251,20 +263,24 @@
    * the checkout page of your payment flow.
    *
    * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
+   * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
    * // if setCustomerId was already called
    * ravelinjs.trackFingerprint();
    * // else, you must inform Ravelin of the customerId explicitly
    * ravelinjs.trackFingerprint('customer123');
    */
-  RavelinJS.prototype.trackFingerprint = function(custId) {
+  RavelinJS.prototype.trackFingerprint = function(custId, cb) {
     if (custId) {
       this.setCustomerId(custId);
     }
 
-    var payload = basicPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId, this.sessionId, this.windowId);
+    // Construct the outer most payload for a fingerprint request, containing our entity Ids
+    var payload = outerPayload(this.customerId, this.tempCustomerId, this.orderId, this.deviceId);
     payload.fingerprintSource = 'browser';
 
+    // browserData represents our inner payload, containing the fingerprint specific information.
+    // The sessionId is included on this inner obj, rather than on the outermost level.
     var browserData = { sessionId: this.sessionId };
 
     if (typeof location !== 'undefined') {
@@ -284,8 +300,8 @@
 
           var val = components[i].value;
 
-          // Some keys have changed types between Fingerprint2 version 1.8 and 2.0
-          // Convert them back to their 1.8 version (which is what our backend expects)
+          // Some keys have changed types between Fingerprint2 version 1.8 and 2.0.
+          // We need to convert them back to their 1.8 versions (which is what our backend expects).
           // Start with fields that went from int => bool. Convert them back to ints.
           if (['sessionStorage', 'localStorage', 'indexedDb', 'openDatabase'].indexOf(sanitizedKey) !== -1) {
             if (val === 'error') {
@@ -296,7 +312,7 @@
           }
 
           // Screen resolution fields have changed to specifically include the word 'screen' in 2.0.
-          // Let's change them back to their 1.8 values.
+          // Let's change them back to their 1.8 values (which is what our backend expects).
           if (sanitizedKey === 'screenResolution') {
             sanitizedKey = 'resolution';
           } else if (sanitizedKey === 'availableScreenResolution') {
@@ -313,13 +329,14 @@
 
         payload.browser = browserData;
 
-        sendToRavelin(apiKey, FINGERPRINT_URL, payload);
+        sendToRavelin(apiKey, FINGERPRINT_URL, payload, cb);
       });
     } catch (e) {
       try {
-        sendErrorToRavelin(apiKey, e, payload);
+        sendErrorToRavelin(apiKey, e, payload, cb);
       } catch (e) {
-        // Give up
+        // Give up trying to send error details to Ravelin
+        handleCallback(cb, e);
       }
     }
   }
@@ -331,6 +348,7 @@
    *
    * @param {String} eventName A description of what has occurred.
    * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
    * // track when a customer uses search functionality
    * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
@@ -338,20 +356,18 @@
    * // track without any additional metadata
    * ravelinjs.track('CUSTOMER_SEARCHED');
    */
-  RavelinJS.prototype.track = function(eventName, eventProperties) {
-    var payload = basicPayload(this.customerId,
+  RavelinJS.prototype.track = function(eventName, eventProperties, cb) {
+    var payload = outerPayload(this.customerId,
                                this.tempCustomerId,
-                               this.orderId,
-                               this.deviceId,
-                               this.sessionId,
-                               this.windowId);
+                               this.orderId);
 
-    var trackingPayload = trackPayload(payload, eventName, eventProperties);
+    var trackingPayload = trackPayload(payload, this.deviceId, this.sessionId, eventName, eventProperties);
 
     try {
-      sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload);
+      sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload, cb);
     } catch (e) {
       // Ignore errors sending clickstream data.
+      handleCallback(cb, e);
     }
   }
 
@@ -359,6 +375,7 @@
    * trackPage logs the page view. Call this from as many pages as possible.
    *
    * @param {Object} meta Any additional metadata you wish to use to describe the page.
+   * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
    * // Call from landing page after page load
    * ravelinjs.trackPage(); // www.ravelintest.com
@@ -373,23 +390,24 @@
    * ..
    * ravelinjs.trackPage(); // www.ravelintest.com/page-2
    */
-  RavelinJS.prototype.trackPage = function(eventProperties) {
-    this.track(PAGE_EVENT_NAME, eventProperties);
+  RavelinJS.prototype.trackPage = function(eventProperties, cb) {
+    this.track(PAGE_EVENT_NAME, eventProperties, cb);
   }
 
   /**
    * trackLogin informs Ravelin of customers logging into your site.
    *
    * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
    * ravelinjs.trackLogin('cust123', {...}); // Called immediately after your login logic.
    */
-  RavelinJS.prototype.trackLogin = function(customerId, eventProperties) {
+  RavelinJS.prototype.trackLogin = function(customerId, eventProperties, cb) {
     if (customerId) {
       this.setCustomerId(customerId);
     }
 
-    this.track(LOGIN_EVENT_NAME, eventProperties);
+    this.track(LOGIN_EVENT_NAME, eventProperties, cb);
   }
 
   /**
@@ -397,11 +415,12 @@
    * Call this function immediately before your own logout logic is executed.
    *
    * @param {Object} meta Any additional metadata you wish to use to describe the event.
+   * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
    * ravelinjs.trackLogout(); // Called before you begin your logout process
    */
-  RavelinJS.prototype.trackLogout = function(eventProperties) {
-    this.track(LOGOUT_EVENT_NAME, eventProperties);
+  RavelinJS.prototype.trackLogout = function(eventProperties, cb) {
+    this.track(LOGOUT_EVENT_NAME, eventProperties, cb);
     this.customerId = undefined;
     this.tempCustomerId = undefined;
     this.orderId = undefined;
@@ -647,11 +666,11 @@
     return browser;
   }
 
-  function basicPayload(custId, tempCustId, orderId, deviceId, sessionId, windowId) {
-    var payload = {
-      libVer: FULL_VERSION_STRING,
-      deviceId: deviceId
-    };
+  // outerPayload represents the outermost levels for our API payloads, always containing libVer,
+  // and customer/order entity ids. The deviceId may be included at this level as well,
+  // (as is the case for fingerprint requests), or it may be included at a lower level (clickstream events).
+  function outerPayload(custId, tempCustId, orderId, deviceId) {
+    var payload = { libVer: FULL_VERSION_STRING };
 
     if (custId) {
       payload.customerId = custId;
@@ -665,14 +684,16 @@
       payload.orderId = orderId;
     }
 
-    // We should always have a session and window id
-    payload.sessionId = sessionId;
-    payload.windowId = windowId;
+    if (deviceId) {
+      payload.deviceId = deviceId;
+    }
 
     return payload;
   }
 
-  function trackPayload(payload, eventName, eventProperties) {
+  function trackPayload(outerPayload, deviceId, sessionId, eventName, eventProperties) {
+    // We have some predetermined event types that correspond to known event names, match them up first,
+    // falling back to simply 'track' if this has a custom (aka unknown) event name.
     var eventType = '';
     if (eventName === RESIZE_EVENT_TYPE) {
       eventType = RESIZE_EVENT_TYPE;
@@ -682,57 +703,51 @@
       eventType = GENERIC_TRACK_EVENT_TYPE;
     }
 
+    // If the client fails to specify an eventName when calling the custom track function, use 'UNNAMED'
     if (!eventName || typeof eventName !== 'string') {
       eventName = UNKNOWN_EVENT_NAME;
     }
 
+    // If the client fails to include custom event properties for this event, we still send a null value
     if (eventProperties && typeof eventProperties !== 'object') {
       eventProperties = null;
     }
 
+    // We include the timestamp of when we constructed this event, incl microsecond timings rounded to the
+    // nearest 5us for browsers which support microsecond timestamps.
     var now = Date.now ? Date.now() : +new Date();
-
-    // newer browsers support microsecond timings rounded to the nearest 5us.
     var nowMicro = 0;
     if (typeof performance !== 'undefined' && performance.now && performance.timing) {
       nowMicro = (performance.timing.navigationStart + performance.now())*1000 || 0;
     }
 
-    payload.eventType = eventType;
-    payload.eventData = {
+    // Construct our full event payload, appending tracking information
+    outerPayload.eventType = eventType;
+    outerPayload.eventData = {
       eventName: eventName,
       properties: eventProperties
     };
-    payload.eventMeta = {
+    outerPayload.eventMeta = {
       trackingSource: 'browser',
-      ravelinDeviceId: payload.deviceId,
-      ravelinSessionId: payload.sessionId,
-      ravelinWindowId: payload.windowId,
+      ravelinDeviceId: deviceId,
+      ravelinSessionId: sessionId,
       clientEventTimeMilliseconds: now,
       clientEventTimeMicroseconds: nowMicro
     };
 
     // Enrich eventMeta with additional data from browser
     if (typeof window !== 'undefined' && window.location) {
-      payload.eventMeta.url = window.location.href;
+      outerPayload.eventMeta.url = window.location.href;
     }
 
     if (typeof document !== 'undefined') {
-      payload.eventMeta.canonicalUrl = getCanonicalUrl();
-      payload.eventMeta.pageTitle = document.title;
-      payload.eventMeta.referrer = document.referrer || undefined;
+      outerPayload.eventMeta.canonicalUrl = getCanonicalUrl();
+      outerPayload.eventMeta.pageTitle = document.title;
+      outerPayload.eventMeta.referrer = document.referrer || undefined;
     }
 
-    // Track payloads have the uuids as properties on the eventMeta obj, not the top level
-    delete payload.deviceId;
-    delete payload.sessionId;
-    delete payload.windowId;
-
-    var trackPayload = {
-      events: [payload]
-    }
-
-    return trackPayload;
+    // We wrap our payload in another obj, sending our single event as the first element of an array of events
+    return { events: [outerPayload] };
   }
 
   function sensitiveElement(elem) {
@@ -742,7 +757,6 @@
       }
 
       var noTrackAttr = (elem.dataset && elem.dataset.rvnSensitive) || elem.getAttribute('data-rvn-sensitive');
-
       if (noTrackAttr !== undefined && noTrackAttr !== null && noTrackAttr !== 'false') {
         return true;
       }
@@ -827,9 +841,9 @@
       (domain ? ';domain=' + domain : '');
   }
 
-  function sendToRavelin(apiKey, url, payload) {
+  function sendToRavelin(apiKey, url, payload, cb) {
     if (!apiKey) {
-      throw new TypeError('[ravelinjs] "apiKey" is null or undefined');
+      throw new Error('[ravelinjs] "apiKey" is null or undefined');
     }
 
     if (typeof payload === 'object') {
@@ -843,6 +857,17 @@
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
       xhr.setRequestHeader('Authorization', 'token ' + apiKey);
       xhr.send(payload);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300 && cb) {
+            handleCallback(cb);
+          } else if (xhr.status > 400 && cb) {
+            handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to ' + url));
+          }
+        }
+      };
+    } else {
+      handleCallback(cb);
     }
   }
 
@@ -855,6 +880,21 @@
     }
 
     sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload);
+  }
+
+  // handleCallback ensures we don't try and call unspecified callbacks, and that we only pass through
+  // instances of error values (if they are present). We don't want to pass other alues through because it
+  // limits our ability to change the structure of those values in future versions.
+  function handleCallback(cb, err) {
+    if (!cb || typeof cb !== 'function') {
+      return;
+    }
+
+    if (err && err instanceof Error) {
+      cb(err);
+    } else {
+      cb();
+    }
   }
 
   // ========================================================================================================
