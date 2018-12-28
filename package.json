@@ -1,30 +1,31 @@
 {
   "name": "ravelinjs",
   "version": "1.0.0",
-  "description": "Ravelin Client-side Card Encryption Library.",
+  "description": "Ravelin's Javascript Library.",
   "main": "ravelin.js",
   "scripts": {
     "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",
     "minify-latest": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js && cp ravelin.min.js ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
     "test": "mocha -C test/test.js",
-    "cover": "nyc --reporter=html mocha -C test/test.js",
+    "test-cover": "nyc --reporter=html mocha -C test/test.js",
     "test-debug": "mocha --inspect-brk test/test.js",
     "test-appium": "npm run minify && wdio ./test/appium.conf.js",
     "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
     "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
-    "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
+    "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'",
+    "go-sri": "sri -out=sri.json -hash=all ravelin.js ravelin.min.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unravelin/ravelinjs.git"
   },
-  "author": "Paul Scott <paul.scott@ravelin.com>",
-  "license": "ISC",
+  "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
+  "license": "TBD",
   "bugs": {
     "url": "https://github.com/unravelin/ravelinjs/issues"
   },
-  "homepage": "https://github.com/unravelin/ravelinjs#readme",
+  "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
     "appium": "^1.8.0",
     "appium-doctor": "^1.4.3",

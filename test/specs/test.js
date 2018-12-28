@@ -28,12 +28,20 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
-  // Ensure that deviceId/sessionId are set upon lib instantiation
-  browser.getText('#deviceid').should.not.be.empty;
-  browser.getText('#sessionid').should.not.be.empty;
-  browser.getText('#cookies').should.not.be.empty;
+  checkIdsAreSet(browser);
+  checkCardEncryptionWorks(browser);
+  checkFingerprintingDoesNotError(browser);
+}
 
-  // Do the form.
+function checkIdsAreSet(browser) {
+  // Ensure that deviceId/sessionId are set upon lib instantiation
+  browser.getText('#deviceId').should.not.be.empty;
+  browser.getText('#sessionId').should.not.be.empty;
+  browser.getText('#cookies').should.not.be.empty;
+}
+
+function checkCardEncryptionWorks(browser) {
+  // Fill in the card encryption form.
   browser.setValue('#name', 'John');
   browser.setValue('#number', '4111 1111 1111 1111');
   browser.selectByValue('#month', '4')
@@ -41,11 +49,19 @@ function suite(browser) {
   browser.click('#encrypt');
 
   // Check there was no error.
-  var error = browser.getText('#encryption-output-error');
+  var error = browser.getText('#encryptionOutputError');
   if (error) throw new Error(error);
 
   // Check the result looked valid.
-  browser.getText('#encryption-output').should.not.be.empty;
+  browser.getText('#encryptionOutput').should.not.be.empty;
+}
+
+function checkFingerprintingDoesNotError(browser) {
+  browser.click('#trackFingerprint');
+
+  // Check there was no error.
+  var error = browser.getText('#fingerprintError');
+  if (error) throw new Error(error);
 }
 
 function usuallyIt(itDoes) {

@@ -317,7 +317,7 @@ describe('ravelinjs', function() {
       global.XMLHttpRequest = sinon.useFakeXMLHttpRequest();
       global.XMLHttpRequest.onCreate = req => {
         req.withCredentials = true;
-        reqs.push(req)
+        reqs.push(req);
       };
       ravelin.setPublicAPIKey('testAPIKey');
     });
@@ -662,7 +662,7 @@ describe('ravelinjs', function() {
       global.XMLHttpRequest = sinon.useFakeXMLHttpRequest();
       global.XMLHttpRequest.onCreate = req => {
         req.withCredentials = true;
-        reqs.push(req)
+        reqs.push(req);
       };
       ravelin.setPublicAPIKey('testAPIKey');
     });
@@ -689,8 +689,51 @@ describe('ravelinjs', function() {
       expect(body.customerId).to.equal('123456789');
       expect(body.error).to.contain('ReferenceError: Fingerprint2 is not defined\n');
     });
-  });
 
+    it('fails gracefully and sends error to ravelin (with callback)', () => {
+      var callbackTrigged = false;
+      ravelin.trackFingerprint(123456789, function(err) {
+        callbackTrigged = true;
+        expect(err).to.be.undefined;
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('errors on unset api token', () => {
+      ravelin.setPublicAPIKey(''); // unset API key
+
+      var callbackTrigged = false;
+      ravelin.trackFingerprint(123456789, function(err) {
+        callbackTrigged = true;
+        expect(err).not.to.be.undefined;
+      });
+
+      expect(reqs[0]).to.be.undefined; // expect no API calls to have been made
+      expect(callbackTrigged).to.be.true;
+    });
+
+    it('does not error on non-function callback', () => {
+      expect(() => ravelin.trackFingerprint('cust123', 'not a callback function')).not.to.throw();
+    });
+
+    it('does not attempt request if withCredentials falsey', () => {
+      // Override onCreate to set withCredentials to false
+      global.XMLHttpRequest.onCreate = req => {
+        req.withCredentials = false;
+        reqs.push(req);
+      };
+
+      ravelin.trackFingerprint(123456789, function(err) {
+        assertError(err, 'xhr "withCredentials" must be set to true');
+      });
+
+      expect(reqs[0].readyState).to.equal(0); // expect call not to have been submitted
+    });
+  });
 });
 
 function assertDeviceId(deviceId) {
@@ -769,4 +812,9 @@ function assertCipher(c) {
 
 function assertJSONCipher(j) {
   return assertCipher(JSON.parse(j));
+}
+
+function assertError(err, msg) {
+  expect(err.message.substring(0, 12)).to.equal('[ravelinjs] '); // all errors should start with [ravelinjs]
+  expect(err.message).to.include(msg); // error should contain a specific message
 }

@@ -3,7 +3,7 @@ import output from '../common.js';
 
 document.getElementById('encrypt').onclick = function() {
   var month = document.getElementById('month');
-  output('encryption-output', function() {
+  output('encryptionOutput', function() {
     return ravelin.encrypt({
       nameOnCard: document.getElementById('name').value,
       pan: document.getElementById('number').value,
@@ -14,13 +14,18 @@ document.getElementById('encrypt').onclick = function() {
   return false;
 };
 
-var setRSAKey = function() { ravelin.setRSAKey(document.getElementById('rsa-key').value); };
-var setPublicAPIKey = function() { ravelin.setPublicAPIKey(document.getElementById('pub-token').value); };
-var setCustomerId = function() { ravelin.setCustomerId(document.getElementById('customer-id').value); };
-var setTempCustomerId = function() { ravelin.setTempCustomerId(document.getElementById('temp-customer-id').value); };
-var setOrderId = function() { ravelin.setOrderId(document.getElementById('order-id').value); };
+var setRSAKey = function() { ravelin.setRSAKey(document.getElementById('rsaKey').value); };
+var setPublicAPIKey = function() { ravelin.setPublicAPIKey(document.getElementById('pubToken').value); };
+var setCustomerId = function() { ravelin.setCustomerId(document.getElementById('customerId').value); };
+var setTempCustomerId = function() { ravelin.setTempCustomerId(document.getElementById('tempCustomerId').value); };
+var setOrderId = function() { ravelin.setOrderId(document.getElementById('orderId').value); };
 
-var trackFingerprint = function() { ravelin.trackFingerprint(); };
+var trackFingerprint = function() {
+  ravelinjs.trackFingerprint(null, function(err) {
+      document.getElementById('fingerprintError').innerText = err ? err.message : '';
+  });
+};
+
 var track = function() { ravelin.track('RANDOM', { rand: ravelin.uuid() }); };
 var trackPage = function() { ravelin.trackPage(); };
 var trackLogin = function() { ravelin.trackLogin(); };

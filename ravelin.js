@@ -239,12 +239,12 @@
     details.month += '';
     details.year += '';
 
-    // AES encrypt the card details, using a freshly generated session key and IV.
-    // This key and IV are returned from this call as well, all as base64.
+    // AES encrypt the card details, using a uniquely generated session key and IV.
+    // The GCM auth tag is appended to the ciphertext. This key and IV are returned from this call as well
+    // as the card detail ciphertext, all as base64.
     var aesResult = aesEncrypt(JSON.stringify(details));
 
-    // RSA encrypt the key and IV from the previous step, as a single pipe-delimited string.
-    // The GCM auth tag is appended to the ciphertext.
+    // RSA encrypt the key and IV from the previous step, as a single, pipe-delimited string.
     var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
     // This payload identically matches the structure we expect to be sent to the Ravelin API
@@ -341,7 +341,7 @@
     }
   }
 
-   /**
+  /**
    * track invokes the Ravelin client-side tracking script. You must have set
    * the public API key in advance of calling track, so that it can submit the
    * data directly to Ravelin. Its execution is asynchronous.
@@ -357,16 +357,13 @@
    * ravelinjs.track('CUSTOMER_SEARCHED');
    */
   RavelinJS.prototype.track = function(eventName, eventProperties, cb) {
-    var payload = outerPayload(this.customerId,
-                               this.tempCustomerId,
-                               this.orderId);
-
+    var payload = outerPayload(this.customerId, this.tempCustomerId, this.orderId);
     var trackingPayload = trackPayload(payload, this.deviceId, this.sessionId, eventName, eventProperties);
 
     try {
       sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload, cb);
     } catch (e) {
-      // Ignore errors sending clickstream data.
+      // Don't throw any errors produced when attempting to send clickstream data.
       handleCallback(cb, e);
     }
   }
@@ -550,7 +547,7 @@
     return this.orderId;
   };
 
-    /**
+  /**
    * Returns the temporary customerId currently assigned to ravelinjs
    *
    * @example
@@ -841,6 +838,9 @@
       (domain ? ';domain=' + domain : '');
   }
 
+  // TODO: There is an issue here if the client's callback function errors, it will be caught by our try..catch
+  // block that we wrap all sendToRavelin calls inside of. These try...catch blocks sometimes also call cb again
+  // so we can end up calling our client's callbacks twice, which is not cool! Need to think of a smart way to handle this.
   function sendToRavelin(apiKey, url, payload, cb) {
     if (!apiKey) {
       throw new Error('[ravelinjs] "apiKey" is null or undefined');
@@ -852,7 +852,9 @@
 
     var xhr = new XMLHttpRequest();
 
-    if ('withCredentials' in xhr) {
+    // We must have permission to submit cross-origin requests with authorization headers
+    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
+    if (xhr.withCredentials) {
       xhr.open('POST', url);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
       xhr.setRequestHeader('Authorization', 'token ' + apiKey);
@@ -866,12 +868,17 @@
           }
         }
       };
-    } else {
-      handleCallback(cb);
+
+      return;
     }
+
+    // If withCredentials is falsey, we don't attempt to submit any requests, and instead return an error
+    // back to any provided callbacks to explain the issue.
+    var err = new Error('[ravelinjs] Unable to submit request to Ravelin. xhr "withCredentials" must be set to true.');
+    handleCallback(cb, err);
   }
 
-  function sendErrorToRavelin(apiKey, err, payload) {
+  function sendErrorToRavelin(apiKey, err, payload, cb) {
     // Capture the stack trace if it is supported in the browser.
     if (err.stack) {
       payload.error = err.stack.toString();
@@ -879,7 +886,7 @@
       payload.error = err.toString();
     }
 
-    sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload);
+    sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload, cb);
   }
 
   // handleCallback ensures we don't try and call unspecified callbacks, and that we only pass through
@@ -901,7 +908,6 @@
   //
   // MurmurHash3 related functions
   //
-
   // We've copied these out from fingerprint2 so we can use them inside ravelinjs after the fingerprint has
   // completed to compress down the size of the canvas/webgl/fontlists we send to the server
 
@@ -3208,6 +3214,8 @@
       }
     }
 
+    // TODO: discuss with product and detection whether or not the pasted values that are worth storing
+    // TODO: discuss legal/GDPR impact of tracking pasted values by default
     // Don't track pastes into password fields, or if the element has a 'no-track' attribute.
     if (!sensitiveElement(e.target)) {
       var clipboardData = e.clipboardData || window.clipboardData;
