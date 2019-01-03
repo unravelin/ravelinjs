@@ -16,6 +16,10 @@ exports.config = Object.assign(base, {
     user: user,
     key: key,
 
+    jasmineNodeOpts: {
+      defaultTimeoutInterval: 60000
+    },
+
     // Picked up by cbt_tunnels.
     baseUrl: 'http://local',
 

@@ -28,8 +28,6 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
-  browser.setTimeout({ 'script': 60000 }); // Double the default timeout, we do quite a lot in these tests
-
   checkIdsAreSet(browser);
   checkCardEncryptionWorks(browser);
   // checkFingerprintingDoesNotError(browser);
