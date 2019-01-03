@@ -1,5 +1,5 @@
 // Universal Module Definition: https://github.com/umdjs/umd/blob/36fd1135ba44e758c7371e7af72295acdebce010/templates/returnExports.js#L40-L60
-(function (root, factory) {
+(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define([], factory);
   } else if (typeof module === 'object' && module.exports) {
@@ -7,7 +7,7 @@
   } else {
     root.ravelinjs = factory();
   }
-}(typeof self !== 'undefined' ? self : this, function () {
+}(typeof self !== 'undefined' ? self : this, function() {
 
   // Versioning
   var RAVELINJS_VERSION = '1.0.0';
@@ -40,13 +40,13 @@
 
   /**
    * Default constructor for a ravelinjs instance. Not exported. Instead, it is invoked during script loading
-   * and the resulting instance is exported. Initialises uuids and lookup-table.
+   * and the resulting instance is exported. Initialises uuids and lookup table.
    */
   function RavelinJS() {
     // Seed our UUID lookup table
     this.lut = [];
 
-    for (var i=0; i<256; i++) {
+    for (var i = 0; i < 256; i++) {
       this.lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
     }
 
@@ -360,12 +360,7 @@
     var payload = outerPayload(this.customerId, this.tempCustomerId, this.orderId);
     var trackingPayload = trackPayload(payload, this.deviceId, this.sessionId, eventName, eventProperties);
 
-    try {
-      sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload, cb);
-    } catch (e) {
-      // Don't throw any errors produced when attempting to send clickstream data.
-      handleCallback(cb, e);
-    }
+    sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload, cb);
   }
 
   /**
@@ -394,6 +389,7 @@
   /**
    * trackLogin informs Ravelin of customers logging into your site.
    *
+   * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
    * @param {Object} meta Any additional metadata you wish to use to describe the event.
    * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
    * @example
@@ -838,12 +834,14 @@
       (domain ? ';domain=' + domain : '');
   }
 
-  // TODO: There is an issue here if the client's callback function errors, it will be caught by our try..catch
-  // block that we wrap all sendToRavelin calls inside of. These try...catch blocks sometimes also call cb again
-  // so we can end up calling our client's callbacks twice, which is not cool! Need to think of a smart way to handle this.
   function sendToRavelin(apiKey, url, payload, cb) {
     if (!apiKey) {
-      throw new Error('[ravelinjs] "apiKey" is null or undefined');
+      var err = new Error('[ravelinjs] "apiKey" is null or undefined');
+      if (!cb) {
+        throw err;
+      } else {
+        handleCallback(cb, err);
+      }
     }
 
     if (typeof payload === 'object') {
@@ -852,9 +850,7 @@
 
     var xhr = new XMLHttpRequest();
 
-    // We must have permission to submit cross-origin requests with authorization headers
-    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
-    if (xhr.withCredentials) {
+    if ('withCredentials' in xhr) {
       xhr.open('POST', url);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
       xhr.setRequestHeader('Authorization', 'token ' + apiKey);
@@ -864,29 +860,22 @@
           if (xhr.status >= 200 && xhr.status < 300 && cb) {
             handleCallback(cb);
           } else if (xhr.status > 400 && cb) {
-            handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to ' + url));
+            handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to ' + url + '. ' + xhr.responseText));
           }
         }
       };
-
-      return;
-    }
-
-    // If withCredentials is falsey, we don't attempt to submit any requests, and instead return an error
-    // back to any provided callbacks to explain the issue.
-    var err = new Error('[ravelinjs] Unable to submit request to Ravelin. xhr "withCredentials" must be set to true.');
-    handleCallback(cb, err);
+    };
   }
 
   function sendErrorToRavelin(apiKey, err, payload, cb) {
-    // Capture the stack trace if it is supported in the browser.
+    // Capture the stack trace if it is supported in the browser
     if (err.stack) {
       payload.error = err.stack.toString();
     } else {
       payload.error = err.toString();
     }
 
-    sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload, cb);
+    sendToRavelin(apiKey, FINGERPRINT_ERROR_URL, payload, function() { handleCallback(cb, err); });
   }
 
   // handleCallback ensures we don't try and call unspecified callbacks, and that we only pass through

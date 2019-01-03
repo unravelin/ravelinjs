@@ -327,9 +327,9 @@ describe('ravelinjs', function() {
       reqs = [];
     });
 
-    it('track page event', () => {
+    it('track page event', (done) => {
       ravelin.setCustomerId(123456789);
-      ravelin.trackPage({extra: 'stuff', things: 2});
+      ravelin.trackPage({extra: 'stuff', things: 2}, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -356,11 +356,12 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('track page event (with callback, no error)', () => {
+    it('track page event (with callback, no error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackPage(null, function(err) {
         callbackTrigged = true;
         expect(err).to.be.undefined;
+        done();
       });
 
       const trackReq = reqs[0];
@@ -369,11 +370,12 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track page event (with callback with error)', () => {
+    it('track page event (with callback with error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackPage(null, function(err) {
         callbackTrigged = true;
-        expect(err).not.to.be.undefined;
+        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        done();
       });
 
       const trackReq = reqs[0];
@@ -382,9 +384,9 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track login event (pre-set customerId)', () => {
+    it('track login event (pre-set customerId)', (done) => {
       ravelin.setCustomerId(123456789);
-      ravelin.trackLogin(null, {extra: 'stuff', things: 2});
+      ravelin.trackLogin(null, {extra: 'stuff', things: 2}, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -411,8 +413,8 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('track login event (explicit customerId)', () => {
-      ravelin.trackLogin(12345);
+    it('track login event (explicit customerId)', (done) => {
+      ravelin.trackLogin(12345, null, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -435,11 +437,12 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('track login event (with callback, no error)', () => {
+    it('track login event (with callback, no error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackLogin(null, null, function(err) {
         callbackTrigged = true;
         expect(err).to.be.undefined;
+        done();
       });
 
       const trackReq = reqs[0];
@@ -448,11 +451,12 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track login event (with callback with error)', () => {
+    it('track login event (with callback with error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackLogin(null, null, function(err) {
         callbackTrigged = true;
-        expect(err).not.to.be.undefined;
+        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        done();
       });
 
       const trackReq = reqs[0];
@@ -461,11 +465,11 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track logout event', () => {
+    it('track logout event', (done) => {
       ravelin.setCustomerId('cust123');
       ravelin.setTempCustomerId('tempcust123');
       ravelin.setOrderId('order123');
-      ravelin.trackLogout();
+      ravelin.trackLogout(null, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -495,11 +499,12 @@ describe('ravelinjs', function() {
       expect(ravelin.getOrderId()).to.be.undefined;
     });
 
-    it('track logout event (with callback, no error)', () => {
+    it('track logout event (with callback, no error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackLogout(null, function(err) {
         callbackTrigged = true;
         expect(err).to.be.undefined;
+        done();
       });
 
       const trackReq = reqs[0];
@@ -508,11 +513,12 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track logout event (with callback with error)', () => {
+    it('track logout event (with callback with error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackLogout(null, function(err) {
         callbackTrigged = true;
-        expect(err).not.to.be.undefined;
+        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        done();
       });
 
       const trackReq = reqs[0];
@@ -521,11 +527,11 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('custom track event', () => {
+    it('custom track event', (done) => {
       ravelin.setCustomerId(123456789);
       ravelin.setTempCustomerId('foobar');
       ravelin.setOrderId('fooOrder');
-      ravelin.track('fooEvent', {extra: 'stuff', things: 2});
+      ravelin.track('fooEvent', {extra: 'stuff', things: 2}, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -554,8 +560,8 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('custom track (paste) event', () => {
-      ravelin.track('paste', { pasteStuff: "yep" });
+    it('custom track (paste) event', (done) => {
+      ravelin.track('paste', { pasteStuff: "yep" }, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -578,8 +584,8 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('custom track (resize) event', () => {
-      ravelin.track('resize', { resizeStuff: "yep" });
+    it('custom track (resize) event', (done) => {
+      ravelin.track('resize', { resizeStuff: "yep" }, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -602,8 +608,8 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('custom track (unnamed) event', () => {
-      ravelin.track();
+    it('custom track (unnamed) event', (done) => {
+      ravelin.track(null, null, done);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
@@ -625,11 +631,12 @@ describe('ravelinjs', function() {
       });
     });
 
-    it('track custom event (with callback, no error)', () => {
+    it('track custom event (with callback, no error)', (done) => {
       var callbackTrigged = false;
       ravelin.track(null, null, function(err) {
         callbackTrigged = true;
         expect(err).to.be.undefined;
+        done();
       });
 
       const trackReq = reqs[0];
@@ -638,17 +645,51 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track custom event (with callback with error)', () => {
+    it('track custom event (with callback with error)', (done) => {
       var callbackTrigged = false;
       ravelin.track(null, null, function(err) {
         callbackTrigged = true;
-        expect(err).not.to.be.undefined;
+        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        done();
       });
 
       const trackReq = reqs[0];
       trackReq.respond(401);
 
       expect(callbackTrigged).to.be.true;
+    });
+
+    it('track event passes error to callback if no API key set and callback provided', (done) => {
+      ravelin.setPublicAPIKey(undefined);
+      ravelin.track(null, null, function(err) {
+        assertError(err, '[ravelinjs] "apiKey" is null or undefined');
+        done();
+      });
+    });
+
+    it('track event throws error to callback if no API key set and no callback provided', () => {
+      ravelin.setPublicAPIKey(undefined);
+      expect(() => ravelin.track(null, null)).to.throw('[ravelinjs] "apiKey" is null or undefined');
+    });
+
+    it('track event sends null properties if non-object data provided', (done) => {
+      ravelin.track(null, 'not a valid event property', done);
+
+      const trackReq = reqs[0];
+      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+      const body = JSON.parse(trackReq.requestBody).events[0];
+
+      assertTrackRequestBody(body, {
+        libVer: expectedVersion,
+        eventType: 'track',
+        eventData: {
+          eventName: 'UNNAMED',
+          properties: null, // this is the property we are testing
+        },
+        eventMeta: {
+          trackingSource: 'browser',
+        }
+      });
     });
   });
 
@@ -694,7 +735,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackFingerprint(123456789, function(err) {
         callbackTrigged = true;
-        expect(err).to.be.undefined;
+        expect(err).to.be.instanceof(Error);
       });
 
       const trackReq = reqs[0];
@@ -703,35 +744,8 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('errors on unset api token', () => {
-      ravelin.setPublicAPIKey(''); // unset API key
-
-      var callbackTrigged = false;
-      ravelin.trackFingerprint(123456789, function(err) {
-        callbackTrigged = true;
-        expect(err).not.to.be.undefined;
-      });
-
-      expect(reqs[0]).to.be.undefined; // expect no API calls to have been made
-      expect(callbackTrigged).to.be.true;
-    });
-
     it('does not error on non-function callback', () => {
       expect(() => ravelin.trackFingerprint('cust123', 'not a callback function')).not.to.throw();
-    });
-
-    it('does not attempt request if withCredentials falsey', () => {
-      // Override onCreate to set withCredentials to false
-      global.XMLHttpRequest.onCreate = req => {
-        req.withCredentials = false;
-        reqs.push(req);
-      };
-
-      ravelin.trackFingerprint(123456789, function(err) {
-        assertError(err, 'xhr "withCredentials" must be set to true');
-      });
-
-      expect(reqs[0].readyState).to.equal(0); // expect call not to have been submitted
     });
   });
 });
@@ -815,6 +829,7 @@ function assertJSONCipher(j) {
 }
 
 function assertError(err, msg) {
+  expect(err).to.be.instanceof(Error);
   expect(err.message.substring(0, 12)).to.equal('[ravelinjs] '); // all errors should start with [ravelinjs]
   expect(err.message).to.include(msg); // error should contain a specific message
 }

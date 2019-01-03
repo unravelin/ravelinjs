@@ -1,0 +1,1 @@
+./amd-min/common.js

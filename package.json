@@ -12,6 +12,7 @@
     "test-appium": "npm run minify && wdio ./test/appium.conf.js",
     "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
+    "webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
     "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'",
     "go-sri": "sri -out=sri.json -hash=all ravelin.js ravelin.min.js"
