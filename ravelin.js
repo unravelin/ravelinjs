@@ -468,6 +468,8 @@
 
   /**
    * Allows the manual setting of a deviceId for scenarios in which you believe the value may have been reset.
+   * Does not accept a deviceId parameter, instead it uses any existing deviceId set inside the device
+   * cookies, or otherwise generates and assigns a new deviceId.
    *
    * @example
    * ravelinjs.setDeviceId();
@@ -504,6 +506,8 @@
 
   /**
    * Allows the manual setting of a sessionId for scenarios in which you believe the value may have been reset.
+   * Does not accept a sessionId parameter, instead it uses any existing sessionId set inside the device
+   * cookies, or otherwise generates and assigns a new sessionId.
    *
    * @example
    * ravelinjs.setSessionId();
