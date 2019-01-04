@@ -5,20 +5,50 @@
 // values from inside the integration-test-service.
 describe('ravelinjs', function() {
 
+  // When we launch the crossbrowser-e2e job, we set 3 env vars that specify our artifact file paths,
+  // all 3 of which must be provided. See ./circleci/config.yaml for where these values are set.
+  // They are also copied over to the config-service so the integration-test-service knows where to find them.
+  const ciphertextOutputFile = process.env.E2E_CIPHERTEXT_FILE;
+  const deviceIdFile = process.env.E2E_DEVICEID_FILE;
+  const sessionIdFile = process.env.E2E_SESSIONID_FILE;
+
+  if (!ciphertextOutputFile) throw new Error("Envvar E2E_CIPHERTEXT_FILE must be set.");
+  if (!deviceIdFile) throw new Error("Envvar E2E_DEVICEID_FILE must be set.");
+  if (!sessionIdFile) throw new Error("Envvar E2E_SESSIONID_FILE must be set.");
+
+  console.log('Ciphertext destination:', ciphertextOutputFile);
+  console.log('DeviceId destination:', deviceIdFile);
+  console.log('SessionId destination:', sessionIdFile);
+
+  // In addition, when the integration test is launched, additional env variables are provided in the job req.
+  // These must also all be provided in order to complete this test suite. See the RavelinJS integration test
+  // to see how these values are generated and how they are provided to the job.
+  const publicApiToken = process.env.E2E_PUBLIC_API_TOKEN;
+  const rsaKey = process.env.E2E_RSA_KEY;
+  const nameOnCard = process.env.E2E_NAME_ON_CARD;
+  const customerId = process.env.E2E_CUSTOMER_ID;
+  const orderId = process.env.E2E_ORDER_ID;
+
+  if (!publicApiToken || !publicApiToken.match(/(publishable_key_live_)([0-z]+)/)) {
+    throw new Error("Envvar E2E_PUBLIC_API_TOKEN must be set and of the form publishable_key_live_XXXXXXXX");
+  }
+  if (!rsaKey || !rsaKey.match(/^[^|]+\|[^|]+$/)) {
+    throw new Error("Envvar E2E_RSA_KEY must be set and of the form ...|...");
+  }
+
+  if (!nameOnCard) throw new Error("Envvar E2E_NAME_ON_CARD must be set.");
+  if (!customerId) throw new Error("Envvar E2E_CUSTOMER_ID must be set.");
+  if (!orderId) throw new Error("Envvar E2E_ORDER_ID must be set.");
+
+  console.log('Publishable Token:', publicApiToken);
+  console.log('RSA Key:', rsaKey);
+  console.log('Name on card:', nameOnCard);
+  console.log('CustomerId:', customerId);
+  console.log('OrderId:', orderId);
+
   // Our first test populates the card encryption form, saves the ciphertext and submits the paymentMethodCipher
   // for decryption, verifying that the card details saved against the customer match the encrypted inputs.
   describe('returns the encrypted card details', function() {
-    const rsaKey = process.env.E2E_RSA_KEY;
-    const nameOnCard = process.env.E2E_NAME_ON_CARD;
-    const ciphertextOutputFile = process.env.E2E_CIPHERTEXT_FILE;
-
-    console.log('Name on card:', nameOnCard);
-    console.log('Ciphertext destination:', ciphertextOutputFile);
-    console.log('RSA Key:', rsaKey);
-
-    if (!rsaKey.match(/^[^|]+\|[^|]+$/)) throw new Error("Envvar E2E_RSA_KEY must be set and of the form ...|...");
-    if (!nameOnCard) throw new Error("Envvar E2E_NAME_ON_CARD must be set.");
-    if (!ciphertextOutputFile) throw new Error("Envvar E2E_CIPHERTEXT_FILE must be set.");
 
     it('loads the page', function() {
       browser.url('/pages/scripttag/index.html');
@@ -26,6 +56,7 @@ describe('ravelinjs', function() {
       browser.pause(1000); // Wait for commonjs init to complete
 
       browser.setValue('#rsaKey', rsaKey);
+      browser.click('#setRSAKey');
     });
 
     var ciphertext;
@@ -55,16 +86,6 @@ describe('ravelinjs', function() {
   // Our second test submits a device fingerprint to the API under a random customerId. Using that same
   // customerId, we read out their devices and assert that a device with our ravelinjs deviceId exists.
   describe('ravelinjs tracks and fingerprints the browser', function() {
-    const publicApiToken = process.env.E2E_PUBLIC_API_TOKEN;
-    const customerId = process.env.E2E_CUSTOMER_ID;
-    const fingerprintTestOutputFile = process.env.E2E_FINGERPRINT_TEST_OUTPUT_FILE;
-
-    console.log('Publishable Token:', publicApiToken);
-    console.log('CustomerId:', customerId);
-    console.log('Fingerprint destination:', fingerprintTestOutputFile);
-
-    if (!customerId) throw new Error("Envvar E2E_CUSTOMER_ID must be set.");
-    if (!fingerprintTestOutputFile) throw new Error("Envvar E2E_FINGERPRINT_TEST_OUTPUT_FILE must be set.");
 
     it('loads the page', function() {
       browser.url('/pages/scripttag/index.html');
@@ -87,10 +108,9 @@ describe('ravelinjs', function() {
       if (error) throw new Error(error);
     });
 
-    it('writes the deviceId and sessionId to a local file', function() {
-      var deviceId = browser.getText('#deviceId');
-      var sessionId = browser.getText('#sessionId');
-      require('fs').writeFileSync(fingerprintTestOutputFile, deviceId+'|'+sessionId);
+    it('writes the deviceId and sessionId artifacts', function() {
+      require('fs').writeFileSync(deviceIdFile, browser.getText('#deviceId') || '');
+      require('fs').writeFileSync(sessionIdFile, browser.getText('#sessionId') || '');
     });
   });
 
@@ -98,19 +118,6 @@ describe('ravelinjs', function() {
   // Using the same customerId and orderId, we will verify each of these 4 events are recorded against this
   // session in Ravelin.
   describe('ravelinjs tracks session activity', function() {
-    const publicApiToken = process.env.E2E_PUBLIC_API_TOKEN;
-    const customerId = process.env.E2E_CUSTOMER_ID;
-    const orderId = process.env.E2E_ORDER_ID;
-    const sessionTrackingTestOutputFile = process.env.E2E_SESSION_TRACKING_TEST_OUTPUT_FILE;
-
-    console.log('Publishable Token:', publicApiToken);
-    console.log('CustomerId:', customerId);
-    console.log('OrderId:', orderId);
-    console.log('Session Tracking destination:', sessionTrackingTestOutputFile);
-
-    if (!customerId) throw new Error("Envvar E2E_CUSTOMER_ID must be set.");
-    if (!orderId) throw new Error("Envvar E2E_ORDER_ID must be set.");
-    if (!sessionTrackingTestOutputFile) throw new Error("Envvar E2E_SESSION_TRACKING_TEST_OUTPUT_FILE must be set.");
 
     it('loads the page', function() {
       browser.url('/pages/scripttag/index.html');
@@ -163,10 +170,9 @@ describe('ravelinjs', function() {
       if (error) throw new Error(error);
     });
 
-    it('writes the deviceId and sessionId to a local file', function() {
-      var deviceId = browser.getText('#deviceId');
-      var sessionId = browser.getText('#sessionId');
-      require('fs').writeFileSync(sessionTrackingTestOutputFile, deviceId+'|'+sessionId);
+    it('writes the deviceId and sessionId artifacts', function() {
+      require('fs').writeFileSync(deviceIdFile, browser.getText('#deviceId') || '');
+      require('fs').writeFileSync(sessionIdFile, browser.getText('#sessionId') || '');
     });
   });
 });

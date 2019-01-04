@@ -5,11 +5,6 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:8.11
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
     working_directory: ~/repo
 
     steps:
@@ -42,7 +37,10 @@ jobs:
           name: "Encryption E2E tests: npm run test-crossbrowser-e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test-crossbrowser-e2e
+            env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt
+            env E2E_DEVICEID_FILE=~/repo/deviceid.txt
+            env E2E_SESSIONID_FILE=~/repo/sessionid.txt
+            npm run test-crossbrowser-e2e
 
       - run:
           name: "Cross-browser integration tests: npm run test-crossbrowser"
@@ -55,4 +53,4 @@ jobs:
       - store_artifacts:
           path: ~/repo/test/shots
       - store_artifacts:
-          path: ~/repo/cipher.txt
+          path: ~/repo/*.txt

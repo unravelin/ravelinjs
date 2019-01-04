@@ -63,6 +63,6 @@ typings/
 ravelin.min.js
 *.min.js
 sri.json
-ciphertext.txt
-fingerprint.txt
-sessiontracking.txt
+cipher.txt
+deviceid.txt
+sessionid.txt
