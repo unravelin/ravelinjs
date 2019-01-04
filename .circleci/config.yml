@@ -53,4 +53,8 @@ jobs:
       - store_artifacts:
           path: ~/repo/test/shots
       - store_artifacts:
-          path: ~/repo/*.txt
+          path: ~/repo/cipher.txt
+      - store_artifacts:
+          path: ~/repo/deviceid.txt
+      - store_artifacts:
+          path: ~/repo/sessionid.txt
