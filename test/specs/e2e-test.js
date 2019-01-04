@@ -108,9 +108,8 @@ describe('ravelinjs', function() {
       if (error) throw new Error(error);
     });
 
-    it('writes the deviceId and sessionId artifacts', function() {
+    it('writes the deviceId artifact', function() {
       require('fs').writeFileSync(deviceIdFile, browser.getText('#deviceId') || '');
-      require('fs').writeFileSync(sessionIdFile, browser.getText('#sessionId') || '');
     });
   });
 
@@ -170,8 +169,7 @@ describe('ravelinjs', function() {
       if (error) throw new Error(error);
     });
 
-    it('writes the deviceId and sessionId artifacts', function() {
-      require('fs').writeFileSync(deviceIdFile, browser.getText('#deviceId') || '');
+    it('writes the sessionId artifact', function() {
       require('fs').writeFileSync(sessionIdFile, browser.getText('#sessionId') || '');
     });
   });
