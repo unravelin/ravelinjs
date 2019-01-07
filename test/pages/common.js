@@ -57,7 +57,12 @@
   }
 
   function writeCookiesAndIds() {
-    document.getElementById('cookies').appendChild(document.createTextNode(document.cookie));
+    var cookiesElem = document.getElementById('cookies');
+    if (cookiesElem.innerHTML != "") {
+      return;
+    }
+
+    cookiesElem.appendChild(document.createTextNode(document.cookie));
     var cookies = document.cookie.split('; ');
     for (var i = cookies.length-1; i >= 0; i--) {
       var x = cookies[i].split('=');
@@ -119,6 +124,7 @@
   }
 
   function writeFingerprintError(err) {
+    writeCookiesAndIds(); // Temporary measure as we haven't yet ported deviceId setting into ravelinjs
     document.getElementById('fingerprintError').innerText = err instanceof Error ? err.message : '';
   }
 
