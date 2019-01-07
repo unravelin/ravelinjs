@@ -10,7 +10,8 @@
     "test-appium": "npm run minify && wdio ./test/appium.conf.js",
     "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
-    "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'"
+    "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
+    "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },
   "repository": {
     "type": "git",
