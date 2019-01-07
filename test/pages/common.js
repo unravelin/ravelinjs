@@ -73,7 +73,7 @@
         if (devIdElem.innerHTML == '') {
           devIdElem.appendChild(document.createTextNode(cookieVal));
         }
-      } else if (cookieName === 'ravelinSessionId') {
+      } else if (cookieName === 'ravelinSessionUuid') {
         var sesIdElem = document.getElementById('sessionId');
         if (sesIdElem.innerHTML == '') {
           sesIdElem.appendChild(document.createTextNode(cookieVal));
