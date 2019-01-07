@@ -58,11 +58,10 @@
 
   function writeCookiesAndIds() {
     var cookiesElem = document.getElementById('cookies');
-    if (cookiesElem.innerHTML != "") {
-      return;
+    if (cookiesElem.innerHTML == '') {
+      cookiesElem.appendChild(document.createTextNode(document.cookie));
     }
 
-    cookiesElem.appendChild(document.createTextNode(document.cookie));
     var cookies = document.cookie.split('; ');
     for (var i = cookies.length-1; i >= 0; i--) {
       var x = cookies[i].split('=');
@@ -70,9 +69,15 @@
       var cookieVal = x[1];
 
       if (cookieName === 'ravelinDeviceId') {
-        document.getElementById('deviceId').appendChild(document.createTextNode(cookieVal));
-      } else if (cookieName === 'ravelinSessionId'){
-        document.getElementById('sessionId').appendChild(document.createTextNode(cookieVal));
+        var devIdElem = document.getElementById('deviceId');
+        if (devIdElem.innerHTML == '') {
+          devIdElem.appendChild(document.createTextNode(cookieVal));
+        }
+      } else if (cookieName === 'ravelinSessionId') {
+        var sesIdElem = document.getElementById('sessionId');
+        if (sesIdElem.innerHTML == '') {
+          sesIdElem.appendChild(document.createTextNode(cookieVal));
+        }
       }
     };
   }
