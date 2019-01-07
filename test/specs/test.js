@@ -28,10 +28,10 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
-  checkIdsAreSet(browser);
   checkCardEncryptionWorks(browser);
   checkFingerprintingDoesNotError(browser);
   checkTrackingEventsDoNotError(browser);
+  checkIdsAreSet(browser); // Check ids last because we have a hack the fingerprint test to ensure they exist
 }
 
 function checkIdsAreSet(browser) {
