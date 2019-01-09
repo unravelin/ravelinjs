@@ -2,42 +2,37 @@ describe('ravelinjs', function() {
     const cap = browser.desiredCapabilities;
 
     it('can be used with a script tag', function() {
-        browser.url('/pages/scripttag/index.html');
-        suite(browser);
+        runSuiteWithOneRetry(browser, '/pages/scripttag/index.html');
     });
 
     it('can be used minified with a script tag', function() {
-        browser.url('/pages/scripttag-min/index.html');
-        suite(browser);
+        runSuiteWithOneRetry(browser, '/pages/scripttag-min/index.html');
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
-        browser.url('/pages/amd/index.html');
-
-        try {
-          suite(browser);
-        } catch(e) {
-          // Do one retry incase of very rare requirejs race-condition failure
-          suite(browser);
-        }
+        runSuiteWithOneRetry(browser, '/pages/amd/index.html');
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
-        browser.url('/pages/amd-min/index.html');
-
-        try {
-          suite(browser);
-        } catch(e) {
-          // Do one retry incase of very rare requirejs race-condition failure
-          suite(browser);
-        }
+        runSuiteWithOneRetry(browser, '/pages/amd-min/index.html');
     });
 
     usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
-        browser.url('/pages/webpack/index.html');
-        suite(browser);
+        runSuiteWithOneRetry(browser, '/pages/webpack/index.html');
     });
 });
+
+function runSuiteWithOneRetry(browser, page) {
+  try {
+    browser.url(page);
+    browser.pause(500);
+    suite(browser);
+  } catch(e) {
+    browser.url(page);
+    browser.pause(500);
+    suite(browser);
+  }
+}
 
 function suite(browser) {
     // Fill in the card encryption form
@@ -52,11 +47,7 @@ function suite(browser) {
     if (error) throw new Error(error);
 
     // Check the result looked valid
-    var cipher = browser.getText('#encryptionOutput');
-
-    if (!cipher) {
-        throw new Error('#encryptionOutput did not contain ciphertext');
-    }
+    browser.getText('#encryptionOutput').should.not.be.empty;
 }
 
 function usuallyIt(itDoes) {
