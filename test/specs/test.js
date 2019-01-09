@@ -28,19 +28,19 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
-    // Do the form.
+    // Fill in the card encryption form
     browser.setValue('#name', 'John');
     browser.setValue('#number', '4111 1111 1111 1111');
     browser.selectByValue('#month', '4')
     browser.setValue('#year', '2019');
-    browser.click('#update');
+    browser.click('#encrypt');
 
-    // Check there was no error.
-    var error = browser.getText('#output-error');
+    // Check there was no error
+    var error = browser.getText('#encryptionOutputError');
     if (error) throw new Error(error);
 
-    // Check the result looked valid.
-    browser.getText('#output').should.not.be.empty;
+    // Check the result looked valid
+    browser.getText('#encryptionOutput').should.not.be.empty;
 }
 
 function usuallyIt(itDoes) {

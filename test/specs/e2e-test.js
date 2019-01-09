@@ -14,21 +14,8 @@ describe('ravelinjs returns the encrypted card details', function() {
     });
 
     it('sets up the RSA key', function() {
-        // Set the key.
-        const demoKeyMsg = browser.getText('#output');
-        browser.setValue('#rsa-key', rsaKey);
-        browser.click('#key-form input[type=submit]');
-
-        // Check there wasn't an error.
-        raise(browser.getText('#output-error'));
-
-        // Confirm the key has been updated.
-        const output = browser.getText('#output');
-        if (output == demoKeyMsg) {
-            throw new Error('Key wasnt changed from default');
-        } else if (!output.match(/^Key set/)) {
-            throw new Error('Output message doesnt suggest key was set');
-        }
+      browser.setValue('#rsaKey', rsaKey);
+      browser.click('#setRSAKey');
     });
 
     var ciphertext;
@@ -39,14 +26,14 @@ describe('ravelinjs returns the encrypted card details', function() {
         browser.setValue('#number', '4111 1111 1111 1111');
         browser.selectByValue('#month', '4')
         browser.setValue('#year', '2019');
-        browser.click('#update');
+        browser.click('#encrypt');
 
         // Check there wasn't an error.
-        raise(browser.getText('#output-error'));
+        raise(browser.getText('#encryptionOutputError'));
 
-        ciphertext = browser.getText('#output');
+        ciphertext = browser.getText('#encryptionOutput');
         if (!ciphertext.match(/^\{.+\}$/) || !ciphertext.includes("cardCiphertext")) {
-            throw new Error("Doesn't look like we got a valid ciphertext: " + ciphertext);
+          throw new Error("Doesn't look like we got a valid ciphertext: " + ciphertext);
         }
     });
 
