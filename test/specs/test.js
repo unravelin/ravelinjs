@@ -13,12 +13,24 @@ describe('ravelinjs', function() {
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
         browser.url('/pages/amd/index.html');
-        suite(browser);
+
+        try {
+          suite(browser);
+        } catch(e) {
+          // Do one retry incase of very rare requirejs race-condition failure
+          suite(browser);
+        }
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
         browser.url('/pages/amd-min/index.html');
-        suite(browser);
+
+        try {
+          suite(browser);
+        } catch(e) {
+          // Do one retry incase of very rare requirejs race-condition failure
+          suite(browser);
+        }
     });
 
     usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
@@ -40,7 +52,11 @@ function suite(browser) {
     if (error) throw new Error(error);
 
     // Check the result looked valid
-    browser.getText('#encryptionOutput').should.not.be.empty;
+    var cipher = browser.getText('#encryptionOutput');
+
+    if (!cipher) {
+        throw new Error('#encryptionOutput did not contain ciphertext');
+    }
 }
 
 function usuallyIt(itDoes) {
