@@ -102,30 +102,6 @@ exports.config = Object.assign(base, {
         // Internet Explorer.
         {
             build: 'ravelinjs 1.0',
-            name: 'win10 ie11',
-            browserName: 'Internet Explorer',
-            version: '11',
-            platform: 'Windows 10',
-            screenResolution: '1366x768',
-        },
-        {
-            build: 'ravelinjs 1.0',
-            name: 'win8 ie10',
-            browserName: 'Internet Explorer',
-            version: '10',
-            platform: 'Windows 8',
-            screenResolution: '1366x768',
-        },
-        {
-            build: 'ravelinjs 1.0',
-            name: 'win7 ie9',
-            browserName: 'Internet Explorer',
-            version: '9',
-            platform: 'Windows 7 64-Bit',
-            screenResolution: '1366x768',
-        },
-        {
-            build: 'ravelinjs 1.0',
             name: 'win7 ie8',
             browserName: 'Internet Explorer',
             version: '8',
