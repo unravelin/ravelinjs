@@ -30,7 +30,7 @@ describe('ravelinjs', function() {
 function suite(browser) {
   checkIdsAreSet(browser);
   checkCardEncryptionWorks(browser);
-  // checkFingerprintingDoesNotError(browser);
+  checkFingerprintingDoesNotError(browser);
   checkTrackingEventsDoNotError(browser);
 }
 

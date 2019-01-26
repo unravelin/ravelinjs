@@ -713,39 +713,54 @@ describe('ravelinjs', function() {
       reqs = [];
     });
 
-    it('fails gracefully and sends error to ravelin', () => {
+    it('sends device info to ravelin', () => {
       ravelin.trackFingerprint(123456789);
 
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/fingerprinterror?source=browser');
+      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/fingerprint?source=browser');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody);
 
       assertDeviceId(body.deviceId);
+      assertUuid(body.browser.sessionId);
+
       expect(body.libVer).to.equal(expectedVersion);
       expect(body.fingerprintSource).to.equal('browser');
       expect(body.customerId).to.equal('123456789');
-      expect(body.error).to.contain('ReferenceError: Fingerprint2 is not defined\n');
+      expect(body.browser.browser).to.equal('Unknown');
+      expect(body.browser.javascriptEnabled).to.equal(true);
+      expect(body.browser.timezoneOffset).to.equal(0);
     });
 
-    it('fails gracefully and sends error to ravelin (with callback)', () => {
+    it('track fingeprint event (with callback, no error)', (done) => {
       var callbackTrigged = false;
-      ravelin.trackFingerprint(123456789, function(err) {
+      ravelin.trackFingerprint(null, function(err) {
         callbackTrigged = true;
-        expect(err).to.be.instanceof(Error);
+        expect(err).to.be.undefined;
+        done();
       });
 
       const trackReq = reqs[0];
-      trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
+      trackReq.respond(200);
 
       expect(callbackTrigged).to.be.true;
     });
 
-    it('does not error on non-function callback', () => {
-      expect(() => ravelin.trackFingerprint('cust123', 'not a callback function')).not.to.throw();
+    it('track fingeprint event (with callback with error)', (done) => {
+      var callbackTrigged = false;
+      ravelin.trackFingerprint(null, function(err) {
+        callbackTrigged = true;
+        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/fingerprint?source=browser');
+        done();
+      });
+
+      const trackReq = reqs[0];
+      trackReq.respond(401);
+
+      expect(callbackTrigged).to.be.true;
     });
   });
 });

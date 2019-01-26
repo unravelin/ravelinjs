@@ -5,6 +5,14 @@
 // values from inside the integration-test-service.
 describe('ravelinjs', function() {
 
+  // We want to run this e2e test from our staging environment, so we need to hack the XHR 'open' function
+  // to manipulate the URL passed in. We want to add 'staging' to the hardcoded https://api.ravelin.com url.
+  var baseImp = window.XMLHttpRequest.prototype.open;
+  window.XMLHttpRequest.prototype.open = function() {
+      arguments[1] = arguments[1].replace('.', '-staging.', 1);
+      return baseImp.apply(this, arguments);
+  };
+
   // We have hardcoded the file names of our outputs because they must be individually specified as
   // 'store_artifacts' commands in circle.yml. These files will be written to the root dir of the repo,
   // and available at the path 'home/circleci/repo/$.txt' via the API.

@@ -28,6 +28,7 @@
 
     setUserAgent();
     writeCookiesAndIds();
+    writeDeviceInfo(ravelinjsInstance);
   }
 
   // Init ravelinjs and the HTML page with a hardcoded public API key associated to the ravelinjs CID
@@ -69,6 +70,12 @@
         document.getElementById('sessionId').appendChild(document.createTextNode(cookieVal));
       }
     };
+  }
+
+  function writeDeviceInfo(rjsInstance) {
+    var info = rjsInstance.getDeviceInfo();
+
+    document.getElementById('deviceInfo').appendChild(document.createTextNode(JSON.stringify(info, null, 4)));
   }
 
   // Wire up 'setter' buttons that set keys, tokens ids etc to associated rjs buttons
