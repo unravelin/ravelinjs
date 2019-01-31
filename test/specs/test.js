@@ -66,11 +66,11 @@ function checkCardEncryptionWorks() {
   var error = browser.getText('#encryptionOutputError');
   if (error) throw new Error(error);
 
-  // Check the result looked valid
+  // Check the results looked valid
   browser.getText('#encryptionOutput').should.not.be.empty;
 }
 
-function checkFingerprintingDoesNotError(browser) {
+function checkFingerprintingDoesNotError() {
   // We have hooked up the #trackFingerprint button to call ravelinjs.trackFingerprint
   // and provided a callback that writes any resulting errors to #fingerprintError.
   // No text in #fingerprintError means no error occured fingerprinting the device.
@@ -81,9 +81,12 @@ function checkFingerprintingDoesNotError(browser) {
 
   var error = browser.getText('#fingerprintError');
   if (error) throw new Error(error);
+
+  // Check the results looked valid
+  browser.getText('#fingerprintOutput').should.not.be.empty;
 }
 
-function checkTrackingEventsDoNotError(browser) {
+function checkTrackingEventsDoNotError() {
   // We have hooked up the #track, #trackPage, #trackLogin and #trackLogout buttons to call
   // their respective ravelinjs functions,  and provided a callback that writes any errors to #trackingError.
   // No text in #trackingError means no error occured fingerprinting the device.

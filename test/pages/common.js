@@ -28,7 +28,6 @@
 
     setUserAgent();
     writeCookiesAndIds();
-    writeDeviceInfo(ravelinjsInstance);
   }
 
   // Init ravelinjs and the HTML page with a hardcoded public API key associated to the ravelinjs CID
@@ -72,12 +71,6 @@
     };
   }
 
-  function writeDeviceInfo(rjsInstance) {
-    var info = rjsInstance.getDeviceInfo();
-
-    document.getElementById('deviceInfo').appendChild(document.createTextNode(JSON.stringify(info, null, 4)));
-  }
-
   // Wire up 'setter' buttons that set keys, tokens ids etc to associated rjs buttons
   function wireUpSetterFuncs(rjsInstance) {
     var setRSAKey = function() { rjsInstance.setRSAKey(document.getElementById('rsaKey').value); };
@@ -94,7 +87,12 @@
   }
 
   function wireUpTrackingFuncs(rjsInstance) {
-    var trackFingerprint = function() { rjsInstance.trackFingerprint(null, writeFingerprintError); };
+    var trackFingerprint = function() {
+      rjsInstance.trackFingerprint(null, function(err) {
+        writeFingerprintOutput(err, rjsInstance);
+      });
+    };
+
     var trackPage = trackWithErrHandlingCallback(rjsInstance, rjsInstance.trackPage, [null]);
     var track = trackWithErrHandlingCallback(rjsInstance, rjsInstance.track, ['RANDOM', { rand: rjsInstance.uuid() }]);
     var trackLogin = trackWithErrHandlingCallback(rjsInstance, rjsInstance.trackLogin, [null, null]);
@@ -121,8 +119,9 @@
     };
   }
 
-  function writeFingerprintError(err) {
+  function writeFingerprintOutput(err, rjsInstance) {
     document.getElementById('fingerprintError').innerText = err ? err.message : '';
+    document.getElementById('fingerprintOutput').innerText = err ?  '' : JSON.stringify(rjsInstance.getDeviceInfo(), null, 4);
   }
 
   // Create a wrapper func that calls a given session-tracking function, along with the provided

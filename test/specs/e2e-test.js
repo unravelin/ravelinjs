@@ -5,14 +5,6 @@
 // values from inside the integration-test-service.
 describe('ravelinjs', function() {
 
-  // We want to run this e2e test from our staging environment, so we need to hack the XHR 'open' function
-  // to manipulate the URL passed in. We want to add 'staging' to the hardcoded https://api.ravelin.com url.
-  var baseImp = window.XMLHttpRequest.prototype.open;
-  window.XMLHttpRequest.prototype.open = function() {
-      arguments[1] = arguments[1].replace('.', '-staging.', 1);
-      return baseImp.apply(this, arguments);
-  };
-
   // We have hardcoded the file names of our outputs because they must be individually specified as
   // 'store_artifacts' commands in circle.yml. These files will be written to the root dir of the repo,
   // and available at the path 'home/circleci/repo/$.txt' via the API.
@@ -32,6 +24,7 @@ describe('ravelinjs', function() {
   if (!publicApiToken || !publicApiToken.match(/(publishable_key_live_)([0-z]+)/)) {
     throw new Error("Envvar E2E_PUBLIC_API_TOKEN must be set and of the form publishable_key_live_XXXXXXXX");
   }
+
   if (!rsaKey || !rsaKey.match(/^[^|]+\|[^|]+$/)) {
     throw new Error("Envvar E2E_RSA_KEY must be set and of the form ...|...");
   }
@@ -48,6 +41,17 @@ describe('ravelinjs', function() {
 
   it('loads the page', function() {
     browser.url('/pages/scripttag/index.html');
+
+    // We want to run this e2e test from our staging environment, so we need to hack the XHR 'open' function
+    // to manipulate the URL passed in. We want to add '-staging' to the hardcoded https://api.ravelin.com url.
+    // We do this by passing some Javascript to be executed in the context of our browser.
+    browser.execute(function() {
+      var baseImp = window.XMLHttpRequest.prototype.open;
+      window.XMLHttpRequest.prototype.open = function() {
+        arguments[1] = arguments[1].replace('.', '-staging.', 1);
+        return baseImp.apply(this, arguments);
+      };
+    });
 
     browser.pause(1000); // Wait for commonjs init to complete
 
@@ -70,14 +74,13 @@ describe('ravelinjs', function() {
   // Our first test populates the card encryption form, saves the ciphertext and submits the paymentMethodCipher
   // for decryption, verifying that the card details saved against the customer match the encrypted inputs.
   describe('returns the encrypted card details', function() {
-
     var ciphertext;
 
     it('encrypts the cardholder data', function() {
       // Encrypt the card data.
       browser.setValue('#name', nameOnCard);
       browser.setValue('#number', '4111 1111 1111 1111');
-      browser.selectByValue('#month', '4')
+      browser.selectByValue('#month', '4');
       browser.setValue('#year', '2019');
       browser.click('#encrypt');
 
@@ -98,14 +101,8 @@ describe('ravelinjs', function() {
   // Our second test submits a device fingerprint to the API under a random customerId. Using that same
   // customerId, we read out their devices and assert that a device with our ravelinjs deviceId exists.
   describe('ravelinjs tracks and fingerprints the browser', function() {
-
     it('fingerprints the device and submits details + deviceId to Ravelin', function() {
       browser.click('#trackFingerprint');
-
-      browser.pause(1000); // Wait for async request to complete
-
-      var error = browser.getText('#fingerprintError');
-      if (error) throw new Error(error);
     });
 
     it('writes the deviceId artifact', function() {
@@ -117,41 +114,11 @@ describe('ravelinjs', function() {
   // Using the same customerId and orderId, we will verify each of these 4 events are recorded against this
   // session in Ravelin.
   describe('ravelinjs tracks session activity', function() {
-
-    it('tracks custom events', function() {
+    it('tracks session events', function() {
       browser.click('#track');
-
-      browser.pause(1000); // Wait for async request to complete
-
-      var error = browser.getText('#trackingError');
-      if (error) throw new Error(error);
-    });
-
-    it('tracks page load', function() {
       browser.click('#trackPage');
-
-      browser.pause(1000); // Wait for async request to complete
-
-      var error = browser.getText('#trackingError');
-      if (error) throw new Error(error);
-    });
-
-    it('tracks login', function() {
       browser.click('#trackLogin');
-
-      browser.pause(1000); // Wait for async request to complete
-
-      var error = browser.getText('#trackingError');
-      if (error) throw new Error(error);
-    });
-
-    it('tracks logout', function() {
       browser.click('#trackLogout');
-
-      browser.pause(1000); // Wait for async request to complete
-
-      var error = browser.getText('#trackingError');
-      if (error) throw new Error(error);
     });
 
     it('writes the sessionId artifact', function() {

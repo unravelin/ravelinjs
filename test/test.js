@@ -714,6 +714,14 @@ describe('ravelinjs', function() {
     });
 
     it('sends device info to ravelin', () => {
+      var result = ravelin.getDeviceInfo();
+
+      expect(result.browser).to.equal('Unknown');
+      expect(result.javascriptEnabled).to.equal(true);
+      expect(result.timezoneOffset).to.equal(0);
+    });
+
+    it('sends device info to ravelin', () => {
       ravelin.trackFingerprint(123456789);
 
       const trackReq = reqs[0];
