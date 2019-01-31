@@ -717,6 +717,7 @@
       eventName: eventName,
       properties: eventProperties
     };
+
     outerPayload.eventMeta = {
       trackingSource: 'browser',
       ravelinDeviceId: deviceId,

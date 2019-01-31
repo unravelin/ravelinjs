@@ -43,7 +43,7 @@ function runSuiteWithOneRetry(browser, page) {
 
 function checkIdsAreSet(browser) {
   // Ensure that deviceId/sessionId are set upon lib instantiation
-  console.log(browser.manage().getCookies());
+  console.log(document.cookie);
 }
 
 function checkCardEncryptionWorks(browser) {
