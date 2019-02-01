@@ -81,9 +81,6 @@ function checkFingerprintingDoesNotError() {
 
   var error = browser.getText('#fingerprintError');
   if (error) throw new Error(error);
-
-  // Check the results looked valid
-  browser.getText('#fingerprintOutput').should.not.be.empty;
 }
 
 function checkTrackingEventsDoNotError() {
