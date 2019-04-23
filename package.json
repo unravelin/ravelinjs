@@ -17,7 +17,7 @@
     "url": "git+https://github.com/unravelin/ravelinjs.git"
   },
   "author": "Paul Scott <paul.scott@ravelin.com>",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/unravelin/ravelinjs/issues"
   },
