@@ -1,7 +1,8 @@
 # ravelinjs
 
-`ravelinjs` provides a means of adding cards to Ravelin without having to handle
-PCI-compliant data. The library is intended to work on web pages where you have
+`ravelinjs` provides a means of sending card data to Ravelin without having to handle PCI-compliant data.
+
+The library is intended to work on web pages where you have
 access to the PAN that the customer has entered. Note that storing this data in
 any form on your servers opens them to the PCI compliance requirements. Passing
 through the encrypted values provided by this library avoids your servers
@@ -24,23 +25,25 @@ Examples:
 ### Encrypting Cards
 
 The primary goal of ravelinjs is to allow the secure sharing of card information
-with Ravelin without to handling PCI-compliant data. When collecting the card
-details, encrypt the values to send to Ravelin using
-`ravelinjs.encrypt({pan, month, year, nameOnCard})`. `pan`, `month`, `year` are
-required, while `nameOnCard` is optional, and no other properties are allowed
+with Ravelin without merchants having to handle PCI-compliant data.
+
+When collecting card details, encrypt the values to send to Ravelin using
+`ravelinjs.encrypt({pan, month, year, nameOnCard})`.
+
+`pan`, `month`, `year` are required, whilst `nameOnCard` is optional, and no other properties are allowed
 on the object. Some slight validation is performed, and should any fail an
 exception is raised.
 
 ### Tracking Page Activity
 
 Using ravelinjs, the `setPublicAPIKey` (called immediately), `track`, and
-`trackPage` (call on page load) can be used instead of the [device
+`trackPage` (call on page load) methods can be used instead of the [device
 fingerprinting snippet][device-track]. See the example below for more.
 
 ## Example
 
 In the following form, we collect card details from the customer, encrypt them
-and send that encrypted values (the cipher) back to your server.
+and send that encrypted value (the cipher) back to your server.
 
 ```html
 <!-- Browser -->
@@ -85,7 +88,7 @@ and send that encrypted values (the cipher) back to your server.
 </script>
 ```
 
-Once the cipher is received by your server, the API request to Ravelin in which a fraud recommendation is requested should use this cipher value:
+Once the cipher value is received by your server, it should be used in the API request to Ravelin to obtain a fraud recommendation:
 
 ```js
 /* Server-side */
@@ -101,7 +104,7 @@ var action = request('https://api.ravelin.com/v2/checkout?score=true', {
 
 ## Browser Support
 
-Ravelin test its library using [many browsers](test/crossbrowser.conf.js). Older
+Ravelin tests this library using [many browsers](test/crossbrowser.conf.js). Older
 browser support is provided, but there are caveats on IE10 and other older
 browsers who do not implement any `window.crypto`-like API. In these cases,
 entropy is collected from user activity on the browser. In cases where
@@ -110,7 +113,7 @@ thrown. This API will be tidied up in future.
 
 ## Bundled Code
 
-Providing this library would not have been possible without the stellar works
+This library would not have been possible without the stellar works
 upon which it relies:
 
 * http://bitwiseshiftleft.github.io/sjcl/ (MIT)
@@ -119,7 +122,8 @@ upon which it relies:
 ## Library Roadmap
 
 * Tidy up exceptions used in older browsers where insufficient entropy is
-  available when trying to encrypt. Provide recommedations for how to handle
-  these exceptions.
+  available when trying to encrypt
+  
+* Provide recommedations for how to handle exceptions.
 
 [device-track]: https://developer.ravelin.com/v2/#device-tracking
