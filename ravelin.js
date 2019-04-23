@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.11';
+  var version = '0.0.12';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG

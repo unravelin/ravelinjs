@@ -1,6 +1,6 @@
 {
   "name": "ravelinjs",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Ravelin Client-side Card Encryption Library.",
   "main": "ravelin.js",
   "scripts": {
