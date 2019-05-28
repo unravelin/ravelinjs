@@ -28,8 +28,8 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
-    // Ensure the page has loaded.
-    $('#never-found').waitForExist();
+    // Wait for the page to load.
+    $('#name').waitForExist();
 
     // Do the form.
     browser.setValue('#name', 'John');
