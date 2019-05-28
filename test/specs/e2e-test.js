@@ -15,7 +15,7 @@ describe('ravelinjs returns the encrypted card details', function() {
 
     it('sets up the RSA key', function() {
         // Wait for the page to load.
-        $('#output').waitForExist();
+        $('#name').waitForExist();
 
         // Set the key.
         const demoKeyMsg = browser.getText('#output');
@@ -38,7 +38,7 @@ describe('ravelinjs returns the encrypted card details', function() {
 
     it('encrypts the cardholder data', function() {
         // Wait for the page to load.
-        $('#output').waitForExist();
+        $('#name').waitForExist();
 
         // Encrypt the card data.
         browser.setValue('#name', nameOnCard);
