@@ -141,6 +141,7 @@ exports.config = Object.assign(base, {
         // Android
         {
           build: 'ravelinjs 1.0',
+          name: 'android6 chromeLatest',
           browserName: 'Chrome',
           deviceName: 'Nexus 9',
           platformVersion: '6.0',
