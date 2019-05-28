@@ -157,7 +157,7 @@ exports.config = Object.assign(base, {
         },
     ].map(c => {
         // Apply a maximum duration of 1 minute to each test case.
-        c.max_duration = 60
+        c.max_duration = 120
         return c
     }).filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
