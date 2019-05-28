@@ -8,6 +8,8 @@ if (!user || !key) {
     throw new Error('Set the CROSSBROWSERTESTING_USER and CROSSBROWSERTESTING_KEY envvars.');
 }
 
+process.env.BROWSERS = "safari"
+
 const base = require('./base.conf').config;
 exports.config = Object.assign(base, {
     // Appium desktop defaults.
