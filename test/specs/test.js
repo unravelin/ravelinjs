@@ -3,31 +3,31 @@ describe('ravelinjs', function() {
 
     it('can be used with a script tag', function() {
         browser.waitForURL('/pages/scripttag/index.html', cap.navigateTimeoutMS);
-        suite(browser);
+        suite(browser, cap);
     });
 
     it('can be used minified with a script tag', function() {
         browser.waitForURL('/pages/scripttag-min/index.html', cap.navigateTimeoutMS);
-        suite(browser);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
         browser.waitForURL('/pages/amd/index.html', cap.navigateTimeoutMS);
-        suite(browser);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
         browser.waitForURL('/pages/amd-min/index.html', cap.navigateTimeoutMS);
-        suite(browser);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
         browser.waitForURL('/pages/webpack/index.html', cap.navigateTimeoutMS);
-        suite(browser);
+        suite(browser, cap);
     });
 });
 
-function suite(browser) {
+function suite(browser, cap) {
     // Wait for the page to load.
     $('#name').waitForExist(cap.renderTimeoutMS);
 
