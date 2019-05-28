@@ -223,22 +223,20 @@ exports.config = {
          * starts with url, timing out after timeout or 10000 milliseconds.
          */
         browser.addCommand('waitForURL', function(url, timeout) {
-            value = encodeURIComponent(value).replace('%20', '+');
-            const targetParam = new RegExp('[&?]' + (param + '=' + value).replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '(&|$)');
-
-            var latest;
+            let latest = '(none)';
             try {
                 browser.url(url);
                 return browser.waitUntil(
                     function () {
-                        return browser.getUrl().indexOf(url) == 0;
+                        latest = browser.getUrl();
+                        return latest.indexOf(url) == 0;
                     },
                     timeout || 10000,
                     'timeout'
                 );
             } catch (e) {
                 if (e.message == 'timeout') {
-                    throw new Error("Timed out waiting for URL with query param " + param + "=" + value + ". Last URL was " + latest);
+                    throw new Error("Timed out waiting for URL starting " + url + ". Last URL was " + latest);
                 }
                 throw e;
             }
