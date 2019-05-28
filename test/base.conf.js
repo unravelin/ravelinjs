@@ -220,7 +220,7 @@ exports.config = {
 
         /**
          * browser.waitForURL navigates to url and waits until the browser URL
-         * starts with url, timing out after timeout or 10000 milliseconds.
+         * contains it, timing out after timeout or 10000 milliseconds.
          */
         browser.addCommand('waitForURL', function(url, timeout) {
             let latest = '(none)';
@@ -229,7 +229,7 @@ exports.config = {
                 return browser.waitUntil(
                     function () {
                         latest = browser.getUrl();
-                        return latest.indexOf(url) == 0;
+                        return latest.indexOf(url) > -1;
                     },
                     timeout || 10000,
                     'timeout'
