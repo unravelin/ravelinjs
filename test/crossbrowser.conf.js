@@ -93,9 +93,9 @@ exports.config = Object.assign(base, {
         // Edge.
         {
             build: 'ravelinjs 1.0',
-            name: 'win10 edge14',
+            name: 'win10 edge17',
             browserName: 'MicrosoftEdge',
-            version: '14',
+            version: '17',
             platform: 'Windows 10',
             screenResolution: '1366x768',
         },

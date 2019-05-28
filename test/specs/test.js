@@ -28,6 +28,9 @@ describe('ravelinjs', function() {
 });
 
 function suite(browser) {
+    // Wait for the page to load.
+    $('#name').waitForExist();
+
     // Do the form.
     browser.setValue('#name', 'John');
     browser.setValue('#number', '4111 1111 1111 1111');
