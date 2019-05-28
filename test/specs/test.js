@@ -2,34 +2,34 @@ describe('ravelinjs', function() {
     const cap = browser.desiredCapabilities;
 
     it('can be used with a script tag', function() {
-        browser.url('/pages/scripttag/index.html');
+        browser.waitForURL('/pages/scripttag/index.html', cap.navigateTimeoutMS);
         suite(browser);
     });
 
     it('can be used minified with a script tag', function() {
-        browser.url('/pages/scripttag-min/index.html');
+        browser.waitForURL('/pages/scripttag-min/index.html', cap.navigateTimeoutMS);
         suite(browser);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
-        browser.url('/pages/amd/index.html');
+        browser.waitForURL('/pages/amd/index.html', cap.navigateTimeoutMS);
         suite(browser);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
-        browser.url('/pages/amd-min/index.html');
+        browser.waitForURL('/pages/amd-min/index.html', cap.navigateTimeoutMS);
         suite(browser);
     });
 
     usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
-        browser.url('/pages/webpack/index.html');
+        browser.waitForURL('/pages/webpack/index.html', cap.navigateTimeoutMS);
         suite(browser);
     });
 });
 
 function suite(browser) {
     // Wait for the page to load.
-    $('#name').waitForExist();
+    $('#name').waitForExist(cap.renderTimeoutMS);
 
     // Do the form.
     browser.setValue('#name', 'John');

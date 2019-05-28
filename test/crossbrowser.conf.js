@@ -154,11 +154,15 @@ exports.config = Object.assign(base, {
           platformVersion: '11.0',
           platformName: 'iOS',
           deviceOrientation: 'portrait',
+
+          max_duration: 180,
+          navigateTimeoutMS: 60000,
+          renderTimeoutMS: 60000,
         },
-    ].map(c => {
+    ].map(function(c) {
         // Apply a maximum duration of 1 minute to each test case.
-        c.max_duration = 120
-        return c
+        c.max_duration = c.max_duration || 120;
+        return c;
     }).filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
         !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
