@@ -8,6 +8,8 @@ if (!user || !key) {
     throw new Error('Set the CROSSBROWSERTESTING_USER and CROSSBROWSERTESTING_KEY envvars.');
 }
 
+const timeoutSeconds = 120;
+
 const base = require('./base.conf').config;
 exports.config = Object.assign(base, {
     // Appium desktop defaults.
@@ -18,6 +20,14 @@ exports.config = Object.assign(base, {
 
     // Picked up by cbt_tunnels.
     baseUrl: 'http://local',
+
+    // Bail after the first test failure. The cost of running many tests is too
+    // high, and it takes too damn long.
+    bail: 1,
+    mochaOpts: Object.assign(base.mochaOpts, {
+        // Match mocha timeout with browser.
+        timeout: timeoutSeconds * 1000,
+    }),
 
     maxInstances: parseInt(process.env.WD_PARALLEL, 10) || 1,
     capabilities: [
@@ -139,9 +149,10 @@ exports.config = Object.assign(base, {
         // Android
         {
           build: 'ravelinjs 1.0',
+          name: 'android5 chromeLatest',
           browserName: 'Chrome',
-          deviceName: 'Nexus 9',
-          platformVersion: '6.0',
+          deviceName: 'Nexus 6',
+          platformVersion: '5.0',
           platformName: 'Android',
           deviceOrientation: 'portrait',
         },
@@ -154,8 +165,16 @@ exports.config = Object.assign(base, {
           platformVersion: '11.0',
           platformName: 'iOS',
           deviceOrientation: 'portrait',
+
+          max_duration: 180,
+          navigateTimeoutMS: 60000,
+          renderTimeoutMS: 60000,
         },
-    ].filter(
+    ].map(function(c) {
+        // Apply a maximum duration of 1 minute to each test case.
+        c.max_duration = c.max_duration || timeoutSeconds;
+        return c;
+    }).filter(
         // Filter the capabilities by name if there's a BROWSERS envvar.
         !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
     ),

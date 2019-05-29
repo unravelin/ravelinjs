@@ -2,34 +2,34 @@ describe('ravelinjs', function() {
     const cap = browser.desiredCapabilities;
 
     it('can be used with a script tag', function() {
-        browser.url('/pages/scripttag/index.html');
-        suite(browser);
+        browser.waitForURL('/pages/scripttag/index.html', cap.navigateTimeoutMS);
+        suite(browser, cap);
     });
 
     it('can be used minified with a script tag', function() {
-        browser.url('/pages/scripttag-min/index.html');
-        suite(browser);
+        browser.waitForURL('/pages/scripttag-min/index.html', cap.navigateTimeoutMS);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
-        browser.url('/pages/amd/index.html');
-        suite(browser);
+        browser.waitForURL('/pages/amd/index.html', cap.navigateTimeoutMS);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
-        browser.url('/pages/amd-min/index.html');
-        suite(browser);
+        browser.waitForURL('/pages/amd-min/index.html', cap.navigateTimeoutMS);
+        suite(browser, cap);
     });
 
     usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
-        browser.url('/pages/webpack/index.html');
-        suite(browser);
+        browser.waitForURL('/pages/webpack/index.html', cap.navigateTimeoutMS);
+        suite(browser, cap);
     });
 });
 
-function suite(browser) {
+function suite(browser, cap) {
     // Wait for the page to load.
-    $('#name').waitForExist();
+    $('#name').waitForExist(cap.renderTimeoutMS);
 
     // Do the form.
     browser.setValue('#name', 'John');
