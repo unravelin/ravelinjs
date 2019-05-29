@@ -218,7 +218,33 @@ exports.config = {
         global.expect = chai.expect;
         chai.Should();
 
-        // Set up a custom URL helper.
+        /**
+         * browser.waitForURL navigates to url and waits until the browser URL
+         * contains it, timing out after timeout or 10000 milliseconds.
+         */
+        browser.addCommand('waitForURL', function(url, timeout) {
+            let latest = '(none)';
+            try {
+                browser.url(url);
+                return browser.waitUntil(
+                    function () {
+                        latest = browser.getUrl();
+                        return latest.indexOf(url) > -1;
+                    },
+                    timeout,
+                    'timeout'
+                );
+            } catch (e) {
+                if (e.message == 'timeout') {
+                    throw new Error("Timed out waiting for URL starting " + url + ". Last URL was " + latest);
+                }
+                throw e;
+            }
+        });
+        /**
+         * browser.waitForQueryParam waits for the browser URL to define
+         * param=value in the query string.
+         */
         browser.addCommand('waitForQueryParam', function(param, value, timeout) {
             value = encodeURIComponent(value).replace('%20', '+');
             const targetParam = new RegExp('[&?]' + (param + '=' + value).replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '(&|$)');
@@ -230,7 +256,7 @@ exports.config = {
                         latest = browser.getUrl();
                         return targetParam.test(latest);
                     },
-                    timeout || 10000,
+                    timeout,
                     'timeout'
                 );
             } catch (e) {
