@@ -24,9 +24,9 @@ describe('ravelinjs', function() {
             expect(() => ravelin.encrypt({})).to.throw('RavelinJS Key has not been set');
         });
 
-        it('validates pan has at least 13 digits', function() {
+        it('validates pan has at least 12 digits', function() {
             ravelin.setRSAKey(dummyRSAKey);
-            const err = 'RavelinJS validation: pan should have at least 13 digits';
+            const err = 'RavelinJS validation: pan should have at least 12 digits';
             expect(() => ravelin.encrypt({})).to.throw(err);
             expect(() => ravelin.encrypt({pan: '4111 1111'})).to.throw(err);
         });
@@ -105,6 +105,6 @@ function validateCipher(c) {
          c.cardCiphertext != '' && c.cardCiphertext.length > 10 &&
          c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
          c.algorithm == 'RSA_WITH_AES_256_GCM' &&
-         c.ravelinSDKVersion == '0.0.12-ravelinjs' &&
+         c.ravelinSDKVersion == '0.0.13-ravelinjs' &&
          typeof(c.keyIndex) === 'number';
 }

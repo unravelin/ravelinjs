@@ -9,7 +9,7 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
-  var version = '0.0.12';
+  var version = '0.0.13';
 
   var RSAKey = (function(){
     // prng4.js - uses Arcfour as a PRNG
@@ -1033,8 +1033,8 @@
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
-    if (!details.pan || details.pan.length < 13) {
-      throw new Error('RavelinJS validation: pan should have at least 13 digits');
+    if (!details.pan || details.pan.length < 12) {
+      throw new Error('RavelinJS validation: pan should have at least 12 digits');
     }
 
     if (typeof details.month == 'string') {
