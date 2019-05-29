@@ -24,9 +24,9 @@ exports.config = Object.assign(base, {
     // Bail after the first test failure. The cost of running many tests is too
     // high, and it takes too damn long.
     bail: 1,
-    // Up the test timeout to 60s.
     mochaOpts: Object.assign(base.mochaOpts, {
-      timeout: timeoutSeconds * 1000,
+        // Match mocha timeout with browser.
+        timeout: timeoutSeconds * 1000,
     }),
 
     maxInstances: parseInt(process.env.WD_PARALLEL, 10) || 1,
