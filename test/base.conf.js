@@ -231,7 +231,7 @@ exports.config = {
                         latest = browser.getUrl();
                         return latest.indexOf(url) > -1;
                     },
-                    timeout || 10000,
+                    timeout,
                     'timeout'
                 );
             } catch (e) {
@@ -256,7 +256,7 @@ exports.config = {
                         latest = browser.getUrl();
                         return targetParam.test(latest);
                     },
-                    timeout || 10000,
+                    timeout,
                     'timeout'
                 );
             } catch (e) {
