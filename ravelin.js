@@ -85,28 +85,7 @@
       throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
     }
 
-    this.rsaKey = new RSAKey();
-
-    // A client's public RSA key has a structure of either 'exponent|modulus' or 'keyIndex|exponent|modulus'.
-    // The index of a key is roughly equivalent to the version, with each new RSA key pair we
-    // generate for a client having an index of n+1. A single client can have multiple active RSA key pairs,
-    // and we can decomission a key pair as required while allowing all other active versions to operate.
-    //
-    // The first key we issue a client is of index 0. For keys of index 0, we omit this value from the key.
-    // e.g '10001|AA1C1C1EC...`
-    //
-    // For all keys beyond the first, the index is prefixed to key definition.
-    // e.g '1|10001|BB2D2D2FD...'
-    //
-    // For all keys (including those of index 0), the index must be returned from 'encrypt' calls;
-    // the value is needed server-side to determine which private key should be used for decryption.
-    if (split.length === 2) {
-      this.keyIndex = 0;
-      this.rsaKey.setPublic(split[1], split[0]);
-    } else {
-      this.keyIndex = +split[0];
-      this.rsaKey.setPublic(split[2], split[1]);
-    }
+    this.rawPubKey = rawPubKey;
   }
 
   /**
@@ -185,7 +164,7 @@
    * > }
    */
   RavelinJS.prototype.encryptAsObject = function(details) {
-    if (!this.rsaKey) {
+    if (!this.rawPubKey) {
       throw new Error('[ravelinjs] Encryption Key has not been set');
     }
 
@@ -193,9 +172,36 @@
       throw new Error('[ravelinjs] Encryption validation: no details provided');
     }
 
+    // A client's public RSA key has a structure of either 'exponent|modulus' or 'keyIndex|exponent|modulus'.
+    // The index of a key is roughly equivalent to the version, with each new RSA key pair we
+    // generate for a client having an index of n+1. A single client can have multiple active RSA key pairs,
+    // and we can decomission a key pair as required while allowing all other active versions to operate.
+    //
+    // The first key we issue a client is of index 0. For keys of index 0, we omit this value from the key.
+    // e.g '10001|AA1C1C1EC...`
+    //
+    // For all keys beyond the first, the index is prefixed to key definition.
+    // e.g '1|10001|BB2D2D2FD...'
+    //
+    // For all keys (including those of index 0), the index must be returned from 'encrypt' calls;
+    // the value is needed server-side to determine which private key should be used for decryption.
+    var rsaKey = new RSAKey();
+    var keyIndex = 0;
+
+    var split = this.rawPubKey.split('|'); // Validated inside setRSAKey
+
+    if (split.length === 2) {
+      keyIndex = 0;
+      rsaKey.setPublic(split[1], split[0]);
+    } else {
+      keyIndex = +split[0];
+      rsaKey.setPublic(split[2], split[1]);
+    }
+
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
+
     if (!details.pan || details.pan.length < 12) {
       throw new Error('[ravelinjs] Encryption validation: pan should have at least 12 digits');
     }
@@ -205,6 +211,7 @@
     if (typeof details.month == 'string') {
       details.month = parseInt(details.month, 10);
     }
+
     // Months in Javascript start at zero ;)
     if (!(details.month > 0 && details.month < 13)) {
       throw new Error('[ravelinjs] Encryption validation: month should be in the range 1-12');
@@ -216,9 +223,11 @@
     if (typeof details.year === 'string') {
       details.year = parseInt(details.year, 10);
     }
+
     if (details.year > 0 && details.year < 100) {
       details.year += 2000;
     }
+
     if (!(details.year > 2000)) {
       throw new Error('[ravelinjs] Encryption validation: year should be in the 21st century');
     }
@@ -244,7 +253,7 @@
     var aesResult = aesEncrypt(JSON.stringify(details));
 
     // RSA encrypt the key and IV from the previous step, as a single, pipe-delimited string.
-    var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
+    var rsaResultB64 = rsaEncrypt(rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
     // This payload identically matches the structure we expect to be sent to the Ravelin API
     return {
@@ -253,7 +262,7 @@
       aesKeyCiphertext: rsaResultB64,
       algorithm: 'RSA_WITH_AES_256_GCM',
       ravelinSDKVersion: FULL_VERSION_STRING,
-      keyIndex: this.keyIndex
+      keyIndex: keyIndex
     };
   }
 
@@ -590,17 +599,17 @@
 
     var aesBlockCipher = new sjcl.cipher.aes(sessionKey);
     var bits = sjcl.codec.utf8String.toBits(plaintext);
-    var cipher = sjcl.mode.gcm.encrypt(aesBlockCipher, bits, iv, null, 128);
+    var ciphertext = sjcl.mode.gcm.encrypt(aesBlockCipher, bits, iv, null, 128);
 
     return {
-      ciphertextB64: sjcl.codec.base64.fromBits(cipher),
+      ciphertextB64: sjcl.codec.base64.fromBits(ciphertext),
       aesKeyB64: sjcl.codec.base64.fromBits(sessionKey),
       ivB64: sjcl.codec.base64.fromBits(iv)
     };
   }
 
-  function rsaEncrypt(rsa, aesKeyB64, ivB64) {
-    var encryptedHex = rsa.encrypt(aesKeyB64 + '|' + ivB64);
+  function rsaEncrypt(pubKey, aesKeyB64, ivB64) {
+    var encryptedHex = pubKey.encrypt(aesKeyB64 + '|' + ivB64);
     var encryptedBits = sjcl.codec.hex.toBits(encryptedHex);
     var aesKeyAndIVCiphertextBase64 = sjcl.codec.base64.fromBits(encryptedBits);
 
