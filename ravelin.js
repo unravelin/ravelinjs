@@ -14,7 +14,7 @@
   var FULL_VERSION_STRING = RAVELINJS_VERSION + '-ravelinjs';
 
   // URLs
-  var API_URL = 'https://api.ravelin.com';
+  var API_URL = 'https://api.ravelin.net';
   var FINGERPRINT_URL = API_URL + '/v2/fingerprint?source=browser';
   var CLICKSTREAM_URL = API_URL + '/v2/click';
 
@@ -35,7 +35,7 @@
   var LOGOUT_EVENT_NAME = 'LOGOUT';
 
   // Misc
-  var NO_EXPIRE = new Date((new Date()).setDate(10000));
+  var THIRTEEN_MONTHS = 339552e5; // 393 days as ms (393 * 86400 * 1000)
 
   /**
    * Default constructor for a ravelinjs instance. Not exported. Instead, it is invoked during script loading
@@ -196,8 +196,8 @@
     if (details.pan) {
       details.pan = details.pan.toString().replace(/[^0-9]/g, '');
     }
-    if (!details.pan || details.pan.length < 13) {
-      throw new Error('[ravelinjs] Encryption validation: pan should have at least 13 digits');
+    if (!details.pan || details.pan.length < 12) {
+      throw new Error('[ravelinjs] Encryption validation: pan should have at least 12 digits');
     }
 
     // We accept the month as an int or string, specified as one or two digits.
@@ -397,8 +397,10 @@
 
     this.cookieDomain = domain;
 
+    var expiry = new Date(new Date().getTime() + THIRTEEN_MONTHS);
+
     // Maintain the same device/sessionIds, but store them now under the new domain
-    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null, this.cookieDomain);
+    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expiry, null, this.cookieDomain);
     writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
   }
 
@@ -445,15 +447,16 @@
       return;
     }
 
+    var expiry = new Date(new Date().getTime() + THIRTEEN_MONTHS);
     if (this.deviceId) {
       // If deviceId is present in instance but not cookies, ensure it is also assigned to our cookies
-      writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null);
+      writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expiry, null);
       return;
     }
 
     // If no deviceId located, instantiate one and write to cookies
     this.deviceId = 'rjs-' + this.uuid();
-    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, NO_EXPIRE, null);
+    writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expiry, null);
   }
 
   /**
@@ -826,7 +829,8 @@
           if (xhr.status >= 200 && xhr.status < 300 && cb) {
             handleCallback(cb);
           } else if (xhr.status > 400 && cb) {
-            handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to ' + url + '. ' + xhr.responseText));
+            handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to '
+              + url + '. ' + xhr.responseText));
           }
         }
       };

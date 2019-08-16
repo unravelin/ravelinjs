@@ -2,35 +2,33 @@ describe('ravelinjs', function() {
   const cap = browser.desiredCapabilities;
 
   it('can be used with a script tag', function() {
-    runSuiteWithOneRetry('/pages/scripttag/index.html');
+    runSuiteWithOneRetry('/pages/scripttag/index.html', cap);
   });
 
   it('can be used minified with a script tag', function() {
-    runSuiteWithOneRetry('/pages/scripttag-min/index.html');
+    runSuiteWithOneRetry('/pages/scripttag-min/index.html', cap);
   });
 
   usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
-    runSuiteWithOneRetry('/pages/amd/index.html');
+    runSuiteWithOneRetry('/pages/amd/index.html', cap);
   });
 
   usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
-    runSuiteWithOneRetry('/pages/amd-min/index.html');
+    runSuiteWithOneRetry('/pages/amd-min/index.html', cap);
   });
 
   usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
-    runSuiteWithOneRetry('/pages/webpack/index.html');
+    runSuiteWithOneRetry('/pages/webpack/index.html', cap);
   });
 });
 
 
-function runSuiteWithOneRetry(page) {
+function runSuiteWithOneRetry(page, cap) {
   try {
-    browser.url(page);
-    browser.pause(500);
+    browser.waitForURL(page);
     suite();
   } catch(e) {
-    browser.url(page);
-    browser.pause(500);
+    browser.waitForURL(page, cap.navigateTimeoutMS);
     suite();
   }
 }

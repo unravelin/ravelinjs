@@ -40,10 +40,10 @@ describe('ravelinjs', function() {
   console.log('OrderId:', orderId);
 
   it('loads the page', function() {
-    browser.url('/pages/scripttag/index.html');
+    browser.waitForURL('/pages/scripttag/index.html', 12000);
 
     // We want to run this e2e test from our staging environment, so we need to hack the XHR 'open' function
-    // to manipulate the URL passed in. We want to add '-staging' to the hardcoded https://api.ravelin.com url.
+    // to manipulate the URL passed in. We want to add '-staging' to the hardcoded https://api.ravelin.net url.
     // We do this by passing some Javascript to be executed in the context of our browser.
     browser.execute(function() {
       var baseImp = window.XMLHttpRequest.prototype.open;

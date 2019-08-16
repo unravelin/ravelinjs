@@ -217,9 +217,9 @@ describe('ravelinjs', function() {
       expect(() => ravelin.encrypt(false)).to.throw(err);
     });
 
-    it('validates pan has at least 13 digits', function() {
+    it('validates pan has at least 12 digits', function() {
       ravelin.setRSAKey(dummyRSAKey);
-      const err = '[ravelinjs] Encryption validation: pan should have at least 13 digits';
+      const err = '[ravelinjs] Encryption validation: pan should have at least 12 digits';
       expect(() => ravelin.encrypt({})).to.throw(err);
       expect(() => ravelin.encrypt({pan: '4111 1111'})).to.throw(err);
     });
@@ -334,7 +334,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -374,7 +374,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackPage(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -391,7 +391,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -419,7 +419,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -455,7 +455,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackLogin(null, null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -474,7 +474,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -517,7 +517,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackLogout(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -536,7 +536,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -566,7 +566,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -590,7 +590,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -614,7 +614,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/click');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/click');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody).events[0];
@@ -649,7 +649,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.track(null, null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/click');
+        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -718,7 +718,7 @@ describe('ravelinjs', function() {
 
       expect(result.browser).to.equal('Unknown');
       expect(result.javascriptEnabled).to.equal(true);
-      expect(result.timezoneOffset).to.equal(0);
+      expect(result.timezoneOffset).to.equal(new Date().getTimezoneOffset());
     });
 
     it('sends device info to ravelin', () => {
@@ -727,7 +727,7 @@ describe('ravelinjs', function() {
       const trackReq = reqs[0];
       trackReq.respond(200, { 'Content-Type': 'application/json' }, '');
 
-      expect(trackReq.url).to.equal('https://api.ravelin.com/v2/fingerprint?source=browser');
+      expect(trackReq.url).to.equal('https://api.ravelin.net/v2/fingerprint?source=browser');
       expect(trackReq.method).to.equal('POST');
 
       const body = JSON.parse(trackReq.requestBody);
@@ -740,7 +740,7 @@ describe('ravelinjs', function() {
       expect(body.customerId).to.equal('123456789');
       expect(body.browser.browser).to.equal('Unknown');
       expect(body.browser.javascriptEnabled).to.equal(true);
-      expect(body.browser.timezoneOffset).to.equal(0);
+      expect(body.browser.timezoneOffset).to.equal(new Date().getTimezoneOffset());
     });
 
     it('track fingeprint event (with callback, no error)', (done) => {
@@ -761,7 +761,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackFingerprint(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.com/v2/fingerprint?source=browser');
+        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/fingerprint?source=browser');
         done();
       });
 
