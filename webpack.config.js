@@ -3,11 +3,14 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   devtool: false,
-  entry: path.resolve(__dirname, 'src/index.js'),
+  entry: {
+    'ravelin': path.resolve(__dirname, 'src/ravelin.js'),
+    'ravelin-no-encrypt': path.resolve(__dirname, 'src/ravelin-no-encrypt.js'),
+  },
   output: {
     pathinfo: false,
     path: path.resolve(__dirname, 'dist'),
-    filename: 'ravelin.js',
+    filename: '[name].js',
     library: 'ravelinjs',
     libraryTarget: 'umd',
   },
