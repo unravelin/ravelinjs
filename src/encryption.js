@@ -1,4 +1,5 @@
-var RavelinJS = require('./main');
+var RavelinJS = require('./core');
+var FULL_VERSION_STRING = require('./version');
 
 /**
  * encrypt performs the encrypt process for the provided card details and prepares them to be sent

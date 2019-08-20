@@ -1,3 +1,3 @@
-require('./main');
+require('./core');
 
 module.exports = require('./init');

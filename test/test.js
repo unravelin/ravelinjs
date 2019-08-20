@@ -14,8 +14,8 @@ describe('ravelinjs', function() {
     window = undefined;
 
     // Reinstantiate a fresh ravelinjs instance at the start of every test in every suite
-    delete require.cache[require.resolve('../ravelin')];
-    ravelin = require('../ravelin');
+    delete require.cache[require.resolve('../src/ravelin')];
+    ravelin = require('../src/ravelin');
   });
 
   describe('tracking IDs', function() {

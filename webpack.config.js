@@ -14,7 +14,4 @@ module.exports = {
     library: 'ravelinjs',
     libraryTarget: 'umd',
   },
-  externals: {
-    crypto: 'crypto',
-  },
 };
