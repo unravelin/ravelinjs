@@ -1,1 +1,1 @@
-../../../ravelin.js
+../../../dist/ravelin.js

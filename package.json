@@ -5,7 +5,7 @@
     "node": ">=10.x"
   },
   "description": "Ravelin's Javascript Library.",
-  "main": "ravelin.js",
+  "main": "./dist/ravelin.js",
   "scripts": {
     "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",
     "minify-latest": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js && cp ravelin.min.js ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
