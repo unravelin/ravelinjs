@@ -7,8 +7,8 @@
   "description": "Ravelin's Javascript Library.",
   "main": "./dist/ravelin.js",
   "scripts": {
-    "minify": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js",
-    "minify-latest": "uglifyjs --support-ie8 -o ravelin.min.js ravelin.js && cp ravelin.min.js ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
+    "minify": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js",
+    "minify-latest": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js && cp ./dist/ravelin.min.js ./dist/ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
     "test": "mocha -C test/test.js",
     "test-cover": "nyc --reporter=html mocha -C test/test.js",
     "test-debug": "mocha --inspect-brk test/test.js",
@@ -18,7 +18,7 @@
     "webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
     "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'",
-    "go-sri": "sri -out=sri.json -hash=all ravelin.js ravelin.min.js",
+    "go-sri": "sri -out=sri.json -hash=all ./dist/ravelin.js ./dist/ravelin.min.js",
     "new": "webpack"
   },
   "repository": {
@@ -32,6 +32,7 @@
   },
   "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
+    "@wdio/cli": "5.12.5",
     "appium": "1.14.1",
     "appium-doctor": "1.11.1",
     "cbt_tunnels": "0.9.10",
