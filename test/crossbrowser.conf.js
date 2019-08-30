@@ -48,9 +48,9 @@ exports.config = Object.assign(base, {
         // },
         {
             build: 'ravelinjs 1.0',
-            name: 'win8 chrome18',
+            name: 'win8 chrome50',
             browserName: 'Chrome',
-            version: '18',
+            version: '50',
             platform: 'Windows 8',
         },
         // Safari.
