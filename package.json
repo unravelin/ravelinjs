@@ -2,7 +2,7 @@
   "name": "ravelinjs",
   "version": "1.0.0",
   "engines": {
-    "node": ">=10.x"
+    "node": ">=8.x"
   },
   "description": "Ravelin's Javascript Library.",
   "main": "./dist/ravelin.js",
@@ -32,7 +32,6 @@
   },
   "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
-    "@wdio/cli": "5.12.5",
     "appium": "1.14.1",
     "appium-doctor": "1.11.1",
     "cbt_tunnels": "0.9.10",
@@ -47,7 +46,7 @@
     "wdio-junit-reporter": "0.4.4",
     "wdio-mocha-framework": "0.6.4",
     "wdio-spec-reporter": "0.1.5",
-    "webdriverio": "5.12.1",
+    "webdriverio": "4.14.1",
     "webpack": "4.39.2",
     "webpack-cli": "3.3.7"
   }
