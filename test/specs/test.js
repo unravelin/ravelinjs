@@ -22,7 +22,6 @@ describe('ravelinjs', function() {
   });
 });
 
-
 function runSuiteWithOneRetry(page, cap) {
   try {
     browser.waitForURL(page);

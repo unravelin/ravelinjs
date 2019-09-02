@@ -48,9 +48,9 @@ exports.config = Object.assign(base, {
         },
         {
             build: 'ravelinjs 1.0',
-            name: 'win8 chrome18',
+            name: 'win8 chrome50',
             browserName: 'Chrome',
-            version: '18',
+            version: '50',
             platform: 'Windows 8',
         },
         // Safari.
@@ -96,9 +96,9 @@ exports.config = Object.assign(base, {
         // Edge.
         {
             build: 'ravelinjs 1.0',
-            name: 'win10 edge14',
+            name: 'win10 edge17',
             browserName: 'MicrosoftEdge',
-            version: '14',
+            version: '17',
             platform: 'Windows 10',
             screenResolution: '1366x768',
         },
@@ -142,9 +142,10 @@ exports.config = Object.assign(base, {
         // Android
         {
           build: 'ravelinjs 1.0',
+          name: 'android5 chromeLatest',
           browserName: 'Chrome',
-          deviceName: 'Nexus 9',
-          platformVersion: '6.0',
+          deviceName: 'Nexus 6',
+          platformVersion: '5.0',
           platformName: 'Android',
           deviceOrientation: 'portrait',
         },
@@ -157,14 +158,18 @@ exports.config = Object.assign(base, {
           platformVersion: '11.0',
           platformName: 'iOS',
           deviceOrientation: 'portrait',
+
+          max_duration: 180,
+          navigateTimeoutMS: 60000,
+          renderTimeoutMS: 60000,
         },
     ].map(function(c) {
-      // Apply a maximum duration of 1 minute to each test case.
-      c.max_duration = c.max_duration || timeoutSeconds;
-      return c;
+        // Apply a maximum duration of 1 minute to each test case.
+        c.max_duration = c.max_duration || timeoutSeconds;
+        return c;
     }).filter(
-      // Filter the capabilities by name if there's a BROWSERS envvar.
-      !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
+        // Filter the capabilities by name if there's a BROWSERS envvar.
+        !process.env.BROWSERS ? () => true : (b) => !!~b.name.toLowerCase().indexOf(process.env.BROWSERS.toLowerCase())
     ),
 
     /**
