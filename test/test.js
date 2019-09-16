@@ -8,14 +8,24 @@ const expectedVersion = '1.0.0-ravelinjs';
 describe('ravelinjs', function() {
   var ravelin;
 
+  before(() => {
+    // `require` can't be used with Webpack because it will try to parse it
+    // but we need the original functionality when testing from source
+    global.__non_webpack_require__ = require;
+  });
+
   beforeEach('reset the ravelin library', function() {
     // Ensure we always start tests without access to document/window (some tests will be stubbing them)
     document = undefined;
     window = undefined;
 
     // Reinstantiate a fresh ravelinjs instance at the start of every test in every suite
-    delete require.cache[require.resolve('../ravelin')];
-    ravelin = require('../ravelin');
+    delete require.cache[require.resolve('../src/core')];
+    delete require.cache[require.resolve('../src/encryption')];
+    delete require.cache[require.resolve('../src/init')];
+    delete require.cache[require.resolve('../src/version')];
+    delete require.cache[require.resolve('../src/ravelin')];
+    ravelin = require('../src/ravelin');
   });
 
   describe('tracking IDs', function() {
