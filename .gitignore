@@ -62,8 +62,9 @@ typings/
 
 ravelin.min.js
 *.min.js
-sri.json
+*.sri
 cipher.txt
 deviceid.txt
 sessionid.txt
 dist/
+releases/

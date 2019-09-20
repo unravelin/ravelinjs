@@ -7,19 +7,24 @@
   "description": "Ravelin's Javascript Library.",
   "main": "./dist/ravelin.js",
   "scripts": {
-    "minify": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js",
-    "minify-latest": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js && cp ./dist/ravelin.min.js ./dist/ravelin-$(node -e 'console.log(require(\"./package.json\").version)').min.js",
+    "webpack": "webpack",
+    "minify": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js && uglifyjs --support-ie8 -o ./dist/ravelin-no-encrypt.min.js ./dist/ravelin-no-encrypt.js",
+
+    "release": "npm run minify && npm run webpack && npm run release-mkdir && npm run release-rename && npm run release-sri",
+    "release-mkdir": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && mkdir -p ./releases && mkdir -p ./releases/$VERSION",
+    "release-rename": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && cp ./dist/ravelin.min.js ./releases/$VERSION/ravelin-$VERSION.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$VERSION/ravelin-no-encrypt-$VERSION.min.js",
+    "release-sri": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && sri -out=./releases/$VERSION/sri.json -hash=all ./releases/$VERSION",
+
     "test": "mocha -C test/test.js",
     "test-cover": "nyc --reporter=html mocha -C test/test.js",
     "test-debug": "mocha --inspect-brk test/test.js",
     "test-appium": "npm run minify && wdio ./test/appium.conf.js",
     "test-crossbrowser": "npm run minify && wdio ./test/crossbrowser.conf.js",
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
-    "webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
-    "live-crossbrowser": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
-    "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'",
-    "go-sri": "sri -out=sri.json -hash=all ./dist/ravelin.js ./dist/ravelin.min.js",
-    "new": "webpack"
+    "testpage-webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
+    "test-crossbrowser-live": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
+
+    "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },
   "repository": {
     "type": "git",

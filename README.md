@@ -1,12 +1,10 @@
 # ravelinjs
 
-`ravelinjs` provides a means of sending card data to Ravelin without having to handle PCI-compliant data.
-
-The library is intended to work on web pages where you have
-access to the PAN that the customer has entered. Note that storing this data in
-any form on your servers opens them to the PCI compliance requirements. Passing
-through the encrypted values provided by this library avoids your servers
-handling any sensitive data.
+`ravelinjs` is used to gather fraud prevention data points from customer sessions. This primarily consists of:
+    - device identifiers
+    - device information
+    - session information
+    - encrypted card details
 
 ## Usage Guide
 
@@ -16,27 +14,34 @@ The ravelin library can be used as a dependency in AMD modules; imported into
 scripts bundled using webpack; or by dropping a `<script src="ravelin.min.js">`
 into your web page.
 
-Examples:
+### Instantiation
+The first thing you will need to do once the page has loaded is to initialise the state of the instance:
+```
+ravelinjs.setPublicAPIKey('pk_live_...'); // your public API key is available from the Ravelin dashboard
 
-* [Loading from a `<script>` as `ravelinjs`](test/pages/scripttag) (just use it)
-* [Loading into requirejs](test/pages/amd) (just list it as a dependency)
-* [Bundling with webpack](test/pages/webpack) (just import it)
+ravelinjs.setCustomerId('cust123'); // if the customerId is currently known, you can set it...
+ravelinjs.setTempCustomerId('session_abc123...'); // ...else, do you have a temporary customerId you can use?
+ravelinjs.setOrderId('order123'); // if the orderId is currently known, you can set it
 
-### Encrypting Cards
+ravelinjs.setPublicRSAKey('10001|BB2...'); // if using client-side encryption, you must also set the public RSA key
 
-The primary goal of ravelinjs is to allow the secure sharing of card information
-with Ravelin without merchants having to handle PCI-compliant data.
+```
+### Assigning DeviceIds (Required)
 
-When collecting card details, encrypt the values to send to Ravelin using
+On instantiation, ravelinjs will set a `ravelinDeviceId` cookie in the browser. This value will either be a previously assigned deviceId (from a previous session), or a newly generated UUID unique if no prior value was detected. Extract this cookie from requests to your servers to include it in future Ravelin API requests.
+
+### Encrypting Cards (Optional)
+
+If you wish to use our [client-side encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details) offering, you can encrypt the values to send to Ravelin using
 `ravelinjs.encrypt({pan, month, year, nameOnCard})`.
 
 `pan`, `month`, `year` are required, whilst `nameOnCard` is optional, and no other properties are allowed
-on the object. Some slight validation is performed, and should any fail an
-exception is raised.
+on the object. Validation is performed on the length of the PAN and expiry dates; failures cause an
+exception to be raised.
 
 ### Tracking Page Activity
 
-Using ravelinjs, the `setPublicAPIKey` (called immediately), `track`, and
+The `track`, and
 `trackPage` (call on page load) methods can be used instead of the [device
 fingerprinting snippet][device-track]. See the example below for more.
 
@@ -88,7 +93,8 @@ and send that encrypted value (the cipher) back to your server.
 </script>
 ```
 
-Once the cipher value is received by your server, it should be used in the API request to Ravelin to obtain a fraud recommendation:
+Once the cipher value is received by your server, it should be used in the API request to Ravelin to obtain a
+fraud recommendation:
 
 ```js
 /* Server-side */
@@ -104,26 +110,14 @@ var action = request('https://api.ravelin.com/v2/checkout?score=true', {
 
 ## Browser Support
 
-Ravelin tests this library using [many browsers](test/crossbrowser.conf.js). Older
-browser support is provided, but there are caveats on IE10 and other older
-browsers who do not implement any `window.crypto`-like API. In these cases,
-entropy is collected from user activity on the browser. In cases where
-insufficient entropy is collected before `encrypt` is called, an exception is
-thrown. This API will be tidied up in future.
+Ravelin tests this library using [many browsers](test/crossbrowser.conf.js). Older browser support is
+provided, but there are caveats on IE10 and other older browsers who do not implement any `window.crypto`-like
+API. In these cases, entropy is collected from user activity on the browser. In cases where insufficient
+entropy is collected before `encrypt` is called, an exception is thrown. This API will be tidied up in future.
 
 ## Bundled Code
 
-This library would not have been possible without the stellar works
-upon which it relies:
+This library would not have been possible without the stellar works upon which it relies:
 
 * http://bitwiseshiftleft.github.io/sjcl/ (MIT)
 * http://www-cs-students.stanford.edu/~tjw/jsbn/ (BSD)
-
-## Library Roadmap
-
-* Tidy up exceptions used in older browsers where insufficient entropy is
-  available when trying to encrypt
-  
-* Provide recommedations for how to handle exceptions.
-
-[device-track]: https://developer.ravelin.com/v2/#device-tracking
