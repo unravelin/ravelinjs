@@ -11,12 +11,10 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        path.resolve(__dirname, 'specs/test.js'),
+      path.resolve(__dirname, 'specs/test.js'),
     ],
     // Patterns to exclude.
-    exclude: [
-        // 'path/to/excluded/files'
-    ],
+    exclude: [],
     //
     // ============
     // Capabilities
@@ -132,8 +130,8 @@ exports.config = {
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
-        ui: 'bdd',
-        timeout: 30000,
+      ui: 'bdd',
+      timeout: 30000,
     },
 
     // Test reporter for stdout.
@@ -141,9 +139,9 @@ exports.config = {
     // see also: http://webdriver.io/guide/reporters/dot.html
     reporters: ['junit', 'spec'],
     reporterOptions: {
-        junit: {
-            outputDir: __dirname + '/junit/'
-        }
+      junit: {
+        outputDir: __dirname + '/junit/'
+      }
     },
     //
     // =====
@@ -159,31 +157,31 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      */
     onPrepare: function (config, capabilities) {
-        return Promise.all(this.onPrepares.map(fn => fn(config, capabilities)).filter(Boolean));
+      return Promise.all(this.onPrepares.map(fn => fn(config, capabilities)).filter(Boolean));
     },
     onPrepares: [
-        function webpackTestPage() {
-            return new Promise(function(resolve, reject) {
-                const path = require('path');
-                console.log('Webpack: setting up test/pages/webpack.');
+      function webpackTestPage() {
+        return new Promise(function(resolve, reject) {
+          const path = require('path');
+          console.log('Webpack: setting up test/pages/webpack.');
 
-                require('webpack')({
-                    entry: path.resolve(__dirname, 'pages/webpack/index.js'),
-                    output: {
-                        path: path.resolve(__dirname, 'pages/webpack'),
-                        filename: 'bundle.js',
-                    },
-                }, function(err, stats) {
-                    if (err) {
-                        console.error('Webpack: errored.');
-                        reject(err);
-                    } else {
-                        console.log('Webpack: set up.');
-                        resolve(stats);
-                    }
-                });
-            });
-        }
+          require('webpack')({
+            entry: path.resolve(__dirname, 'pages/webpack/index.js'),
+            output: {
+              path: path.resolve(__dirname, 'pages/webpack'),
+              filename: 'bundle.js',
+            },
+          }, function(err, stats) {
+            if (err) {
+              console.error('Webpack: errored.');
+              reject(err);
+            } else {
+              console.log('Webpack: set up.');
+              resolve(stats);
+            }
+          });
+        });
+      }
     ],
 
     /**
@@ -202,7 +200,7 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      */
     onComplete: function(exitCode, config, capabilities) {
-        return Promise.all(this.onCompletes.map(fn => fn(exitCode, config, capabilities)).filter(Boolean));
+      return Promise.all(this.onCompletes.map(fn => fn(exitCode, config, capabilities)).filter(Boolean));
     },
     onCompletes: [],
 
@@ -213,59 +211,59 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
     before: function (capabilities, specs) {
-        // Set up Chai.
-        var chai = require('chai');
-        global.expect = chai.expect;
-        chai.Should();
+      // Set up Chai.
+      var chai = require('chai');
+      global.expect = chai.expect;
+      chai.Should();
 
-        /**
-         * browser.waitForURL navigates to url and waits until the browser URL
-         * contains it, timing out after timeout or 10000 milliseconds.
-         */
-        browser.addCommand('waitForURL', function(url, timeout) {
-            let latest = '(none)';
-            try {
-                browser.url(url);
-                return browser.waitUntil(
-                    function () {
-                        latest = browser.getUrl();
-                        return latest.indexOf(url) > -1;
-                    },
-                    timeout,
-                    'timeout'
-                );
-            } catch (e) {
-                if (e.message == 'timeout') {
-                    throw new Error("Timed out waiting for URL starting " + url + ". Last URL was " + latest);
-                }
-                throw e;
-            }
-        });
-        /**
-         * browser.waitForQueryParam waits for the browser URL to define
-         * param=value in the query string.
-         */
-        browser.addCommand('waitForQueryParam', function(param, value, timeout) {
-            value = encodeURIComponent(value).replace('%20', '+');
-            const targetParam = new RegExp('[&?]' + (param + '=' + value).replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '(&|$)');
+      /**
+       * browser.waitForURL navigates to url and waits until the browser URL
+       * contains it, timing out after timeout or 10000 milliseconds.
+       */
+      browser.addCommand('waitForURL', function(url, timeout) {
+        let latest = '(none)';
+        try {
+          browser.url(url);
+          return browser.waitUntil(
+            function () {
+              latest = browser.getUrl();
+              return latest.indexOf(url) > -1;
+            },
+            timeout,
+            'timeout'
+          );
+        } catch (e) {
+          if (e.message == 'timeout') {
+            throw new Error("Timed out waiting for URL starting " + url + ". Last URL was " + latest);
+          }
+          throw e;
+        }
+      });
+      /**
+       * browser.waitForQueryParam waits for the browser URL to define
+       * param=value in the query string.
+       */
+      browser.addCommand('waitForQueryParam', function(param, value, timeout) {
+        value = encodeURIComponent(value).replace('%20', '+');
+        const targetParam = new RegExp('[&?]' + (param + '=' + value).replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '(&|$)');
 
-            var latest;
-            try {
-                return browser.waitUntil(
-                    function () {
-                        latest = browser.getUrl();
-                        return targetParam.test(latest);
-                    },
-                    timeout,
-                    'timeout'
-                );
-            } catch (e) {
-                if (e.message == 'timeout') {
-                    throw new Error("Timed out waiting for URL with query param " + param + "=" + value + ". Last URL was " + latest);
-                }
-                throw e;
-            }
-        });
+        var latest;
+        try {
+          return browser.waitUntil(
+            function () {
+              latest = browser.getUrl();
+              return targetParam.test(latest);
+            },
+            timeout,
+            'timeout'
+          );
+        } catch (e) {
+          if (e.message == 'timeout') {
+            throw new Error("Timed out waiting for URL with query param " + param + "=" + value + ". Last URL was " + latest);
+          }
+          throw e;
+        }
+      });
     },
 
     /**

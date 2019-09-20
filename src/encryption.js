@@ -2,6 +2,57 @@ var RavelinJS = require('./core');
 var FULL_VERSION_STRING = require('./version');
 
 /**
+ * setRSAKey configures RavelinJS with the given public encryption key, in the format that
+ * Ravelin provides it. You can find your public RSA key inside the Ravelin dashboard.
+ *
+ * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
+ * @example
+ * ravelinjs.setRSAKey('10010|abc123...xyz789');
+ */
+RavelinJS.prototype.setRSAKey = function(rawPubKey) {
+  if (typeof rawPubKey !== 'string') {
+    throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
+  }
+
+  // A client's public RSA key has a structure of either 'exponent|modulus' or 'keyIndex|exponent|modulus'.
+  // The index of a key is roughly equivalent to the version, with each new RSA key pair we
+  // generate for a client having an index of n+1. A single client can have multiple active RSA key pairs,
+  // and we can decomission a key pair as required while allowing all other active versions to operate.
+  //
+  // The first key we issue a client is of index 0. For keys of index 0, we omit this value from the key.
+  // e.g '10001|AA1C1C1EC...`
+  //
+  // For all keys beyond the first, the index is prefixed to key definition.
+  // e.g '1|10001|BB2D2D2FD...'
+  //
+  // For all keys (including those of index 0), the index must be returned from 'encrypt' calls;
+  // the value is needed server-side to determine which private key should be used for decryption.
+  var split = rawPubKey.split('|');
+  if (split.length < 2 || split.length > 3) {
+    throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
+  }
+
+  var rsaKey = new RSAKey();
+  var keyIndex = 0;
+
+  var modulus, exponent;
+  if (split.length === 2) {
+    keyIndex = 0;
+    modulus = split[1];
+    exponent = split[0];
+  } else {
+    keyIndex = +split[0];
+    modulus = split[2];
+    exponent = split[1];
+  }
+
+  rsaKey.setPublic(modulus, exponent); // params specified in reverse order to how we defined the key
+
+  this.keyIndex = keyIndex;
+  this.rsaKey = rsaKey;
+}
+
+/**
  * encrypt performs the encrypt process for the provided card details and prepares them to be sent
  * to Ravelin, with the resulting payload returned as a string.
  *
@@ -31,41 +82,16 @@ RavelinJS.prototype.encrypt = function(details) {
  * >  aesKeyCiphertext: "def....tuv==",
  * >  algorithm: "RSA_WITH_AES_256_GCM",
  * >  ravelinSDKVersion: "0.0.1-ravelinjs",
+ * >  pubKeySig: "ghi...qrs=="
  * > }
  */
 RavelinJS.prototype.encryptAsObject = function(details) {
-  if (!this.rawPubKey) {
+  if (!this.rsaKey) {
     throw new Error('[ravelinjs] Encryption Key has not been set');
   }
 
   if (!details) {
     throw new Error('[ravelinjs] Encryption validation: no details provided');
-  }
-
-  // A client's public RSA key has a structure of either 'exponent|modulus' or 'keyIndex|exponent|modulus'.
-  // The index of a key is roughly equivalent to the version, with each new RSA key pair we
-  // generate for a client having an index of n+1. A single client can have multiple active RSA key pairs,
-  // and we can decomission a key pair as required while allowing all other active versions to operate.
-  //
-  // The first key we issue a client is of index 0. For keys of index 0, we omit this value from the key.
-  // e.g '10001|AA1C1C1EC...`
-  //
-  // For all keys beyond the first, the index is prefixed to key definition.
-  // e.g '1|10001|BB2D2D2FD...'
-  //
-  // For all keys (including those of index 0), the index must be returned from 'encrypt' calls;
-  // the value is needed server-side to determine which private key should be used for decryption.
-  var rsaKey = new RSAKey();
-  var keyIndex = 0;
-
-  var split = this.rawPubKey.split('|'); // Validated inside setRSAKey
-
-  if (split.length === 2) {
-    keyIndex = 0;
-    rsaKey.setPublic(split[1], split[0]);
-  } else {
-    keyIndex = +split[0];
-    rsaKey.setPublic(split[2], split[1]);
   }
 
   if (details.pan) {
@@ -123,7 +149,7 @@ RavelinJS.prototype.encryptAsObject = function(details) {
   var aesResult = aesEncrypt(JSON.stringify(details));
 
   // RSA encrypt the key and IV from the previous step, as a single, pipe-delimited string.
-  var rsaResultB64 = rsaEncrypt(rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
+  var rsaResultB64 = rsaEncrypt(this.rsaKey, aesResult.aesKeyB64, aesResult.ivB64);
 
   // This payload identically matches the structure we expect to be sent to the Ravelin API
   return {
@@ -132,29 +158,8 @@ RavelinJS.prototype.encryptAsObject = function(details) {
     aesKeyCiphertext: rsaResultB64,
     algorithm: 'RSA_WITH_AES_256_GCM',
     ravelinSDKVersion: FULL_VERSION_STRING,
-    keyIndex: keyIndex
+    keyIndex: this.keyIndex
   };
-}
-
-/**
- * setRSAKey configures RavelinJS with the given public encryption key, in the format that
- * Ravelin provides it. You can find your public RSA key inside the Ravelin dashboard.
- *
- * @param {String} rawPubKey The public RSA key provided by Ravelin, used to encrypt card details.
- * @example
- * ravelinjs.setRSAKey('10010|abc123...xyz789');
- */
-RavelinJS.prototype.setRSAKey = function(rawPubKey) {
-  if (typeof rawPubKey !== 'string') {
-    throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
-  }
-
-  var split = rawPubKey.split('|');
-  if (split.length < 2 || split.length > 3) {
-    throw new Error('[ravelinjs] Invalid value provided to RavelinJS.setRSAKey');
-  }
-
-  this.rawPubKey = rawPubKey;
 }
 
 // ========================================================================================================

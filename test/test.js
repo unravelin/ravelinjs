@@ -5,8 +5,17 @@ const dummyRSAKey = '10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B83934
 const dummyRSAKeyWithIndex = '2|10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601';
 const expectedVersion = '1.0.0-ravelinjs';
 
-describe('ravelinjs', function() {
+describe('ravelin.js', function() {
   var ravelin;
+
+  function reset() {
+    delete require.cache[require.resolve('../src/core')];
+    delete require.cache[require.resolve('../src/encryption')];
+    delete require.cache[require.resolve('../src/init')];
+    delete require.cache[require.resolve('../src/version')];
+    delete require.cache[require.resolve('../src/ravelin')];
+    ravelin = require('../src/ravelin');
+  }
 
   before(() => {
     // `require` can't be used with Webpack because it will try to parse it
@@ -20,12 +29,7 @@ describe('ravelinjs', function() {
     window = undefined;
 
     // Reinstantiate a fresh ravelinjs instance at the start of every test in every suite
-    delete require.cache[require.resolve('../src/core')];
-    delete require.cache[require.resolve('../src/encryption')];
-    delete require.cache[require.resolve('../src/init')];
-    delete require.cache[require.resolve('../src/version')];
-    delete require.cache[require.resolve('../src/ravelin')];
-    ravelin = require('../src/ravelin');
+    reset();
   });
 
   describe('tracking IDs', function() {
@@ -58,8 +62,7 @@ describe('ravelinjs', function() {
       };
 
       // Reset instance so we can instantiate from cookie
-      delete require.cache[require.resolve('../ravelin')];
-      ravelin = require('../ravelin');
+      reset();
 
       expect(ravelin.getDeviceId()).to.equal('rjs-123-abc');
     });
@@ -88,8 +91,7 @@ describe('ravelinjs', function() {
       };
 
       // Reset instance so we can instantiate from cookie
-      delete require.cache[require.resolve('../ravelin')];
-      ravelin = require('../ravelin');
+      reset();
 
       expect(ravelin.getSessionId()).to.equal('345-zyx');
     });
@@ -280,9 +282,9 @@ describe('ravelinjs', function() {
       ravelin.setRSAKey(dummyRSAKey);
 
       var result = ravelin.encryptAsObject({
-          pan: '4111 1111 1111 1111',
-          month: 10,
-          year: 2020,
+        pan: '4111 1111 1111 1111',
+        month: 10,
+        year: 2020,
       });
 
       expect(result).to.satisfy(assertCipher);
@@ -384,7 +386,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackPage(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
+        assertError(err, 'Error occurred sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -465,7 +467,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackLogin(null, null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
+        assertError(err, 'Error occurred sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -527,7 +529,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.trackLogout(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
+        assertError(err, 'Error occurred sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -659,7 +661,7 @@ describe('ravelinjs', function() {
       var callbackTrigged = false;
       ravelin.track(null, null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/click');
+        assertError(err, 'Error occurred sending payload to https://api.ravelin.net/v2/click');
         done();
       });
 
@@ -753,7 +755,7 @@ describe('ravelinjs', function() {
       expect(body.browser.timezoneOffset).to.equal(new Date().getTimezoneOffset());
     });
 
-    it('track fingeprint event (with callback, no error)', (done) => {
+    it('track fingerprint event (with callback, no error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackFingerprint(null, function(err) {
         callbackTrigged = true;
@@ -767,11 +769,11 @@ describe('ravelinjs', function() {
       expect(callbackTrigged).to.be.true;
     });
 
-    it('track fingeprint event (with callback with error)', (done) => {
+    it('track fingerprint event (with callback with error)', (done) => {
       var callbackTrigged = false;
       ravelin.trackFingerprint(null, function(err) {
         callbackTrigged = true;
-        assertError(err, 'Error occured sending payload to https://api.ravelin.net/v2/fingerprint?source=browser');
+        assertError(err, 'Error occurred sending payload to https://api.ravelin.net/v2/fingerprint?source=browser');
         done();
       });
 

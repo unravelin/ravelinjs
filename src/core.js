@@ -102,7 +102,7 @@ RavelinJS.prototype.setTempCustomerId = function(tempCustId) {
  * the checkout page of your payment flow.
  *
  * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
- * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
+ * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occurred.
  * @example
  * // if setCustomerId was already called
  * ravelinjs.trackFingerprint();
@@ -150,7 +150,7 @@ RavelinJS.prototype.getDeviceInfo = function() {
  *
  * @param {String} eventName A description of what has occurred.
  * @param {Object} meta Any additional metadata you wish to use to describe the page.
- * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
+ * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occurred.
  * @example
  * // track when a customer uses search functionality
  * ravelinjs.track('CUSTOMER_SEARCHED', { searchType: 'product' });
@@ -169,7 +169,7 @@ RavelinJS.prototype.track = function(eventName, eventProperties, cb) {
  * trackPage logs the page view. Call this from as many pages as possible.
  *
  * @param {Object} meta Any additional metadata you wish to use to describe the page.
- * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
+ * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occurred.
  * @example
  * // Call from landing page after page load
  * ravelinjs.trackPage(); // www.ravelintest.com
@@ -193,7 +193,7 @@ RavelinJS.prototype.trackPage = function(eventProperties, cb) {
  *
  * @param {String} customerId The customerId to set for this device fingerprint. Optional if setCustomerId called in advance.
  * @param {Object} meta Any additional metadata you wish to use to describe the event.
- * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
+ * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occurred.
  * @example
  * ravelinjs.trackLogin('cust123', {...}); // Called immediately after your login logic.
  */
@@ -210,7 +210,7 @@ RavelinJS.prototype.trackLogin = function(customerId, eventProperties, cb) {
  * Call this function immediately before your own logout logic is executed.
  *
  * @param {Object} meta Any additional metadata you wish to use to describe the event.
- * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occured.
+ * @param {Function} callback Optional callback function to execute upon completion, passing an error if one occurred.
  * @example
  * ravelinjs.trackLogout(); // Called before you begin your logout process
  */
@@ -643,7 +643,7 @@ function sendToRavelin(apiKey, url, payload, cb) {
         if (xhr.status >= 200 && xhr.status < 300 && cb) {
           handleCallback(cb);
         } else if (xhr.status > 400 && cb) {
-          handleCallback(cb, new Error('[ravelinjs] Error occured sending payload to '
+          handleCallback(cb, new Error('[ravelinjs] Error occurred sending payload to '
             + url + '. ' + xhr.responseText));
         }
       }
