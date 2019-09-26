@@ -1,21 +1,22 @@
 # ravelinjs
 
 `ravelinjs` is used to gather fraud prevention data points from customer sessions. This primarily consists of:
-    - device identifiers
-    - device information
-    - session information
-    - encrypted card details
+- device identifiers
+- device information
+- session information
+- encrypted card details
+
+Gathering these values accurately, and ensuring they are made available to Ravelin through our API or by calls made directly from this SDK, is critical to a successful Ravelin integration.
 
 ## Usage Guide
 
 ### Loading the Library
 
-The ravelin library can be used as a dependency in AMD modules; imported into
-scripts bundled using webpack; or by dropping a `<script src="ravelin.min.js">`
-into your web page.
+The library can be used as a dependency in AMD modules; imported into scripts bundled using webpack;
+or by dropping a `<script src="ravelin.min.js">` into your web page.
 
-### Instantiation
-The first thing you will need to do once the page has loaded is to initialise the state of the instance:
+### Instantiation (Required)
+Once the page has loaded, you need to initialise the state of the instance:
 ```
 ravelinjs.setPublicAPIKey('pk_live_...'); // your public API key is available from the Ravelin dashboard
 
@@ -24,31 +25,52 @@ ravelinjs.setTempCustomerId('session_abc123...'); // ...else, do you have a temp
 ravelinjs.setOrderId('order123'); // if the orderId is currently known, you can set it
 
 ravelinjs.setPublicRSAKey('10001|BB2...'); // if using client-side encryption, you must also set the public RSA key
-
 ```
-### Assigning DeviceIds (Required)
 
-On instantiation, ravelinjs will set a `ravelinDeviceId` cookie in the browser. This value will either be a previously assigned deviceId (from a previous session), or a newly generated UUID unique if no prior value was detected. Extract this cookie from requests to your servers to include it in future Ravelin API requests.
+### Assigning DeviceIds (Required)
+On instantiation, ravelinjs will ensure a `ravelinDeviceId` cookie is set in the customer's browser. This
+value will either be a previously assigned deviceId (from a previous session), or a newly generated UUID (if
+no prior value was detected). Extract this cookie from requests to your servers to include it in future
+Ravelin API requests.
+
+### Extracting Device Information (Recommended)
+To send details of the customer's device to Ravelin, use the `trackFingerprint` method.
+
+```html
+<script src="ravelin.min.js"></script>
+<script>
+    ravelinjs.setPublicAPIKey('pk_live_...');
+    ravelinjs.trackFingerprint();
+</script>
+```
+
+### Tracking Page Activity (Recommended)
+The `track`, and `trackPage` methods are used to send session activity information directly to Ravelin.
+
+```html
+<script src="ravelin.min.js"></script>
+<script>
+    ravelinjs.setPublicAPIKey('pk_live_...');
+    ravelinjs.trackPage();
+</script>
+```
 
 ### Encrypting Cards (Optional)
+If you wish to use our [client-side
+encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details) offering, you can
+encrypt the values to send to Ravelin using `ravelinjs.encrypt({pan, month, year, nameOnCard})`.
 
-If you wish to use our [client-side encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details) offering, you can encrypt the values to send to Ravelin using
-`ravelinjs.encrypt({pan, month, year, nameOnCard})`.
+`pan`, `month`, `year` are required, whilst `nameOnCard` is optional, and no other properties are allowed on
+the object. Validation is performed on the length of the PAN and expiry dates; failures cause an exception to
+be raised.
 
-`pan`, `month`, `year` are required, whilst `nameOnCard` is optional, and no other properties are allowed
-on the object. Validation is performed on the length of the PAN and expiry dates; failures cause an
-exception to be raised.
+Encrypting card details is only necessary for PCI SAQ-A or SAQ-AEP merchants who are otherwise unable to
+provide card details (including a valid [`instrumentId`](https://developer.ravelin.com/apis/v2/#checkout.paymentMethod.0.instrumentId)) to Ravelin during the pre-transaction stage or the
+payment flow.
 
-### Tracking Page Activity
-
-The `track`, and
-`trackPage` (call on page load) methods can be used instead of the [device
-fingerprinting snippet][device-track]. See the example below for more.
-
-## Example
-
-In the following form, we collect card details from the customer, encrypt them
-and send that encrypted value (the cipher) back to your server.
+#### Example
+In the following form, we collect card details from the customer, encrypt them and send that encrypted value
+(the cipher) back to your server.
 
 ```html
 <!-- Browser -->
@@ -64,10 +86,6 @@ and send that encrypted value (the cipher) back to your server.
 
 <script src="ravelin.min.js"></script>
 <script>
-    // Tracking.
-    ravelinjs.setPublicAPIKey('pk_live_...');
-    ravelinjs.trackPage();
-
     // Encryption.
     ravelinjs.setRSAKey('..|.....')
     document.getElementById('form-payment-card').onsubmit = function() {
@@ -82,10 +100,6 @@ and send that encrypted value (the cipher) back to your server.
             year: this.year.value,
             nameOnCard: this.nameOnCard.value,
         });
-
-        // TODO Save the card elsewhere. Might be a PSP API call.
-        // Might be some more encryption to be sent to your server too.
-        saveCardElsewhere(...);
 
         // Avoid sending sensitive data to your server.
         this.pan.value = this.cvv.value = this.name.value = '';

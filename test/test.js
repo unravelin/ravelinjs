@@ -785,6 +785,56 @@ describe('ravelin.js', function() {
   });
 });
 
+describe('ravelin-no-encrypt.js', function() {
+  var ravelin;
+
+  function reset() {
+    delete require.cache[require.resolve('../src/core')];
+    delete require.cache[require.resolve('../src/init')];
+    delete require.cache[require.resolve('../src/version')];
+    delete require.cache[require.resolve('../src/ravelin-no-encrypt')];
+    ravelin = require('../src/ravelin-no-encrypt');
+  }
+
+  before(() => {
+    // `require` can't be used with Webpack because it will try to parse it
+    // but we need the original functionality when testing from source
+    global.__non_webpack_require__ = require;
+  });
+
+  beforeEach('reset the ravelin library', function() {
+    // Ensure we always start tests without access to document/window (some tests will be stubbing them)
+    document = undefined;
+    window = undefined;
+
+    // Reinstantiate a fresh ravelinjs instance at the start of every test in every suite
+    reset();
+  });
+
+  describe('available functionality', function() {
+    it('should set tracking IDs on instantiation', function() {
+      assertDeviceId(ravelin.getDeviceId());
+      assertUuid(ravelin.getSessionId());
+    });
+
+    it('should have core functions available', function() {
+      expect(ravelin.setPublicAPIKey).not.to.be.undefined;
+      expect(ravelin.setCustomerId).not.to.be.undefined;
+      expect(ravelin.setOrderId).not.to.be.undefined;
+      expect(ravelin.trackFingerprint).not.to.be.undefined;
+      expect(ravelin.trackPage).not.to.be.undefined;
+      expect(ravelin.trackLogin).not.to.be.undefined;
+      expect(ravelin.trackLogout).not.to.be.undefined;
+    });
+
+    it('should not have encryption functions available', function() {
+      expect(ravelin.setPublicRSAKey).to.be.undefined;
+      expect(ravelin.encrypt).to.be.undefined;
+      expect(ravelin.encryptAsObject).to.be.undefined;
+    });
+  });
+});
+
 function assertDeviceId(deviceId) {
   expect(deviceId).to.have.lengthOf(40);
 
