@@ -9,10 +9,12 @@
   "scripts": {
     "webpack": "webpack",
     "minify": "uglifyjs --support-ie8 -o ./dist/ravelin.min.js ./dist/ravelin.js && uglifyjs --support-ie8 -o ./dist/ravelin-no-encrypt.min.js ./dist/ravelin-no-encrypt.js",
+
     "release": "npm run minify && npm run webpack && npm run release-mkdir && npm run release-rename && npm run release-sri",
     "release-mkdir": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && mkdir -p ./releases && mkdir -p ./releases/$VERSION",
     "release-rename": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && cp ./dist/ravelin.min.js ./releases/$VERSION/ravelin-$VERSION.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$VERSION/ravelin-no-encrypt-$VERSION.min.js",
     "release-sri": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && sri -out=./releases/$VERSION/sri.json -hash=all ./releases/$VERSION",
+
     "test": "mocha -C test/test.js",
     "test-cover": "nyc --reporter=html mocha -C test/test.js",
     "test-debug": "mocha --inspect-brk test/test.js",
@@ -21,6 +23,7 @@
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
     "testpage-webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
     "test-crossbrowser-live": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
+
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },
   "repository": {
@@ -34,22 +37,22 @@
   },
   "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
-    "appium": "1.15.0",
-    "appium-doctor": "1.12.0",
-    "cbt_tunnels": "0.9.11",
+    "appium": "1.14.1",
+    "appium-doctor": "1.11.1",
+    "cbt_tunnels": "0.9.10",
     "chai": "4.2.0",
     "circle-wait": "1.0.2",
     "nyc": "14.1.1",
     "request": "2.88.0",
-    "sinon": "7.5.0",
+    "sinon": "7.4.1",
     "uglify-js": "3.6.0",
     "wait-port": "0.2.2",
     "wdio-appium-service": "0.2.3",
     "wdio-junit-reporter": "0.4.4",
     "wdio-mocha-framework": "0.6.4",
     "wdio-spec-reporter": "0.1.5",
-    "webdriverio": "5.13.2",
-    "webpack": "4.41.0",
-    "webpack-cli": "3.3.9"
+    "webdriverio": "4.14.1",
+    "webpack": "4.39.2",
+    "webpack-cli": "3.3.7"
   }
 }
