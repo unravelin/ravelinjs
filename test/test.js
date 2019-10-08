@@ -47,7 +47,7 @@ describe('ravelin.js', function() {
 
       sinon.stub(document, 'cookie').get(() => document.innerCookies);
       sinon.stub(document, 'cookie').set((s) => {
-        document.innerCookies = !document.innerCookies ? s : document.innerCookies += '; ' + s;
+        document.innerCookies = !document.innerCookies ? s : document.innerCookies + '; ' + s;
       });
     });
 
