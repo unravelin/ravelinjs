@@ -28,7 +28,7 @@
     "url": "git+https://github.com/unravelin/ravelinjs.git"
   },
   "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
-  "license": "TBD",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/unravelin/ravelinjs/issues"
   },
