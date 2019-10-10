@@ -50,7 +50,7 @@ RavelinJS.prototype.setRSAKey = function(rawPubKey) {
 
   this.keyIndex = keyIndex;
   this.rsaKey = rsaKey;
-}
+};
 
 /**
  * encrypt performs the encrypt process for the provided card details and prepares them to be sent
@@ -65,7 +65,7 @@ RavelinJS.prototype.setRSAKey = function(rawPubKey) {
  */
 RavelinJS.prototype.encrypt = function(details) {
   return JSON.stringify(this.encryptAsObject(details));
-}
+};
 
 /**
  * encryptAsObject performs the encrypt process for the provided card details and prepares them to be sent
@@ -160,7 +160,7 @@ RavelinJS.prototype.encryptAsObject = function(details) {
     ravelinSDKVersion: FULL_VERSION_STRING,
     keyIndex: this.keyIndex
   };
-}
+};
 
 // ========================================================================================================
 //

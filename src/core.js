@@ -52,7 +52,7 @@ function RavelinJS() {
  */
 RavelinJS.prototype.setPublicAPIKey = function(pubKey) {
   this.apiKey = pubKey;
-}
+};
 
 /**
  * setCustomerId sets the customerId for all requests submitted by ravelinjs. This is needed to associate device activity
@@ -74,7 +74,7 @@ RavelinJS.prototype.setCustomerId = function(custId) {
   }
 
   this.customerId = '' + custId;
-}
+};
 
 /**
  * setTempCustomerId sets the tempCustomerId for all requests submitted by ravelinjs. This is used as a temporary association between device/
@@ -95,7 +95,7 @@ RavelinJS.prototype.setTempCustomerId = function(tempCustId) {
   }
 
   this.tempCustomerId = '' + tempCustId;
-}
+};
 
 /**
  * trackFingerprint sends device information back to Ravelin. Invoke from
@@ -131,7 +131,7 @@ RavelinJS.prototype.trackFingerprint = function(custId, cb) {
   payload.browser = browserData;
 
   sendToRavelin(this.apiKey, FINGERPRINT_URL, payload, cb);
-}
+};
 
 /**
  * getDeviceInfo returns basic device information to aid in construction of 3DS2 AReqs.
@@ -141,7 +141,7 @@ RavelinJS.prototype.trackFingerprint = function(custId, cb) {
  */
 RavelinJS.prototype.getDeviceInfo = function() {
   return deviceInfo();
-}
+};
 
 /**
  * track invokes the Ravelin client-side tracking script. You must have set
@@ -163,7 +163,7 @@ RavelinJS.prototype.track = function(eventName, eventProperties, cb) {
   var trackingPayload = trackPayload(payload, this.deviceId, this.sessionId, eventName, eventProperties);
 
   sendToRavelin(this.apiKey, CLICKSTREAM_URL, trackingPayload, cb);
-}
+};
 
 /**
  * trackPage logs the page view. Call this from as many pages as possible.
@@ -186,7 +186,7 @@ RavelinJS.prototype.track = function(eventName, eventProperties, cb) {
  */
 RavelinJS.prototype.trackPage = function(eventProperties, cb) {
   this.track(PAGE_EVENT_NAME, eventProperties, cb);
-}
+};
 
 /**
  * trackLogin informs Ravelin of customers logging into your site.
@@ -203,7 +203,7 @@ RavelinJS.prototype.trackLogin = function(customerId, eventProperties, cb) {
   }
 
   this.track(LOGIN_EVENT_NAME, eventProperties, cb);
-}
+};
 
 /**
  * trackLogout informs Ravelin of logout events and resets the associated customerId and tempCustomerId.
@@ -219,7 +219,7 @@ RavelinJS.prototype.trackLogout = function(eventProperties, cb) {
   this.customerId = undefined;
   this.tempCustomerId = undefined;
   this.orderId = undefined;
-}
+};
 
 /**
  * setCookieDomain configures where Ravelin will store any cookies on your
@@ -242,7 +242,7 @@ RavelinJS.prototype.setCookieDomain = function(domain) {
   // Maintain the same device/sessionIds, but store them now under the new domain
   writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expiry, null, this.cookieDomain);
   writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, null, null, this.cookieDomain);
-}
+};
 
 /**
  * Set the orderId submitted with requests. This is used to associate session-activity
@@ -258,7 +258,7 @@ RavelinJS.prototype.setOrderId = function(orderId) {
   }
 
   this.orderId = '' + orderId;
-}
+};
 
 /**
  * Return the deviceId currently assigned by ravelinjs
@@ -268,7 +268,7 @@ RavelinJS.prototype.setOrderId = function(orderId) {
  */
 RavelinJS.prototype.getDeviceId = function() {
   return this.deviceId;
-}
+};
 
 /**
  * Allows the manual setting of a deviceId for scenarios in which you believe the value may have been reset.
@@ -297,7 +297,7 @@ RavelinJS.prototype.setDeviceId = function() {
   // If no deviceId located, instantiate one and write to cookies
   this.deviceId = 'rjs-' + this.uuid();
   writeCookie(DEVICEID_STORAGE_NAME, this.deviceId, expiry, null);
-}
+};
 
 /**
  * Return the sessionId currently assigned by ravelinjs
@@ -307,7 +307,7 @@ RavelinJS.prototype.setDeviceId = function() {
  */
 RavelinJS.prototype.getSessionId = function() {
   return this.sessionId;
-}
+};
 
 /**
  * Allows the manual setting of a sessionId for scenarios in which you believe the value may have been reset.
@@ -330,7 +330,7 @@ RavelinJS.prototype.setSessionId = function() {
 
   // Set session with zero expiry, meaning the sessionId cookie will expire on browser exit
   writeCookie(SESSIONID_COOKIE_NAME, this.sessionId, 0, null);
-}
+};
 
 /**
  * Returns the customerId currently assigned to ravelinjs
@@ -340,7 +340,7 @@ RavelinJS.prototype.setSessionId = function() {
  */
 RavelinJS.prototype.getCustomerId = function() {
   return this.customerId;
-}
+};
 
 /**
  * Returns the orderId currently assigned to ravelinjs
@@ -350,7 +350,7 @@ RavelinJS.prototype.getCustomerId = function() {
  */
 RavelinJS.prototype.getOrderId = function() {
   return this.orderId;
-}
+};
 
 /**
  * Returns the temporary customerId currently assigned to ravelinjs
@@ -360,7 +360,7 @@ RavelinJS.prototype.getOrderId = function() {
  */
 RavelinJS.prototype.getTempCustomerId = function() {
   return this.tempCustomerId;
-}
+};
 
 /**
  * Univerally unique identifier generation, used internally by ravelinjs to set device/session ids.
@@ -414,7 +414,7 @@ RavelinJS.prototype.uuid = function() {
     this.lut[d1&0xff]+this.lut[d1>>8&0xff]+'-'+this.lut[d1>>16&0x0f|0x40]+this.lut[d1>>24&0xff]+'-'+
     this.lut[d2&0x3f|0x80]+this.lut[d2>>8&0xff]+'-'+this.lut[d2>>16&0xff]+this.lut[d2>>24&0xff]+
     this.lut[d3&0xff]+this.lut[d3>>8&0xff]+this.lut[d3>>16&0xff]+this.lut[d3>>24&0xff];
-}
+};
 
 // ========================================================================================================
 //
@@ -585,7 +585,7 @@ function cleanCookies(domain) {
 
 function readCookie(cookieName) {
   if (typeof document === 'undefined' || typeof document.cookie === 'undefined') {
-    return
+    return;
   }
 
   var cookies = document.cookie.split('; ');
