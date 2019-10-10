@@ -13,6 +13,7 @@
     "release-rename": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && cp ./dist/ravelin.min.js ./releases/$VERSION/ravelin-$VERSION.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$VERSION/ravelin-no-encrypt-$VERSION.min.js",
     "release-sri": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && go run github.com/sHesl/sri -out=./releases/$VERSION/sri.json -hash=all ./releases/$VERSION",
     "test": "mocha -C test/test.js",
+    "lint": "jshint src",
     "test-cover": "nyc --reporter=html mocha -C test/test.js",
     "test-debug": "mocha --inspect-brk test/test.js",
     "test-appium": "wdio ./test/appium.conf.js",
@@ -38,6 +39,7 @@
     "cbt_tunnels": "crossbrowsertesting/cbt-tunnel-nodejs#43e3f678b764c24276e077a9d00107027aa65879",
     "chai": "4.2.0",
     "circle-wait": "1.0.2",
+    "jshint": "2.10.2",
     "nyc": "14.1.1",
     "request": "2.88.0",
     "sinon": "7.4.1",
@@ -51,5 +53,19 @@
     "webpack": "4.39.2",
     "webpack-cli": "3.3.7"
   },
-  "dependencies": {}
+  "jshintConfig": {
+    "unused": true,
+    "freeze": true,
+    "esversion": 3,
+    "futurehostile": true,
+    "latedef": false,
+    "nonew": true,
+    "undef": true,
+    "browser": true,
+    "globals": {
+      "require": true,
+      "module": true,
+      "JSON": true
+    }
+  }
 }
