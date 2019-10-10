@@ -8,8 +8,7 @@
   "main": "./dist/ravelin.js",
   "scripts": {
     "build": "webpack",
-    "dist": "webpack --env production",
-    "release": "npm run dist && npm run release-mkdir && npm run release-rename && npm run release-sri",
+    "release": "npm run build && npm run release-mkdir && npm run release-rename && npm run release-sri",
     "release-mkdir": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && mkdir -p ./releases && mkdir -p ./releases/$VERSION",
     "release-rename": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && cp ./dist/ravelin.min.js ./releases/$VERSION/ravelin-$VERSION.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$VERSION/ravelin-no-encrypt-$VERSION.min.js",
     "release-sri": "VERSION=$(node -e 'console.log(require(\"./package.json\").version)') && go run github.com/sHesl/sri -out=./releases/$VERSION/sri.json -hash=all ./releases/$VERSION",
@@ -51,5 +50,6 @@
     "webdriverio": "4.14.1",
     "webpack": "4.39.2",
     "webpack-cli": "3.3.7"
-  }
+  },
+  "dependencies": {}
 }
