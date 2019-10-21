@@ -51,6 +51,11 @@ RavelinJS.prototype.setRSAKey = function(rawPubKey) {
 
   this.keyIndex = keyIndex;
   this.rsaKey = rsaKey;
+
+  // We also send a signature of the pub key so we can diagnose decryption failures (which are most often
+  // caused by the client using the wrong keys in a certain environment).
+  var sig = sjcl.hash.sha256.hash(rawPubKey);
+  this.keySignature = sjcl.codec.hex.fromBits(sig);
 };
 
 /**
@@ -83,7 +88,7 @@ RavelinJS.prototype.encrypt = function(details) {
  * >  aesKeyCiphertext: "def....tuv==",
  * >  algorithm: "RSA_WITH_AES_256_GCM",
  * >  ravelinSDKVersion: "0.0.1-ravelinjs",
- * >  pubKeySig: "ghi...qrs=="
+ * >  keySignature: "ghi...qrs"
  * > }
  */
 RavelinJS.prototype.encryptAsObject = function(details) {
@@ -159,7 +164,8 @@ RavelinJS.prototype.encryptAsObject = function(details) {
     aesKeyCiphertext: rsaResultB64,
     algorithm: 'RSA_WITH_AES_256_GCM',
     ravelinSDKVersion: FULL_VERSION_STRING,
-    keyIndex: this.keyIndex
+    keyIndex: this.keyIndex,
+    keySignature: this.keySignature
   };
 };
 

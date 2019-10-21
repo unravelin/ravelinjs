@@ -912,6 +912,7 @@ function assertCipher(c) {
          c.aesKeyCiphertext != '' && c.aesKeyCiphertext.length > 10 &&
          c.algorithm == 'RSA_WITH_AES_256_GCM' &&
          c.ravelinSDKVersion == '0.1.0-ravelinjs' &&
+         c.keySignature.length == 64 && // sha256 digest
          typeof(c.keyIndex) === 'number';
 }
 
