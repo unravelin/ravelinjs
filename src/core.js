@@ -40,6 +40,14 @@ function RavelinJS() {
   this.setDeviceId();
   this.setSessionId();
   this.windowId = this.uuid();
+
+  // Register listeners
+  var rjsInstance = this;
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('paste', function(elem) { onPaste(elem, rjsInstance); });
+  } else if (typeof document !== 'undefined' && document.attachEvent) {
+    document.attachEvent('paste', function(elem) { onPaste(elem, rjsInstance); });
+  }
 }
 
 /**
@@ -605,6 +613,41 @@ function writeCookie(name, value, expires, path, domain) {
   document.cookie = name + '=' + value + ';path=' + (path || '/') +
     (expires ? ';expires=' + expires.toUTCString() : '') +
     (domain ? ';domain=' + domain : '');
+}
+
+function onPaste(elem, rjsInstance) {
+  if (!elem || elem.type === 'password') {
+    return;
+  }
+
+  var meta = {};
+
+  if (elem.target) {
+    if (elem.target.name) {
+      meta.fieldName = elem.target.name;
+    }
+
+    if (elem.target.form) {
+      meta.formName = elem.target.form.name || elem.target.form.id;
+      meta.formAction = elem.target.form.action;
+    }
+  }
+
+  var clipboardData = elem.clipboardData || window.clipboardData;
+  if (clipboardData) {
+    var pastedData = clipboardData.getData('Text');
+
+    if (pastedData) {
+      meta.panCleaned = detectPAN(pastedData);
+      meta.pastedValue = obfsPasteData(pastedData);
+    }
+  }
+
+  if (elem.target && elem.target.value) {
+    meta.fieldValue = obfsPasteData(elem.target.value);
+  }
+
+  rjsInstance.track(PASTE_EVENT_TYPE, meta);
 }
 
 function detectPAN(str) {

@@ -1,3 +1,3 @@
-require('./core');
+var RavelinJS = require('./core');
 
-module.exports = require('./init');
+module.exports = new RavelinJS();

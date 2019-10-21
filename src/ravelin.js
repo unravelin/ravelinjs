@@ -1,4 +1,4 @@
-require('./core');
+var RavelinJS = require('./core');
 require('./encryption');
 
-module.exports = require('./init');
+module.exports = new RavelinJS();
