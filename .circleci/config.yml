@@ -26,7 +26,7 @@ jobs:
 
       - run:
           name: "Build"
-          command: npm run dist
+          command: npm run build
 
       # run tests!
       - run:
