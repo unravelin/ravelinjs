@@ -1,5 +1,6 @@
 var RavelinJS = require('./core');
-var { RSAKey, sjcl } = require('./encryption-vendored');
+var enc = require('./encryption-vendored');
+var RSAKey = enc.RSAKey, sjcl = enc.sjcl;
 var FULL_VERSION_STRING = require('./version');
 
 /**
