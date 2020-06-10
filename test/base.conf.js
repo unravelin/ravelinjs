@@ -306,6 +306,7 @@ exports.config = {
       console.log('test', test)
       // Fetch the logs from the browser.
       const logs = browser.log('browser');
+      if (!logs) return;
 
       if (test.passed) {
         // Abort if the test passed and we have no errors or warnings.
