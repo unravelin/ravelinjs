@@ -302,8 +302,28 @@ exports.config = {
      * Function to be executed after a test (in Mocha/Jasmine) or a step (in Cucumber) ends.
      * @param {Object} test test details
      */
-    // afterTest: function (test) {
-    // },
+    afterTest: function (test) {
+      console.log('test', test)
+      // Fetch the logs from the browser.
+      const logs = browser.logs('browser');
+
+      // Abort if we have no errors or warnings.
+      let hasErr = false;
+      for (log of logs) {
+        if (log.level === 'WARNING' || log.level === 'SEVERE') {
+          hasErr = true;
+          break;
+        }
+      }
+      if (test.result && !hasErr) {
+        return;
+      }
+
+      // Dump the logs.
+      for (log of logs) {
+        console.info(log.level, log.message);
+      }
+    },
     /**
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
