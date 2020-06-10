@@ -1,48 +1,40 @@
 describe('ravelinjs', function() {
-  const cap = browser.desiredCapabilities;
 
   describe('script tag usage', function() {
-    runSuiteWithOneRetry('/pages/scripttag/index.html', cap);
+    suite('/pages/scripttag/index.html');
   });
 
   describe('script tag minified usage', function() {
-    runSuiteWithOneRetry('/pages/scripttag-min/index.html', cap);
+    suite('/pages/scripttag-min/index.html');
   });
 
   describe('requirejs usage', function() {
-    runSuiteWithOneRetry('/pages/amd/index.html', cap);
+    suite('/pages/amd/index.html');
   });
 
   describe('requirejs minified usage', function() {
-    runSuiteWithOneRetry('/pages/amd-min/index.html', cap);
+    suite('/pages/amd-min/index.html');
   });
 
   describe('webpack usage', function() {
-    runSuiteWithOneRetry('/pages/webpack/index.html', cap);
+    suite('/pages/webpack/index.html');
   });
 });
 
-function runSuiteWithOneRetry(page, cap) {
-  try {
+function suite(page) {
+  it('loads', function() {
     browser.waitForURL(page);
-    suite();
-  } catch(e) {
-    browser.waitForURL(page, cap.navigateTimeoutMS);
-    suite();
-  }
-}
-
-function suite() {
-  it('sets device cookies', () => {
+  });
+  it('sets device cookies', function() {
     checkCookiesAreSet();
   })
-  it('encrypts cards', () => {
+  it('encrypts cards', function() {
     checkCardEncryptionWorks();
   });
-  it('collects basic device data', () => {
+  it('collects basic device data', function() {
     checkFingerprintingDoesNotError();
   });
-  it ('tracks page events', () => {
+  it ('tracks page events', function() {
     checkTrackingEventsDoNotError();
   })
 }
