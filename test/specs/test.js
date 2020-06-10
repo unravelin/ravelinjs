@@ -1,23 +1,23 @@
 describe('ravelinjs', function() {
   const cap = browser.desiredCapabilities;
 
-  it('can be used with a script tag', function() {
+  describe('script tag usage', function() {
     runSuiteWithOneRetry('/pages/scripttag/index.html', cap);
   });
 
-  it('can be used minified with a script tag', function() {
+  describe('script tag minified usage', function() {
     runSuiteWithOneRetry('/pages/scripttag-min/index.html', cap);
   });
 
-  usuallyIt(!cap.requireJSTestDisabled, 'can be used with requirejs', function() {
+  describe('requirejs usage', function() {
     runSuiteWithOneRetry('/pages/amd/index.html', cap);
   });
 
-  usuallyIt(!cap.requireJSTestDisabled, 'can be used minified with requirejs', function() {
+  describe('requirejs minified usage', function() {
     runSuiteWithOneRetry('/pages/amd-min/index.html', cap);
   });
 
-  usuallyIt(!cap.webpackTestDisabled, 'can be used with webpack', function() {
+  describe('webpack usage', function() {
     runSuiteWithOneRetry('/pages/webpack/index.html', cap);
   });
 });
@@ -33,10 +33,18 @@ function runSuiteWithOneRetry(page, cap) {
 }
 
 function suite() {
-  checkCookiesAreSet();
-  checkCardEncryptionWorks();
-  checkFingerprintingDoesNotError();
-  checkTrackingEventsDoNotError();
+  it('sets device cookies', () => {
+    checkCookiesAreSet();
+  })
+  it('encrypts cards', () => {
+    checkCardEncryptionWorks();
+  });
+  it('collects basic device data', () => {
+    checkFingerprintingDoesNotError();
+  });
+  it ('tracks page events', () => {
+    checkTrackingEventsDoNotError();
+  })
 }
 
 function checkCookiesAreSet() {
@@ -95,8 +103,4 @@ function checkTrackingEventsDoNotError() {
     var error = browser.getText('#trackingError');
     if (error) throw new Error(error);
   }
-}
-
-function usuallyIt(itDoes) {
-  return (itDoes ? it : it.skip).apply(this, Array.prototype.slice.call(arguments, 1));
 }
