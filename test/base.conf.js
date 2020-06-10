@@ -278,8 +278,11 @@ exports.config = {
      * Hook that gets executed before the suite starts
      * @param {Object} suite suite details
      */
-    // beforeSuite: function (suite) {
-    // },
+    beforeSuite: function (suite) {
+      // Retrieve and clear the browser log buffer so that browser start-up logs
+      // from extensions and such don't clutter logs later.
+      browser.log('browser');
+    },
     /**
      * Function to be executed before a test (in Mocha/Jasmine) or a step (in Cucumber) starts.
      * @param {Object} test test details
@@ -303,10 +306,12 @@ exports.config = {
      * @param {Object} test test details
      */
     afterTest: function (test) {
-      // Fetch the logs from the browser.
-      const logs = browser.log('browser');
-      console.log('logs', logs);
-      return;
+      // Fetch the logs from the browser. Documented as returning Object[] but
+      // it seems to return {state: 'success', sessionId, value: [logs...]};
+      let logs = browser.log('browser');
+      if (logs.value) {
+        logs = logs.value;
+      }
 
       if (test.passed) {
         // Abort if the test passed and we have no errors or warnings.
