@@ -28,15 +28,15 @@ function suite(page) {
   it('sets device cookies', function() {
     checkCookiesAreSet();
   })
-  it('encrypts cards', function() {
-    checkCardEncryptionWorks();
-  });
   it('collects basic device data', function() {
     checkFingerprintingDoesNotError();
   });
   it ('tracks page events', function() {
     checkTrackingEventsDoNotError();
   })
+  it('encrypts cards', function() {
+    checkCardEncryptionWorks();
+  });
 }
 
 function checkCookiesAreSet() {
