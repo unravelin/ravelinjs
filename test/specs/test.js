@@ -57,7 +57,7 @@ function checkCardEncryptionWorks() {
   browser.setValue('#year', '2019');
   browser.click('#encrypt');
 
-  browser.pause(1000);
+  browser.pause(5000);
 
   // Check there was no error
   var error = browser.getText('#encryptionOutputError');
