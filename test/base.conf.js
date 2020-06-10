@@ -305,33 +305,33 @@ exports.config = {
      * Function to be executed after a test (in Mocha/Jasmine) or a step (in Cucumber) ends.
      * @param {Object} test test details
      */
-    afterTest: function (test) {
-      // Fetch the logs from the browser. Documented as returning Object[] but
-      // it seems to return {state: 'success', sessionId, value: [logs...]};
-      let logs = browser.log('browser');
-      if (logs.value) {
-        logs = logs.value;
-      }
+    // afterTest: function (test) {
+    //   // Fetch the logs from the browser. Documented as returning Object[] but
+    //   // it seems to return {state: 'success', sessionId, value: [logs...]};
+    //   let logs = browser.log('browser');
+    //   if (logs.value) {
+    //     logs = logs.value;
+    //   }
 
-      if (test.passed) {
-        // Abort if the test passed and we have no errors or warnings.
-        let hasErr = false;
-        for (log of logs) {
-          if (log.level === 'WARNING' || log.level === 'SEVERE') {
-            hasErr = true;
-            break;
-          }
-        }
-        if (!hasErr) {
-          return;
-        }
-      }
+    //   if (test.passed) {
+    //     // Abort if the test passed and we have no errors or warnings.
+    //     let hasErr = false;
+    //     for (log of logs) {
+    //       if (log.level === 'WARNING' || log.level === 'SEVERE') {
+    //         hasErr = true;
+    //         break;
+    //       }
+    //     }
+    //     if (!hasErr) {
+    //       return;
+    //     }
+    //   }
 
-      // Dump the logs.
-      for (log of logs) {
-        console.info(log.level, log.message);
-      }
-    },
+    //   // Dump the logs.
+    //   for (log of logs) {
+    //     console.info(log.level, log.message);
+    //   }
+    // },
     /**
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
