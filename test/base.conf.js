@@ -305,18 +305,20 @@ exports.config = {
     afterTest: function (test) {
       console.log('test', test)
       // Fetch the logs from the browser.
-      const logs = browser.logs('browser');
+      const logs = browser.log('browser');
 
-      // Abort if we have no errors or warnings.
-      let hasErr = false;
-      for (log of logs) {
-        if (log.level === 'WARNING' || log.level === 'SEVERE') {
-          hasErr = true;
-          break;
+      if (test.passed) {
+        // Abort if the test passed and we have no errors or warnings.
+        let hasErr = false;
+        for (log of logs) {
+          if (log.level === 'WARNING' || log.level === 'SEVERE') {
+            hasErr = true;
+            break;
+          }
         }
-      }
-      if (test.result && !hasErr) {
-        return;
+        if (!hasErr) {
+          return;
+        }
       }
 
       // Dump the logs.
