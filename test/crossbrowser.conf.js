@@ -23,7 +23,7 @@ exports.config = Object.assign(base, {
 
   // Bail after the first test failure. The cost of running many tests is too
   // high, and it takes too damn long.
-  bail: 1,
+  bail: 0,
   mochaOpts: Object.assign(base.mochaOpts, {
     // Match mocha timeout with browser.
     timeout: timeoutSeconds * 1000,
