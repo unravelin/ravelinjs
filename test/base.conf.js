@@ -278,11 +278,11 @@ exports.config = {
      * Hook that gets executed before the suite starts
      * @param {Object} suite suite details
      */
-    beforeSuite: function (suite) {
-      // Retrieve and clear the browser log buffer so that browser start-up logs
-      // from extensions and such don't clutter logs later.
-      browser.log('browser');
-    },
+    // beforeSuite: function (suite) {
+    //   // Retrieve and clear the browser log buffer so that browser start-up logs
+    //   // from extensions and such don't clutter logs later.
+    //   browser.log('browser');
+    // },
     /**
      * Function to be executed before a test (in Mocha/Jasmine) or a step (in Cucumber) starts.
      * @param {Object} test test details
