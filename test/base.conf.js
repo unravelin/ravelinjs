@@ -177,6 +177,7 @@ exports.config = {
               minimizer: [
                 new TerserPlugin({
                   include: /\.js$/,
+                  extractComments: false,
                   terserOptions: {
                     ie8: true,
                     safari10: true,
