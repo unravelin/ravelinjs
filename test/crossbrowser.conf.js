@@ -39,35 +39,35 @@ exports.config = Object.assign(base, {
       version: 'latest',
       platform: 'Windows 10',
     },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'osx chromeLatest',
-      browserName: 'Chrome',
-      version: 'latest',
-      platform: 'Mac OSX 10.12',
-    },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win8 chrome50',
-      browserName: 'Chrome',
-      version: '50',
-      platform: 'Windows 8',
-    },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'osx chromeLatest',
+    //   browserName: 'Chrome',
+    //   version: 'latest',
+    //   platform: 'Mac OSX 10.12',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win8 chrome50',
+    //   browserName: 'Chrome',
+    //   version: '50',
+    //   platform: 'Windows 8',
+    // },
     // Safari.
-    {
-      build: 'ravelinjs 1.0',
-      name: 'osx safari11',
-      browserName: 'Safari',
-      version: '11',
-      platform: 'Mac OSX 10.13',
-    },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'osx safari10',
-      browserName: 'Safari',
-      version: '10',
-      platform: 'Mac OSX 10.12',
-    },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'osx safari11',
+    //   browserName: 'Safari',
+    //   version: '11',
+    //   platform: 'Mac OSX 10.13',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'osx safari10',
+    //   browserName: 'Safari',
+    //   version: '10',
+    //   platform: 'Mac OSX 10.12',
+    // },
     // Firefox.
     {
       build: 'ravelinjs 1.0',
@@ -77,48 +77,56 @@ exports.config = Object.assign(base, {
       platform: 'Mac OSX 10.13',
       screenResolution: '1366x768'
     },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win10 ffLatest',
-      browserName: 'Firefox',
-      version: 'latest',
-      platform: 'Windows 10',
-      screenResolution: '1366x768'
-    },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win10 ff45',
-      browserName: 'Firefox',
-      version: '45',
-      platform: 'Windows 10',
-      screenResolution: '1366x768'
-    },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win10 ffLatest',
+    //   browserName: 'Firefox',
+    //   version: 'latest',
+    //   platform: 'Windows 10',
+    //   screenResolution: '1366x768'
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win10 ff45',
+    //   browserName: 'Firefox',
+    //   version: '45',
+    //   platform: 'Windows 10',
+    //   screenResolution: '1366x768'
+    // },
     // Edge.
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win10 edge17',
-      browserName: 'MicrosoftEdge',
-      version: '17',
-      platform: 'Windows 10',
-      screenResolution: '1366x768',
-    },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win10 edge17',
+    //   browserName: 'MicrosoftEdge',
+    //   version: '17',
+    //   platform: 'Windows 10',
+    //   screenResolution: '1366x768',
+    // },
     // Internet Explorer.
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win10 ie11',
-      browserName: 'Internet Explorer',
-      version: '11',
-      platform: 'Windows 10',
-      screenResolution: '1366x768',
-    },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win8 ie10',
-      browserName: 'Internet Explorer',
-      version: '10',
-      platform: 'Windows 8',
-      screenResolution: '1366x768',
-    },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win10 ie11',
+    //   browserName: 'Internet Explorer',
+    //   version: '11',
+    //   platform: 'Windows 10',
+    //   screenResolution: '1366x768',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win8 ie10',
+    //   browserName: 'Internet Explorer',
+    //   version: '10',
+    //   platform: 'Windows 8',
+    //   screenResolution: '1366x768',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win7 ie9',
+    //   browserName: 'Internet Explorer',
+    //   version: '9',
+    //   platform: 'Windows 7 64-Bit',
+    //   screenResolution: '1366x768',
+    // },
     {
       build: 'ravelinjs 1.0',
       name: 'win7 ie8',
@@ -127,16 +135,6 @@ exports.config = Object.assign(base, {
       platform: 'Windows 7',
       screenResolution: '1366x768',
       record_video: 'true',
-
-      webpackTestDisabled: true,
-    },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win7 ie9',
-      browserName: 'Internet Explorer',
-      version: '9',
-      platform: 'Windows 7 64-Bit',
-      screenResolution: '1366x768',
     },
 
     // Android
