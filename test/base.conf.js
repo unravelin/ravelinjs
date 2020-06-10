@@ -1,4 +1,5 @@
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 exports.config = {
     //
@@ -170,6 +171,18 @@ exports.config = {
             output: {
               path: path.resolve(__dirname, 'pages/webpack'),
               filename: 'bundle.js',
+            },
+            optimization: {
+              minimize: true,
+              minimizer: [
+                new TerserPlugin({
+                  include: /\.js$/,
+                  terserOptions: {
+                    ie8: true,
+                    safari10: true,
+                  },
+                }),
+              ],
             },
           }, function(err, stats) {
             if (err) {
