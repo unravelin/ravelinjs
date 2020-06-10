@@ -31,6 +31,65 @@ exports.config = Object.assign(base, {
 
   maxInstances: parseInt(process.env.WD_PARALLEL, 10) || 1,
   capabilities: [
+    // Internet Explorer.
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win10 ie11',
+    //   browserName: 'Internet Explorer',
+    //   version: '11',
+    //   platform: 'Windows 10',
+    //   screenResolution: '1366x768',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win8 ie10',
+    //   browserName: 'Internet Explorer',
+    //   version: '10',
+    //   platform: 'Windows 8',
+    //   screenResolution: '1366x768',
+    // },
+    // {
+    //   build: 'ravelinjs 1.0',
+    //   name: 'win7 ie9',
+    //   browserName: 'Internet Explorer',
+    //   version: '9',
+    //   platform: 'Windows 7 64-Bit',
+    //   screenResolution: '1366x768',
+    // },
+    {
+      build: 'ravelinjs 1.0',
+      name: 'win7 ie8',
+      browserName: 'Internet Explorer',
+      version: '8',
+      platform: 'Windows 7',
+      screenResolution: '1366x768',
+      record_video: 'true',
+    },
+
+    // Android
+    {
+      build: 'ravelinjs 1.0',
+      name: 'android5 chromeLatest',
+      browserName: 'Chrome',
+      deviceName: 'Nexus 6',
+      platformVersion: '5.0',
+      platformName: 'Android',
+      deviceOrientation: 'portrait',
+    },
+    // iOS
+    {
+      build: 'ravelinjs 1.0',
+      name: 'iOS11 safari8',
+      browserName: 'Safari',
+      deviceName: 'iPhone 8 Simulator',
+      platformVersion: '11.0',
+      platformName: 'iOS',
+      deviceOrientation: 'portrait',
+
+      max_duration: 180,
+      navigateTimeoutMS: 60000,
+      renderTimeoutMS: 60000,
+    },
     // Chrome.
     {
       build: 'ravelinjs 1.0',
@@ -102,65 +161,6 @@ exports.config = Object.assign(base, {
     //   platform: 'Windows 10',
     //   screenResolution: '1366x768',
     // },
-    // Internet Explorer.
-    // {
-    //   build: 'ravelinjs 1.0',
-    //   name: 'win10 ie11',
-    //   browserName: 'Internet Explorer',
-    //   version: '11',
-    //   platform: 'Windows 10',
-    //   screenResolution: '1366x768',
-    // },
-    // {
-    //   build: 'ravelinjs 1.0',
-    //   name: 'win8 ie10',
-    //   browserName: 'Internet Explorer',
-    //   version: '10',
-    //   platform: 'Windows 8',
-    //   screenResolution: '1366x768',
-    // },
-    // {
-    //   build: 'ravelinjs 1.0',
-    //   name: 'win7 ie9',
-    //   browserName: 'Internet Explorer',
-    //   version: '9',
-    //   platform: 'Windows 7 64-Bit',
-    //   screenResolution: '1366x768',
-    // },
-    {
-      build: 'ravelinjs 1.0',
-      name: 'win7 ie8',
-      browserName: 'Internet Explorer',
-      version: '8',
-      platform: 'Windows 7',
-      screenResolution: '1366x768',
-      record_video: 'true',
-    },
-
-    // Android
-    {
-      build: 'ravelinjs 1.0',
-      name: 'android5 chromeLatest',
-      browserName: 'Chrome',
-      deviceName: 'Nexus 6',
-      platformVersion: '5.0',
-      platformName: 'Android',
-      deviceOrientation: 'portrait',
-    },
-    // iOS
-    {
-      build: 'ravelinjs 1.0',
-      name: 'iOS11 safari8',
-      browserName: 'Safari',
-      deviceName: 'iPhone 8 Simulator',
-      platformVersion: '11.0',
-      platformName: 'iOS',
-      deviceOrientation: 'portrait',
-
-      max_duration: 180,
-      navigateTimeoutMS: 60000,
-      renderTimeoutMS: 60000,
-    },
   ].map(function(c) {
     // Apply a maximum duration of 1 minute to each test case.
     c.max_duration = c.max_duration || timeoutSeconds;
