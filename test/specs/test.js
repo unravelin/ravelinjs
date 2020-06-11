@@ -64,7 +64,7 @@ function checkCardEncryptionWorks() {
   if (error) throw new Error(error);
 
   // Check the results looked valid
-  browser.getText('#encryptionOutput').should.not.be.empty;
+  browser.getText('#encryptionOutput').should.contain('aesKeyCiphertext');
 }
 
 function checkFingerprintingDoesNotError() {
