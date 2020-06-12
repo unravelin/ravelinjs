@@ -941,6 +941,8 @@
    * copy of https://cdn.ravelin.net/js/rvn-0.1.18-lite.min.js on your domain
    * and reference it here.
    *
+   * Must be called before setPublicAPIKey.
+   *
    * @param {String} src Your self-hosted copy of https://cdn.ravelin.net/js/rvn-0.1.18-lite.min.js.
    * @example ravelinjs.setFallbackJS('/rvn.js');
    * @deprecated This method will be removed in ravelinjs 1.0.0 which will no

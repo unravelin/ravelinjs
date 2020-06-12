@@ -44,6 +44,7 @@
     <script>
         require(['ravelin'], function(ravelin) {
             output(function() {
+                ravelin.setFallbackJS('/rvn.js');
                 ravelin.setPublicAPIKey('pk_live_Mgp7YkLK48IOnHzfcrBotxAJlo1RwiBi');
                 ravelin.trackFingerprint('paul');
                 ravelin.trackPage();
