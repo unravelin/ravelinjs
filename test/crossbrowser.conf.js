@@ -155,6 +155,11 @@ exports.config = Object.assign(base, {
           platformVersion: '5.0',
           platformName: 'Android',
           deviceOrientation: 'portrait',
+
+          // FIXME. I've spent a couple of days trying to get meaningful errors
+          // back from this device. In manual testing it works consistently.
+          requireJSTestDisabled: true,
+          webpackTestDisabled: true,
         },
         // iOS
         {
