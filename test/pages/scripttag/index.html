@@ -62,6 +62,13 @@
         }
         setRSAKey();
 
+        output(function() {
+            ravelin.setPublicAPIKey('secret_key_test_mWDl1lMj0TRwoD2w3VtP4iAPi9X3tedv');
+            ravelin.trackFingerprint('paul');
+            ravelin.trackPage();
+            return 'Cookies: ' + document.cookie;
+        });
+
         document.getElementById('form').onsubmit = function() {
             var month = document.getElementById('month');
             output(function() {
