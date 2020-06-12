@@ -2,7 +2,7 @@ import ravelin from '../../../ravelin.js';
 import output from '../common.js';
 
 output(function() {
-  ravelin.setPublicAPIKey('secret_key_test_mWDl1lMj0TRwoD2w3VtP4iAPi9X3tedv');
+  ravelin.setPublicAPIKey('pk_live_Mgp7YkLK48IOnHzfcrBotxAJlo1RwiBi');
   ravelin.trackFingerprint('paul');
   ravelin.trackPage();
   return 'Cookies: ' + document.cookie;
