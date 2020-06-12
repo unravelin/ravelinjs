@@ -914,12 +914,41 @@
       return;
     }
     if (!window.ravelin) {
-      // https://developer.ravelin.com/v2/#device-tracking.
-      (function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window, document, 'script', 'https://cdn.ravelin.net/js/rvn-beta.min.js', 'ravelin');
+      (function r(a,v,e,l,i,n){
+        a[e] = a[e] || function() { (a[e].q = a[e].q || []).push(arguments)};
+        n = v.createElement('script');
+        n.async = n.defer = 1;
+        n.src = l;
+        if (i) n.onerror = function() { r(a, v, e, i)};
+        v.body.appendChild(n)
+      })(
+        /* r(*/
+        /* a */ window,
+        /* v */ document,
+        /* e */ 'ravelin',
+        /* l */ 'https://cdn.ravelin.net/js/rvn-beta.min.js',
+        /* i */ this.fallbackJS,
+        /* n)*/
+      );
     }
 
     window.ravelin.apply(window, args);
   }
+
+  /**
+   * setFallbackJS defines an alternative source from the default ravelin-hosted
+   * JavaScript used for simple device tracking. It is recommended you host a
+   * copy of https://cdn.ravelin.net/js/rvn-0.1.18-lite.min.js on your domain
+   * and reference it here.
+   *
+   * @param {String} src Your self-hosted copy of https://cdn.ravelin.net/js/rvn-0.1.18-lite.min.js.
+   * @example ravelinjs.setFallbackJS('/rvn.js');
+   * @deprecated This method will be removed in ravelinjs 1.0.0 which will no
+   *  longer rely on any third-party scripts.
+   */
+  RavelinJS.prototype.setFallbackJS = function(src) {
+    this.fallbackJS = src;
+  };
 
   /**
    * setPublicAPIKey sets the API Key used to authenticate with Ravelin. It should be called
