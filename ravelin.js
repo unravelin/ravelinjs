@@ -914,20 +914,20 @@
       return;
     }
     if (!window.ravelin) {
-      (function r(a,v,e,l,i,n){
+      (function r(a,v,e,l,i,n) {
         a[e] = a[e] || function() { (a[e].q = a[e].q || []).push(arguments)};
         n = v.createElement('script');
         n.async = n.defer = 1;
         n.src = l;
-        if (i) n.onerror = function() { r(a, v, e, i)};
-        v.body.appendChild(n)
+        if (i) n.onerror = function() { r(a, v, e, i) };
+        v.body.appendChild(n);
       })(
         /* r(*/
         /* a */ window,
         /* v */ document,
         /* e */ 'ravelin',
         /* l */ 'https://cdn.ravelin.net/js/rvn-beta.min.js',
-        /* i */ this.fallbackJS,
+        /* i */ this.fallbackJS
         /* n)*/
       );
     }
