@@ -62,6 +62,14 @@
         }
         setRSAKey();
 
+        output(function() {
+            ravelinjs.setFallbackJS('/rvn.js');
+            ravelinjs.setPublicAPIKey('pk_live_Mgp7YkLK48IOnHzfcrBotxAJlo1RwiBi');
+            ravelinjs.trackFingerprint('paul');
+            ravelinjs.trackPage();
+            return 'Cookies: ' + document.cookie;
+        });
+
         document.getElementById('form').onsubmit = function() {
             var month = document.getElementById('month');
             output(function() {

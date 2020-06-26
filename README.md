@@ -36,6 +36,12 @@ exception is raised.
 
 ### Tracking Page Activity
 
+Page tracking is performed by a third-party script loaded into your page by
+ravelinjs. To handle cases where the loading of this script fails, it is
+recommended that you host a copy of
+https://cdn.ravelin.net/js/rvn-0.1.18-lite.min.js (at '/rvn.js' in the example
+below) and pass its address to `setFallbackJS`.
+
 Using ravelinjs, the `setPublicAPIKey` (called immediately), `track`, and
 `trackPage` (call on page load) methods can be used instead of the [device
 fingerprinting snippet][device-track]. See the example below for more.
@@ -59,6 +65,9 @@ and send that encrypted value (the cipher) back to your server.
 
 <script src="ravelin.min.js"></script>
 <script>
+    // Fallback.
+    ravelinjs.setFallbackJS('/rvn.js');
+
     // Tracking.
     ravelinjs.setPublicAPIKey('pk_live_...');
     ravelinjs.trackPage();
@@ -123,7 +132,7 @@ upon which it relies:
 
 * Tidy up exceptions used in older browsers where insufficient entropy is
   available when trying to encrypt
-  
+
 * Provide recommedations for how to handle exceptions.
 
 [device-track]: https://developer.ravelin.com/v2/#device-tracking
