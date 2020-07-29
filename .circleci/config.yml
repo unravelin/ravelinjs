@@ -1,14 +1,17 @@
 version: 2
+
+workflows:
+  version: 2
+  nightly:
+    jobs:
+      - build
+      - test-e2e
+
 jobs:
   build:
     docker:
       # specify the version you desire here
       - image: circleci/node:8.11
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
 
     working_directory: ~/repo
 
@@ -29,7 +32,13 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
+  test-e2e:
+    docker:
+      - image: circleci/node:8.11
+
+    working_directory: ~/repo
+
+    steps:
       - run:
           name: "Unit Tests: npm test"
           command: npm test
@@ -41,13 +50,33 @@ jobs:
       - run:
           name: "Encryption E2E tests: npm run test-crossbrowser-e2e"
           command: |
-            if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
             env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test-crossbrowser-e2e
+
+      - store_test_results:
+          path: ~/repo/test/junit
+      - store_artifacts:
+          path: ~/repo/test/shots
+      - store_artifacts:
+          path: ~/repo/cipher.txt
+
+  test-cb:
+    docker:
+      - image: circleci/node:8.11
+
+    working_directory: ~/repo
+
+    steps:
+      - run:
+          name: "Unit Tests: npm test"
+          command: npm test
+
+      - run:
+          name: "Await crossbrowsertesting.com build slot"
+          command: node_modules/.bin/circle-wait
 
       - run:
           name: "Cross-browser integration tests: npm run test-crossbrowser"
           command: |
-            if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
             npm run test-crossbrowser
 
       - store_test_results:
