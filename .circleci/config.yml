@@ -11,21 +11,24 @@ workflows:
       - test-e2e:
           requires:
             - build
+      - test-cb:
+          requires:
+            - build
   nightly:
     triggers:
       - schedule:
-          cron: "0 * * * *"
+          cron: "40 * * * *"
           filters:
+            tags:
+              only: /.*/
             branches:
-              only:
-                - master
-                - cron-ci
+              ignore: /.*/
     jobs:
       - build
       - test-basic:
           requires:
             - build
-      - test-e2e:
+      - test-cb:
           requires:
             - build
 
@@ -80,6 +83,27 @@ jobs:
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
             env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test-crossbrowser-e2e
+
+      - store_test_results:
+          path: ~/repo/test/junit
+      - store_artifacts:
+          path: ~/repo/test/shots
+      - store_artifacts:
+          path: ~/repo/cipher.txt
+
+  test-cb:
+    docker:
+      - image: circleci/node:8.11
+
+    working_directory: ~/repo
+
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+
+      - run:
+          name: "Await crossbrowsertesting.com build slot"
+          command: node_modules/.bin/circle-wait
 
       - run:
           name: "Cross-browser integration tests: npm run test-crossbrowser"
