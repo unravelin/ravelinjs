@@ -41,6 +41,9 @@ jobs:
     docker:
       - image: circleci/node:8.11
 
+    requires:
+      - build
+
     working_directory: ~/repo
 
     steps:
@@ -69,6 +72,9 @@ jobs:
       - image: circleci/node:8.11
 
     working_directory: ~/repo
+
+    requires:
+      - build
 
     steps:
       - run:
