@@ -17,12 +17,11 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "40 * * * *"
+          cron: "0 * * * *"
           filters:
-            tags:
-              only: /.*/
             branches:
-              ignore: /.*/
+              only:
+                - cron-ci
     jobs:
       - build
       - test-basic:
