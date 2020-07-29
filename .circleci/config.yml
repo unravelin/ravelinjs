@@ -32,6 +32,11 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
   test-e2e:
     docker:
       - image: circleci/node:8.11
