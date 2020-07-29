@@ -34,11 +34,6 @@ jobs:
           paths:
             - ~/repo
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
   test-e2e:
     docker:
       - image: circleci/node:8.11
@@ -46,8 +41,6 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - restore_cache:
-          key: v1-dependencies-{{ checksum "package.json" }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
