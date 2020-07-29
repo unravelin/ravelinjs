@@ -2,10 +2,24 @@ version: 2
 
 workflows:
   version: 2
-  nightly:
+  default:
     jobs:
       - build
       - test-e2e:
+          requires:
+            - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "*/5 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+                - cron-ci
+    jobs:
+      - build
+      - test-cb:
           requires:
             - build
 
@@ -43,6 +57,7 @@ jobs:
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+
       - run:
           name: "Unit Tests: npm test"
           command: npm test
