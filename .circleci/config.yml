@@ -30,14 +30,14 @@ jobs:
       - run: npm install
 
       - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo
+
+      - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
   test-e2e:
     docker:
@@ -46,6 +46,11 @@ jobs:
     working_directory: ~/repo
 
     steps:
+      - restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: "Unit Tests: npm test"
           command: npm test
