@@ -5,9 +5,10 @@ describe('ravelinjs returns the encrypted card details', function() {
     console.log('Name on card:', nameOnCard);
     console.log('Ciphertext destination:', outputFilepath);
     console.log('RSA Key:', rsaKey);
-    if (!rsaKey.match(/^[^|]+\|[^|]+$/)) throw new Error("Envvar E2E_RSA_KEY must be set and of the form ...|...");
+    if (!rsaKey) throw new Error("Envvar E2E_RSA_KEY must be set.");
     if (!nameOnCard) throw new Error("Envvar E2E_NAME_ON_CARD must be set.");
     if (!outputFilepath) throw new Error("Envvar E2E_CIPHERTEXT_FILE must be set.");
+    if (!rsaKey.match(/^[^|]+\|[^|]+$/)) throw new Error("Envvar E2E_RSA_KEY must be of the form ...|...");
 
     it('loads the page', function() {
         browser.url('/pages/scripttag/index.html');

@@ -26,7 +26,7 @@ exports.config = Object.assign(base, {
     bail: 1,
     mochaOpts: Object.assign(base.mochaOpts, {
         // Match mocha timeout with browser.
-        timeout: timeoutSeconds * 1000,
+        timeout: timeoutSeconds * 3000,
     }),
 
     maxInstances: parseInt(process.env.WD_PARALLEL, 10) || 1,
