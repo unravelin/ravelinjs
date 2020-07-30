@@ -17,11 +17,11 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "30 * * * *"
+          cron: "30 4 * * *"
           filters:
             branches:
               only:
-                - cron-ci
+                - master
     jobs:
       - build
       - test-basic:

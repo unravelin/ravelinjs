@@ -25,7 +25,7 @@
   "devDependencies": {
     "appium": "^1.8.0",
     "appium-doctor": "^1.4.3",
-    "cbt_tunnels": "^0.9.4",
+    "cbt_tunnels": "^0.9.13",
     "chai": "^4.1.2",
     "circle-wait": "^1.0.2",
     "request": "^2.85.0",
