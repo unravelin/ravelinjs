@@ -1,23 +1,23 @@
 describe('ravelinjs', function() {
 
   describe('script tag usage', function() {
-    suite('/pages/scripttag/index.html');
+    suite('/pages/scripttag/');
   });
 
   describe('script tag minified usage', function() {
-    suite('/pages/scripttag-min/index.html');
+    suite('/pages/scripttag-min/');
   });
 
   describe('requirejs usage', function() {
-    suite('/pages/amd/index.html');
+    suite('/pages/amd/');
   });
 
   describe('requirejs minified usage', function() {
-    suite('/pages/amd-min/index.html');
+    suite('/pages/amd-min/');
   });
 
   describe('webpack usage', function() {
-    suite('/pages/webpack/index.html');
+    suite('/pages/webpack/');
   });
 });
 
