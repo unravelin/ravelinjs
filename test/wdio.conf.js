@@ -232,7 +232,7 @@ exports.config = {
       "browserName": "Firefox",
       "browserVersion": "45.0",
     },
-  ].filter(b => !process.env.BROWSERS || b.browserName.indexOf(process.env.BROWSERS) >= 0),
+  ].filter(b => !process.env.BROWSERS || JSON.stringify(b).indexOf(process.env.BROWSERS) >= 0),
 
   // ===================
   // Test Configurations
