@@ -112,7 +112,7 @@ function checkTrackingEventsDoNotError() {
 
     browser.pause(1000);
 
-    const error = $('#trackingError').click();
+    const error = $('#trackingError').getText();
     if (error) throw new Error(error);
   }
 }
