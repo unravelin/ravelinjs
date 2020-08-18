@@ -1,52 +1,52 @@
-describe('ravelinjs', function() {
-  before(function() {
+describe('ravelinjs', function () {
+  before(function () {
     if (process.env.SKIP_ALL) {
       this.skip();
     }
   });
 
-  describe('script tag usage', function() {
+  describe('script tag usage', function () {
     suite('/pages/scripttag/');
   });
 
-  // describe('script tag minified usage', function() {
-  //   suite('/pages/scripttag-min/');
-  // });
+  describe('script tag minified usage', function () {
+    suite('/pages/scripttag-min/');
+  });
 
-  // describe('requirejs usage', function() {
-  //   suite('/pages/amd/');
-  // });
+  describe('requirejs usage', function () {
+    suite('/pages/amd/');
+  });
 
-  // describe('requirejs minified usage', function() {
-  //   suite('/pages/amd-min/');
-  // });
+  describe('requirejs minified usage', function () {
+    suite('/pages/amd-min/');
+  });
 
-  // describe('webpack usage', function() {
-  //   suite('/pages/webpack/');
-  // });
+  describe('webpack usage', function () {
+    suite('/pages/webpack/');
+  });
 });
 
 function suite(page) {
-  before(function() {
+  before(function () {
     const described = this.currentTest.parent.title;
     if (process.env.SUITE && described.indexOf(process.env.SUITE) == -1) {
       this.skip();
     }
   });
 
-  it('loads', function() {
+  it('loads', function () {
     browser.url(page);
   });
-  it('sets device cookies', function() {
+  it('sets device cookies', function () {
     checkCookiesAreSet();
   })
-  it('collects basic device data', function() {
+  it('collects basic device data', function () {
     checkFingerprintingDoesNotError();
   });
-  it ('tracks page events', function() {
+  it('tracks page events', function () {
     checkTrackingEventsDoNotError();
   })
-  it('encrypts cards', function() {
+  it('encrypts cards', function () {
     checkCardEncryptionWorks();
   });
 }
