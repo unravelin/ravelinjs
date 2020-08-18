@@ -75,16 +75,38 @@ function checkCardEncryptionWorks() {
   $('#number').setValue('4111 1111 1111 1111');
   $('#month').selectByAttribute('value', '4');
   $('#year').setValue('2019');
+
+  // Submit the form.
   $('#encrypt').click();
 
-  browser.pause(5000);
+  const err = $('#encryptionOutputError'),
+        out = $('#encryptionOutput');
+  let errText = err.getText(),
+      outText = out.getText();
 
-  // Check there was no error
-  var error = $('#encryptionOutputError').getText();
-  if (error) throw new Error(error);
+  // Double-check we submitted the form.
+  if (errText == "" && outText == "") {
+    // $('#encrypt').click() isn't doing the job on some browsers. The operation
+    // doesn't trigger the event handler - the button just appears unclicked.
+    // It's happening consistently with Android 5/7 and Safari 13 running on
+    // Browserstack. We seem to be able to reliably click the button with
+    // JavaScript despite this.
+    browser.execute(function () {
+      document.getElementById('encrypt').click();
+    });
+    errText = err.getText()
+    outText = out.getText()
+  }
+
+  // Check there was no error.
+  if (errText) {
+    throw new Error(errText);
+  }
 
   // Check the results looked valid
-  expect($('#encryptionOutput')).toHaveTextContaining('aesKeyCiphertext');
+  if (outText.indexOf('aesKeyCiphertext') == -1) {
+    throw new Error('Expected encryption output to container "aesKeyCiphertext" but received: ' + outText);
+  }
 }
 
 function checkFingerprintingDoesNotError() {
