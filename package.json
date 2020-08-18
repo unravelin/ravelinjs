@@ -1,9 +1,6 @@
 {
   "name": "ravelinjs",
   "version": "0.1.0",
-  "engines": {
-    "node": ">=8.x <9"
-  },
   "description": "Ravelin's Javascript Library.",
   "main": "./dist/ravelin.js",
   "scripts": {
@@ -35,25 +32,24 @@
   },
   "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
-    "appium": "1.14.1",
-    "appium-doctor": "1.11.1",
-    "cbt_tunnels": "crossbrowsertesting/cbt-tunnel-nodejs#43e3f678b764c24276e077a9d00107027aa65879",
+    "@wdio/browserstack-service": "6.4.0",
+    "@wdio/cli": "6.4.0",
+    "@wdio/junit-reporter": "6.4.0",
+    "@wdio/local-runner": "6.4.0",
+    "@wdio/mocha-framework": "6.4.0",
+    "@wdio/spec-reporter": "6.4.0",
+    "@wdio/sync": "6.4.0",
     "chai": "4.2.0",
     "circle-wait": "1.0.2",
+    "express": "4.17.1",
     "jshint": "2.10.2",
     "nyc": "14.1.1",
-    "request": "2.88.0",
     "sinon": "7.4.1",
     "terser-webpack-plugin": "2.1.1",
     "wait-port": "0.2.2",
-    "wdio-appium-service": "0.2.3",
-    "wdio-browserstack-service": "0.1.19",
-    "wdio-junit-reporter": "0.4.4",
-    "wdio-mocha-framework": "0.6.4",
-    "wdio-spec-reporter": "0.1.5",
-    "webdriverio": "4.14.1",
     "webpack": "4.39.2",
-    "webpack-cli": "3.3.7"
+    "webpack-cli": "3.3.7",
+    "xunit-viewer": "6.3.9"
   },
   "jshintConfig": {
     "unused": true,

@@ -17,7 +17,7 @@
     wireUpEncryptionFunc(ravelinjsInstance);
 
     // The default instantiation for our test files is associated to the CID 'ravelinjs'.
-    // Both the RSA key and the public API token are hard coded into this repo (and thus visabile in github).
+    // Both the RSA key and the public API token are hard coded into this repo (and thus visible in github).
     // This CID has the private token disabled, and is isolated so that there is no possibility for mischief
     // with these values. The e2e tests will override the RSA key and public API token for their tests.
     setHardCodedRavelinJSTestPubToken();

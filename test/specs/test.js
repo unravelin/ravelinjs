@@ -1,29 +1,41 @@
 describe('ravelinjs', function() {
+  before(function() {
+    if (process.env.SKIP_ALL) {
+      this.skip();
+    }
+  });
 
   describe('script tag usage', function() {
     suite('/pages/scripttag/');
   });
 
-  describe('script tag minified usage', function() {
-    suite('/pages/scripttag-min/');
-  });
+  // describe('script tag minified usage', function() {
+  //   suite('/pages/scripttag-min/');
+  // });
 
-  describe('requirejs usage', function() {
-    suite('/pages/amd/');
-  });
+  // describe('requirejs usage', function() {
+  //   suite('/pages/amd/');
+  // });
 
-  describe('requirejs minified usage', function() {
-    suite('/pages/amd-min/');
-  });
+  // describe('requirejs minified usage', function() {
+  //   suite('/pages/amd-min/');
+  // });
 
-  describe('webpack usage', function() {
-    suite('/pages/webpack/');
-  });
+  // describe('webpack usage', function() {
+  //   suite('/pages/webpack/');
+  // });
 });
 
 function suite(page) {
+  before(function() {
+    const described = this.currentTest.parent.title;
+    if (process.env.SUITE && described.indexOf(process.env.SUITE) == -1) {
+      this.skip();
+    }
+  });
+
   it('loads', function() {
-    browser.waitForURL(page);
+    browser.url(page);
   });
   it('sets device cookies', function() {
     checkCookiesAreSet();
@@ -40,31 +52,39 @@ function suite(page) {
 }
 
 function checkCookiesAreSet() {
-  if (!browser.getCookie('ravelinDeviceId')) {
-    throw new Error('Expected cookie "ravelinDeviceId" to be set');
-  }
+  const want = ['ravelinSessionId', 'ravelinDeviceId'];
+  const have = browser.getCookies(want);
 
-  if (!browser.getCookie('ravelinSessionId')) {
-    throw new Error('Expected cookie "ravelinSessionId" to be set');
+  for (let w of want) {
+    let found = false;
+    for (let h of have) {
+      if (h.name === w) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      throw new Error('Expected cookie "' + w + '" to be set.');
+    }
   }
 }
 
 function checkCardEncryptionWorks() {
   // Fill in the card encryption form
-  browser.setValue('#name', 'John');
-  browser.setValue('#number', '4111 1111 1111 1111');
-  browser.selectByValue('#month', '4');
-  browser.setValue('#year', '2019');
-  browser.click('#encrypt');
+  $('#name').setValue('John');
+  $('#number').setValue('4111 1111 1111 1111');
+  $('#month').selectByAttribute('value', '4');
+  $('#year').setValue('2019');
+  $('#encrypt').click();
 
   browser.pause(5000);
 
   // Check there was no error
-  var error = browser.getText('#encryptionOutputError');
+  var error = $('#encryptionOutputError').getText();
   if (error) throw new Error(error);
 
   // Check the results looked valid
-  browser.getText('#encryptionOutput').should.contain('aesKeyCiphertext');
+  expect($('#encryptionOutput')).toHaveTextContaining('aesKeyCiphertext');
 }
 
 function checkFingerprintingDoesNotError() {
@@ -72,11 +92,11 @@ function checkFingerprintingDoesNotError() {
   // and provided a callback that writes any resulting errors to #fingerprintError.
   // No text in #fingerprintError means no error occured fingerprinting the device.
   // Reference common.js to check out these registrations.
-  browser.click('#trackFingerprint');
+  $('#trackFingerprint').click();
 
   browser.pause(1000);
 
-  var error = browser.getText('#fingerprintError');
+  const error = $('#fingerprintError').getText();
   if (error) throw new Error(error);
 }
 
@@ -88,11 +108,11 @@ function checkTrackingEventsDoNotError() {
   var buttons = ['', 'Page', 'Login', 'Logout'];
 
   for (var i = 0; i < buttons.length; i++) {
-    browser.click('#track' + buttons[i]);
+    $('#track' + buttons[i]).click();
 
     browser.pause(1000);
 
-    var error = browser.getText('#trackingError');
+    const error = $('#trackingError').click();
     if (error) throw new Error(error);
   }
 }
