@@ -322,7 +322,7 @@ exports.config = {
           o && o.osVersion,
           o && o.deviceName,
         ].filter(Boolean).join("-");
-        return `results-${options.cid}.${cap}.xml`;
+        return `results-${cap}.xml`;
       },
       suiteNameFormat: '.',
     }],
