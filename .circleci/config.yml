@@ -41,13 +41,14 @@ jobs:
           name: "Encryption E2E tests: npm run test-crossbrowser-e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
+            echo Not implemented on crossbrowser. && exit 1
             npm run test-crossbrowser-e2e
 
       - run:
-          name: "Cross-browser integration tests: npm run test-crossbrowser"
+          name: "Browserstack tests: npm run test-browserstack"
           command: |
             if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
-            npm run test-crossbrowser
+            PARALLEL=3 npm run test-browserstack
 
       - store_test_results:
           path: ~/repo/test/junit
