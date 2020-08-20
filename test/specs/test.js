@@ -78,27 +78,44 @@ function checkCardEncryptionWorks() {
   $('#month').selectByAttribute('value', '4');
   $('#year').setValue('2019');
 
-  // Submit the form.
-  $('#encrypt').click();
-
   const err = $('#encryptionOutputError'),
         out = $('#encryptionOutput');
-  let errText = err.getText(),
-      outText = out.getText();
 
-  // Double-check we submitted the form.
-  if (errText == "" && outText == "") {
-    // $('#encrypt').click() isn't doing the job on some browsers. The operation
-    // doesn't trigger the event handler - the button just appears unclicked.
-    // It's happening consistently with Android 5/7 and Safari 13 running on
-    // Browserstack. We seem to be able to reliably click the button with
-    // JavaScript despite this.
-    log.warn('Extra clicking required', browser.capabilities);
-    browser.execute(function () {
-      document.getElementById('encrypt').click();
-    });
-    errText = err.getText()
-    outText = out.getText()
+  // Submit the form.
+  let {errText, outText} = encrypt();
+  function encrypt() {
+    $('#encrypt').click();
+
+    let errText = err.getText(),
+        outText = out.getText();
+    if (errText == "" && outText == "") {
+      // $('#encrypt').click() isn't doing the job on some browsers. The
+      // operation doesn't trigger the event handler - the button just appears
+      // unclicked. It's happening consistently with Android 5/7 and Safari 13
+      // running on Browserstack. We seem to be able to reliably click the
+      // button with JavaScript despite this.
+      log.warn('Extra clicking required', browser.capabilities);
+      browser.execute(function () {
+        document.getElementById('encrypt').click();
+      });
+      errText = err.getText();
+      outText = out.getText();
+    }
+    return {errText, outText};
+  }
+
+  while (errText === "NOT READY: generator isn't seeded") {
+    log.warn('Generator not seeded so trying again after some keyboard inputs', browser.capabilities);
+
+    // The browser needs some user actions as a source of entropy for the
+    // pseudo-random number generator. Send some keypresses for prng to collect.
+    // 15 repeats of 4 keys seems to be enough to seed the generator.
+    for (let i = 0; i < 15; i++) {
+      browser.keys(['a', 'b', 'c', 'd']);
+    }
+
+    // Re-submit the form.
+    ({errText, outText} = encrypt());
   }
 
   // Check there was no error.
