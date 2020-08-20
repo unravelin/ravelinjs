@@ -78,13 +78,14 @@ function checkCardEncryptionWorks() {
   $('#month').selectByAttribute('value', '4');
   $('#year').setValue('2019');
 
-  const err = $('#encryptionOutputError'),
+  const enc = $('#encrypt'),
+        err = $('#encryptionOutputError'),
         out = $('#encryptionOutput');
 
   // Submit the form.
   let {errText, outText} = encrypt();
   function encrypt() {
-    $('#encrypt').click();
+    enc.click();
 
     let errText = err.getText(),
         outText = out.getText();
@@ -104,14 +105,17 @@ function checkCardEncryptionWorks() {
     return {errText, outText};
   }
 
+  // Seed the generator, if necessary.
   while (errText === "NOT READY: generator isn't seeded") {
-    log.warn('Generator not seeded so trying again after some keyboard inputs', browser.capabilities);
+    log.warn('Generator not seeded so jiggling the mouse a bit.', browser.capabilities);
 
     // The browser needs some user actions as a source of entropy for the
-    // pseudo-random number generator. Send some keypresses for prng to collect.
-    // 15 repeats of 4 keys seems to be enough to seed the generator.
-    for (let i = 0; i < 15; i++) {
-      browser.keys(['a', 'b', 'c', 'd']);
+    // pseudo-random number generator. Move the mouse between a few elements to
+    // seed the generator.
+    for (let i = 0; i < 20; i++) {
+      enc.moveTo();
+      err.moveTo();
+      out.moveTo();
     }
 
     // Re-submit the form.
