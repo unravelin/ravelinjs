@@ -368,10 +368,15 @@ exports.config = {
         log.info('Webpack: setting up test/pages/webpack.');
 
         require('webpack')({
+          mode: 'production',
+          devtool: false,
           entry: path.resolve(__dirname, 'pages/webpack/index.js'),
           output: {
+            pathinfo: false,
             path: path.resolve(__dirname, 'pages/webpack'),
             filename: 'bundle.js',
+            library: 'ravelinjs-spec',
+            libraryTarget: 'umd',
           },
           optimization: {
             minimize: true,
