@@ -54,21 +54,7 @@ function suite(page) {
 }
 
 function checkCookiesAreSet() {
-  const want = ['ravelinSessionId', 'ravelinDeviceId'];
-  const have = browser.getCookies(want);
-
-  for (let w of want) {
-    let found = false;
-    for (let h of have) {
-      if (h.name === w) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      throw new Error('Expected cookie "' + w + '" to be set.');
-    }
-  }
+  expect($('#cookies')).toHaveTextContaining('ravelinDeviceId');
 }
 
 function checkCardEncryptionWorks() {
