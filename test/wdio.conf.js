@@ -1,3 +1,4 @@
+const log = require('@wdio/logger').default('ravelinjs');
 const path = require('path');
 const exec = require('child_process').exec;
 const TerserPlugin = require('terser-webpack-plugin');
@@ -364,7 +365,7 @@ exports.config = {
     },
     function webpackTestPageSetup(config, capabilities) {
       return new Promise(function (resolve, reject) {
-        console.log('Webpack: setting up test/pages/webpack.');
+        log.info('Webpack: setting up test/pages/webpack.');
 
         require('webpack')({
           entry: path.resolve(__dirname, 'pages/webpack/index.js'),
@@ -387,10 +388,10 @@ exports.config = {
           },
         }, function (err, stats) {
           if (err) {
-            console.error('Webpack: errored.');
+            log.error('Webpack: errored.');
             reject(err);
           } else {
-            console.log('Webpack: set up.');
+            log.info('Webpack: set up.');
             resolve(stats);
           }
         });

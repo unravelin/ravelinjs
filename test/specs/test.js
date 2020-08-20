@@ -1,3 +1,5 @@
+const log = require('@wdio/logger').default('ravelinjs');
+
 describe('ravelinjs', function () {
   before(function () {
     if (process.env.SKIP_ALL) {
@@ -91,6 +93,7 @@ function checkCardEncryptionWorks() {
     // It's happening consistently with Android 5/7 and Safari 13 running on
     // Browserstack. We seem to be able to reliably click the button with
     // JavaScript despite this.
+    log.warn('Extra clicking required', browser.capabilities);
     browser.execute(function () {
       document.getElementById('encrypt').click();
     });
