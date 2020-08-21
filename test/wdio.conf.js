@@ -523,7 +523,7 @@ exports.config = {
 /**
  * build returns an identifier for the build in question.
  */
-function build() {
+async function build() {
   if (process.env.CIRCLE_TAG) {
     return 'tag/' + process.env.CIRCLE_TAG;
   }
