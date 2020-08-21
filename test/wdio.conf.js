@@ -361,7 +361,7 @@ exports.config = {
     },
     async function setCapabilityDefaults(config, capabilities) {
       const def = await capabilityDefaults();
-      console.log('🤖 https://automate.browserstack.com/v2/search?type=builds&query=' + encodeURIComponent(def.build));
+      console.log('🤖 https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(def.build));
       capabilities.forEach(cap => Object.assign(cap, def));
     },
     function webpackTestPageSetup(config, capabilities) {
