@@ -13,7 +13,7 @@ if (!user || !key) {
 async function capabilityDefaults() {
   return {
     'project': 'ravelinjs',
-    'build': await gitBuild(),
+    'build': await build(),
     'browserstack.console': 'info',
     'browserstack.networkLogs': true,
     'browserstack.debug': true,
@@ -361,6 +361,7 @@ exports.config = {
     },
     async function setCapabilityDefaults(config, capabilities) {
       const def = await capabilityDefaults();
+      console.log('🤖 https://automate.browserstack.com/v2/search?type=builds&query=' + encodeURIComponent(def.build));
       capabilities.forEach(cap => Object.assign(cap, def));
     },
     function webpackTestPageSetup(config, capabilities) {
@@ -517,6 +518,19 @@ exports.config = {
   */
   //onReload: function(oldSessionId, newSessionId) {
   //}
+}
+
+/**
+ * build returns an identifier for the build in question.
+ */
+function build() {
+  if (process.env.CIRCLE_TAG) {
+    return 'tag/' + process.env.CIRCLE_TAG;
+  }
+  if (process.env.CIRCLE_BRANCH) {
+    return 'ci/' + process.env.CIRCLE_BRANCH + '-' + process.env.CIRCLE_SHA1.substr(0, 7);
+  }
+  return await gitBuild()
 }
 
 /**
