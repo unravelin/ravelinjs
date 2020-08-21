@@ -525,10 +525,10 @@ exports.config = {
  */
 async function build() {
   if (process.env.CIRCLE_TAG) {
-    return 'tag/' + process.env.CIRCLE_TAG;
+    return 'tag/' + process.env.CIRCLE_TAG + '-' + process.env.CIRCLE_BUILD_NUM;
   }
   if (process.env.CIRCLE_BRANCH) {
-    return 'ci/' + process.env.CIRCLE_BRANCH + '-' + process.env.CIRCLE_SHA1.substr(0, 7);
+    return 'ci/' + process.env.CIRCLE_BRANCH + '-' + process.env.CIRCLE_SHA1.substr(0, 7) + process.env.CIRCLE_BUILD_NUM;
   }
   return await gitBuild()
 }
