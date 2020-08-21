@@ -15,7 +15,7 @@
     "test-debug": "mocha --inspect-brk test/test.js",
     "test-appium": "wdio ./test/appium.conf.js",
     "test-crossbrowser": "wdio ./test/crossbrowser.conf.js",
-    "test-browserstack": "wdio ./test/browserstack.conf.js",
+    "test-browserstack": "PARALLEL=5 LOG_LEVEL=error wdio ./test/wdio.conf.js",
     "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
     "testpage-webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
     "test-crossbrowser-live": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
