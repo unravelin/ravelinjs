@@ -18,10 +18,14 @@ module.exports = function(env, argv) {
       library: 'ravelinjs',
       libraryTarget: 'umd',
     },
-    module: {rules: [{
-      test: /version.js$/,
-      use: [{loader: 'val-loader'}],
-    }]},
+    module: {rules: [
+      {
+        // Use val-loader to bundle version.js so that we can avoid bundling
+        // all of package.json too.
+        test: /version.js$/,
+        use: [{loader: 'val-loader'}],
+      },
+    ]},
     optimization: {
       minimize: true,
       minimizer: [

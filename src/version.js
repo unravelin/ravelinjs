@@ -5,7 +5,7 @@ module.exports = bakedObj({
 });
 
 /**
- * backedObj returns a function that returns an object with a code property
+ * bakedObj returns a function that returns an object with a code property
  * exporting the JSON-encoded version of vars, and has properties equal to vars.
  *
  * In Node the properties of vars can be accessed on the returned value, but
