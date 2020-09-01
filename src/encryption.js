@@ -1,7 +1,7 @@
 var RavelinJS = require('./core');
 var enc = require('./encryption-vendored');
 var RSAKey = enc.RSAKey, sjcl = enc.sjcl;
-var FULL_VERSION_STRING = require('./version');
+var FULL_VERSION_STRING = require('./version').version;
 
 /**
  * setRSAKey configures RavelinJS with the given public encryption key, in the format that

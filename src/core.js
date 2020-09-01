@@ -1,4 +1,4 @@
-var FULL_VERSION_STRING = require('./version');
+var FULL_VERSION_STRING = require('./version').version;
 
 // URLs
 var API_URL = 'https://api.ravelin.net';
