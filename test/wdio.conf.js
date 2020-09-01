@@ -1,7 +1,6 @@
 const log = require('@wdio/logger').default('ravelinjs');
 const path = require('path');
 const exec = require('child_process').exec;
-const TerserPlugin = require('terser-webpack-plugin');
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -367,32 +366,7 @@ exports.config = {
     function webpackTestPageSetup(config, capabilities) {
       return new Promise(function (resolve, reject) {
         log.info('Webpack: setting up test/pages/webpack.');
-
-        require('webpack')({
-          mode: 'production',
-          devtool: false,
-          entry: path.resolve(__dirname, 'pages/webpack/index.js'),
-          output: {
-            pathinfo: false,
-            path: path.resolve(__dirname, 'pages/webpack'),
-            filename: 'bundle.js',
-            library: 'ravelinjs-spec',
-            libraryTarget: 'umd',
-          },
-          optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                include: /\.js$/,
-                extractComments: false,
-                terserOptions: {
-                  ie8: true,
-                  safari10: true,
-                },
-              }),
-            ],
-          },
-        }, function (err, stats) {
+        require('webpack')(require('./webpack.config'), function (err, stats) {
           if (err) {
             log.error('Webpack: errored.');
             reject(err);
