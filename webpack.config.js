@@ -18,6 +18,10 @@ module.exports = function(env, argv) {
       library: 'ravelinjs',
       libraryTarget: 'umd',
     },
+    module: {rules: [{
+      test: /version.js$/,
+      use: [{loader: 'val-loader'}],
+    }]},
     optimization: {
       minimize: true,
       minimizer: [
