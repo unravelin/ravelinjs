@@ -1,4 +1,4 @@
-const pkgVersion = require('../package.json').version;
+var pkgVersion = require('../package.json').version;
 
 module.exports = bakedObj({
   version: pkgVersion + '-ravelinjs',
@@ -15,7 +15,7 @@ module.exports = bakedObj({
 function bakedObj(vars) {
   // Serialise vars on package load so that we can detect in all environmets
   // when it includes a non-serialisable value.
-  const code = 'module.exports = ' + JSON.stringify(vars) + ';';
+  var code = 'module.exports = ' + JSON.stringify(vars) + ';';
 
   // Construct the val-loader code function and copy vars' properties.
   function versionMod() { return {code: code}; };
