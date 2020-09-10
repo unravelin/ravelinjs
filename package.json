@@ -32,6 +32,9 @@
   },
   "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "15.0.0",
+    "@rollup/plugin-node-resolve": "9.0.0",
+    "@rollup/plugin-replace": "2.3.3",
     "@wdio/browserstack-service": "6.4.0",
     "@wdio/cli": "6.4.0",
     "@wdio/junit-reporter": "6.4.0",
@@ -46,6 +49,7 @@
     "express": "4.17.1",
     "jshint": "2.10.2",
     "nyc": "14.1.1",
+    "rollup": "2.26.11",
     "sinon": "7.4.1",
     "terser-webpack-plugin": "2.1.1",
     "val-loader": "2.1.1",
