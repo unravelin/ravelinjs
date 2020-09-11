@@ -7,7 +7,7 @@ export default [
     input: 'lib/pkg/core+track+encrypt+promise.js',
     output: {
       file: 'build/ravelin.js',
-      format: 'umd',
+      format: 'iife',
       name: 'ravelinjs'
     },
     plugins: [
