@@ -7,7 +7,6 @@
     "build": "rollup --config",
     "lint": "jshint src",
     "version": "echo $npm_package_version",
-
     "release": "run-s build release-mkdir release-rename release-sri",
     "release-mkdir": "mkdir -p ./releases/$npm_package_version",
     "release-rename": "cp ./dist/ravelin.min.js ./releases/$npm_package_version/ravelin-$npm_package_version.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$npm_package_version/ravelin-no-encrypt-$npm_package_version.min.js",
@@ -53,6 +52,7 @@
     "nyc": "14.1.1",
     "promise-polyfill": "8.1.3",
     "rollup": "2.26.11",
+    "rollup-plugin-terser": "7.0.2",
     "sinon": "7.4.1",
     "terser-webpack-plugin": "2.1.1",
     "val-loader": "2.1.1",
