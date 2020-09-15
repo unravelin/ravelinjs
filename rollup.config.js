@@ -1,12 +1,16 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
+import { basename } from 'path';
+import glob from 'glob';
 
-export default [
+const bundles = glob.sync("lib/bundle/*.js");
+
+export default bundles.map(bundle => (
   {
-    input: 'lib/pkg/core+track+encrypt+promise.js',
+    input: bundle,
     output: {
-      file: 'build/ravelin.js',
+      file: 'build/ravelin-' + basename(bundle),
       format: 'iife',
       name: 'ravelinjs'
     },
@@ -18,4 +22,4 @@ export default [
       commonjs(),
     ]
   }
-];
+));
