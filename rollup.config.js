@@ -9,7 +9,14 @@ var builds = module.exports = [];
 
 var output = {
   format: 'iife',
-  name: 'ravelinjs'
+  name: 'ravelinjs',
+
+  // Prevent Object.freeze being used for namespace references.
+  // https://www.rollupjs.org/guide/en/#outputfreeze.
+  freeze: false,
+  // Prevent Object.defineProperty being used for dynamic exports.
+  // https://www.rollupjs.org/guide/en/#outputexternallivebindings.
+  externalLiveBindings: false,
 };
 var plugins = [
   replace({
