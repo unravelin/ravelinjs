@@ -9,7 +9,7 @@ var builds = module.exports = [];
 
 var output = {
   format: 'iife',
-  name: 'ravelinjs',
+  name: 'Ravelin',
 
   // Prevent Object.freeze being used for namespace references.
   // https://www.rollupjs.org/guide/en/#outputfreeze.
