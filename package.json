@@ -1,8 +1,8 @@
 {
   "name": "ravelinjs",
-  "version": "0.1.0",
-  "description": "Ravelin's Javascript Library.",
-  "main": "./dist/ravelin.js",
+  "version": "1.0.0",
+  "description": "Ravelin's Browser SDK",
+  "main": "./build/ravelin-core+track+encrypt+promise.js",
   "scripts": {
     "build": "rollup --config",
     "lint": "jshint src",
