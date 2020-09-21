@@ -71,8 +71,6 @@
     "undef": true,
     "browser": true,
     "globals": {
-      "require": true,
-      "module": true,
       "JSON": true
     }
   }
