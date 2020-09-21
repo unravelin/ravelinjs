@@ -20,7 +20,7 @@ var output = {
 };
 var plugins = [
   replace({
-    'process.env.npm_package_version': JSON.stringify(require('./package.json').version),
+    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version),
   }),
   resolve(),
   commonjs(),
