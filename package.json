@@ -5,8 +5,7 @@
   "main": "./build/ravelin-core+track+encrypt+promise.js",
   "scripts": {
     "build": "rollup --config",
-    "lint": "jshint src",
-    "version": "echo $npm_package_version",
+    "lint": "jshint lib",
     "release": "run-s build release-mkdir release-rename release-sri",
     "release-mkdir": "mkdir -p ./releases/$npm_package_version",
     "release-rename": "cp ./dist/ravelin.min.js ./releases/$npm_package_version/ravelin-$npm_package_version.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$npm_package_version/ravelin-no-encrypt-$npm_package_version.min.js",
