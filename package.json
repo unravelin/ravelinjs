@@ -52,11 +52,8 @@
     "rollup": "2.26.11",
     "rollup-plugin-terser": "7.0.2",
     "sinon": "7.4.1",
-    "terser-webpack-plugin": "2.1.1",
     "val-loader": "2.1.1",
     "wait-port": "0.2.2",
-    "webpack": "4.39.2",
-    "webpack-cli": "3.3.7",
     "xunit-viewer": "6.3.9",
     "yaku": "1.0.1"
   }
