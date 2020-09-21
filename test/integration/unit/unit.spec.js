@@ -9,9 +9,9 @@ describe('ravelinjs unit tests', function() {
       return $('#mocha-stats .duration').getText() !== 'duration: 0';
     });
 
-    var nErr = $('#mocha-stats .failures').getText();
-    if (nErr !== 'failures: 0') {
-      throw new Error('Unit tests found ' + nErr);
+    var stats = $('#mocha-stats').getText();
+    if (stats.indexOf('failures: 0') === -1) {
+      throw new Error('Stats: ' + stats.replace(/(\d)([fd])/g, '$1, $2'));
     }
   });
 });
