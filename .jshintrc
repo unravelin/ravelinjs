@@ -20,7 +20,7 @@
 
     // Spec files are executed in node + mocha.
     "**/*.*.js": {
-      "esversion": 8,
+      "esversion": 9,
       "node": true,
       "browser": false,
       "mocha": true,
