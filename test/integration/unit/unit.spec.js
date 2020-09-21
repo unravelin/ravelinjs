@@ -2,7 +2,7 @@
 
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
-    browser.url('/test/integration/pages/unit/');
+    browser.url('/unit/');
     expect(browser).toHaveTitleContaining('Mocha');
 
     browser.waitUntil(function() {
