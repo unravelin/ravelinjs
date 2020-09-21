@@ -1,4 +1,4 @@
-/* globals describe, it, browser */
+/* globals describe, it, browser, expect, $ */
 
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
@@ -8,7 +8,6 @@ describe('ravelinjs unit tests', function() {
     browser.waitUntil(function() {
       return $('#mocha-stats .duration').getText() !== 'duration: 0';
     });
-
 
     var nErr = $('#mocha-stats .failures').getText();
     if (nErr !== 'failures: 0') {

@@ -37,7 +37,7 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   specs: [
     path.join(__dirname, '/specs/test.js'),
-    path.join(__dirname, '/specs/unit.js'),
+    path.join(__dirname, '/pages/**/*.spec.js'),
   ],
   // Patterns to exclude.
   exclude: [
