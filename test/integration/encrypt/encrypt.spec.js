@@ -2,7 +2,7 @@ const log = require('@wdio/logger').default('ravelinjs');
 
 describe('Ravelin.encrypt', function () {
   it('loads', function() {
-    browser.url('/pages/encrypt/');
+    browser.url('/test/integration/encrypt/');
     expect(browser).toHaveTitleContaining('ravelinjs');
 
     var e = $('#error').getText();

@@ -1,4 +1,3 @@
-const log = require('@wdio/logger').default('ravelinjs');
 const path = require('path');
 const exec = require('child_process').exec;
 
@@ -6,16 +5,17 @@ const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
 
 if (!user || !key) {
-  throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.')
+  throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.');
 }
 
 async function capabilityDefaults() {
+  const b = await build();
   return {
     'project': 'ravelinjs',
-    'build': await build(),
+    'build': b,
     'browserstack.console': 'info',
     'browserstack.networkLogs': true,
-    'browserstack.debug': true,
+    'browserstack.debug': true
   };
 }
 
@@ -36,8 +36,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   specs: [
-    path.join(__dirname, '/specs/test.js'),
-    path.join(__dirname, '/pages/**/*.spec.js'),
+    path.join(__dirname, '**/*.spec.js'),
   ],
   // Patterns to exclude.
   exclude: [
@@ -363,20 +362,6 @@ exports.config = {
       const def = await capabilityDefaults();
       console.log('🤖 https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(def.build));
       capabilities.forEach(cap => Object.assign(cap, def));
-    },
-    function webpackTestPageSetup(config, capabilities) {
-      return new Promise(function (resolve, reject) {
-        log.info('Webpack: setting up test/pages/webpack.');
-        require('webpack')(require('./webpack.config'), function (err, stats) {
-          if (err) {
-            log.error('Webpack: errored.');
-            reject(err);
-          } else {
-            log.info('Webpack: set up.');
-            resolve(stats);
-          }
-        });
-      });
     }
   ]
   /**
@@ -493,7 +478,7 @@ exports.config = {
   */
   //onReload: function(oldSessionId, newSessionId) {
   //}
-}
+};
 
 /**
  * build returns an identifier for the build in question.
@@ -505,7 +490,7 @@ async function build() {
   if (process.env.CIRCLE_BRANCH) {
     return 'ci/' + process.env.CIRCLE_BRANCH + '-' + process.env.CIRCLE_SHA1.substr(0, 7) + '-' + process.env.CIRCLE_BUILD_NUM;
   }
-  return await gitBuild()
+  return await gitBuild();
 }
 
 /**

@@ -11,15 +11,8 @@
     "release-mkdir": "mkdir -p ./releases/$npm_package_version",
     "release-rename": "cp ./dist/ravelin.min.js ./releases/$npm_package_version/ravelin-$npm_package_version.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$npm_package_version/ravelin-no-encrypt-$npm_package_version.min.js",
     "release-sri": "go run github.com/sHesl/sri -out=./releases/$npm_package_version/sri.json -hash=all ./releases/$npm_package_version",
-    "test": "mocha -C test/test.js",
-    "test-cover": "nyc --reporter=html mocha -C test/test.js",
-    "test-debug": "mocha --inspect-brk test/test.js",
-    "test-appium": "wdio ./test/appium.conf.js",
-    "test-crossbrowser": "wdio ./test/crossbrowser.conf.js",
-    "test-browserstack": "PARALLEL=5 LOG_LEVEL=error wdio ./test/wdio.conf.js",
-    "test-crossbrowser-e2e": "wdio ./test/crossbrowser-e2e.conf.js",
-    "testpage-webpack": "webpack ./test/pages/webpack/index.js -o ./test/pages/webpack/bundle.js",
-    "test-crossbrowser-live": "sh -u -c 'cbt_tunnels --username $CROSSBROWSERTESTING_USER --authkey $CROSSBROWSERTESTING_KEY --dir ./test/'",
+    "test": "run-s test:integration",
+    "test:integration": "wdio ./test/integration/wdio.conf.js",
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },
   "repository": {
