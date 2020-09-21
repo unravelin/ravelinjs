@@ -60,18 +60,5 @@
     "webpack-cli": "3.3.7",
     "xunit-viewer": "6.3.9",
     "yaku": "1.0.1"
-  },
-  "jshintConfig": {
-    "unused": true,
-    "freeze": true,
-    "esversion": 3,
-    "futurehostile": true,
-    "latedef": false,
-    "nonew": true,
-    "undef": true,
-    "browser": true,
-    "globals": {
-      "JSON": true
-    }
   }
 }

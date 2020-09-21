@@ -1,0 +1,34 @@
+{
+  "unused": true,
+  "freeze": true,
+  "esversion": 3,
+  "futurehostile": true,
+  "latedef": false,
+  "nonew": true,
+  "undef": true,
+  "browser": true,
+  "globals": {
+    "JSON": true
+  },
+
+  "overrides": {
+    // Rollup bundles these files.
+    "**/lib/**/*.js": {
+      // export/import is handled automatically.
+      "-W119": true
+    },
+
+    // Spec files are executed in node + mocha.
+    "**/*.*.js": {
+      "esversion": 8,
+      "node": true,
+      "browser": false,
+      "mocha": true,
+      "globals": {
+        "expect": true,
+        "browser": true,
+        "$": true
+      }
+    }
+  }
+}
