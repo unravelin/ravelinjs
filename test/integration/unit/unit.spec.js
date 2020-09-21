@@ -1,5 +1,3 @@
-/* globals describe, it, browser, expect, $ */
-
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
     browser.url('/unit/');
