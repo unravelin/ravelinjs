@@ -13,7 +13,6 @@ describe('Ravelin.encrypt', function () {
 
     var e = $('#error').getText();
     if (e) throw new Error(e);
-    expect($('#output')).toHaveTextContaining('Initialised');
   });
 
   it('encrypts', function() {
@@ -51,7 +50,7 @@ describe('Ravelin.encrypt', function () {
     }
 
     // Seed the generator, if necessary.
-    while (errText === "NOT READY: generator isn't seeded") {
+    while (errText.indexOf("generator isn't seeded") !== -1) {
       log.warn('Generator not seeded so jiggling the mouse a bit.', browser.capabilities);
 
       // The browser needs some user actions as a source of entropy for the

@@ -43,17 +43,16 @@
     <script>
         var ravelin;
 
-        document.getElementById('init').addEventListener('click', function() {
+        document.getElementById('init').onclick = function() {
             run(function() {
                 ravelin = new Ravelin({
                     rsaKey: document.getElementById('rsaKey').value,
                     publishableToken: document.getElementById('pubToken').value
                 });
-                return 'Initialised';
             });
-        });
+        };
 
-        document.getElementById('encrypt').addEventListener('click', function() {
+        document.getElementById('encrypt').onclick = function() {
             run(function() {
                 var month = document.getElementById('month');
                 return ravelin.encrypt.card({
@@ -64,7 +63,7 @@
                     month: month.options[month.selectedIndex].value
                 });
             });
-        });
+        };
 
         function run(fn) {
             var out = document.getElementById('output'),
@@ -73,9 +72,19 @@
             err.innerHTML = '';
             var t = out, m = '';
             try {
-                m = JSON.stringify(fn());
+                var o = fn();
+                if (typeof o !== 'undefined') {
+                    m = o.toString();
+                    if (m === ({}).toString()) {
+                        try {
+                            m = JSON.stringify(o);
+                        } catch (e) {}
+                    }
+                }
             } catch (e) {
-                m = e.name + ": " + e.message + "\nStack: " + e.stack;
+                m = e.message;
+                if (e.name) m = e.name + ": " + m;
+                if (e.stack) m = m + "\nStack: " + e.stack;
                 t = err;
             }
             t.appendChild(document.createTextNode(m));
