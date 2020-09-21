@@ -1,3 +1,5 @@
+const path = require('path');
+
 // Karma configuration
 // Generated on Mon Sep 21 2020 19:31:34 GMT+0100 (British Summer Time)
 
@@ -15,8 +17,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      "build/ravelin-core+track+encrypt+promise.js",
-      'test/unit/test.js'
+      path.join(__dirname, '../build/ravelin-core+track+encrypt+promise.js'),
+      path.join(__dirname, '**/*.test.js')
     ],
 
 
@@ -66,5 +68,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
-}
+  });
+};

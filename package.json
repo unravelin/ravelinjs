@@ -13,8 +13,8 @@
     "release-rename": "cp ./dist/ravelin.min.js ./releases/$npm_package_version/ravelin-$npm_package_version.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$npm_package_version/ravelin-no-encrypt-$npm_package_version.min.js",
     "release-sri": "go run github.com/sHesl/sri -out=./releases/$npm_package_version/sri.json -hash=all ./releases/$npm_package_version",
     "test": "run-s test:integration",
-    "test:unit": "karma start --single-run",
-    "test:unit:watch": "karma start --auto",
+    "test:unit": "karma start ./test/karma.conf.js --single-run",
+    "test:unit:watch": "karma start ./test/karma.conf.js --auto",
     "test:integration": "wdio ./test/integration/wdio.conf.js",
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },

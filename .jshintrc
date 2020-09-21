@@ -18,8 +18,17 @@
       "-W119": true
     },
 
+    // Unit test files: run in the browser.
+    "**/*.test.js": {
+      "mocha": true,
+      "globals": {
+        "expect": true,
+        "Ravelin": true
+      }
+    },
+
     // Spec files are executed in node + mocha.
-    "**/*.*.js": {
+    "**/*.{spec,conf,config}.js": {
       "esversion": 9,
       "node": true,
       "browser": false,
