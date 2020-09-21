@@ -1,5 +1,5 @@
-const path = require('path');
-const exec = require('child_process').exec;
+import path from 'path';
+import { exec } from 'child_process';
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
