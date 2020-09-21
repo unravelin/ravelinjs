@@ -1,27 +1,15 @@
-/* globals describe, require, it, expect, browser, $ */
-
 const log = require('@wdio/logger').default('ravelinjs');
 
 describe('Ravelin.encrypt', function () {
   it('loads', function() {
     browser.url('/pages/encrypt/');
-    expect(browser).toHaveTitleContaining('ravelinj');
-  });
-
-  it('initialises', function() {
-    $('#init').click();
+    expect(browser).toHaveTitleContaining('ravelinjs');
 
     var e = $('#error').getText();
     if (e) throw new Error(e);
   });
 
   it('encrypts', function() {
-    // Fill in the card encryption form
-    $('#name').setValue('John');
-    $('#number').setValue('4111 1111 1111 1111');
-    $('#month').selectByAttribute('value', '4');
-    $('#year').setValue('2019');
-
     const enc = $('#encrypt'),
           err = $('#error'),
           out = $('#output');
@@ -41,7 +29,9 @@ describe('Ravelin.encrypt', function () {
         // button with JavaScript despite this.
         log.warn('Extra clicking required', browser.capabilities);
         browser.execute(function () {
+          /* jshint -W117 */ // This code is sent to the browser, where document is defined.
           document.getElementById('encrypt').click();
+          /* jshint +W117 */
         });
         errText = err.getText();
         outText = out.getText();
