@@ -15,7 +15,7 @@
     "test": "run-s test:integration",
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
-    "test:integration": "wdio ./test/integration/wdio.conf.js",
+    "test:integration": "wdio ./test/wdio.conf.js",
     "go-serve": "goexec 'http.ListenAndServe(\":8088\", http.FileServer(http.Dir(\".\")))'"
   },
   "repository": {
