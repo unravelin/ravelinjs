@@ -54,7 +54,7 @@ describe('ravelin.encrypt', function() {
       rsaKey: dummyRSAKey
     });
 
-    var err = '[ravelinjs] Encryption validation: encrypt only allows properties pan, year, month, nameOnCard';
+    var err = /ravelin\/encrypt: unrecognised property cvv/;
     expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1, year: '18', 'cvv': '123'}); }).to.throwException(err);
   });
 
