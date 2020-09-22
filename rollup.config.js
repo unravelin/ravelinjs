@@ -9,6 +9,7 @@ var builds = module.exports = [];
 
 var output = {
   format: 'iife',
+  sourcemap: true,
   name: 'Ravelin',
 
   // Prevent Object.freeze being used for namespace references.
