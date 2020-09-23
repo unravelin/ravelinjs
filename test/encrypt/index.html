@@ -68,24 +68,25 @@
                 err = document.getElementById('error');
             out.innerHTML = '';
             err.innerHTML = '';
-            var t = out, m = '';
             try {
                 var o = fn();
                 if (typeof o !== 'undefined') {
-                    m = o.toString();
+                    var m = o.toString();
                     if (m === ({}).toString()) {
                         try {
                             m = JSON.stringify(o);
                         } catch (e) {}
                     }
+                    out.appendChild(document.createTextNode(m));
                 }
             } catch (e) {
-                m = e.message;
+                var m = e.message;
                 if (e.name) m = e.name + ": " + m;
                 if (e.stack) m = m + "\nStack: " + e.stack;
-                t = err;
+                err.appendChild(document.createTextNode(m));
+                throw e;
             }
-            t.appendChild(document.createTextNode(m));
+
             return o;
         }
     </script>
