@@ -9,19 +9,58 @@
   <body>
     <div id="mocha"></div>
 
-
     <script src="https://unpkg.com/jquery@1.12.4/dist/jquery.js"></script>
     <script src="https://unpkg.com/expect.js@0.3.1/index.js"></script>
     <script src="https://unpkg.com/mocha@2.5.3/mocha.js"></script>
 
     <script class="mocha-init">
       mocha.setup('bdd');
-      mocha.checkLeaks();
+      // mocha.checkLeaks(); // Incorrectly detects Sizzle in IE8.
     </script>
+
     <script src="ravelin.js"></script>
+
     <script src="../all.test.js"></script>
     <script src="../core.test.js"></script>
     <script src="../encrypt.test.js"></script>
+
+    <script>
+      // This test is added at the end as a sentinel so that the spec can tell
+      // the browser has finished executing the unit tests. Otherwise there's no
+      // indication of whether tests are still running.
+      describe('Unit Tests', function() {
+        it('test-summary', function() {
+          // Print the names of all tests that failed.
+          var e = testSummary('.test.fail');
+          if (e) {
+            throw new Error("These tests errored:\n" + e);
+          }
+        });
+      });
+
+      // We're going to keep an eye out for the test-summary result so that we
+      // can give it an ID that the spec is watching for.
+      (function() {
+        var interval = setInterval(function() {
+          var h2s = document.getElementsByTagName('h2');
+          if (!h2s.length) return;
+          var h2 = h2s[h2s.length - 1];
+          if (h2.innerHTML.indexOf('test-summary') === -1) return;
+          h2.parentNode.id = 'completed';
+          clearInterval(interval);
+        }, 20);
+      })();
+
+      function testSummary(selector) {
+        return $(selector).map(function() {
+          var suite = $(this).parents('li.suite').map(function() {
+            return $(this).children("h1").text();
+          }).toArray().reverse().join(": ");
+          var cond = (this.firstChild.innerText || this.firstChild.textContent).replace(/[\n ‣]+$/, '');
+          return suite + (suite ? ': ' : '') + cond;
+        }).toArray().join("\n")
+      }
+    </script>
     <script class="mocha-exec">
       mocha.run();
     </script>
