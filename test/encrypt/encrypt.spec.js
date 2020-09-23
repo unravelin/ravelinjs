@@ -40,7 +40,7 @@ describe('Ravelin.encrypt', function () {
     }
 
     // Seed the generator, if necessary.
-    while (errText.indexOf("generator isn't seeded") !== -1) {
+    while (errText.indexOf("generator not ready") !== -1) {
       log.warn('Generator not seeded so jiggling the mouse a bit.', browser.capabilities);
 
       // The browser needs some user actions as a source of entropy for the
