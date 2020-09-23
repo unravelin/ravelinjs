@@ -1,4 +1,5 @@
 const path = require('path');
+const { launchServer, stopServer } = require('./server');
 const { exec} = require('child_process');
 
 const user = process.env.BROWSERSTACK_USERNAME;
@@ -264,7 +265,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://' + user + '.browserstack.com/',
+  baseUrl: '', // Configured in onPrepare/beforeSession hooks.
 
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -281,13 +282,7 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: [
-    ['browserstack', {
-      browserstackLocal: true,
-      opts: {
-        // The folder to expose as http://{user}.browserstack.com/ in tests.
-        f: __dirname,
-      },
-    }]
+    'browserstack',
   ],
   user: user,
   key: key,
@@ -350,6 +345,14 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: [
+    async function setBaseURL(config) {
+      // The config.baseUrl that we have set isn't the one that gets sent to the
+      // child process which launches the browser instance. So we set a BASE_URL
+      // envvar to be copied by a beforeSession hook below.
+      config.baseUrl = await launchServer();
+      console.log('🚆 ' + config.baseUrl);
+      process.env.BASE_URL = config.baseUrl;
+    },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
       const limit = parseInt(process.env.LIMIT, 10);
@@ -362,8 +365,8 @@ exports.config = {
       const def = await capabilityDefaults();
       console.log('🤖 https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(def.build));
       capabilities.forEach(cap => Object.assign(cap, def));
-    }
-  ]
+    },
+  ],
   /**
    * Gets executed before a worker process is spawned and can be used to initialise specific service
    * for that worker as well as modify runtime environments in an async fashion.
@@ -382,8 +385,11 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  // beforeSession: function (config, capabilities, specs) {
-  // },
+  beforeSession: function (config) {
+    if (process.env.BASE_URL) {
+      config.baseUrl = process.env.BASE_URL;
+    }
+  },
   /**
    * Gets executed before test execution begins. At this point you can access to all global
    * variables like `browser`. It is the perfect place to define custom commands.
@@ -469,8 +475,11 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: [
+    async function shutdownNgrok() {
+      await stopServer();
+    },
+  ],
   /**
   * Gets executed when a refresh happens.
   * @param {String} oldSessionId session ID of the old session

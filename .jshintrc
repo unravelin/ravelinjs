@@ -38,6 +38,12 @@
         "browser": true,
         "$": true
       }
+    },
+
+    // Node.
+    "**/*.[mc]js": {
+      "esversion": 9,
+      "node": true
     }
   }
 }
