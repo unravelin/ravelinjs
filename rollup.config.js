@@ -21,7 +21,7 @@ var output = {
 };
 var plugins = [
   replace({
-    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version),
+    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version + '-ravelinjs'),
   }),
   resolve(),
   commonjs(),
