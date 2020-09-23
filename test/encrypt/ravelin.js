@@ -1,1 +1,1 @@
-../../build/ravelin-core+track+encrypt+promise.min.js
+../../build/ravelin-core+track+encrypt+promise.js
