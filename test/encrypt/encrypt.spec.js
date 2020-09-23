@@ -1,5 +1,4 @@
-import logger from '@wdio/logger';
-const log = logger('ravelinjs');
+const log = require('@wdio/logger').default('ravelinjs');
 
 describe('Ravelin.encrypt', function () {
   it('loads', function() {
