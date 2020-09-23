@@ -42,6 +42,11 @@ glob.sync("lib/bundle/*.js").forEach(bundle => builds.push(
       file: 'build/ravelin-' + basename(bundle).replace(/\.js$/, '.min.js'),
       ...output,
     },
-    plugins: plugins.concat([terser()]),
+    plugins: plugins.concat([
+      terser({
+        ie8: true,
+        safari10: true,
+      }),
+    ]),
   },
 ));
