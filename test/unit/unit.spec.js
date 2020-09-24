@@ -1,8 +1,6 @@
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
     browser.url('/unit/');
-    expect(browser).toHaveTitleContaining('Mocha');
-
     browser.waitUntil(function() {
       // The unit test page will assign this ID to an element when the final
       // test has run.
