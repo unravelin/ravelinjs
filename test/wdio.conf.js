@@ -1,9 +1,15 @@
 const path = require('path');
-const { launchProxy, app, disconnectProxy } = require('./server');
+const { launchProxy, app } = require('./server');
 const { exec} = require('child_process');
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
+const baseUrl = 'http://' + user + '.browserstack.com';
+
+const browserStackOpts = {
+  localProxyHost: 'localhost',
+  localProxyPort: 'unknown' // Set in launchAPIServer.
+};
 
 if (!user || !key) {
   throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.');
@@ -265,7 +271,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://' + user + '.browserstack.com/',
+  baseUrl: baseUrl,
 
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -284,10 +290,7 @@ exports.config = {
   services: [
     ['browserstack', {
       browserstackLocal: true,
-      opts: {
-        // The files to be hosted.
-        f: __dirname,
-      }
+      opts: browserStackOpts,
     }],
   ],
   user: user,
@@ -334,7 +337,6 @@ exports.config = {
   mochaOpts: {
     ui: 'bdd',
     timeout: 60000,
-    bail: true,
   },
 
   //
@@ -352,8 +354,12 @@ exports.config = {
    */
   onPrepare: [
     async function launchAPIServer() {
-      process.env.API = await launchProxy(app());
-      console.log('🚆 ' + process.env.API + ' Logs: http://localhost:4040');
+      const api = await launchProxy(app());
+      browserStackOpts.localProxyPort = api.internalPort;
+      process.env.TEST_INTERNAL = api.internal;
+      process.env.TEST_LOCAL = baseUrl;
+      process.env.TEST_REMOTE = api.remote;
+      console.log(`🤖 ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
@@ -474,7 +480,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  onComplete: disconnectProxy,
+  // onComplete: function(exitCode, config, capabilities, results)
   /**
   * Gets executed when a refresh happens.
   * @param {String} oldSessionId session ID of the old session

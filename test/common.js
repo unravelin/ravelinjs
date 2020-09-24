@@ -1,4 +1,11 @@
 /**
+ * done marks the test page as finished.
+ */
+function done() {
+  document.body.id = 'completed';
+}
+
+/**
  * run immediately invokes fn() and returns its return value while
  * printing it to <div id=output>. Any exceptions thrown are swallowed
  * and printed to <div id=error>. If fn returns a promise then that promise is
@@ -29,25 +36,34 @@ function run(outId, errId, fn) {
 
   function pass(o) {
     if (typeof o === 'undefined') return;
+    out.appendChild(document.createTextNode(stringify(o)));
+  }
+
+  function fail(e) {
+    err.appendChild(document.createTextNode(stringify(e)));
+  }
+
+  function stringify(v) {
+    if (v instanceof Error) {
+      var em = v.message;
+      if (v.name) em = v.name + ": " + em;
+      if (v.stack) em = em + "\nStack: " + v.stack;
+      return em;
+    }
+
     var m = o.toString();
     if (m === ({}).toString()) {
       try {
         m = JSON.stringify(o);
       } catch (e) { }
     }
-    out.appendChild(document.createTextNode(m));
-  }
-
-  function fail(e) {
-    var em = e.message;
-    if (e.name) em = e.name + ": " + em;
-    if (e.stack) em = em + "\nStack: " + e.stack;
-    err.appendChild(document.createTextNode(em));
+    return m;
   }
 }
 
 /**
  * parseQuery returns the queryString as an object of properties.
+ * https://stackoverflow.com/a/13419367/123600
  * @param {string} queryString window.location.search
  */
 function parseQuery(queryString) {

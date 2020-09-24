@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 /* jshint esversion: 9, node: true */
-const url = require('url');
+const { parse: parseURL } = require('url');
+const buildURL = require('build-url');
+const fetch = require('node-fetch');
 const express = require('express');
 const cors = require('cors');
 const serveIndex = require('serve-index');
@@ -12,13 +14,15 @@ const joqular = require('joqular');
  * app returns the express application of our test server.
  */
 function app() {
+  /** @type {RequestLog[]} */
+  const requests = [];
+
   const app = express();
 
   // Return any static files.
   app.get('*', express.static(__dirname), serveIndex(__dirname, {view: 'details'}));
 
   // Log any API requests and return a 204 No Content.
-  var requests = [];
   app.use('/z',
     // Enable CORS, but don't support pre-flight OPTIONS requests.
     cors(),
@@ -29,13 +33,13 @@ function app() {
       requests.push({
         time: new Date(),
         method: req.method,
-        url: req.originalUrl,
-        path: req.originalUrl.match(/^.*?(?=\?)/),
+        path: parseURL(req.originalUrl).pathname,
         query: req.query,
         headers: req.headers,
         body: req.body,
         bodyJSON: maybeJSON(req.body),
       });
+      if (process.env.DEBUG) console.log(requests[requests.length - 1]);
       next();
     },
     // Return a 204.
@@ -45,7 +49,7 @@ function app() {
   );
 
   // Let tests read API requests received, optionally filtering by providing
-  // a ?q={"url":{"$match": "/\bkey=\b/"}}
+  // a ?q={"url":{"$match": "/\bkey=\b/"}}, for example.
   app.get('/requests', async function logSearch(req, res) {
     const r = !req.query.q ?
       requests :
@@ -85,21 +89,25 @@ function maybeJSON(b) {
 async function launchProxy(app) {
   // Start express listening on a random port.
   var listener;
-  const port = await (new Promise((resolve) => {
+  const local = await (new Promise((resolve) => {
     listener = app.listen(0, "127.0.0.1", function() {
       // TODO: Any error handling needed here?
-      resolve(listener.address().port);
+      resolve(listener.address());
     });
   }));
 
   // Spin up an ngrok tunnel pointing to our app.
   return ngrok.connect({
-    addr: port,
+    addr: local.port,
     onStatusChange: function(status) {
       // Shut down the express app when ngrok is closed.
       if (status == 'closed') listener.close();
     },
-  });
+  }).then(url => ({
+    internal: `http://${local.address}:${local.port}`,
+    internalPort: local.port,
+    remote: url,
+  }));
 }
 
 /**
@@ -110,13 +118,54 @@ async function disconnectProxy(url) {
   await ngrok.disconnect(url);
 }
 
-module.exports = { launchProxy, app, disconnectProxy };
+/**
+ * @typedef {object} RequestLog
+ * @prop {Date} time
+ * @prop {string} method
+ * @prop {string} path
+ * @prop {object} query
+ * @prop {object} headers
+ * @prop {string} body
+ * @prop {object} bodyJSON
+ */
+
+/**
+ * expectRequest queries the app server at process.env.API to see whether any /z
+ * or /z/err requests were made matching the given pattern. If no pattern is
+ * provided, all requests are returned.
+ *
+ * It is an error for the pattern to anything other than one request.
+ *
+ * @param {string} api The server whose /requests we're checking.
+ * @param {object} pattern A joqular query object to match {@type {RequestLog}}:
+ *                         https://www.npmjs.com/package/joqular/v/2.0.4-b.
+ * @returns {RequestLog} The matched request.
+ */
+async function expectRequest(api, pattern) {
+  const q = JSON.stringify(pattern);
+  const url = buildURL(api, {path: '/requests', queryParams: {q}});
+  return fetch(url).then(function(res) {
+    if (res.status == 204) {
+      throw new Error('No recorded API requests matching ' + q);
+    } else if (!res.ok) {
+      throw new Error('Error fetching ' + url + ': ' + res.statusText);
+    }
+    return res.json();
+  }).then(function(logs) {
+    if (logs.length !== 1) {
+      throw new Error('Expected one request matching ' + q + 'but found: ' + JSON.stringify(logs));
+    }
+    return logs[0];
+  });
+}
+
+module.exports = { launchProxy, app, disconnectProxy, expectRequest };
 
 if (require.main === module) {
   const a = app();
   if (process.argv.length <= 2) {
     // Launch behind ngrok.
-    launchProxy(a).then(url => console.log('🚆 ' + url));
+    launchProxy(a).then(url => console.log('🚆', url));
   } else {
     // Launch on the given port.
     const port = parseInt(process.argv[2], 10);

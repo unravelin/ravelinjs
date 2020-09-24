@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>send test</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <h1>send test</h1>
+
+  <h2>Output</h2>
+  <pre id="output"></pre>
+  <h2>Output Error</h2>
+  <pre id="error"></pre>
+
+  <script src="../common.js"></script>
+  <script src="./ravelin.js"></script>
+  <script>
+    run(function() {
+      // Send a "msg" error report to http://api/?key.
+      var q = parseQuery(window.location.search);
+      var r = new Ravelin({
+        api: q.api,
+        key: q.key
+      });
+      try {
+        throw new Error(q.msg);
+      } catch(e) {
+        return r.core.reportError(e);
+      }
+    }).then(done, done);
+  </script>
+</body>
+</html>
