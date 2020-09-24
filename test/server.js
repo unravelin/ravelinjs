@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 /* jshint esversion: 9, node: true */
+const url = require('url');
 const express = require('express');
 const cors = require('cors');
-const ngrok = require('ngrok');
 const serveIndex = require('serve-index');
+const ngrok = require('ngrok');
+const joqular = require('joqular');
 
 /**
  * app returns the express application of our test server.
@@ -24,7 +26,16 @@ function app() {
     express.text({type: "*/*"}),
     // Log the request.
     function logRequest(req, res, next) {
-      requests.push({method: req.method, url: req.originalUrl, body: req.body, time: new Date()});
+      requests.push({
+        time: new Date(),
+        method: req.method,
+        url: req.originalUrl,
+        path: req.originalUrl.match(/^.*?(?=\?)/),
+        query: req.query,
+        headers: req.headers,
+        body: req.body,
+        bodyJSON: maybeJSON(req.body),
+      });
       next();
     },
     // Return a 204.
@@ -33,9 +44,21 @@ function app() {
       .post('/err', noContent)
   );
 
-  // Let tests read API requests received.
-  app.get('/requests', function logSearch(req, res) {
-    res.send(requests);
+  // Let tests read API requests received, optionally filtering by providing
+  // a ?q={"url":{"$match": "/\bkey=\b/"}}
+  app.get('/requests', async function logSearch(req, res) {
+    const r = !req.query.q ?
+      requests :
+      (await joqular.query(
+        JSON.parse(req.query.q),
+        ...requests
+      )).filter(Boolean);
+
+    if (r.length) {
+      res.send(r);
+    } else {
+      res.status(204).send();
+    }
   });
 
   return app;
@@ -43,6 +66,12 @@ function app() {
 
 function noContent(req, res) {
   res.status(204).send();
+}
+
+function maybeJSON(b) {
+  try {
+    return JSON.parse(b);
+  } catch(e) {}
 }
 
 /**

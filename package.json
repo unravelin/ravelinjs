@@ -44,6 +44,7 @@
     "circle-wait": "1.0.2",
     "cors": "2.8.5",
     "express": "4.17.1",
+    "joqular": "2.0.4-b",
     "jshint": "2.10.2",
     "karma": "5.2.2",
     "karma-chrome-launcher": "3.1.0",
