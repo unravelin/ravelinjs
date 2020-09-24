@@ -265,7 +265,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: '', // Configured in onPrepare/beforeSession hooks.
+  baseUrl: 'http://' + user + '.browserstack.com/',
 
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -282,7 +282,13 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: [
-    'browserstack',
+    ['browserstack', {
+      browserstackLocal: true,
+      opts: {
+        // The files to be hosted.
+        f: __dirname,
+      }
+    }],
   ],
   user: user,
   key: key,
@@ -345,13 +351,9 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: [
-    async function setBaseURL(config) {
-      // The config.baseUrl that we have set isn't the one that gets sent to the
-      // child process which launches the browser instance. So we set a BASE_URL
-      // envvar to be copied by a beforeSession hook below.
-      config.baseUrl = await launchServer();
-      console.log('🚆 ' + config.baseUrl);
-      process.env.BASE_URL = config.baseUrl;
+    async function launchAPIServer() {
+      process.env.API = await launchServer();
+      console.log('🚆 ' + process.env.API);
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
@@ -385,11 +387,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  beforeSession: function (config) {
-    if (process.env.BASE_URL) {
-      config.baseUrl = process.env.BASE_URL;
-    }
-  },
+  // beforeSession: function (config) {
+  // },
   /**
    * Gets executed before test execution begins. At this point you can access to all global
    * variables like `browser`. It is the perfect place to define custom commands.
