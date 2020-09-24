@@ -29,26 +29,22 @@ jobs:
           command: npm run build
 
       # run tests!
-      - run:
-          name: "Unit Tests: npm test"
-          command: npm test
 
       - run:
           name: "Await crossbrowsertesting.com build slot"
           command: node_modules/.bin/circle-wait
 
       - run:
-          name: "Encryption E2E tests: npm run test-crossbrowser-e2e"
+          name: "Encryption E2E tests: npm run test:e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            echo Not implemented on crossbrowser. && exit 1
-            npm run test-crossbrowser-e2e
+            echo Not implemented on browserstack. && exit 1
 
       - run:
-          name: "Browserstack tests: npm run test-browserstack"
+          name: "Browser tests: npm run test:integration"
           command: |
             if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
-            PARALLEL=3 npm run test-browserstack
+            PARALLEL=3 LOG_LEVEL=warn npm run test:integration
 
       - store_test_results:
           path: ~/repo/test/junit
