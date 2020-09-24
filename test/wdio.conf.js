@@ -1,5 +1,5 @@
 const path = require('path');
-const { launchServer, stopServer } = require('./server');
+const { launchProxy, app, disconnectProxy } = require('./server');
 const { exec} = require('child_process');
 
 const user = process.env.BROWSERSTACK_USERNAME;
@@ -352,8 +352,8 @@ exports.config = {
    */
   onPrepare: [
     async function launchAPIServer() {
-      process.env.API = await launchServer();
-      console.log('🚆 ' + process.env.API);
+      process.env.API = await launchProxy(app());
+      console.log('🚆 ' + process.env.API + ' Logs: http://localhost:4040');
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
@@ -474,7 +474,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  onComplete: stopServer,
+  onComplete: disconnectProxy,
   /**
   * Gets executed when a refresh happens.
   * @param {String} oldSessionId session ID of the old session
