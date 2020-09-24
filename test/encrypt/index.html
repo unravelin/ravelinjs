@@ -1,94 +1,66 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <title>ravelinjs script tag test</title>
-    <link rel="stylesheet" href="../style.css" />
+  <meta charset="utf-8">
+  <title>ravelinjs script tag test</title>
+  <link rel="stylesheet" href="../style.css" />
 </head>
+
 <body>
-    <h1>Ravelin.encrypt</h1>
-    <div>
-        Name on Card: <input type="text" id="name" value="Mr Test" /><br />
-        Card Number: <input type="text" id="number" value="4111 1111 1111 1111"/><br />
-        Month: <select id="month">
-            <option selected value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-        </select><br/>
-        Year: <input type="number" id="year" value="2099" /><br />
+  <h1>Ravelin.encrypt</h1>
+  <div>
+    Name on Card: <input type="text" id="name" value="Mr Test" /><br />
+    Card Number: <input type="text" id="number" value="4111 1111 1111 1111" /><br />
+    Month: <select id="month">
+      <option selected value="1">January</option>
+      <option value="2">February</option>
+      <option value="3">March</option>
+      <option value="4">April</option>
+      <option value="5">May</option>
+      <option value="6">June</option>
+      <option value="7">July</option>
+      <option value="8">August</option>
+      <option value="9">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select><br />
+    Year: <input type="number" id="year" value="2099" /><br />
 
-        <br/> <button id="encrypt" >Encrypt</button>
-    </div>
+    <br /> <button id="encrypt">Encrypt</button>
+  </div>
 
-    <h2>Output</h2>
-    <pre id="output"></pre>
-    <h2>Output Error</h2>
-    <pre id="error"></pre>
+  <h2>Output</h2>
+  <pre id="output"></pre>
+  <h2>Output Error</h2>
+  <pre id="error"></pre>
 
-    <script src="./ravelin.js"></script>
-    <script>
-        var ravelin;
+  <script src="../common.js"></script>
+  <script src="./ravelin.js"></script>
+  <script>
+    var ravelin;
 
-        run(function() {
-            // Initialise ravelin.
-            ravelin = new Ravelin({
-                rsaKey: '10001|B84498733A4CF477091B6D052129D4B528CB308B30B5567CAAF307608CF2F44D8ADC35191F45BB36A5ACBC191E8EAE6B1F2A80A2EC7F78815179A020246B1D6921EA9CADEE9C16B3FA33EF0183C6F13E3AE35BED0E4A84977B05A32C2C15EA5FEAC6BD594C83C0A226CC1776C26737E9B69E0B183F8F9184ADC44EC5751D1A863BD55E15A148C3B28D649B214890E8D0586AF5E982DB4559156EAA464C712FD7776E8C1C191BA67BA464973F4EB6F8BCEA08FB95EEE09EDAE6F4A8340C7A2833BFE905200488D896A8294A423A59B5058B03F1B82B6CCB6C4746BA297F7BD2D8494B36F02E0EDFF31CDBD73D6FA9BFE958BA58ACEE9CCDC87069C07DB8C6EC63'
-            });
+    run(function () {
+      // Initialise ravelin.
+      ravelin = new Ravelin({
+        rsaKey: '10001|B84498733A4CF477091B6D052129D4B528CB308B30B5567CAAF307608CF2F44D8ADC35191F45BB36A5ACBC191E8EAE6B1F2A80A2EC7F78815179A020246B1D6921EA9CADEE9C16B3FA33EF0183C6F13E3AE35BED0E4A84977B05A32C2C15EA5FEAC6BD594C83C0A226CC1776C26737E9B69E0B183F8F9184ADC44EC5751D1A863BD55E15A148C3B28D649B214890E8D0586AF5E982DB4559156EAA464C712FD7776E8C1C191BA67BA464973F4EB6F8BCEA08FB95EEE09EDAE6F4A8340C7A2833BFE905200488D896A8294A423A59B5058B03F1B82B6CCB6C4746BA297F7BD2D8494B36F02E0EDFF31CDBD73D6FA9BFE958BA58ACEE9CCDC87069C07DB8C6EC63'
+      });
+    });
+
+    document.getElementById('encrypt').onclick = function () {
+      run(function () {
+        // Encrypt the card details in the form.
+        var month = document.getElementById('month');
+        return ravelin.encrypt.card({
+          pan: document.getElementById('number').value,
+          nameOnCard: document.getElementById('name').value,
+          year: document.getElementById('year').value,
+          month: month.options[month.selectedIndex].value
         });
-
-        document.getElementById('encrypt').onclick = function() {
-            run(function() {
-                // Encrypt the card details in the form.
-                var month = document.getElementById('month');
-                return ravelin.encrypt.card({
-                    pan: document.getElementById('number').value,
-                    nameOnCard: document.getElementById('name').value,
-                    year: document.getElementById('year').value,
-                    month: month.options[month.selectedIndex].value
-                });
-            });
-        };
-
-        /**
-         * run immediately invokes fn() and returns its return value while
-         * printing it to <div id=output>. Any exceptions thrown are swallowed
-         * and printed to <div id=error>.
-         */
-        function run(fn) {
-            var out = document.getElementById('output'),
-                err = document.getElementById('error');
-            out.innerHTML = '';
-            err.innerHTML = '';
-            try {
-                var o = fn();
-                if (typeof o !== 'undefined') {
-                    var m = o.toString();
-                    if (m === ({}).toString()) {
-                        try {
-                            m = JSON.stringify(o);
-                        } catch (e) {}
-                    }
-                    out.appendChild(document.createTextNode(m));
-                }
-            } catch (e) {
-                var m = e.message;
-                if (e.name) m = e.name + ": " + m;
-                if (e.stack) m = m + "\nStack: " + e.stack;
-                err.appendChild(document.createTextNode(m));
-                throw e;
-            }
-
-            return o;
-        }
-    </script>
+      });
+    };
+  </script>
 </body>
+
 </html>
