@@ -2,6 +2,7 @@
 
 /* jshint esversion: 9, node: true */
 const { parse: parseURL } = require('url');
+const logger = require('@wdio/logger').default('test/server');
 const buildURL = require('build-url');
 const fetch = require('node-fetch');
 const express = require('express');
@@ -22,11 +23,11 @@ function app() {
   // Return any static files.
   app.get('*', express.static(__dirname), serveIndex(__dirname, {view: 'details'}));
 
-  // Log any API requests.
-  const apiSink = [
+  // /z API.
+  app.use('/z',
     // Request all request bodies as text, even if Content-Type is omitted.
     express.text({type: () => true}),
-    // Log the request.
+    // Record the request.
     function logRequest(req, res, next) {
       requests.push({
         time: new Date(),
@@ -37,15 +38,18 @@ function app() {
         body: req.body,
         bodyJSON: maybeJSON(req.body),
       });
-      if (process.env.DEBUG) console.log(requests[requests.length - 1]);
+      // Log the request.
+      logger.debug('request', requests[requests.length - 1]);
+      if (req.method === 'OPTIONS') {
+        logger.warn(`Unexpected OPTIONS ${req.originalUrl} request from ${req.headers["user-agent"]}`);
+      }
       next();
     },
-    // Return a 204.
-    noContent,
-  ];
-  app.use('/z', cors());
-  app.post('/z', apiSink);
-  app.post('/z/err', apiSink);
+    // Add CORS headers, support CORS requests.
+    cors()
+  );
+  app.post('/z', noContent);
+  app.post('/z/err', noContent);
 
   // Let tests read API requests received, optionally filtering by providing
   // a ?q={"url":{"$match": "/\bkey=\b/"}}, for example.
