@@ -48,9 +48,12 @@ function test(page, api, msg) {
   });
 
   // Warn if it took several attempts to send.
-  const r = JSON.parse($('#output').getText());
-  log.debug('result', r);
-  if (r.attempts > 1) {
-    log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
+  const r = $('#output').getText();
+  log.debug('stats', r);
+  if (r) {
+    const stats = JSON.parse(r);
+    if (stats.attempts > 1) {
+      log.warn(`Succeeded after ${stats.attempts-1} failures:`, stats.failures);
+    }
   }
 }
