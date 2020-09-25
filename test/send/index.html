@@ -20,8 +20,8 @@
       // Send a "msg" error report to http://api/?key.
       var q = parseQuery(window.location.search);
       var r = new Ravelin({
-        api: q.api,
-        key: q.key
+        api: q.api || '/',
+        key: q.key || 'hello'
       });
       try {
         throw new Error(q.msg);
