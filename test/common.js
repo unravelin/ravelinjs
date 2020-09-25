@@ -51,10 +51,10 @@ function run(outId, errId, fn) {
       return em;
     }
 
-    var m = o.toString();
+    var m = v.toString();
     if (m === ({}).toString()) {
       try {
-        m = JSON.stringify(o);
+        m = JSON.stringify(v);
       } catch (e) { }
     }
     return m;
