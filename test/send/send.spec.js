@@ -25,6 +25,7 @@ function test(page, api, msg) {
   // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
   browser.url(buildURL(page, {path: '/send/', queryParams: {api, key, msg}}));
   expect(browser).toHaveUrlContaining(key);
+  expect(browser).toHaveTitleContaining('send');
 
   // Wait for the browser to finish reporting the error message.
   browser.waitUntil(function() {
