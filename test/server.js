@@ -41,7 +41,7 @@ function app() {
         status: res.statusCode,
       };
       requests.push(log);
-      logger.debug('request', log);
+      logger.info('request', log);
       if (req.method === 'OPTIONS') {
         logger.warn(`Unexpected OPTIONS ${req.originalUrl} request from ${req.headers["user-agent"]}`);
       }

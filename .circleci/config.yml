@@ -44,7 +44,7 @@ jobs:
           name: "Browser tests: npm run test:integration"
           command: |
             if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
-            PARALLEL=5 LOG_LEVEL=warn npm run test:integration
+            PARALLEL=5 npm run test:integration
 
       - store_test_results:
           path: ~/repo/test/junit
