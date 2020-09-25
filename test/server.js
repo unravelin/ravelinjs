@@ -38,12 +38,15 @@ function app() {
         headers: req.headers,
         body: req.body,
         bodyJSON: maybeJSON(req.body),
-        status: res.statusCode,
       };
       requests.push(log);
-      logger.info('request', log);
       if (req.method === 'OPTIONS') {
         logger.warn(`Unexpected OPTIONS ${req.originalUrl} request from ${req.headers["user-agent"]}`);
+      }
+      if (req.method === 'POST' && !log.bodyJSON) {
+        logger.warn('request without bodyJSON', log);
+      } else {
+        logger.info('request', log);
       }
       onFinished(res, function() {
         log.status = res.statusCode;
