@@ -2,6 +2,7 @@
 
 /* jshint esversion: 9, node: true */
 const { parse: parseURL } = require('url');
+const onFinished = require('on-finished');
 const logger = require('@wdio/logger').default('test/server');
 const buildURL = require('build-url');
 const fetch = require('node-fetch');
@@ -29,7 +30,7 @@ function app() {
     express.text({type: () => true}),
     // Record the request.
     function logRequest(req, res, next) {
-      requests.push({
+      const log = {
         time: new Date(),
         method: req.method,
         path: parseURL(req.originalUrl).pathname,
@@ -37,12 +38,16 @@ function app() {
         headers: req.headers,
         body: req.body,
         bodyJSON: maybeJSON(req.body),
-      });
-      // Log the request.
-      logger.debug('request', requests[requests.length - 1]);
+        status: res.statusCode,
+      };
+      requests.push(log);
+      logger.debug('request', log);
       if (req.method === 'OPTIONS') {
         logger.warn(`Unexpected OPTIONS ${req.originalUrl} request from ${req.headers["user-agent"]}`);
       }
+      onFinished(res, function() {
+        log.status = res.statusCode;
+      });
       next();
     },
     // Add CORS headers, support CORS requests.
