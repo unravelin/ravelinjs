@@ -37,13 +37,15 @@ function test(page, api, msg) {
   if (e) throw new Error(e);
 
   // Confirm that an AJAX request with the error was received.
-  browser.waitUntil(() => browser.call(() => {
-    expectRequest(process.env.TEST_INTERNAL, {
-      'path': {'$eq': '/z/err'},
-      'query': {'key': {'$eq': key}},
-      'bodyJSON': {'msg': {'$eq': msg}},
-    });
-  }));
+  browser.waitUntil(function() {
+    return browser.call(
+      () => expectRequest(process.env.TEST_INTERNAL, {
+        'path': {'$eq': '/z/err'},
+        'query': {'key': {'$eq': key}},
+        'bodyJSON': {'msg': {'$eq': msg}},
+      })
+    );
+  });
 
   // Warn if it took several attempts to send.
   const r = JSON.parse($('#output').getText());
