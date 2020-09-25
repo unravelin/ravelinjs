@@ -1,6 +1,5 @@
 const log = require('@wdio/logger').default('send.spec');
 const { expectRequest } = require('../server');
-const promiseRetry = require('promise-retry');
 const buildURL = require('build-url');
 
 describe('ravelinjs.core.send', function() {
