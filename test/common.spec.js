@@ -18,14 +18,14 @@ function navigate(browser, titleSubstr, ...urls) {
       // Confirm that the page loaded with the title we expected.
       browser.waitUntil(function() {
         title = browser.getTitle();
-        if (title.indexOf(titleSubstr) !== -1) {
+        if (title.indexOf(titleSubstr) === -1) {
           throw new Error('mismatched title');
         }
         return true;
       });
       return;
     } catch (e) {
-      if (e.message === 'mismatched title') {
+      if (e.message.indexOf('mismatched title') !== -1) {
         // Either the titles don't match or the page didn't load.
         errs.push(`${urls[i]}: ${title}`);
       } else {
@@ -33,9 +33,9 @@ function navigate(browser, titleSubstr, ...urls) {
       }
     }
   }
-  throw new Error(`No pages had title matching substring ${titleSubstr}: ${errs.join(";")}`);
+  throw new Error(`No pages had title matching substring ${titleSubstr}: ${errs.join("; ")}`);
 }
 
-exports = {
+module.exports = {
   navigate,
 };
