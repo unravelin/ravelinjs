@@ -19,18 +19,11 @@ function app() {
 
   const app = express();
 
-  // Disallow all options requests.
-  app.options('*', function(req, res) {
-    res.status(405).send("We don't want browsers to make pre-flight requests.");
-  });
-
   // Return any static files.
   app.get('*', express.static(__dirname), serveIndex(__dirname, {view: 'details'}));
 
   // Log any API requests.
   const apiSink = [
-    // Add Access-Control-Allow-Origin: *.
-    cors(),
     // Request all request bodies as text, even if Content-Type is omitted.
     express.text({type: () => true}),
     // Log the request.
@@ -50,6 +43,7 @@ function app() {
     // Return a 204.
     noContent,
   ];
+  app.use('/z', cors());
   app.post('/z', apiSink);
   app.post('/z/err', apiSink);
 
