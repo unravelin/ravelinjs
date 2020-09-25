@@ -1,4 +1,5 @@
 const { expectRequest } = require('../server');
+const promiseRetry = require('promise-retry');
 const buildURL = require('build-url');
 
 describe('ravelinjs.core.send', function() {
@@ -23,7 +24,7 @@ function test(page, api, msg) {
 
   // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
   browser.url(buildURL(page, {path: '/send/', queryParams: {api, key, msg}}));
-  expect(browser).toHaveTitleContaining('send');
+  expect(browser).toHaveUrlContaining(key);
 
   // Wait for the browser to finish reporting the error message.
   browser.waitUntil(function() {
@@ -35,9 +36,11 @@ function test(page, api, msg) {
   if (e) throw new Error(e);
 
   // Confirm that an AJAX request with the error was received.
-  return expectRequest(process.env.TEST_INTERNAL, {
-    'path': {'$eq': '/z/err'},
-    'query': {'key': {'$eq': key}},
-    'bodyJSON': {'msg': {'$eq': msg}},
-  });
+  return promiseRetry(function(retry) {
+    return expectRequest(process.env.TEST_INTERNAL, {
+      'path': {'$eq': '/z/err'},
+      'query': {'key': {'$eq': key}},
+      'bodyJSON': {'msg': {'$eq': msg}},
+    }).catch(retry);
+  }, {retries: 2});
 }
