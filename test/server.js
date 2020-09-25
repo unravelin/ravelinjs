@@ -168,8 +168,8 @@ async function expectRequest(api, pattern) {
     }
     return res.json();
   }).then(function(logs) {
-    if (logs.length !== 1) {
-      throw new Error('Expected one request matching ' + q + 'but found: ' + JSON.stringify(logs));
+    if (!logs.length) {
+      throw new Error('Found no requests matching ' + q);
     }
     return logs[0];
   });
