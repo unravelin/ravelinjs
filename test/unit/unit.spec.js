@@ -1,7 +1,8 @@
+const { navigate } = require('../common.spec.js');
+
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
-    browser.url('/unit/');
-    expect(browser).toHaveTitleContaining('Mocha');
+    navigate(browser, 'Mocha', '/unit/', process.env.TEST_REMOTE + '/unit/');
     browser.waitUntil(function() {
       // The unit test page will assign this ID to an element when the final
       // test has run.

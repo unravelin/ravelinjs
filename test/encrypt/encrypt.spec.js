@@ -1,15 +1,13 @@
 const log = require('@wdio/logger').default('encrypt.spec');
+const { navigate } = require('../common.spec.js');
 
 describe('Ravelin.encrypt', function () {
-  it('loads', function() {
-    browser.url('/encrypt/');
-    expect(browser).toHaveTitleContaining('encrypt');
-
+  it('encrypts', function() {
+    // Check the page loads.
+    navigate(browser, 'encrypt', '/encrypt/', process.env.TEST_REMOTE + '/encrypt/');
     var e = $('#error').getText();
     if (e) throw new Error(e);
-  });
 
-  it('encrypts', function() {
     const enc = $('#encrypt'),
           err = $('#error'),
           out = $('#output');
