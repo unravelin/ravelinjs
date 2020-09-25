@@ -5,17 +5,17 @@ const buildURL = require('build-url');
 describe('ravelinjs.core.send', function() {
   it('sends to paths', function() {
     // http://test.browserstack.com/send/ -> /z/err
-    return test('/', '/', 'path');
+    test('/', '/', 'path');
   });
 
   it('sends to samesite URLs', function() {
     // http://test.browserstack.com/send/ -> http://test.browserstack.com/z/err/
-    return test('/', process.env.TEST_LOCAL, 'samesite');
+    test('/', process.env.TEST_LOCAL, 'samesite');
   });
 
   it('sends to remote URLs', function() {
     // http://test.browserstack.com/send/ -> http://test.ngrok.io/z/err
-    return test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
+    test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
   });
 });
 
@@ -36,19 +36,19 @@ function test(page, api, msg) {
   const e = $('#error').getText();
   if (e) throw new Error(e);
 
-  // Warn if it took several attempts to send.
-  browser.waitUntil(function() {
-    const r = JSON.parse($('#output').getText());
-    log.debug('result', r);
-    if (r.attempts > 1) {
-      log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
-    }
-  });
-
   // Confirm that an AJAX request with the error was received.
-  return expectRequest(process.env.TEST_INTERNAL, {
-    'path': {'$eq': '/z/err'},
-    'query': {'key': {'$eq': key}},
-    'bodyJSON': {'msg': {'$eq': msg}},
-  });
+  browser.waitUntil(() => browser.call(() => {
+    expectRequest(process.env.TEST_INTERNAL, {
+      'path': {'$eq': '/z/err'},
+      'query': {'key': {'$eq': key}},
+      'bodyJSON': {'msg': {'$eq': msg}},
+    });
+  }));
+
+  // Warn if it took several attempts to send.
+  const r = JSON.parse($('#output').getText());
+  log.debug('result', r);
+  if (r.attempts > 1) {
+    log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
+  }
 }
