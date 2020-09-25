@@ -1,9 +1,9 @@
-const log = require('@wdio/logger').default('ravelinjs');
+const log = require('@wdio/logger').default('encrypt.spec');
 
 describe('Ravelin.encrypt', function () {
   it('loads', function() {
     browser.url('/encrypt/');
-    expect(browser).toHaveTitleContaining('ravelinjs');
+    expect(browser).toHaveTitleContaining('encrypt');
 
     var e = $('#error').getText();
     if (e) throw new Error(e);
