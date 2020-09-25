@@ -38,11 +38,13 @@ function test(page, api, msg) {
   if (e) throw new Error(e);
 
   // Warn if it took several attempts to send.
-  const r = JSON.parse($('#output').getText());
-  log.debug('result', r);
-  if (r.attempts > 1) {
-    log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
-  }
+  browser.waitUntil(function() {
+    const r = JSON.parse($('#output').getText());
+    log.debug('result', r);
+    if (r.attempts > 1) {
+      log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
+    }
+  });
 
   // Confirm that an AJAX request with the error was received.
   return expectRequest(process.env.TEST_INTERNAL, {
