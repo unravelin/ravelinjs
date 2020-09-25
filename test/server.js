@@ -19,14 +19,19 @@ function app() {
 
   const app = express();
 
+  // Disallow all options requests.
+  app.options('*', function(req, res) {
+    res.status(405).send("We don't want browsers to make pre-flight requests.");
+  });
+
   // Return any static files.
   app.get('*', express.static(__dirname), serveIndex(__dirname, {view: 'details'}));
 
-  // Log any API requests and return a 204 No Content.
-  app.use('/z',
-    // Enable CORS, but don't support pre-flight OPTIONS requests.
+  // Log any API requests.
+  const apiSink = [
+    // Add Access-Control-Allow-Origin: *.
     cors(),
-    // Request all request bodies as text.
+    // Request all request bodies as text, even if Content-Type is omitted.
     express.text({type: () => true}),
     // Log the request.
     function logRequest(req, res, next) {
@@ -43,10 +48,10 @@ function app() {
       next();
     },
     // Return a 204.
-    express.Router()
-      .post('/', noContent)
-      .post('/err', noContent)
-  );
+    noContent,
+  ];
+  app.post('/z', apiSink);
+  app.post('/z/err', apiSink);
 
   // Let tests read API requests received, optionally filtering by providing
   // a ?q={"url":{"$match": "/\bkey=\b/"}}, for example.
