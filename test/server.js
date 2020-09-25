@@ -27,7 +27,7 @@ function app() {
     // Enable CORS, but don't support pre-flight OPTIONS requests.
     cors(),
     // Request all request bodies as text.
-    express.text({type: "*/*"}),
+    express.text({type: () => true}),
     // Log the request.
     function logRequest(req, res, next) {
       requests.push({
