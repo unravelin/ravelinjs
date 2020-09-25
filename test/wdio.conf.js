@@ -8,7 +8,8 @@ const baseUrl = 'http://' + user + '.browserstack.com';
 
 const browserStackOpts = {
   localProxyHost: 'localhost',
-  localProxyPort: 'unknown' // Set in launchAPIServer.
+  localProxyPort: 'unknown', // Set in launchAPIServer.
+  'disable-dashboard': true,
 };
 
 if (!user || !key) {
