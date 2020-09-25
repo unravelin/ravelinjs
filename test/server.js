@@ -77,7 +77,12 @@ function app() {
 }
 
 function noContent(req, res) {
-  res.status(204).send();
+  try {
+    JSON.parse(req.body);
+    res.status(204).send();
+  } catch(e) {
+    res.status(400).send(e);
+  }
 }
 
 function maybeJSON(b) {
