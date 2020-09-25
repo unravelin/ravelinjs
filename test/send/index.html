@@ -26,7 +26,7 @@
       try {
         throw new Error(q.msg);
       } catch(e) {
-        return r.core.reportError(e);
+        return r.core.reportError(e).then(function() { return 'done'; });
       }
     }).then(done, done);
   </script>
