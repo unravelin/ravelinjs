@@ -1,3 +1,4 @@
+const log = require('@wdio/logger').default('send.spec');
 const { expectRequest } = require('../server');
 const promiseRetry = require('promise-retry');
 const buildURL = require('build-url');
@@ -36,12 +37,17 @@ function test(page, api, msg) {
   const e = $('#error').getText();
   if (e) throw new Error(e);
 
+  // Warn if it took several attempts to send.
+  const r = JSON.parse($('#output').getText());
+  log.debug('result', r);
+  if (r.attempts > 1) {
+    log.warn(`Succeeded after ${r.attempts-1} failures:`, r.failures);
+  }
+
   // Confirm that an AJAX request with the error was received.
-  return promiseRetry(function(retry) {
-    return expectRequest(process.env.TEST_INTERNAL, {
-      'path': {'$eq': '/z/err'},
-      'query': {'key': {'$eq': key}},
-      'bodyJSON': {'msg': {'$eq': msg}},
-    }).catch(retry);
-  }, {retries: 2});
+  return expectRequest(process.env.TEST_INTERNAL, {
+    'path': {'$eq': '/z/err'},
+    'query': {'key': {'$eq': key}},
+    'bodyJSON': {'msg': {'$eq': msg}},
+  });
 }

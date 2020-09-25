@@ -26,7 +26,25 @@
       try {
         throw new Error(q.msg);
       } catch(e) {
-        return r.core.reportError(e).then(function() { return 'done'; });
+        var failures = [];
+        function attemptSend(e, n) {
+          return r.core.reportError(e).then(
+            function success() {
+              return {
+                attempts: n,
+                failures: failures
+              };
+            },
+            function failure(err) {
+              // BrowserStackLocal seems to be injecting some 400s into
+              // responses. The request arrives at our server with an incomplete
+              // request body. Lets just try sending the request again.
+              failures.push(err);
+              return attemptSend(e, n+1);
+            }
+          );
+        }
+        return attemptSend(e, 1);
       }
     }).then(done, done);
   </script>
