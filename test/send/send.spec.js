@@ -1,4 +1,5 @@
 const log = require('@wdio/logger').default('send.spec');
+const { navigate, hasTitle, hasElement, hasURL } = require('../common.spec.js');
 const { expectRequest } = require('../server');
 const buildURL = require('build-url');
 
@@ -23,13 +24,15 @@ function test(page, api, msg) {
   const key = browser.sessionId;
 
   // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
-  browser.url(buildURL(page, {path: '/send/', queryParams: {api, key, msg}}));
-  expect(browser).toHaveUrlContaining(key);
-  expect(browser).toHaveTitleContaining('send');
-
-  // Wait for the browser to finish reporting the error message.
-  browser.waitUntil(function() {
-    return !!$('#completed');
+  navigate(browser, {
+    attempts: 3,
+    urls: [buildURL(page, {path: '/send/', queryParams: {api, key, msg}})],
+    tests: [
+      // Confirm the page has loaded.
+      hasURL(key), hasTitle('send'), hasElement('#output'),
+      // Wait for the test to complete.
+      hasElement('#completed'),
+    ],
   });
 
   // Check whether the browser reported any errors.

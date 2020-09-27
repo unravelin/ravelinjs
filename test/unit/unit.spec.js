@@ -1,12 +1,17 @@
-const { navigate } = require('../common.spec.js');
+const { navigate, hasTitle, hasElement } = require('../common.spec.js');
 
 describe('ravelinjs unit tests', function() {
   it('passes', function() {
-    navigate(browser, 'Mocha', '/unit/', process.env.TEST_REMOTE + '/unit/');
-    browser.waitUntil(function() {
-      // The unit test page will assign this ID to an element when the final
-      // test has run.
-      return !!$('#completed');
+    navigate(browser, {
+      attempts: 3,
+      urls: ['/unit/', process.env.TEST_REMOTE + '/unit/'],
+      tests: [
+        // Wait for the page to load.
+        hasTitle('Mocha'), hasElement('#mocha-stats'),
+        // The unit test page will assign this ID to an element when the final
+        // test has run.
+        hasElement('#completed'),
+      ],
     });
 
     // See if we got any errors.
