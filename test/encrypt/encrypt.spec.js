@@ -5,7 +5,7 @@ describe('Ravelin.encrypt', function () {
   it('encrypts', function() {
     // Check the page loads.
     navigate(browser, {
-      urls: ['/encrypt/', process.env.TEST_REMOTE + '/encrypt'],
+      url: '/encrypt/',
       tests: [hasTitle('encrypt'), hasElement('#output')],
     });
     var e = $('#error').getText();

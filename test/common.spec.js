@@ -12,24 +12,23 @@ const log = require('@wdio/logger').default('common.spec');
  *
  * @param {Browser} browser
  * @param {object} page
- * @param {string[]} page.urls
+ * @param {string} page.url
  * @param {NavTest[]} page.tests
  * @param {number} [page.attempts=2]
+ * @param {object} [page.waitOpts] Options for browser.waitUntil
  */
-function navigate(browser, {urls, tests, attempts}) {
+function navigate(browser, {url, tests, attempts, waitOpts}) {
   var errs = [];
   for (var r = 0; r < (attempts || 2); r++) {
-    for (var i = 0; i < urls.length; i++) {
-      browser.url(urls[i]);
-      try {
-        // Confirm that the page loaded with the title we expected.
-        tests.forEach(f => browser.waitUntil(() => (f(browser), true)));
-        return;
-      } catch (e) {
-        const m = e.message.replace(/^waitUntil condition failed with the following reason: /, '');
-        log.warn(`Session ${browser.sessionId} failed to load ${urls[i]}: ${m}`);
-        errs.push(`${urls[i]} => ${m}`);
-      }
+    browser.url(url);
+    try {
+      // Confirm that the page loaded with the title we expected.
+      tests.forEach(f => browser.waitUntil(() => (f(browser), true), waitOpts));
+      return;
+    } catch (e) {
+      const m = e.message.replace(/^waitUntil condition failed with the following reason: /, '');
+      log.warn(`Session ${browser.sessionId} failed to load ${url}: ${m}`);
+      errs.push(m);
     }
 
     // If none of the pages we tried worked, perhaps we've got a network issue?

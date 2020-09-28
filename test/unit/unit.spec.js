@@ -4,7 +4,7 @@ describe('ravelinjs unit tests', function() {
   it('passes', function() {
     navigate(browser, {
       attempts: 3,
-      urls: ['/unit/', process.env.TEST_REMOTE + '/unit/'],
+      url: '/unit/',
       tests: [
         // Wait for the page to load.
         hasTitle('Mocha'), hasElement('#mocha-stats'),

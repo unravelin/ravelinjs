@@ -26,7 +26,7 @@ function test(page, api, msg) {
   // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
   navigate(browser, {
     attempts: 3,
-    urls: [buildURL(page, {path: '/send/', queryParams: {api, key, msg}})],
+    url: buildURL(page, {path: '/send/', queryParams: {api, key, msg}}),
     tests: [
       // Confirm the page has loaded.
       hasURL(key), hasTitle('send'), hasElement('#output'),
