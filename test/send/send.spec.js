@@ -43,9 +43,9 @@ function test(page, api, msg) {
   browser.waitUntil(function() {
     return browser.call(
       () => expectRequest(process.env.TEST_INTERNAL, {
-        'path': {'$eq': '/z/err'},
-        'query': {'key': {'$eq': key}},
-        'bodyJSON': {'msg': {'$eq': msg}},
+        'path': '/z/err',
+        'query': {'key': key},
+        'bodyJSON.msg': {'$eq': msg},
       })
     );
   });

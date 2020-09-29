@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>track test</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <h1>track test</h1>
+
+  <form name="cardForm" action="/form-action" method="POST">
+    <fieldset>Tracked:<br><input name="name" type="text" id="name-input" /></fieldset>
+    <fieldset>Sensitive:<br><input name="name" type="text" id="name-input" data-rvn-sensitive="true" /></fieldset>
+    <fieldset>Password:<br><input name="name" type="password" id="name-input" /></fieldset>
+  </form>
+
+  <h2>Output</h2>
+  <pre id="output"></pre>
+  <h2>Output Error</h2>
+  <pre id="error"></pre>
+
+  <script src="../common.js"></script>
+  <script src="./ravelin.js"></script>
+  <script>
+    run(function() {
+      var q = parseQuery(window.location.search);
+      var r = new Ravelin({
+        api: '/',
+        key: q.key || 'hello'
+      });
+      done();
+    });
+  </script>
+</body>
+</html>
