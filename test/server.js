@@ -10,7 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const serveIndex = require('serve-index');
 const ngrok = require('ngrok');
-const joqular = require('joqular');
+const mingo = require('mingo');
 
 /**
  * app returns the express application of our test server.
@@ -63,12 +63,8 @@ function app() {
   // a ?q={"url":{"$match": "/\bkey=\b/"}}, for example.
   app.get('/requests', async function logSearch(req, res) {
     const r = !req.query.q ?
-      requests :
-      (await joqular.query(
-        JSON.parse(req.query.q),
-        ...requests
-      )).filter(Boolean);
-
+        requests :
+        mingo.find(requests, JSON.parse(req.query.q)).all();
     if (r.length) {
       res.send(r);
     } else {
