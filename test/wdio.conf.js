@@ -117,6 +117,11 @@ exports.config = {
       },
       "browserName": "IE",
       "browserVersion": "8.0",
+
+      // IE8 doesn't let you attach to onpaste events at the document or window
+      // level, and we don't want to have to enumerate every form/input to
+      // attach listeners.
+      skipPasteEventTest: true,
     },
 
     // Android

@@ -1,8 +1,8 @@
 /* jshint browser: false, esversion: 6, node: true */
 
-const { expectRequest } = require('../server');
+const { fetchRequest } = require('../server');
 
-expectRequest('http://localhost:12345', {
+fetchRequest('http://localhost:12345', {
   path: '/z',
   query: {key: 'hello'},
   "bodyJSON.events": {"$elemMatch": {

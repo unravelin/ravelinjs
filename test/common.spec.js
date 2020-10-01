@@ -1,4 +1,5 @@
 /* jshint esversion: 9, node: true, browser: false */
+const { diff } = require('deep-diff');
 const log = require('@wdio/logger').default('common.spec');
 
 /** @typedef {(browser) => void} NavTest */
@@ -79,9 +80,27 @@ function hasElement(selector) {
   return browser => browser.$(selector);
 }
 
+/**
+ * objDiff throws an error if act has any fields that differ or are missing from
+ * exp. Fields present on act but missing in exp are not an error.
+ * @param {object} act
+ * @param {object} exp
+ * @param {string} [msg]
+ */
+function objDiff(act, exp, msg) {
+  const d = diff(exp, act)
+    .filter(c => c.kind != 'A' && c.kind != 'N')
+    .map(c => `- ${c.path.join(".")}: ${c.lhs}` + (c.kind == 'E' ? `\n+ ${c.path.join(".")}: ${c.rhs}` : ''))
+    .join("\n");
+  if (d) {
+    throw new Error(msg + (msg ? ': ' : '') + 'expected (-) but got (+):\n' + d);
+  }
+}
+
 module.exports = {
   navigate,
   hasTitle,
   hasURL,
   hasElement,
+  objDiff,
 };

@@ -45,6 +45,8 @@ function app() {
       }
       if (req.method === 'POST' && !log.bodyJSON) {
         logger.warn('request without bodyJSON', log);
+      } else if (req.path.match(/\/err/)) {
+        logger.warn('error request', log);
       } else {
         logger.info('request', log);
       }
@@ -60,7 +62,7 @@ function app() {
   app.post('/z/err', noContent);
 
   // Let tests read API requests received, optionally filtering by providing
-  // a ?q={"url":{"$match": "/\bkey=\b/"}}, for example.
+  // a ?q={"url":{"$regex": "key="}}, for example.
   app.get('/requests', async function logSearch(req, res) {
     const r = !req.query.q ?
         requests :
@@ -142,7 +144,7 @@ async function disconnectProxy(url) {
  */
 
 /**
- * expectRequest queries the app server at process.env.API to see whether any /z
+ * fetchRequest queries the app server at process.env.API to see whether any /z
  * or /z/err requests were made matching the given pattern. If no pattern is
  * provided, all requests are returned.
  *
@@ -153,25 +155,71 @@ async function disconnectProxy(url) {
  *                         https://www.npmjs.com/package/joqular/v/2.0.4-b.
  * @returns {RequestLog} The matched request.
  */
-async function expectRequest(api, pattern) {
+async function fetchRequest(api, pattern) {
   const q = JSON.stringify(pattern);
   const url = buildURL(api, {path: '/requests', queryParams: {q}});
   return fetch(url).then(function(res) {
     if (res.status == 204) {
-      throw new Error('No recorded API requests matching ' + q);
+      throw new EmptyFetchError(pattern);
     } else if (!res.ok) {
       throw new Error('Error fetching ' + url + ': ' + res.statusText);
     }
     return res.json();
   }).then(function(logs) {
     if (!logs.length) {
-      throw new Error('Found no requests matching ' + q);
+      throw new EmptyFetchError(pattern);
     }
     return logs[0];
   });
 }
 
-module.exports = { launchProxy, app, disconnectProxy, expectRequest };
+class EmptyFetchError extends Error {
+  constructor(q) {
+    super(`Found no requests matching ${JSON.stringify(q)}`);
+    this.q = q;
+  }
+}
+
+async function expectNoRequest(api, pattern) {
+  let r;
+  try {
+    r = await fetchRequest(api, pattern);
+  } catch (e) {
+    if (e instanceof EmptyFetchError) {
+      return;
+    }
+    throw e;
+  }
+  throw new NonemptyFetchError(r, pattern);
+}
+
+class NonemptyFetchError extends Error {
+  constructor(r, q) {
+    super(`Found unexpected request matching ${JSON.stringify(q)}`);
+    this.r = r;
+    this.q = q;
+  }
+}
+
+async function expectNoError(api, key) {
+  try {
+    await expectNoRequest(api, {
+      'path': '/z/err',
+      'query.key': key,
+    });
+  } catch (e) {
+    if (e instanceof NonemptyFetchError) {
+      const err = e.r.bodyJSON;
+      let m = err.message;
+      if (err.type) m = err.type + ': ' + m;
+      if (err.stack) m += "\nStack: " + err.stack;
+      throw new Error(m);
+    }
+    throw e;
+  }
+}
+
+module.exports = { launchProxy, app, disconnectProxy, fetchRequest, expectNoRequest, expectNoError };
 
 if (require.main === module) {
   const a = app();

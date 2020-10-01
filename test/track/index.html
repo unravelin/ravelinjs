@@ -8,10 +8,12 @@
 <body>
   <h1>track test</h1>
 
+  <input id="clip-stage" onclick="this.select()" />
+
   <form name="cardForm" action="/form-action" method="POST">
-    <fieldset>Tracked:<br><input name="name" type="text" id="name-input" /></fieldset>
-    <fieldset>Sensitive:<br><input name="name" type="text" id="name-input" data-rvn-sensitive="true" /></fieldset>
-    <fieldset>Password:<br><input name="name" type="password" id="name-input" /></fieldset>
+    <fieldset>Tracked:<br><input id="in-tracked" name="name" type="text" /></fieldset>
+    <fieldset>Sensitive:<br><input id="in-sensitive" name="action" type="text" data-rvn-sensitive="true" /></fieldset>
+    <fieldset>Password:<br><input id="in-password" type="password" /></fieldset>
   </form>
 
   <h2>Output</h2>

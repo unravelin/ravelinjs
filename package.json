@@ -44,6 +44,7 @@
     "chai": "4.2.0",
     "circle-wait": "1.0.2",
     "cors": "2.8.5",
+    "deep-diff": "1.0.2",
     "express": "4.17.1",
     "joqular": "2.0.4-b",
     "jshint": "2.10.2",

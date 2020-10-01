@@ -1,6 +1,6 @@
 const log = require('@wdio/logger').default('send.spec');
 const { navigate, hasTitle, hasElement, hasURL } = require('../common.spec.js');
-const { expectRequest } = require('../server');
+const { fetchRequest } = require('../server');
 const buildURL = require('build-url');
 
 describe('ravelinjs.core.send', function() {
@@ -42,7 +42,7 @@ function test(page, api, msg) {
   // Confirm that an AJAX request with the error was received.
   browser.waitUntil(function() {
     return browser.call(
-      () => expectRequest(process.env.TEST_INTERNAL, {
+      () => fetchRequest(process.env.TEST_INTERNAL, {
         'path': '/z/err',
         'query': {'key': key},
         'bodyJSON.msg': {'$eq': msg},
