@@ -1,6 +1,6 @@
 const path = require('path');
 const { launchProxy, app } = require('./server');
-const { exec} = require('child_process');
+const { exec } = require('child_process');
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -87,36 +87,36 @@ exports.config = {
 
     // Internet Explorer.
     {
-      'bstack:options': {
-        "os": "Windows",
-        "osVersion": "7",
-      },
+      "os": "Windows",
+      "os_version": "7",
       "browserName": "IE",
-      "browserVersion": "11.0",
+      "browser_version": "11.0",
+      'browserstack.sendKeys': 'true',
+      "browserstack.selenium_version": "3.5.2",
     },
     {
-      'bstack:options': {
-        "os": "Windows",
-        "osVersion": "7",
-      },
+      "os": "Windows",
+      "os_version": "7",
       "browserName": "IE",
-      "browserVersion": "10.0",
+      "browser_version": "10.0",
+      'browserstack.sendKeys': 'true',
+      "browserstack.selenium_version": "3.5.2",
     },
     {
-      'bstack:options': {
-        "os": "Windows",
-        "osVersion": "7",
-      },
+      "os": "Windows",
+      "os_version": "7",
       "browserName": "IE",
-      "browserVersion": "9.0",
+      "browser_version": "9.0",
+      'browserstack.sendKeys': 'true',
+      "browserstack.selenium_version": "3.5.2",
     },
     {
-      'bstack:options': {
-        "os": "Windows",
-        "osVersion": "7",
-      },
+      "os": "Windows",
+      "os_version": "7",
       "browserName": "IE",
-      "browserVersion": "8.0",
+      "browser_version": "8.0",
+      "browserstack.selenium_version": "3.5.2",
+      'browserstack.sendKeys': 'true',
 
       // IE8 doesn't let you attach to onpaste events at the document or window
       // level, and we don't want to have to enumerate every form/input to
@@ -323,7 +323,7 @@ exports.config = {
     'spec',
     ['junit', {
       outputDir: path.join(__dirname, '../reports/junit'),
-      outputFileFormat: function(options) {
+      outputFileFormat: function (options) {
         const c = options.capabilities, o = c["bstack:options"];
         const cap = [
           c.browserName,
@@ -342,7 +342,7 @@ exports.config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: 60000,
+    timeout: 600000,
   },
 
   //
