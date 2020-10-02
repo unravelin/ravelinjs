@@ -69,3 +69,4 @@ sessionid.txt
 dist/
 releases/
 build
+.vscode
