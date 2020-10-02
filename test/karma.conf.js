@@ -17,6 +17,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      path.resolve(path.join(__dirname, '../node_modules/xhook/dist/xhook.min.js')),
       path.join(__dirname, '../build/ravelin-core+track+encrypt+promise.js'),
       path.join(__dirname, '**/*.test.js')
     ],

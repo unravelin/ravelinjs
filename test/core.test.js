@@ -1,4 +1,7 @@
 describe('ravelin.core', function() {
+  beforeEach(function() {
+    xhook.destroy();
+  });
   before(function() {
     deleteAllCookies();
   });
@@ -37,6 +40,54 @@ describe('ravelin.core', function() {
         });
       });
     });
+  });
+
+  it('retries 500s', function() {
+    var failures = 0;
+    xhook.before(function(req) {
+      if (failures < 1) {
+        failures++;
+        return {status: 500};
+      }
+      return {status: 204};
+    });
+    var rav = new Ravelin({
+      api: '/',
+      key: 'retries'
+    });
+    return rav.core.send('POST', 'z', {
+      retryTest: 'hello'
+    }).then(function(r) {
+      expect(r).to.eql({
+        status: 204,
+        attempt: 2,
+        text: ""
+      });
+    });
+  });
+
+  it('retries 500s at most 3 times', function() {
+    xhook.before(function(req) {
+      return {status: 500};
+    });
+    var rav = new Ravelin({
+      api: '/',
+      key: 'retries'
+    });
+    return rav.core.send('POST', 'z', {
+      retryTest: 'hello'
+    }).then(
+      function (r) {
+        throw r;
+      },
+      function(r) {
+        expect(r).to.eql({
+          status: 500,
+          attempt: 3,
+          text: ""
+        });
+      }
+    );
   });
 });
 

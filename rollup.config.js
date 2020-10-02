@@ -44,6 +44,9 @@ glob.sync("lib/bundle/*.js").forEach(bundle => builds.push(
     },
     plugins: plugins.concat([
       terser({
+        compress: {
+          typeofs: false,
+        },
         ie8: true,
         safari10: true,
       }),
