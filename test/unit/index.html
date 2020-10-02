@@ -52,14 +52,21 @@
         }, 20);
       })();
 
+      /**
+       * testSummary returns a plain-text description of the tests matching the
+       * given selector, along with any of their errors.
+       * @param {string} selector
+       * @returns {string}
+       */
       function testSummary(selector) {
         return $(selector).map(function() {
           var suite = $(this).parents('li.suite').map(function() {
             return $(this).children("h1").text();
           }).toArray().reverse().join(": ");
+          var state = this.className.match(/\bpass\b/) ? 'PASS: ' : 'FAIL: ';
           var cond = (this.firstChild.innerText || this.firstChild.textContent).replace(/[\n ‣]+$/, '');
-          var error = $(this).find('pre.error').text();
-          return suite + (suite ? ': ' : '') + cond + (error ? "\n" + error.replace(/^\s+|\s+$/g, '').replace(/^/m, '    ') : '');
+          var error = $(this).find('pre.error').text().replace(/^\s+|\s+$/g, '').replace(/^/m, '    ');
+          return state + suite + (suite ? ': ' : '') + cond + (error ? "\n" + error : '');
         }).toArray().join("\n")
       }
     </script>
