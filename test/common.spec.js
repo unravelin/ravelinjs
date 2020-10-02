@@ -77,7 +77,7 @@ function hasURL(substr) {
  * @returns {NavTest}
  */
 function hasElement(selector) {
-  return browser => browser.$(selector);
+  return browser => browser.$(selector).isExisting();
 }
 
 /**
