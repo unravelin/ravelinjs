@@ -23,29 +23,9 @@
         api: q.api || '/',
         key: q.key || 'hello'
       });
-      try {
-        throw new Error(q.msg);
-      } catch(e) {
-        var failures = [];
-        function attemptSend(e, n) {
-          return r.core.reportError(e).then(
-            function success() {
-              return {
-                attempts: n,
-                failures: failures
-              };
-            },
-            function failure(err) {
-              // BrowserStackLocal seems to be injecting some 400s into
-              // responses. The request arrives at our server with an incomplete
-              // request body. Lets just try sending the request again.
-              failures.push(err);
-              return attemptSend(e, n+1);
-            }
-          );
-        }
-        return attemptSend(e, 1);
-      }
+      return r.core.send('POST', 'z', {
+        msg: q.msg
+      });
     }).then(done, done);
   </script>
 </body>

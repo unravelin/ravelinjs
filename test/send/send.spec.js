@@ -43,7 +43,7 @@ function test(page, api, msg) {
   browser.waitUntil(function() {
     return browser.call(
       () => fetchRequest(process.env.TEST_INTERNAL, {
-        'path': '/z/err',
+        'path': '/z',
         'query': {'key': key},
         'bodyJSON.msg': {'$eq': msg},
       })
