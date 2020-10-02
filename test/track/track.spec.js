@@ -2,11 +2,13 @@ const log = require('@wdio/logger').default('track.spec');
 const { navigate, hasTitle, hasElement, objDiff } = require('../common.spec.js');
 const { fetchRequest } = require('../server');
 
-describe('ravelin.track', function() {
+describe('ravelin.track', function () {
   var canPaste = true;
+  var key;
+  var sessionId, deviceId;
 
-  it('loads', function() {
-    const key = browser.sessionId;
+  it('loads', function () {
+    key = browser.sessionId;
 
     // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
     navigate(browser, {
@@ -25,71 +27,80 @@ describe('ravelin.track', function() {
     if (e) throw new Error(e);
   });
 
-  it('sends page-load events', function() {
-    const key = browser.sessionId;
-
+  it('sends page-load events', function () {
     // Read the device and session IDs from the cookies.
     const cookies = browser.getCookies();
-    const sessionId = cookies.filter(({name}) => name === 'ravelinSessionId')[0].value;
-    const deviceId = cookies.filter(({name}) => name === 'ravelinDeviceId')[0].value;
+    sessionId = cookies.filter(({ name }) => name === 'ravelinSessionId')[0].value;
+    deviceId = cookies.filter(({ name }) => name === 'ravelinDeviceId')[0].value;
     if (!deviceId.match(/^rjs-/)) {
       throw new Error('Expected cookie ravelinDeviceId to start with "rjs-" but got ' + deviceId);
     }
 
     // Confirm that we received a page-load event.
-    browser.waitUntil(function() {
-      return browser.call(
+    let loadEvent;
+    browser.waitUntil(function () {
+      loadEvent = browser.call(
         () => fetchRequest(process.env.TEST_INTERNAL, {
           path: '/z',
-          query: {key: key},
-          "bodyJSON.events": {"$elemMatch": {
-            eventType: 'PAGE_LOADED',
-            eventData: {eventName: "track"},
-            "eventMeta.url": {"$regex": "^https?://.+/track/.*"},
-            "eventMeta.trackingSource": "browser",
-            "eventMeta.pageTitle": "track test",
-            "eventMeta.clientEventTimeMilliseconds": {"$gt": 1601315328222},
-            "eventMeta.ravelinDeviceId": deviceId,
-            "eventMeta.ravelinSessionId": sessionId,
-            "eventMeta.ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
-          }}
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'PAGE_LOADED',
+            }
+          }
         })
       );
+      return !!loadEvent;
     });
+    objDiff(
+      loadEvent.bodyJSON.events[0],
+      {
+        eventType: 'PAGE_LOADED',
+        eventData: { eventName: "track" },
+        eventMeta: {
+          trackingSource: "browser",
+          pageTitle: "track test",
+          ravelinDeviceId: deviceId,
+          ravelinSessionId: sessionId,
+          // "url": {"$regex": "^https?://.+/track/.*"},
+          // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
+          // "ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
+        },
+      },
+      'Validating page load event'
+    );
   });
 
-  it('sends paste non-pan text', function() {
-    // Paste into <input id=in-tracked />
-    const e = $('#in-tracked');
+  it('sends redacted paste events of pan text', function () {
+    // Paste into <input name=name id=in-tracked />
+    const e = $('#in-pan');
     e.clearValue();
-    canPaste = pasteInto(e, 'h3ll0, world');
+    canPaste = pasteInto(e, '4111 1111 1111 1111');
     if (!canPaste) {
       log.warn('Copy-paste failed so skipping all paste tests. ' + browser.sessionId);
       this.skip();
     }
 
-    const key = browser.sessionId;
-    const cookies = browser.getCookies();
-    const sessionId = cookies.filter(({name}) => name === 'ravelinSessionId')[0].value;
-    const deviceId = cookies.filter(({name}) => name === 'ravelinDeviceId')[0].value;
-
-    // Confirm that we received a page-load event.
+    // Fetch the paste event we shared.
     let pasteEvent;
-    browser.waitUntil(function() {
+    browser.waitUntil(function () {
       pasteEvent = browser.call(
         () => fetchRequest(process.env.TEST_INTERNAL, {
           method: 'POST',
           path: '/z',
-          query: {key: key},
-          "bodyJSON.events": {"$elemMatch": {
-            eventType: 'paste',
-            "eventData.properties.fieldName": "name",
-          }}
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'paste',
+              "eventData.properties.fieldName": "name",
+            }
+          }
         })
       );
       return !!pasteEvent;
     });
 
+    // Confirm the paste event has the properties we want.
     objDiff(
       pasteEvent.bodyJSON.events[0],
       {
@@ -97,13 +108,185 @@ describe('ravelin.track', function() {
         eventData: {
           eventName: "paste",
           properties: {
-              fieldName: "name",
-              formName: "cardForm",
-              formAction: "/form-action",
-              selectionStart: 0,
-              selectionEnd: 0,
-              panCleaned: false,
-              pastedValue: "X0XX0, XXXXX"
+            fieldName: "name",
+            formName: "cardForm",
+            formAction: "/form-action",
+            selectionStart: 0,
+            selectionEnd: 0,
+            panCleaned: true,
+            pastedValue: "0000 0000 0000 0000"
+          }
+        },
+        eventMeta: {
+          trackingSource: "browser",
+          pageTitle: "track test",
+          ravelinDeviceId: deviceId,
+          ravelinSessionId: sessionId,
+          // url: {"$regex": "^https?://.+/track/.*"},
+          // clientEventTimeMilliseconds: {"$gt": 1601315328222},
+          // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+        }
+      },
+      'Validating paste event'
+    );
+  });
+
+  it('sends redacted paste events of non-pan text', function () {
+    if (!canPaste) {
+      this.skip();
+    }
+
+    // Paste into <input name=name2 id=in-tracked />
+    const e = $('#in-no-pan');
+    e.clearValue();
+    pasteInto(e, 'h3ll0, world');
+
+    // Fetch the paste event we shared.
+    let pasteEvent;
+    browser.waitUntil(function () {
+      pasteEvent = browser.call(
+        () => fetchRequest(process.env.TEST_INTERNAL, {
+          method: 'POST',
+          path: '/z',
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'paste',
+              "eventData.properties.fieldName": "name2",
+            }
+          }
+        })
+      );
+      return !!pasteEvent;
+    });
+
+    // Confirm the paste event has the properties we want.
+    objDiff(
+      pasteEvent.bodyJSON.events[0],
+      {
+        eventType: 'paste',
+        eventData: {
+          eventName: "paste",
+          properties: {
+            fieldName: "name2",
+            formName: "cardForm",
+            formAction: "/form-action",
+            selectionStart: 0,
+            selectionEnd: 0,
+            panCleaned: false,
+            pastedValue: "X0XX0, XXXXX"
+          }
+        },
+        eventMeta: {
+          trackingSource: "browser",
+          pageTitle: "track test",
+          ravelinDeviceId: deviceId,
+          ravelinSessionId: sessionId,
+          // url: {"$regex": "^https?://.+/track/.*"},
+          // clientEventTimeMilliseconds: {"$gt": 1601315328222},
+          // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+        }
+      },
+      'Validating paste event'
+    );
+  });
+
+  it('sends redacted paste events of sensitive text', function () {
+    if (!canPaste) {
+      this.skip();
+    }
+
+    // Paste into <input name=action id=in-sensitive rvn-data-sensitive=true />
+    const e = $('#in-sensitive');
+    e.clearValue();
+    canPaste = pasteInto(e, 'h3ll0, world');
+
+    // Fetch the paste event we shared.
+    let pasteEvent;
+    browser.waitUntil(function () {
+      pasteEvent = browser.call(
+        () => fetchRequest(process.env.TEST_INTERNAL, {
+          method: 'POST',
+          path: '/z',
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'paste',
+              "eventData.properties.fieldName": "action",
+            }
+          }
+        })
+      );
+      return !!pasteEvent;
+    });
+
+    // Confirm the paste event has the properties we want.
+    objDiff(
+      pasteEvent.bodyJSON.events[0],
+      {
+        eventType: 'paste',
+        eventData: {
+          eventName: "paste",
+          properties: {
+            fieldName: "action",
+            formName: "cardForm",
+            formAction: "/form-action",
+          }
+        },
+        eventMeta: {
+          trackingSource: "browser",
+          pageTitle: "track test",
+          ravelinDeviceId: deviceId,
+          ravelinSessionId: sessionId,
+          // url: {"$regex": "^https?://.+/track/.*"},
+          // clientEventTimeMilliseconds: {"$gt": 1601315328222},
+          // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+        }
+      },
+      'Validating paste event'
+    );
+  });
+
+  it('sends redacted paste events from password fields', function () {
+    if (!canPaste) {
+      this.skip();
+    }
+
+    // Paste into <input id=in-password />
+    const e = $('#in-password');
+    e.clearValue();
+    canPaste = pasteInto(e, 'h3ll0, world');
+
+    // Fetch the paste event we shared.
+    let pasteEvent;
+    browser.waitUntil(function () {
+      pasteEvent = browser.call(
+        () => fetchRequest(process.env.TEST_INTERNAL, {
+          method: 'POST',
+          path: '/z',
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'paste',
+              "eventData.properties.fieldName": "in-password",
+            }
+          }
+        })
+      );
+      return !!pasteEvent;
+    });
+
+    // Confirm the paste event has the properties we want.
+    objDiff(
+      pasteEvent.bodyJSON.events[0],
+      {
+        eventType: 'paste',
+        eventData: {
+          eventName: "paste",
+          properties: {
+            fieldName: "in-password",
+            formName: "cardForm",
+            formAction: "/form-action",
           }
         },
         eventMeta: {

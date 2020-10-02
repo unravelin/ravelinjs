@@ -245,7 +245,19 @@ exports.config = {
       "browserName": "Firefox",
       "browserVersion": "45.0",
     },
-  ].filter(b => !process.env.BROWSERS || JSON.stringify(b).indexOf(process.env.BROWSERS) >= 0),
+  ].filter(function(b) {
+    if (!process.env.BROWSERS) {
+      return true;
+    }
+    const j = JSON.stringify(b);
+    const tokens = process.env.BROWSERS.split(',');
+    for (var tok of tokens) {
+      if (j.indexOf(tok) === -1) {
+        return false;
+      }
+    }
+    return true;
+  }),
 
   // ===================
   // Test Configurations
