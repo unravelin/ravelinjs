@@ -57,7 +57,8 @@
             return $(this).children("h1").text();
           }).toArray().reverse().join(": ");
           var cond = (this.firstChild.innerText || this.firstChild.textContent).replace(/[\n ‣]+$/, '');
-          return suite + (suite ? ': ' : '') + cond;
+          var error = $(this).find('pre.error').text();
+          return suite + (suite ? ': ' : '') + cond + (error ? "\n" + error.replace(/^\s+|\s+$/g, '').replace(/^/m, '    ') : '');
         }).toArray().join("\n")
       }
     </script>
