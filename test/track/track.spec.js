@@ -1,8 +1,10 @@
-// const log = require('@wdio/logger').default('track.spec');
+const log = require('@wdio/logger').default('track.spec');
 const { navigate, hasTitle, hasElement, objDiff } = require('../common.spec.js');
 const { fetchRequest } = require('../server');
 
-describe('ravelinjs.track', function() {
+describe('ravelin.track', function() {
+  var canPaste = true;
+
   it('loads', function() {
     const key = browser.sessionId;
 
@@ -57,19 +59,19 @@ describe('ravelinjs.track', function() {
   });
 
   it('sends paste non-pan text', function() {
-    if (browser.capabilities.skipPasteEventTest) {
+    // Paste into <input id=in-tracked />
+    const e = $('#in-tracked');
+    e.clearValue();
+    canPaste = pasteInto(e, 'h3ll0, world');
+    if (!canPaste) {
+      log.warn('Copy-paste failed so skipping all paste tests. ' + browser.sessionId);
       this.skip();
     }
 
     const key = browser.sessionId;
-
     const cookies = browser.getCookies();
     const sessionId = cookies.filter(({name}) => name === 'ravelinSessionId')[0].value;
     const deviceId = cookies.filter(({name}) => name === 'ravelinDeviceId')[0].value;
-
-    const e = $('#in-tracked');
-    e.clearValue();
-    pasteInto(e, 'h3ll0, world');
 
     // Confirm that we received a page-load event.
     let pasteEvent;
@@ -119,14 +121,23 @@ describe('ravelinjs.track', function() {
   });
 });
 
+/**
+ * pasteInto attempts to set the clipboard to text and then paste it into e.
+ * @param {element} e
+ * @param {string} text
+ * @returns {boolean} Whether we believe the paste to have been successful.
+ */
 function pasteInto(e, text) {
   // Write into <input id=clip-stage onclick=this.select()> then copy out.
   const c = $('#clip-stage');
   c.setValue(text);
   c.click();
-  c.addValue(['Control', 'Insert']);
+  c.addValue(["Control", "Insert"]);
 
   // Paste into the element at selector.
+  const prev = e.getValue();
   e.click();
-  e.addValue(['Shift', 'Insert']);
+  e.addValue(["Shift", "Insert"]);
+
+  return prev != e.getValue();
 }
