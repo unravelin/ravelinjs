@@ -44,28 +44,38 @@ describe('ravelin.core', function() {
     });
   });
 
-  describe('#key', function() {
-    var tests = [
-      {key: 'pk_test_123', url: 'https://ravelin.click/'},
-      {key: 'pk_live_123', url: 'https://ravelin.click/'},
-      {key: 'publishable_key_test_123', url: 'https://ravelin.click/'},
-      {key: 'publishable_key_live_123', url: 'https://ravelin.click/'},
-      {key: 'publishable_key_test_live_123', url: 'https://ravelin.click/'},
-      {key: 'publishable_key_env_123', url: 'https://env.ravelin.click/'},
-      {key: 'publishable_key_test_env_123', url: 'https://env.ravelin.click/'}
-    ];
-    for (var i = 0; i < tests.length; i++) {
-      (function(test) {
-        it('infers url from key in test = ' + JSON.stringify(test), function() {
-          xhook.before(function(req) {
-            expect(req.url).to.be(test.url + '?key=' + test.key);
-            return {status: 204, text: ""};
-          });
-          var r = new Ravelin({key: test.key});
-          return r.core.send('POST', '/', {hi: true});
+  describe('#Core', function() {
+    $([
+      {key: 'pk_live_123', api: '/', expApi: '/'},
+      {key: 'pk_live_123', api: '////', expApi: '/'},
+      {key: 'pk_test_123', api: '/root/', expApi: '/root'},
+      {key: 'pk_live_123', api: 'rel/', expApi: 'rel'}
+    ]).each(function(n, test) {
+      it('respects explicit api in test = ' + JSON.stringify(test), function() {
+        var r = new Ravelin({
+          key: test.key,
+          api: test.api
         });
-      })(tests[i]);
-    }
+        expect(r.core.api).to.be(test.expApi);
+      });
+    });
+
+    $([
+      {key: 'publishable_key_test_123', api: '', expApi: 'https://ravelin.click'},
+      {key: 'publishable_key_test_123', expApi: 'https://ravelin.click'},
+      {key: 'publishable_key_live_123', expApi: 'https://ravelin.click'},
+      {key: 'publishable_key_test_live_123', expApi: 'https://ravelin.click'},
+      {key: 'publishable_key_env_123', expApi: 'https://env.ravelin.click'},
+      {key: 'publishable_key_test_env_123', expApi: 'https://env.ravelin.click'}
+    ]).each(function(n, test) {
+      it('infers url from key in test = ' + JSON.stringify(test), function() {
+        var r = new Ravelin({
+          key: test.key,
+          api: test.api
+        });
+        expect(r.core.api).to.be(test.expApi);
+      });
+    });
   });
 
   describe('#send', function() {
