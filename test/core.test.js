@@ -48,8 +48,9 @@ describe('ravelin.core', function() {
       {key: 'pk_live_123', url: 'https://ravelin.click/'},
       {key: 'publishable_key_test_123', url: 'https://ravelin.click/'},
       {key: 'publishable_key_live_123', url: 'https://ravelin.click/'},
-      {key: 'publishable_key_hello_123', url: 'https://hello.ravelin.click/'},
-      {key: 'publishable_key_test_hello_123', url: 'https://hello.ravelin.click/'}
+      {key: 'publishable_key_test_live_123', url: 'https://ravelin.click/'},
+      {key: 'publishable_key_env_123', url: 'https://env.ravelin.click/'},
+      {key: 'publishable_key_test_env_123', url: 'https://env.ravelin.click/'}
     ];
     for (var i = 0; i < tests.length; i++) {
       (function(test) {
