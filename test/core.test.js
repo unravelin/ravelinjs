@@ -65,6 +65,23 @@ describe('ravelin.core', function() {
     }
   });
 
+  it('wont retry unknown errors', function() {
+    xhook.before(function(r) {
+      throw new Error('not retried');
+    });
+    var r = new Ravelin({key: 'k', api: '/'});
+    return r.core.send('POST', 'z', {}).
+      then(
+        function pass(r) {
+          throw new Error('Exception expected but got result ' + JSON.stringify(r));
+        },
+        function fail(err) {
+          expect(err).to.be.an(Error);
+          expect(err.message).to.eql('not retried');
+        }
+      );
+  });
+
   it('retries 500s', function() {
     var failures = 0;
     xhook.before(function(req) {
