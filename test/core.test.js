@@ -42,6 +42,29 @@ describe('ravelin.core', function() {
     });
   });
 
+  describe('#key', function() {
+    var tests = [
+      {key: 'pk_test_123', url: 'https://ravelin.click/'},
+      {key: 'pk_live_123', url: 'https://ravelin.click/'},
+      {key: 'publishable_key_test_123', url: 'https://ravelin.click/'},
+      {key: 'publishable_key_live_123', url: 'https://ravelin.click/'},
+      {key: 'publishable_key_hello_123', url: 'https://hello.ravelin.click/'},
+      {key: 'publishable_key_test_hello_123', url: 'https://hello.ravelin.click/'}
+    ];
+    for (var i = 0; i < tests.length; i++) {
+      (function(test) {
+        it('infers API ' + test.api + ' from key ' + test.key, function() {
+          xhook.before(function(req) {
+            expect(req.url).to.be(test.url + '?key=' + test.key);
+            return {status: 204, text: ""};
+          });
+          var r = new Ravelin({key: test.key});
+          return r.core.send('POST', '/', {hi: true});
+        });
+      })(tests[i]);
+    }
+  });
+
   it('retries 500s', function() {
     var failures = 0;
     xhook.before(function(req) {
