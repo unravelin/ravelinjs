@@ -52,7 +52,11 @@ describe('ravelin.core', function() {
       {key: 'pk_live_123', api: 'rel/', expApi: 'rel'}
     ]).each(function(n, test) {
       it('respects explicit api in test = ' + JSON.stringify(test), function() {
+        xhook.before(function(r) {
+          return {status: 204};
+        });
         var r = new Ravelin({
+          init: false,
           key: test.key,
           api: test.api
         });
