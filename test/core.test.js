@@ -81,7 +81,6 @@ describe('ravelin.core', function() {
           },
           function(e) {
             expect(e).to.be.a(TypeError);
-            expect(e.message).to.match(/json/i);
           }
         );
     } catch (e) {
