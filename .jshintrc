@@ -21,6 +21,8 @@
     // Unit test files: run in the browser.
     "**/*.test.js": {
       "mocha": true,
+      "browser": true,
+      "jquery": true,
       "globals": {
         "xhook": true,
         "expect": true,
