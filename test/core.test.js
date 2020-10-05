@@ -65,6 +65,29 @@ describe('ravelin.core', function() {
     }
   });
 
+  it('returns a rejected promise for bad bodies', function() {
+    // Create b with a cyclical reference to itself, which will fail to stringify.
+    var b = {};
+    b.b = b;
+
+    // Try to serialise b in a request.
+    var r = new Ravelin({key: 'k', api: '/'});
+    try {
+      return r.core.send('POST', 'z', b)
+        .then(
+          function(r) {
+            throw new Error('Expected an error but got result: ' + JSON.stringify(r));
+          },
+          function(e) {
+            expect(e).to.be.a(TypeError);
+            expect(e.message).to.match(/json/i);
+          }
+        );
+    } catch (e) {
+      throw new Error('Expected failed promise but caught exception: ' + e.message);
+    }
+  });
+
   it('wont retry unknown errors', function() {
     xhook.before(function(r) {
       throw new Error('not retried');
