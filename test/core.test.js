@@ -2,9 +2,6 @@ describe('ravelin.core', function() {
   beforeEach(function() {
     xhook.destroy();
   });
-  before(function() {
-    deleteAllCookies();
-  });
 
   describe('#id', function() {
     it('returns IDs', function() {
@@ -28,8 +25,18 @@ describe('ravelin.core', function() {
         syncMs: 5
       });
       return r1.core.id().then(function(id1) {
-        // Take the ID out of the cookies.
-        deleteAllCookies();
+        // Take the ID out of the cookies. This is the only time that we should
+        // clear the cookies, because there may have been other Ravelin
+        // instances created that are attempting to restore their deviceId in
+        // the cookies.
+        // TODO: Can we r.core._stop()?
+        var cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
 
         // Wait a second.
         return new r1.core.Promise(function(resolve) {
@@ -171,13 +178,3 @@ describe('ravelin.core', function() {
     });
   });
 });
-
-function deleteAllCookies() {
-  var cookies = document.cookie.split(";");
-  for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
-      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-  }
-}
