@@ -84,7 +84,7 @@ describe('ravelin.track', function () {
     e.addValue(["Shift", "Insert"]);
 
     // Check if the paste worked.
-    if (e.getValue() != "") {
+    if (e.getValue() === "") {
       log.warn('Copy-paste failed so skipping all paste tests. ' + browser.sessionId);
       this.skip();
     }
