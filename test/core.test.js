@@ -25,7 +25,7 @@ describe('ravelin.core', function() {
 
     it('reinstates an ID removed from cookies', function() {
       var r1 = new Ravelin({
-        syncMS: 30
+        syncMs: 30
       });
       return r1.core.id().then(function(id1) {
         // Take the ID out of the cookies.
