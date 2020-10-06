@@ -15,7 +15,10 @@ describe('ravelin.track', function() {
 
   describe('#load', function() {
     it('sends upon instantiation', function(done) {
+      var key = this.test.fullTitle();
       xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
         r.core.id().then(function(deviceId) {
           var loadEvent = JSON.parse(req.body).events[0];
           expect(loadEvent).to.have.property('eventType', 'PAGE_LOADED');
@@ -26,7 +29,7 @@ describe('ravelin.track', function() {
         }).then(done, done);
         return {status: 204};
       });
-      r = new Ravelin({key: 'hi', api: '/'});
+      r = new Ravelin({key: key, api: '/'});
     });
   });
 
@@ -36,7 +39,10 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
+      var key = this.test.fullTitle();
       xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
@@ -65,7 +71,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: 'k', api: '/'});
+      r = new Ravelin({key: key, api: '/'});
 
       var input = $('<form action=/ name="form-name"><input name=name></form>')
         .appendTo(document.body)
@@ -78,7 +84,10 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
+      var key = this.test.fullTitle();
       xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
@@ -105,7 +114,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: 'k', api: '/'});
+      r = new Ravelin({key: key, api: '/'});
 
       var input = $('<input name=name>').appendTo(document.body)[0];
       input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111'));
@@ -116,7 +125,10 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
+      var key = this.test.fullTitle();
       xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
@@ -141,7 +153,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: 'k', api: '/'});
+      r = new Ravelin({key: key, api: '/'});
 
       var input = $('<form action=/ name="form-name"><input name=hello data-rvn-sensitive=true></form>')
         .appendTo(document.body)
@@ -154,7 +166,10 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
+      var key = this.test.fullTitle();
       xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
@@ -179,7 +194,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: 'k', api: '/'});
+      r = new Ravelin({key: key, api: '/'});
 
       var input = $('<form action=/ name="form-name"><input type=password name=action></form>')
         .appendTo(document.body)

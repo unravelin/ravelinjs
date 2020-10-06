@@ -20,6 +20,7 @@ module.exports = function(config) {
       path.resolve(path.join(__dirname, '../node_modules/jquery/dist/jquery.js')),
       path.resolve(path.join(__dirname, '../node_modules/xhook/dist/xhook.js')),
       path.join(__dirname, '../build/ravelin-core+track+encrypt+promise.js'),
+      path.join(__dirname, 'common.js'),
       path.join(__dirname, '**/*.test.js')
     ],
 
