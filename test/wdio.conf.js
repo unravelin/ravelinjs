@@ -209,14 +209,16 @@ exports.config = {
       "browserName": "Safari",
       "browserVersion": "13.0",
     },
-    {
-      'bstack:options': {
-        "os": "OS X",
-        "osVersion": "High Sierra",
-      },
-      "browserName": "Safari",
-      "browserVersion": "11.0",
-    },
+    // Finding that High Sierra isn't starting properly:
+    // https://automate.browserstack.com/dashboard/v2/builds/ffecf909566a3dd424c71404338350fe6ccecabf/sessions/8fb5ed210e940700b992559292c8516ca3fc33e3
+    // {
+    //   'bstack:options': {
+    //     "os": "OS X",
+    //     "osVersion": "High Sierra",
+    //   },
+    //   "browserName": "Safari",
+    //   "browserVersion": "11.0",
+    // },
     {
       'bstack:options': {
         "os": "OS X",
