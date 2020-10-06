@@ -21,9 +21,12 @@ async function capabilityDefaults() {
   return {
     'project': 'ravelinjs',
     'build': b,
-    'browserstack.console': 'info',
-    'browserstack.networkLogs': true,
-    'browserstack.debug': true
+    'browserstack.debug': 'true',
+    'browserstack.console': 'verbose',
+    'browserstack.networkLogs': 'true',
+    'browserstack.networkLogsOptions': {
+        captureContent: true
+    },
   };
 }
 
