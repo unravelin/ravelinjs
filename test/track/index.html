@@ -26,7 +26,8 @@
       var q = parseQuery(window.location.search);
       var r = new Ravelin({
         api: '/',
-        key: q.key || 'hello'
+        key: q.key || 'hello',
+        sendRetryMs: 1
       });
       done();
     });

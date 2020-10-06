@@ -247,8 +247,8 @@ exports.config = {
     if (!process.env.BROWSERS) {
       return true;
     }
-    const j = JSON.stringify(b);
-    const tokens = process.env.BROWSERS.split(',');
+    const j = JSON.stringify(b).toLowerCase();
+    const tokens = process.env.BROWSERS.toLowerCase().split(',');
     for (var tok of tokens) {
       if (j.indexOf(tok) === -1) {
         return false;

@@ -21,7 +21,8 @@
       var q = parseQuery(window.location.search);
       var r = new Ravelin({
         api: q.api || '/',
-        key: q.key || 'hello'
+        key: q.key || 'hello',
+        sendRetryMs: 1
       });
       return r.core.send('POST', 'z', {
         msg: q.msg
