@@ -22,7 +22,7 @@ describe('ravelin.track', function() {
   });
 
   describe('#paste', function() {
-    it('sends paste content', function(done) {
+    it('sends redacted paste events', function(done) {
       if (!document.createEvent) {
         this.skip(); // Not available on IE8.
       }
@@ -60,6 +60,118 @@ describe('ravelin.track', function() {
       var input = document.body.appendChild(document.createElement('input'));
       input.name = 'hello';
       input.dispatchEvent(fakePasteEvent('text/plain', 'h3ll0, wor1d.'));
+    });
+
+    it('sends redacted paste events of PANs', function(done) {
+      if (!document.createEvent) {
+        this.skip(); // Not available on IE8.
+      }
+
+      var r;
+      xhook.before(function(req) {
+        var event = JSON.parse(req.body).events[0];
+        if (event.eventType !== 'paste') {
+          return {status: 204};
+        }
+        xhook.destroy();
+
+        // Validate the event.
+        r.core.id().then(function(deviceId) {
+          expect(event).to.have.property('eventType', 'paste');
+          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventData).to.eql({
+            eventName: 'paste',
+            properties: {
+              fieldName: 'hello',
+              selectionStart: 0,
+              selectionEnd: 0,
+              pastedValue: '0000 0000 0000 0000',
+              panCleaned: true
+            }
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      r = new Ravelin({key: 'k', api: '/'});
+
+      var input = document.body.appendChild(document.createElement('input'));
+      input.name = 'hello';
+      input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111'));
+    });
+
+    it('sends empty paste events from sensitive fields', function(done) {
+      if (!document.createEvent) {
+        this.skip(); // Not available on IE8.
+      }
+
+      var r;
+      xhook.before(function(req) {
+        var event = JSON.parse(req.body).events[0];
+        if (event.eventType !== 'paste') {
+          return {status: 204};
+        }
+
+        // Validate the event.
+        r.core.id().then(function(deviceId) {
+          expect(event).to.have.property('eventType', 'paste');
+          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventData).to.eql({
+            eventName: 'paste',
+            properties: {
+              fieldName: 'hello'
+            }
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      r = new Ravelin({key: 'k', api: '/'});
+
+      var input = document.body.appendChild(document.createElement('input'));
+      input.setAttribute('data-rvn-sensitive', 'true');
+      input.name = 'hello';
+      input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
+    });
+
+    it('sends empty paste events from password fields', function(done) {
+      if (!document.createEvent) {
+        this.skip(); // Not available on IE8.
+      }
+
+      var r;
+      xhook.before(function(req) {
+        var event = JSON.parse(req.body).events[0];
+        if (event.eventType !== 'paste') {
+          return {status: 204};
+        }
+
+        // Validate the event.
+        r.core.id().then(function(deviceId) {
+          expect(event).to.have.property('eventType', 'paste');
+          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventData).to.eql({
+            eventName: 'paste',
+            properties: {
+              fieldName: 'hello'
+            }
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      r = new Ravelin({key: 'k', api: '/'});
+
+      var input = document.body.appendChild(document.createElement('input'));
+      input.type = 'password';
+      input.name = 'hello';
+      input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
     });
   });
 });
