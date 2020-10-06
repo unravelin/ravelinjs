@@ -1,11 +1,20 @@
 describe('ravelin.track', function() {
-  beforeEach(function() {
+  var r;
+
+  // afterEach(cleanup) seems to invoke cleanup() after tests return, which is
+  // before async tests actually complete.
+  beforeEach(cleanup);
+  after(cleanup);
+  function cleanup() {
     xhook.destroy();
-  });
+    if (r) {
+      r.track._detach();
+      r = null;
+    }
+  }
 
   describe('#load', function() {
     it('sends upon instantiation', function(done) {
-      var r;
       xhook.before(function(req) {
         r.core.id().then(function(deviceId) {
           var loadEvent = JSON.parse(req.body).events[0];
@@ -27,16 +36,15 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
-      var r;
       xhook.before(function(req) {
-        var event = JSON.parse(req.body).events[0];
-        if (event.eventType !== 'paste') {
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
         }
-        xhook.destroy();
 
         // Validate the event.
         r.core.id().then(function(deviceId) {
+          event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
@@ -70,16 +78,15 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
-      var r;
       xhook.before(function(req) {
-        var event = JSON.parse(req.body).events[0];
-        if (event.eventType !== 'paste') {
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
         }
-        xhook.destroy();
 
         // Validate the event.
         r.core.id().then(function(deviceId) {
+          event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
@@ -109,15 +116,15 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
-      var r;
       xhook.before(function(req) {
-        var event = JSON.parse(req.body).events[0];
-        if (event.eventType !== 'paste') {
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
         }
 
         // Validate the event.
         r.core.id().then(function(deviceId) {
+          event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
@@ -147,15 +154,15 @@ describe('ravelin.track', function() {
         this.skip(); // Not available on IE8.
       }
 
-      var r;
       xhook.before(function(req) {
-        var event = JSON.parse(req.body).events[0];
-        if (event.eventType !== 'paste') {
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
         }
 
         // Validate the event.
         r.core.id().then(function(deviceId) {
+          event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');

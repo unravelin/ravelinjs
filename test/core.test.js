@@ -33,7 +33,7 @@ describe('ravelin.core', function() {
 
         // Wait a second.
         return new r1.core.Promise(function(resolve) {
-          setTimeout(resolve, 200);
+          setTimeout(resolve, 300);
         }).then(function() {
           var r2 = new Ravelin({});
           return r2.core.id().then(function(id2) {
