@@ -108,6 +108,21 @@ describe('ravelin.track', function () {
       return !!pasteEvent;
     });
 
+    const props = {
+      fieldName: "name",
+      formName: "cardForm",
+      formAction: "/form-action",
+      selectionStart: 0,
+      selectionEnd: 0,
+    };
+    if (browser.capabilities.browserName != 'internet explorer') {
+      // A dirty hack to detect when clipboardData is unavailable on the client.
+      // Seems that IE's use of selenium3 prevents us from injecting values from
+      // wdio.conf.js into browser.capabilities. ¯\_(ツ)_/¯
+      props.panCleaned = true;
+      props.pastedValue = "0000 0000 0000 0000";
+    }
+
     // Confirm the paste event has the properties we want.
     objDiff(
       pasteEvent.bodyJSON.events[0],
@@ -115,15 +130,7 @@ describe('ravelin.track', function () {
         eventType: 'paste',
         eventData: {
           eventName: "paste",
-          properties: {
-            fieldName: "name",
-            formName: "cardForm",
-            formAction: "/form-action",
-            selectionStart: 0,
-            selectionEnd: 0,
-            panCleaned: true,
-            pastedValue: "0000 0000 0000 0000"
-          }
+          properties: props
         },
         eventMeta: {
           trackingSource: "browser",
@@ -137,5 +144,71 @@ describe('ravelin.track', function () {
       },
       'Validating paste event'
     );
+  });
+
+  it('sends resize events', function() {
+    try {
+      // Make the browser smaller.
+      var d1 = browser.getWindowSize();
+      browser.setWindowSize(d1.width - 10, d1.height - 10);
+      var d2 = browser.getWindowSize();
+
+      if (d1.width == d2.width && d1.height == d2.height) {
+        log.warn('Resizing the browser had no effect. Skipping test.');
+        this.skip();
+      }
+    } catch (e) {
+      log.warn('Resizing the browser failed. Skipping test. ' + e.toString());
+      this.skip();
+    }
+
+    // Validate that we got an event of the expected format.
+    let resizeEvent;
+    browser.waitUntil(function () {
+      resizeEvent = browser.call(
+        () => fetchRequest(process.env.TEST_INTERNAL, {
+          method: 'POST',
+          path: '/z',
+          query: { key: key },
+          "bodyJSON.events": {
+            "$elemMatch": {
+              eventType: 'resize',
+            }
+          }
+        })
+      );
+      return !!resizeEvent;
+    });
+    objDiff(
+      resizeEvent.bodyJSON.events[0],
+      {
+        eventType: 'resize',
+        eventData: {
+          eventName: "resize"
+        },
+        eventMeta: {
+          trackingSource: "browser",
+          pageTitle: "track test",
+          ravelinDeviceId: deviceId,
+          ravelinSessionId: sessionId,
+          // url: {"$regex": "^https?://.+/track/.*"},
+          // clientEventTimeMilliseconds: {"$gt": 1601315328222},
+          // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+        }
+      },
+      'Validating resize event'
+    );
+    const props = resizeEvent.bodyJSON.events[0].eventData.properties;
+    checkDim(props, 'resolutionOld');
+    checkDim(props, 'resolutionNew');
+
+    function checkDim(props, d) {
+      if (!props.hasOwnProperty(d)) {
+        throw new ReferenceError('properties has no dimension ' + d);
+      }
+      var dim = props[d];
+      if (typeof dim.w !== 'number') throw new TypeError('Expected ' + d + '.w to be a number but it is ' + typeof dim.w);
+      if (typeof dim.h !== 'number') throw new TypeError('Expected ' + d + '.h to be a number but it is ' + typeof dim.h);
+    }
   });
 });
