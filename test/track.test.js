@@ -44,7 +44,9 @@ describe('ravelin.track', function() {
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
-              fieldName: 'hello',
+              fieldName: 'name',
+              formName: 'form-name',
+              formAction: '/',
               selectionStart: 0,
               selectionEnd: 0,
               pastedValue: 'X0XX0, XXX0X.',
@@ -57,8 +59,9 @@ describe('ravelin.track', function() {
 
       r = new Ravelin({key: 'k', api: '/'});
 
-      var input = document.body.appendChild(document.createElement('input'));
-      input.name = 'hello';
+      var input = $('<form action=/ name="form-name"><input name=name></form>')
+        .appendTo(document.body)
+        .find("input")[0];
       input.dispatchEvent(fakePasteEvent('text/plain', 'h3ll0, wor1d.'));
     });
 
@@ -84,7 +87,7 @@ describe('ravelin.track', function() {
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
-              fieldName: 'hello',
+              fieldName: 'name',
               selectionStart: 0,
               selectionEnd: 0,
               pastedValue: '0000 0000 0000 0000',
@@ -97,8 +100,7 @@ describe('ravelin.track', function() {
 
       r = new Ravelin({key: 'k', api: '/'});
 
-      var input = document.body.appendChild(document.createElement('input'));
-      input.name = 'hello';
+      var input = $('<input name=name>').appendTo(document.body)[0];
       input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111'));
     });
 
@@ -123,7 +125,9 @@ describe('ravelin.track', function() {
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
-              fieldName: 'hello'
+              fieldName: 'hello',
+              formName: 'form-name',
+              formAction: '/'
             }
           });
         }).then(done, done);
@@ -132,9 +136,9 @@ describe('ravelin.track', function() {
 
       r = new Ravelin({key: 'k', api: '/'});
 
-      var input = document.body.appendChild(document.createElement('input'));
-      input.setAttribute('data-rvn-sensitive', 'true');
-      input.name = 'hello';
+      var input = $('<form action=/ name="form-name"><input name=hello data-rvn-sensitive=true></form>')
+        .appendTo(document.body)
+        .find("input")[0];
       input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
     });
 
@@ -159,7 +163,9 @@ describe('ravelin.track', function() {
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
-              fieldName: 'hello'
+              fieldName: 'action',
+              formName: 'form-name',
+              formAction: '/'
             }
           });
         }).then(done, done);
@@ -168,9 +174,9 @@ describe('ravelin.track', function() {
 
       r = new Ravelin({key: 'k', api: '/'});
 
-      var input = document.body.appendChild(document.createElement('input'));
-      input.type = 'password';
-      input.name = 'hello';
+      var input = $('<form action=/ name="form-name"><input type=password name=action></form>')
+        .appendTo(document.body)
+        .find("input")[0];
       input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
     });
   });
