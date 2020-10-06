@@ -3,7 +3,6 @@ const { navigate, hasTitle, hasElement, objDiff } = require('../common.spec.js')
 const { fetchRequest } = require('../server');
 
 describe('ravelin.track', function () {
-  var canPaste = true;
   var key;
   var sessionId, deviceId;
 
@@ -72,11 +71,20 @@ describe('ravelin.track', function () {
   });
 
   it('sends redacted paste events of pan text', function () {
+    // Write into <input id=clip-stage onclick=this.select()> then copy out.
+    const c = $('#clip-stage');
+    c.setValue('4111 1111 1111 1111');
+    c.click();
+    c.addValue(["Control", "Insert"]);
+
     // Paste into <input name=name id=in-tracked />
     const e = $('#in-pan');
     e.clearValue();
-    canPaste = pasteInto(e, '4111 1111 1111 1111');
-    if (!canPaste) {
+    e.click();
+    e.addValue(["Shift", "Insert"]);
+
+    // Check if the paste worked.
+    if (e.getValue() != "") {
       log.warn('Copy-paste failed so skipping all paste tests. ' + browser.sessionId);
       this.skip();
     }
@@ -131,24 +139,3 @@ describe('ravelin.track', function () {
     );
   });
 });
-
-/**
- * pasteInto attempts to set the clipboard to text and then paste it into e.
- * @param {element} e
- * @param {string} text
- * @returns {boolean} Whether we believe the paste to have been successful.
- */
-function pasteInto(e, text) {
-  // Write into <input id=clip-stage onclick=this.select()> then copy out.
-  const c = $('#clip-stage');
-  c.setValue(text);
-  c.click();
-  c.addValue(["Control", "Insert"]);
-
-  // Paste into the element at selector.
-  const prev = e.getValue();
-  e.click();
-  e.addValue(["Shift", "Insert"]);
-
-  return prev != e.getValue();
-}
