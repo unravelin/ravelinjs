@@ -7,7 +7,7 @@ const key = process.env.BROWSERSTACK_ACCESS_KEY;
 const baseUrl = 'http://' + user + '.browserstack.com';
 
 const browserStackOpts = {
-  forceProxy: true,
+  // forceProxy: true,
   localProxyHost: 'localhost',
   localProxyPort: 'unknown', // Set in launchAPIServer.
   'disable-dashboard': true,
