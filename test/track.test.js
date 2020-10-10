@@ -34,10 +34,13 @@ describe('ravelin.track', function() {
   });
 
   describe('#paste', function() {
+    // IE8 doesn't support createEvent or paste handling at all.
+    var capable = !!document.createEvent;
+    // Safari is difficult to craft a paste event for?
+    var capableContent = !!fakePasteEvent('text/plain', 'test').clipboardData;
+
     it('sends redacted paste events', function(done) {
-      if (!document.createEvent) {
-        this.skip(); // Not available on IE8.
-      }
+      if (!capable) this.skip();
 
       var key = this.test.fullTitle();
       xhook.before(function(req) {
@@ -46,6 +49,18 @@ describe('ravelin.track', function() {
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
+        }
+
+        var props = {
+          fieldName: 'name',
+          formName: 'form-name',
+          formAction: '/',
+          selectionStart: 0,
+          selectionEnd: 0
+        };
+        if (capableContent) {
+          props.pastedValue = 'X0XX0, XXX0X.';
+          props.panCleaned = false;
         }
 
         // Validate the event.
@@ -57,15 +72,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
             eventName: 'paste',
-            properties: {
-              fieldName: 'name',
-              formName: 'form-name',
-              formAction: '/',
-              selectionStart: 0,
-              selectionEnd: 0,
-              pastedValue: 'X0XX0, XXX0X.',
-              panCleaned: false
-            }
+            properties: props
           });
         }).then(done, done);
         return {status: 204};
@@ -80,9 +87,7 @@ describe('ravelin.track', function() {
     });
 
     it('sends redacted paste events of PANs', function(done) {
-      if (!document.createEvent) {
-        this.skip(); // Not available on IE8.
-      }
+      if (!capable) this.skip();
 
       var key = this.test.fullTitle();
       xhook.before(function(req) {
@@ -91,6 +96,16 @@ describe('ravelin.track', function() {
         var event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return {status: 204};
+        }
+
+        var props = {
+          fieldName: 'name',
+          selectionStart: 0,
+          selectionEnd: 0
+        };
+        if (capableContent) {
+          props.pastedValue = '0000 0000 0000 0000';
+          props.panCleaned = true;
         }
 
         // Validate the event.
@@ -102,13 +117,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
             eventName: 'paste',
-            properties: {
-              fieldName: 'name',
-              selectionStart: 0,
-              selectionEnd: 0,
-              pastedValue: '0000 0000 0000 0000',
-              panCleaned: true
-            }
+            properties: props
           });
         }).then(done, done);
         return {status: 204};
@@ -121,9 +130,7 @@ describe('ravelin.track', function() {
     });
 
     it('sends empty paste events from sensitive fields', function(done) {
-      if (!document.createEvent) {
-        this.skip(); // Not available on IE8.
-      }
+      if (!capable) this.skip();
 
       var key = this.test.fullTitle();
       xhook.before(function(req) {
@@ -162,9 +169,7 @@ describe('ravelin.track', function() {
     });
 
     it('sends empty paste events from password fields', function(done) {
-      if (!document.createEvent) {
-        this.skip(); // Not available on IE8.
-      }
+      if (!capable) this.skip();
 
       var key = this.test.fullTitle();
       xhook.before(function(req) {
