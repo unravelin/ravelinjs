@@ -20,6 +20,13 @@ describe('ravelin.core', function() {
       });
     });
 
+    it('sets the ravelinDeviceId cookie', function() {
+      var r = new Ravelin({});
+      return r.core.id().then(function(id) {
+        expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + id + '\\b'));
+      });
+    });
+
     it('reinstates an ID removed from cookies', function() {
       var r1 = new Ravelin({
         syncMs: 5
