@@ -1,8 +1,23 @@
 {
   "name": "ravelinjs",
   "version": "1.0.0",
+  "license": "Apache-2.0",
   "description": "Ravelin's Browser SDK",
+  "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
+  "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
+  "bugs": {
+    "url": "https://github.com/unravelin/ravelinjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unravelin/ravelinjs.git"
+  },
+
   "main": "./build/ravelin-core+track+encrypt+promise.js",
+  "files": [
+    "build"
+  ],
+
   "scripts": {
     "watch": "run-p **:watch",
     "lint": "jshint lib",
@@ -22,16 +37,6 @@
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
     "test:integration": "wdio ./test/wdio.conf.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/unravelin/ravelinjs.git"
-  },
-  "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/unravelin/ravelinjs/issues"
-  },
-  "homepage": "https://developer.ravelin.com/libraries-and-sdks/ravelinjs/",
   "devDependencies": {
     "@rollup/plugin-commonjs": "15.0.0",
     "@rollup/plugin-node-resolve": "9.0.0",
