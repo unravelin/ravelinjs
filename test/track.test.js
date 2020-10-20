@@ -129,6 +129,49 @@ describe('ravelin.track', function() {
       input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111'));
     });
 
+    it('shouldnt treat 19-digit numbers as PANs', function(done) {
+      if (!capable) this.skip();
+
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
+          return {status: 204};
+        }
+
+        var props = {
+          fieldName: 'name',
+          selectionStart: 0,
+          selectionEnd: 0
+        };
+        if (capableContent) {
+          props.pastedValue = '0000 0000 0000 0000 000';
+          props.panCleaned = false;
+        }
+
+        // Validate the event.
+        r.core.id().then(function(deviceId) {
+          event = event.events[0];
+          expect(event).to.have.property('eventType', 'paste');
+          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventData).to.eql({
+            eventName: 'paste',
+            properties: props
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      r = new Ravelin({key: key, api: '/'});
+
+      var input = $('<input name=name>').appendTo(document.body)[0];
+      input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111 123'));
+    });
+
     it('sends empty paste events from sensitive fields', function(done) {
       if (!capable) this.skip();
 
