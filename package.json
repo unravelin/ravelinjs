@@ -4,16 +4,19 @@
   "description": "Ravelin's Browser SDK",
   "main": "./build/ravelin-core+track+encrypt+promise.js",
   "scripts": {
-    "watch": "run-p *:watch *:*:watch",
+    "watch": "run-p **:watch",
+    "lint": "jshint lib",
+    "clean": "rm -rf build releases; mkdir build",
+
     "build": "rollup --config",
     "build:watch": "rollup --config --watch --no-watch.clearScreen",
-    "lint": "jshint lib",
-    "clean": "rm -rf build; mkdir build",
-    "integrity": "cd build; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
-    "integrity:verify": "cd build; sed s/^sha384-// integrity | shasum -c",
-    "release": "run-s clean build integrity bundle",
-    "bundle": "mkdir -p releases/ravelinjs-$npm_package_version; cp build/* releases/ravelinjs-$npm_package_version",
-    "release-rename": "cp ./dist/ravelin.min.js ./releases/$npm_package_version/ravelin-$npm_package_version.min.js && cp ./dist/ravelin-no-encrypt.min.js ./releases/$npm_package_version/ravelin-no-encrypt-$npm_package_version.min.js",
+    "build:integrity": "cd build; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
+    "build:integrity:verify": "cd build; sed s/^sha384-// integrity | shasum -c",
+
+    "release": "run-s clean build build:integrity release:copy release:verify",
+    "release:copy": "mkdir -p releases/ravelinjs-$npm_package_version; cp build/* releases/ravelinjs-$npm_package_version",
+    "release:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
+
     "test": "run-s test:integration",
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
