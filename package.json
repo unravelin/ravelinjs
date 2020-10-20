@@ -19,7 +19,7 @@
   ],
 
   "scripts": {
-    "watch": "run-p **:watch",
+    "watch": "run-p *:watch *:*:watch",
     "lint": "jshint lib",
     "clean": "rm -rf build releases; mkdir build",
 
