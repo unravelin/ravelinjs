@@ -295,6 +295,77 @@ it relies:
 * http://bitwiseshiftleft.github.io/sjcl/ (MIT)
 * http://www-cs-students.stanford.edu/~tjw/jsbn/ (BSD)
 
+## Upgrading
+
+### Uprading to ravelinjs v1 from ravelinjs v0
+
+If you are using RavelinJS v0 from a script or loaded via npm then equivalent
+functionality is now covered by bundles  with the core+track+encrypt components.
+Please review which components you need in the [bundles](#bundles) and complete
+the [quickstart] setup instructions. You can now remove cdn.ravelin.net from
+your Content-Security-Policy and make the following substitutions to complete
+the upgrade:
+
+* `ravelinjs.setFallbackJS(src)` → Removed.
+* `ravelinjs.setCookieDomain(domain)` → Set during instantiation in `new
+  Ravelin({cookieDomain: 'c.com'})`.
+* `ravelinjs.setPublicAPIKey(apiKey)` → Set during instantiation in `new Ravelin({key: apiKey})`.
+* `ravelinjs.setRSAKey(rawPubKey)` → Set during instantiation in `new Ravelin({rsaKey: rawPubKey})`.
+* `ravelinjs.setCustomerId(customerId)` → Removed.
+* `ravelinjs.setTempCustomer` → Removed.
+* `ravelinjs.encrypt(card)` → `JSON.stringify(ravelin.encrypt.card(card))`
+* `ravelinjs.encryptAsObject(card)` → `ravelin.encrypt.card(card)`
+* `ravelinjs.track(eventName, meta)` → Removed.
+* `ravelinjs.trackPage(meta)` → `ravelin.track.load()`
+* `ravelinjs.trackLogout(meta)` → Removed.
+* `ravelinjs.trackFingerprint(customerI` → Removed. This method implemented some
+  privacy-insensitive browser fingerprinting that Ravelin no longer wishes to be
+  part of. Instead, follow the instructions of
+  [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
+* `ravelinjs.setOrderId(orderId)` → Removed.
+
+### Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet
+
+If you previously used a snippet such as
+
+```js
+(function(r,a,v,e,l,i,n){r[l]=r[l]||function(){(r[l].q=r[l].q||[]).push(arguments)};i=a.createElement(v);i.async=i.defer=1;i.src=e;a.body.appendChild(i)})(window,document,'script','https://cdn.ravelin.net/ravelin-beta.min.js','ravelin');
+```
+
+or
+
+```js
+(function r(a,v,e,l,i,n){a[e]=a[e]||function(){(a[e].q=a[e].q||[]).push(arguments)};n=v.createElement("script");n.async=n.defer=1;n.src=l;if(i)n.onerror=function(){r(a,v,e,i)};v.body.appendChild(n)})(window,document,"ravelin","https://cdn.ravelin.net/js/rvn-beta.min.js","/rvn-lite.min.js")
+```
+
+then the functionality you were using is covered by bundles with the core+track
+components. After following the [quickstart] instructions you can remove
+cdn.ravelin.net from your Content-Security-Policy, and make the following
+substitutions to complete the upgrade:
+
+* `ravelin('setApiKey', 'k')` → Set during instantiation in `new Ravelin({key: 'k'})`.
+* `ravelin('setCookieDomain', 'c')` → Set during instantiation in `new
+  Ravelin({cookieDomain: 'c.com'})`.
+* `ravelin('track')` → Removed.
+* `ravelin('trackPage')` → [`ravelin.track.load()`][ravelin.track.load] is now
+  called when Ravelin is instantiated, but you can call this method again when
+  the user navigates if you have a single-page application.
+* `ravelin('trackLogin')` → Removed.
+* `ravelin('trackLogout')` → Removed.
+
+* `ravelin('fingerprint')` → Removed. This method implemented some
+  privacy-insensitive browser fingerprinting that Ravelin no longer wishes to be
+  part of. Instead, follow the instructions of
+  [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
+* `ravelin('send')` → Removed
+* `ravelin('setCustomerId')` → Removed.
+* `ravelin('setTempCustomerId')` → Removed.
+* `ravelin('setOrderId')` → Removed.
+
+[ravelin.encrypt.card]: #ravelinencryptcardcard-object-object
+[ravelin.track.load]: #ravelintrackload
+[ravelin.core.id]: #ravelincoreid-promisestring
+[quickstart]: #quickstart "RavelinJS Quickstart Instructions"
 [releases]: https://www.github.com/unravelin/ravelinjs/releases "RavelinJS GitHub Releases"
 [postv2order]: https://developer.ravelin.com/apis/v2/#postv2order "Ravelin API: POST /v2/order"
 [postv2checkout]: https://developer.ravelin.com/apis/v2/#postv2checkout "Ravelin API: POST /v2/checkout"
