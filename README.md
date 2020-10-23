@@ -113,9 +113,13 @@ var rav = new Ravelin({
      * cookieDomain to store.com.
      */
     // cookieDomain: 'store.com',
+    /**
+     * @prop {PromiseConstructor} [Promise] An injectable Promise implementation
+     * to use. If not provided, defaults to window.Promise or a polyfill if the
+     * +promise component is included.
+     */
+    // Promise: window.Promise,
 
-    // Encrypt
-    // =======
     /**
      * @prop {string} [rsaKey] The public key used to encrypt credit card info.
      */
