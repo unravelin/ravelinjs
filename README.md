@@ -202,6 +202,8 @@ var cipher = ravelin.encrypt.card({
     month: '1',
     /** @prop {string} [nameOnCard] Optional card holder name. */
     nameOnCard: 'Tom Johnson'
+    /** @prop {string} [rsaKey] Optional RSA public key to use. Can be set during instantiation. */
+    // rsaKey: '0|...',
 });
 ```
 
@@ -266,17 +268,21 @@ exception when trying to encrypt.
 ### `ravelin.track.load()`
 
 Send a page-load event. This is automatically triggered when Ravelin is
-instantiated, but can be invoked again on page navigation. Best called after the
-page title has been updated from the navigation event - so the [Window
-popstate][popstate] event may or may not be appropriate depending on your
-framework.
+instantiated, but should be invoked manually after page navigation in a
+single-page app. To ensure the correct page title is collected, call after the
+page content has loaded - so the [Window popstate][popstate] event may be too
+early.
 
 ### `ravelin.track.paste(event: ClipboardEvent)`
 
-Send a paste event to Ravelin. Browsers other than IE8 will automatically listen
-for pastes into fields and send redacted contents. For example, if a user pastes
-"h3ll0, wor1d." into a field Ravelin will receive "X0XX0, XXX0X.". However, if
-the pasted content is an `<input type=password>`, any `<input
+Send a paste event to Ravelin. This is done automatically if the paste happens
+in the same frame Ravelin is instantiated - except on IE8 which does not support
+paste-event listening at the document level.
+
+The paste event contains information about where the paste happened and
+approximate shape of the paste content. For example, if a user pastes "h3ll0,
+wor1d." into a field Ravelin will receive "X0XX0, XXX0X.". However, if the
+pasted content is an `<input type=password>`, a `<input
 data-rvn-sensitive=true>`, or a child of any `<div data-rvn-sensitive=true>`
 field we will not include any form of pasted value - only that a paste event
 occurred.
