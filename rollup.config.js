@@ -2,6 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
+import license from 'rollup-plugin-license';
 import { basename } from 'path';
 import glob from 'glob';
 
@@ -25,6 +26,10 @@ var plugins = [
   }),
   resolve(),
   commonjs(),
+  license({
+    sourcemap: true,
+    banner: `/*! <%= pkg.name %> <%= pkg.version %> - https://github.com/unravelin/ravelinjs. Copyright <%= moment().format('YYYY') %> */`,
+  }),
 ];
 
 glob.sync("lib/bundle/*.js").forEach(bundle => builds.push(
