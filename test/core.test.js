@@ -79,10 +79,10 @@ describe('ravelin.core', function() {
     });
 
     $([
-      {key: 'publishable_key_test_123', api: '', expApi: 'https://ravelin.click'},
-      {key: 'publishable_key_test_123', expApi: 'https://ravelin.click'},
-      {key: 'publishable_key_live_123', expApi: 'https://ravelin.click'},
-      {key: 'publishable_key_test_live_123', expApi: 'https://ravelin.click'},
+      {key: 'publishable_key_test_123', api: '', expApi: 'https://live.ravelin.click'},
+      {key: 'publishable_key_test_123', expApi: 'https://live.ravelin.click'},
+      {key: 'publishable_key_live_123', expApi: 'https://live.ravelin.click'},
+      {key: 'publishable_key_test_live_123', expApi: 'https://live.ravelin.click'},
       {key: 'publishable_key_env_123', expApi: 'https://env.ravelin.click'},
       {key: 'publishable_key_test_env_123', expApi: 'https://env.ravelin.click'}
     ]).each(function(n, test) {
