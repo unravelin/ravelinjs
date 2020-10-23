@@ -15,8 +15,10 @@ a successful Ravelin integration.
 
 ## Quickstart
 
-Get a copy of [ravelin-core+track+encrypt+promise.min.js on Github
-releases][releases] and instantiate your Ravelin instance on the page:
+Add `https://*.ravelin.click` to your site's [Content-Security-Policy
+`connect-src`][csp-connect] directive. Get a copy of
+[ravelin-core+track+encrypt+promise.min.js on Github releases][releases] and
+instantiate your Ravelin instance on the page:
 
 ```html
 <script src="ravelin-core+track+encrypt+promise.min.js"></script>
@@ -46,21 +48,29 @@ need.
 The components are:
 
 * **core:** API and error-reporting functionality used by all bundles, and Basic
-  device identification:
-    * `ravelinDeviceId` cookie
-    * `ravelin.core.id()`
-* **encrypt:** Card encryption.
-    * `ravelin.encrypt.card()`
-* **track:** Send page-load, resize and paste events.
-    * `ravelin.track.load()`
-* **promise:** A Promise polyfill required for Internet Explorer support.
-  Optional if you already have your own polyfill or do not want to support any
-  version of Internet Explorer.
+  device identification with `ravelin.core.id()` or a `ravelinDeviceId` cookie.
+* **encrypt:** Card encryption with `ravelin.encrypt.card()`.
+* **track:** Automatically send page-load, resize and paste events, or manually
+  with `ravelin.track.load()`.
+* **promise:** Provide a fallback Promise polyfill required for Internet
+  Explorer support. Optional if you already have your own polyfill or do not
+  want to support any version of Internet Explorer.
 
 The [release files][releases] indicate which components they include using a
 `+component` naming convention. For example, `ravelin-core+track.min.js`
 contains only the core and track components and so cannot be used to encrypt
 cards and doesn't guarantee Internet Explorer compatibility.
+
+## Content-Security-Policy
+
+RavelinJS will send track events and error reports back to the Ravelin API as
+configured in the `api` initialisation property, or inferred from your API key.
+If your site is configured with a Content-Security-Policy, be sure to add the
+API to the `connect-src` directive:
+
+```http
+Content-Security-Policy: connect-src 'self' https://*.ravelin.click;
+```
 
 ## Browser Compatibility
 
@@ -92,9 +102,10 @@ var rav = new Ravelin({
     key: 'publishable_key_...',
     /**
      * @prop {string} [api] The base URL of the Ravelin API. Defaults to
-     * productive, or another environment identified by the key.
+     * productive, or another environment identified by the key. If you set a
+     * Content-Security-Policy then add the api to the connect-src directive.
      */
-    // api: 'https://api/',
+    // api: 'https://live.ravelin.click/',
     /**
      * @prop {string} [cookieDomain] The top-most domain that we can store
      * cookies on. If you expect your customer to navigate between multiple
@@ -284,3 +295,4 @@ it relies:
 [postv2paymentmethod]: https://developer.ravelin.com/apis/v2/#postv2paymentmethod "Ravelin API: POST /v2/paymentmethod"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "MDN: JavaScript Promises"
 [popstate]: https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event "MDN: Window popstate event"
+[csp-connect]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src "MDN: Content-Security-Policy connect-src"
