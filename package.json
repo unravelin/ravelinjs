@@ -1,6 +1,6 @@
 {
   "name": "ravelinjs",
-  "version": "1.0.0",
+  "version": "1.0.0-rc1",
   "license": "Apache-2.0",
   "description": "Ravelin's Browser SDK",
   "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
@@ -12,26 +12,20 @@
     "type": "git",
     "url": "git+https://github.com/unravelin/ravelinjs.git"
   },
-
   "main": "./build/ravelin-core+track+encrypt+promise.js",
   "files": [
     "build"
   ],
-
   "scripts": {
     "watch": "run-p *:watch *:*:watch",
     "lint": "jshint lib",
     "clean": "rm -rf build releases; mkdir build",
-
     "build": "rollup --config",
     "build:watch": "rollup --config --watch --no-watch.clearScreen",
-    "build:integrity": "cd build; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
-    "build:integrity:verify": "cd build; sed s/^sha384-// integrity | shasum -c",
-
-    "release": "run-s clean build build:integrity release:copy release:verify",
-    "release:copy": "mkdir -p releases/ravelinjs-$npm_package_version; cp build/* releases/ravelinjs-$npm_package_version",
-    "release:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
-
+    "release": "run-s release:copy release:integrity release:integrity:verify",
+    "release:copy": "mkdir -p releases/ravelinjs-$npm_package_version; set -x; cd build; for f in *.js*; do cp -- $f ../releases/ravelinjs-$npm_package_version/`echo $f | sed s/^ravelin-/ravelin-$npm_package_version-/`; done",
+    "release:integrity": "cd releases/ravelinjs-$npm_package_version; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
+    "release:integrity:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
     "test": "run-s test:integration",
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
