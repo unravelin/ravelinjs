@@ -22,7 +22,7 @@ describe('ravelin.track', function() {
         r.core.id().then(function(deviceId) {
           var loadEvent = JSON.parse(req.body).events[0];
           expect(loadEvent).to.have.property('eventType', 'PAGE_LOADED');
-          expect(loadEvent).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(loadEvent).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
           expect(loadEvent.eventData).to.eql({eventName: 'track'});
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(deviceId);
@@ -67,7 +67,7 @@ describe('ravelin.track', function() {
         r.core.id().then(function(deviceId) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
@@ -123,7 +123,7 @@ describe('ravelin.track', function() {
           r.core.id().then(function(deviceId) {
             event = event.events[0];
             expect(event).to.have.property('eventType', 'paste');
-            expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+            expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
             expect(event.eventMeta.trackingSource).to.be('browser');
             expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
             expect(event.eventData).to.eql({
@@ -167,7 +167,7 @@ describe('ravelin.track', function() {
         r.core.id().then(function(deviceId) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
@@ -200,7 +200,7 @@ describe('ravelin.track', function() {
         r.core.id().then(function(deviceId) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
@@ -239,7 +239,7 @@ describe('ravelin.track', function() {
         r.core.id().then(function(deviceId) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-ravelinjs');
+          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
           expect(event.eventData).to.eql({
