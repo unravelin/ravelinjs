@@ -180,12 +180,13 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
 
 ### `ravelin.encrypt.card(card: object): object`
 
-`ravelin.encrypt.card` returns an object describing the encrypted form of cardholder data for use with [Ravelin's client-side
+`ravelin.encrypt.card` returns an object describing the encrypted form of
+cardholder data for use with [Ravelin's client-side
 encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details).
-This object can then be sent via your server to Ravelin without increasing the scope of PCI compliance required of your server. 
-The object can be used directly as a paymentMethod in
-a [v2/checkout][postv2checkout] or [v2/paymentmethod][postv2paymentmethod]
-request, for example.
+This object can then be sent via your server to Ravelin without increasing the
+scope of PCI compliance required of your server. The object can be used directly
+as a paymentMethod in a [v2/checkout][postv2checkout] or
+[v2/paymentmethod][postv2paymentmethod] request, for example.
 
 Encrypting cardholder data is only necessary for non-PCI compliant merchants (PCI
 SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide cardholder data
