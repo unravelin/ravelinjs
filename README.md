@@ -301,7 +301,7 @@ it relies:
 
 ## Upgrading
 
-### Uprading to ravelinjs v1 from ravelinjs v0
+### Upgrading to ravelinjs v1 from ravelinjs v0
 
 If you are using RavelinJS v0 from a script or loaded via npm then equivalent
 functionality is now covered by bundles  with the core+track+encrypt components.
