@@ -5,7 +5,7 @@ with:
 
 * an identifier for the customer's browser to be attached to an order (core);
 * simple page events like loading, pasting and resizing (track); and
-* credit card details encrypted for transmission through your server (encrypt).
+* cardholder data encrypted for transmission through your server (encrypt).
 
 Gathering these values accurately, and ensuring they are made available to
 Ravelin through our API or by calls made directly from this SDK, is critical to
@@ -29,7 +29,7 @@ This will set the `ravelinDeviceId` cookie on your domain, send a page-load
 event, and then allow you to call:
 
 * `ravelin.core.id().then(function(id) { ... })` to get the deviceId.
-* `ravelin.encrypt.card({pan: "4111 ..."})` to encrypt card details to be sent
+* `ravelin.encrypt.card({pan: "4111 ..."})` to encrypt cardholder data to be sent
   to Ravelin.
 * `ravelin.track.load()` to track a page load.
 
@@ -49,7 +49,7 @@ The components are:
 
 * **core:** API and error-reporting functionality used by all bundles, and Basic
   device identification with `ravelin.core.id()` or a `ravelinDeviceId` cookie.
-* **encrypt:** Card encryption with `ravelin.encrypt.card()`.
+* **encrypt:** Cardholder data encryption with `ravelin.encrypt.card()`.
 * **track:** Automatically send page-load, resize and paste events, or manually
   with `ravelin.track.load()`.
 * **promise:** Provide a fallback Promise polyfill required for Internet
@@ -79,13 +79,13 @@ browsers](test/wdio.conf.js). We plan to drop support for IE8-IE10 soon, so
 please contact us if you still support these browsers.
 
 A Promise/A+ polyfill is required for Internet Explorer support. If you do not
-have one, or at not sure, then use a +promise ravelinjs bundle.
+have one, or are not sure, then use a +promise ravelinjs bundle.
 
 Card encryption uses window.crypto where available, and otherwise falls back to
 a pseudo-random number generator which collects user movements and keypresses as
 a source of entropy. If insufficient events have been collected before
-encryption has been attempted, an Error is thrown so that we do not insecurely
-send card details over the wire.
+encryption is attempted, an Error is thrown to prevent insecure transmission of
+cardholder data.
 
 
 ## Reference
@@ -102,7 +102,7 @@ var rav = new Ravelin({
     key: 'publishable_key_...',
     /**
      * @prop {string} [api] The base URL of the Ravelin API. Defaults to
-     * productive, or another environment identified by the key. If you set a
+     * production, or another environment identified by the key. If you set a
      * Content-Security-Policy then add the api to the connect-src directive.
      */
     // api: 'https://live.ravelin.click/',
@@ -121,7 +121,7 @@ var rav = new Ravelin({
     // Promise: window.Promise,
 
     /**
-     * @prop {string} [rsaKey] The public key used to encrypt credit card info.
+     * @prop {string} [rsaKey] The public key used to encrypt cardholder data.
      */
     // rsaKey: '0|...',
 });
@@ -180,16 +180,15 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
 
 ### `ravelin.encrypt.card(card: object): object`
 
-`ravelin.encrypt.card` returns an object describing the encrypted form of the
-card details for use with [Ravelin's client-side
+`ravelin.encrypt.card` returns an object describing the encrypted form of cardholder data for use with [Ravelin's client-side
 encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details).
-This object can then be sent via your server to Ravelin without your server
-becoming under PCI scope. The object can be used directly as a paymentMethod in
+This object can then be sent via your server to Ravelin without increasing the scope of PCI compliance required of your server. 
+The object can be used directly as a paymentMethod in
 a [v2/checkout][postv2checkout] or [v2/paymentmethod][postv2paymentmethod]
 request, for example.
 
-Encrypting card details is only necessary for non-PCI compliant merchants (PCI
-SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide card details
+Encrypting cardholder data is only necessary for non-PCI compliant merchants (PCI
+SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide cardholder data
 (including a valid
 [`instrumentId`](https://developer.ravelin.com/apis/v2/#checkout.paymentMethod.0.instrumentId))
 to Ravelin when scoring an order.
@@ -198,13 +197,13 @@ The full set of fields are:
 
 ```js
 var cipher = ravelin.encrypt.card({
-    /** @prop {string} pan The full card card number. */
+    /** @prop {string} pan The full primary account number of the card. */
     pan: '4111 1111 1111 1111',
     /** @prop {string|number} year The expiry year on the card. 12 => 2012. */
     year: '2020',
     /** @prop {string|number} month The expiry month on the card. 1 => Jan. */
     month: '1',
-    /** @prop {string} [nameOnCard] Optional card holder name. */
+    /** @prop {string} [nameOnCard] Optional cardholder name. */
     nameOnCard: 'Tom Johnson'
     /** @prop {string} [rsaKey] Optional RSA public key to use. Can be set during instantiation. */
     // rsaKey: '0|...',
@@ -230,7 +229,7 @@ HTML example:
 
     var form = document.getElementById('payment-form');
     form.onsubmit = function() {
-        // Encrypt the card details in the form.
+        // Encrypt the cardholder data in the form.
         var cipher = ravelin.encrypt.card({
             pan: form['pan'].value,
             year: form['year'].value,
