@@ -53,8 +53,10 @@ describe('Ravelin.encrypt', function () {
     }
 
     // Store the cipher for the e2e-test to load.
-    if (process.env.E2E_CIPHERTEXT_FILE) {
-      require('fs').writeFileSync(process.env.E2E_CIPHERTEXT_FILE, outText);
+    const outFile = process.env.E2E_CIPHERTEXT_FILE;
+    if (outFile) {
+      log.info(`Writing cipher into ${outFile}: ${outText}`);
+      require('fs').writeFileSync(outFile, outText);
     }
   });
 });
