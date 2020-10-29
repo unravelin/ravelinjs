@@ -16,7 +16,7 @@ describe('Ravelin.encrypt', function () {
           out = $('#output');
 
     if (process.env.E2E_NAME_ON_CARD) {
-      $('input[name=nameOnCard]').setValue(process.env.E2E_NAME_ON_CARD);
+      $('#name').setValue(process.env.E2E_NAME_ON_CARD);
     }
 
     while (true) {
