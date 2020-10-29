@@ -38,7 +38,7 @@ jobs:
           name: "Encryption E2E tests: npm run test:e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            echo Not implemented on browserstack. && exit 1
+            npm run test:e2e
 
       - run:
           name: "Browser tests: npm run test:integration"

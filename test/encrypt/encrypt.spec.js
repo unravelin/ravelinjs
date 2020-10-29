@@ -5,7 +5,7 @@ describe('Ravelin.encrypt', function () {
   it('encrypts', function() {
     // Check the page loads.
     navigate(browser, {
-      url: '/encrypt/',
+      url: '/encrypt/?rsaKey=' + encodeURIComponent(process.env.E2E_RSA_KEY || ''),
       tests: [hasTitle('encrypt'), hasElement('#output')],
     });
     var e = $('#error').getText();
@@ -14,6 +14,10 @@ describe('Ravelin.encrypt', function () {
     const enc = $('#encrypt'),
           err = $('#error'),
           out = $('#output');
+
+    if (process.env.E2E_NAME_ON_CARD) {
+      $('input[name=nameOnCard]').setValue(process.env.E2E_NAME_ON_CARD);
+    }
 
     while (true) {
       // Submit the form.
@@ -46,6 +50,11 @@ describe('Ravelin.encrypt', function () {
     const outText = out.getText();
     if (outText.indexOf('aesKeyCiphertext') == -1) {
       throw new Error('Expected encryption output to container "aesKeyCiphertext" but received: ' + outText);
+    }
+
+    // Store the cipher for the e2e-test to load.
+    if (process.env.E2E_CIPHERTEXT_FILE) {
+      require('fs').writeFileSync(process.env.E2E_CIPHERTEXT_FILE, outText);
     }
   });
 });
