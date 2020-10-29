@@ -33,6 +33,11 @@ event, and then allow you to call:
   to Ravelin.
 * `ravelin.track.load()` to track a page load.
 
+If you are wanting to track paste events than lastly add a `data-rvn-pan`
+attribute to any inputs the user types a credit/debit card PAN into, and a
+`data-rvn-sensitive` to or around any elements you don't want Ravelin to report
+any content from.
+
 → Read on for more details.
 
 ---
@@ -172,7 +177,7 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
         device: {
             deviceId: form.getValue('device-id'),
             userAgent: req.header('User-Agent'),
-            ipAddress: req.ip // X-Forwarded-For in express)
+            ipAddress: req.ip // X-Forwarded-For in Express JS.
         }
     })
 });
@@ -283,13 +288,18 @@ Send a paste event to Ravelin. This is done automatically if the paste happens
 in the same frame Ravelin is instantiated - except on IE8 which does not support
 paste-event listening at the document level.
 
+To correctly identify the paste contents you should annotate your forms with
+attributes:
+
+* `data-rvn-pan` if the user enters a credit-card number into that input; or
+* `data-rvn-sensitive` if no values should be shared in the event back to Ravelin.
+
 The paste event contains information about where the paste happened and
 approximate shape of the paste content. For example, if a user pastes "h3ll0,
 wor1d." into a field Ravelin will receive "X0XX0, XXX0X.". However, if the
-pasted content is an `<input type=password>`, a `<input
-data-rvn-sensitive=true>`, or a child of any `<div data-rvn-sensitive=true>`
-field we will not include any form of pasted value - only that a paste event
-occurred.
+pasted content is an `<input type=password>`, a `<input data-rvn-sensitive>`, or
+a child of any `<div data-rvn-sensitive>` field we will not include any form of
+pasted value - only that a paste event occurred.
 
 ## Vendored Code
 
@@ -322,7 +332,7 @@ the upgrade:
 * `ravelinjs.track(eventName, meta)` → Removed.
 * `ravelinjs.trackPage(meta)` → `ravelin.track.load()`
 * `ravelinjs.trackLogout(meta)` → Removed.
-* `ravelinjs.trackFingerprint(customerI` → Removed. This method implemented some
+* `ravelinjs.trackFingerprint(customer)` → Removed. This method implemented some
   privacy-insensitive browser fingerprinting that Ravelin no longer wishes to be
   part of. Instead, follow the instructions of
   [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.

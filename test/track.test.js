@@ -39,63 +39,87 @@ describe('ravelin.track', function() {
     // Safari is difficult to craft a paste event for?
     var capableContent = !!fakePasteEvent('text/plain', 'test').clipboardData;
 
-    it('sends redacted paste events', function(done) {
-      if (!capable) this.skip();
-
-      var key = this.test.fullTitle();
-      xhook.before(function(req) {
-        if (!keysMatch(req, key)) return {status: 204};
-
-        var event = JSON.parse(req.body);
-        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
-          return {status: 204};
-        }
-
-        var props = {
-          fieldName: 'name',
-          formName: 'form-name',
-          formAction: '/',
-          selectionStart: 0,
-          selectionEnd: 0
-        };
-        if (capableContent) {
-          props.pastedValue = 'X0XX0, XXX0X.';
-          props.panCleaned = false;
-        }
-
-        // Validate the event.
-        r.core.id().then(function(deviceId) {
-          event = event.events[0];
-          expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
-          expect(event.eventData).to.eql({
-            eventName: 'paste',
-            properties: props
-          });
-        }).then(done, done);
-        return {status: 204};
-      });
-
-      r = new Ravelin({key: key, api: '/'});
-
-      var input = $('<form action=/ name="form-name"><input name=name></form>')
-        .appendTo(document.body)
-        .find("input")[0];
-      input.dispatchEvent(fakePasteEvent('text/plain', 'h3ll0, wor1d.'));
-    });
-
     $([
-      {paste: '4234 5678 901', pastedValue: '0000 0000 000', panCleaned: false},
-      {paste: '4234 5678 9012', pastedValue: '0000 0000 0000', panCleaned: true},
-      {paste: '4234 5678 9012 3', pastedValue: '0000 0000 0000 0', panCleaned: true},
-      {paste: '4234 5678 9012 34', pastedValue: '0000 0000 0000 00', panCleaned: true},
-      {paste: '4234 5678 9012 345', pastedValue: '0000 0000 0000 000', panCleaned: true},
-      {paste: '4234 5678 9012-3456', pastedValue: '0000 0000 0000-0000', panCleaned: true},
-      {paste: '4234 5678-9012 3456 7', pastedValue: '0000 0000-0000 0000 0', panCleaned: false},
-      {paste: '4234 5678 9012 3456 78', pastedValue: '0000 0000 0000 0000 00', panCleaned: false},
-      {paste: '4234 5678 9012 3456 789', pastedValue: '0000 0000 0000 0000 000', panCleaned: false}
+      {
+        paste: '4234 5678 901',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 000', panCleaned: false}
+      },
+      {
+        paste: '4234 5678 9012',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 3',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 3',
+        into: '<input name=name />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0'}
+      },
+      {
+        paste: '4234 5678 9012 34',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 00', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 345',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 000', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012-3456',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000-0000', panCleaned: true}
+      },
+      {
+        paste: '4234 5678-9012 3456 7',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: false}
+      },
+      {
+        paste: '4234 5678-9012 3456 7',
+        into: '<input name=name data-rvn-pan data-rvn-sensitive />',
+        props: {fieldName: 'name', panCleaned: true}
+      },
+      {
+        paste: '4234 5678-9012 3456 7',
+        into: '<input name=name data-rvn-sensitive />',
+        props: {fieldName: 'name'}
+      },
+      {
+        paste: '4234 5678-9012 3456 7',
+        into: '<div data-rvn-sensitive><input name=name></div>',
+        props: {fieldName: 'name'}
+      },
+      {
+        paste: '4234 5678 9012 3456 78',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 00', panCleaned: false}
+      },
+      {
+        paste: '4234 5678 9012 3456 789',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 000', panCleaned: false}
+      },
+      {
+        paste: 'h3ll0, wor1d.',
+        into: '<form action=/ name="form-name"><input name=action></form>',
+        props: {fieldName: 'action', formName: 'form-name', formAction: '/', selectionStart: 0, selectionEnd: 0, pastedValue: 'X0XX0, XXX0X.'}
+      },
+      {
+        paste: 'hello',
+        into: '<form action=/ name="form-name"><input type=password name=action></form>',
+        props: {fieldName: 'action', formName: 'form-name', formAction: '/'}
+      },
+      {
+        paste: 'hello',
+        into: '<form action=/ name="form-name"><input type=password name=action></form>',
+        props: {fieldName: 'action', formName: 'form-name', formAction: '/'}
+      }
     ]).each(function(n, test) {
       it('sends redacted paste events of ' + JSON.stringify(test), function(done) {
         if (!capable) this.skip();
@@ -109,14 +133,11 @@ describe('ravelin.track', function() {
             return {status: 204};
           }
 
-          var props = {
-            fieldName: 'name',
-            selectionStart: 0,
-            selectionEnd: 0
-          };
-          if (capableContent) {
-            props.pastedValue = test.pastedValue;
-            props.panCleaned = test.panCleaned;
+          if (!capableContent) {
+            delete test.props.pastedValue;
+            // If we can't check the paste contents then we assume all pastes
+            // into pan fields contain pans.
+            if ('panCleaned' in test.props) test.props.panCleaned = true;
           }
 
           // Validate the event.
@@ -128,7 +149,7 @@ describe('ravelin.track', function() {
             expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
             expect(event.eventData).to.eql({
               eventName: 'paste',
-              properties: props
+              properties: test.props
             });
           }).then(done, done);
           return {status: 204};
@@ -136,52 +157,10 @@ describe('ravelin.track', function() {
 
         r = new Ravelin({key: key, api: '/'});
 
-        var input = $('<input name=name>').appendTo(document.body)[0];
+        var input = $(test.into).appendTo(document.body);
+        input = input.find('input')[0] || input[0];
         input.dispatchEvent(fakePasteEvent('text/plain', test.paste));
       });
-    });
-
-    it('shouldnt treat 19-digit numbers as PANs', function(done) {
-      if (!capable) this.skip();
-
-      var key = this.test.fullTitle();
-      xhook.before(function(req) {
-        if (!keysMatch(req, key)) return {status: 204};
-
-        var event = JSON.parse(req.body);
-        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
-          return {status: 204};
-        }
-
-        var props = {
-          fieldName: 'name',
-          selectionStart: 0,
-          selectionEnd: 0
-        };
-        if (capableContent) {
-          props.pastedValue = '0000 0000 0000 0000 000';
-          props.panCleaned = false;
-        }
-
-        // Validate the event.
-        r.core.id().then(function(deviceId) {
-          event = event.events[0];
-          expect(event).to.have.property('eventType', 'paste');
-          expect(event).to.have.property('libVer', '1.0.0-rc1-ravelinjs');
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
-          expect(event.eventData).to.eql({
-            eventName: 'paste',
-            properties: props
-          });
-        }).then(done, done);
-        return {status: 204};
-      });
-
-      r = new Ravelin({key: key, api: '/'});
-
-      var input = $('<input name=name>').appendTo(document.body)[0];
-      input.dispatchEvent(fakePasteEvent('text/plain', '4111 1111 1111 1111 123'));
     });
 
     it('sends empty paste events from sensitive fields', function(done) {
