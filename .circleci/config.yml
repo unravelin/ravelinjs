@@ -35,7 +35,7 @@ jobs:
           name: "Encryption E2E tests: npm run test:e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            env E2E_CIPHERTEXT_FILE=/home/circle/repo/cipher.txt npm run test:e2e
+            env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test:e2e
 
       - run:
           name: "Browser tests: npm run test:integration"
@@ -44,6 +44,6 @@ jobs:
             PARALLEL=5 npm run test:integration
 
       - store_test_results:
-          path: /home/circle/repo/reports/junit
+          path: ~/repo/reports/junit
       - store_artifacts:
-          path: /home/circle/repo/cipher.txt
+          path: ~/repo/cipher.txt
