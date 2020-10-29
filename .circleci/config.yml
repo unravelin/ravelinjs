@@ -35,6 +35,7 @@ jobs:
           name: "Encryption E2E tests: npm run test:e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
+            env | grep E2E_
             npm run test:e2e
 
       - run:
@@ -44,12 +45,6 @@ jobs:
             PARALLEL=5 npm run test:integration
 
       - store_test_results:
-          path: ~/repo/test/junit
-      - store_artifacts:
-          path: ~/repo/test/shots
+          path: ~/repo/reports/junit
       - store_artifacts:
           path: ~/repo/cipher.txt
-      - store_artifacts:
-          path: ~/repo/deviceid.txt
-      - store_artifacts:
-          path: ~/repo/sessionid.txt
