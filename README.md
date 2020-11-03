@@ -11,7 +11,10 @@ Gathering these values accurately, and ensuring they are made available to
 Ravelin through our API or by calls made directly from this SDK, is critical to
 a successful Ravelin integration.
 
-Please feel welcome to create issues or submit pull requests on the project. [CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for ravelinjs.
+Please feel welcome to create issues or submit pull requests on [the
+project](https://github.com/unravelin/ravelinjs).
+[CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for
+ravelinjs.
 
 ---
 
@@ -140,7 +143,8 @@ var rav = new Ravelin({
 string. This will eventually match the `ravelinDeviceId` cookie. Your goal is to
 make a server-side API request to Ravelin where you send the customer's order
 and device - using this deviceId - together in a [v2/checkout][postv2checkout]
-or [v2/order][postv2order] API request.
+or [v2/order][postv2order] API request, or the customer and device in a
+[v2/connect][postv2connect] API request.
 
 HTML example:
 
@@ -192,8 +196,9 @@ cardholder data for use with [Ravelin's client-side
 encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details).
 This object can then be sent via your server to Ravelin without increasing the
 scope of PCI compliance required of your server. The object can be used directly
-as a paymentMethod in a [v2/checkout][postv2checkout] or
-[v2/paymentmethod][postv2paymentmethod] request, for example.
+as a paymentMethod in a [v2/checkout][postv2checkout],
+[v2/paymentmethod][postv2paymentmethod] or [v2/connect][postv2connect] request,
+for example.
 
 Encrypting cardholder data is only necessary for non-PCI compliant merchants (PCI
 SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide cardholder data
@@ -386,6 +391,7 @@ substitutions to complete the upgrade:
 [postv2order]: https://developer.ravelin.com/apis/v2/#postv2order "Ravelin API: POST /v2/order"
 [postv2checkout]: https://developer.ravelin.com/apis/v2/#postv2checkout "Ravelin API: POST /v2/checkout"
 [postv2paymentmethod]: https://developer.ravelin.com/apis/v2/#postv2paymentmethod "Ravelin API: POST /v2/paymentmethod"
+[postv2connect]: https://developer.ravelin.com/apis/connect/#postv2connect "Ravelin Connect API: POST /v2/connect"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "MDN: JavaScript Promises"
 [popstate]: https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event "MDN: Window popstate event"
 [csp-connect]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src "MDN: Content-Security-Policy connect-src"
