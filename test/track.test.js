@@ -83,7 +83,22 @@ describe('ravelin.track', function() {
       {
         paste: '4234 5678-9012 3456 7',
         into: '<input name=name data-rvn-pan />',
-        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: false}
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 3456 78',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 00', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 3456 789',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 000', panCleaned: true}
+      },
+      {
+        paste: '4234 5678 9012 3456 7890',
+        into: '<input name=name data-rvn-pan />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 0000', panCleaned: false}
       },
       {
         paste: '4234 5678-9012 3456 7',
@@ -99,16 +114,6 @@ describe('ravelin.track', function() {
         paste: '4234 5678-9012 3456 7',
         into: '<div data-rvn-sensitive><input name=name></div>',
         props: {fieldName: 'name'}
-      },
-      {
-        paste: '4234 5678 9012 3456 78',
-        into: '<input name=name data-rvn-pan />',
-        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 00', panCleaned: false}
-      },
-      {
-        paste: '4234 5678 9012 3456 789',
-        into: '<input name=name data-rvn-pan />',
-        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0000 000', panCleaned: false}
       },
       {
         paste: 'h3ll0, wor1d.',
