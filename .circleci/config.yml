@@ -47,3 +47,6 @@ jobs:
           path: ~/repo/reports/junit
       - store_artifacts:
           path: ~/repo/cipher.txt
+      - store_artifacts:
+          path: ~/repo/releases
+          destination: release
