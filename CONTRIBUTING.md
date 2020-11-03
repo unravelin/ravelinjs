@@ -74,7 +74,8 @@ unit tests from an integration test (piggy-backing on the browser-spawning)
 which you can run with `npm run test:integration -- --spec
 test/unit/unit.spec.js` (see below for running integration tests).
 
-Unit tests run in the browser and therefore must be written in IE-compatible JavaScript, as with code in the lib. The tests have access to:
+Unit tests run in the browser and therefore must be written in IE-compatible
+JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
 * the [Mocha test framework](https://mochajs.org/);
@@ -112,7 +113,8 @@ These environment variables can be used to configure what gets run:
 
 * `PARALLEL` (int) The number of tests that can be run simultaneously
 * `LOG_LEVEL` (debug|info|warn|error) The level of logs shown
-* `BROWSERS` (string) A comma-separated list of strings to search for in the browser spec definitions, for example: `BROWSERS=safari,7`.
+* `BROWSERS` (string) A comma-separated list of strings to search for in the
+  browser spec definitions, for example: `BROWSERS=safari,7`.
 * `LIMIT` (int) A maximum number of browsers to run tests on.
 
 ### Process
@@ -146,7 +148,8 @@ clicking buttons, and pressing keys. The configuration lives in
 7. wdio collects and reports on the results, finishing with an exit code of 1 if
    any tests failed.
 
-The utilities available to your spec tests depends on what you include in the HTML file you write for you test, but most will use:
+The utilities available to your spec tests depends on what you include in the
+HTML file you write for you test, but most will use:
 
 * `Ravelin` from build/ravelinjs-core+track+encrypt+promise.min.js (via symlink
   test/ravelin.js)
@@ -154,7 +157,9 @@ The utilities available to your spec tests depends on what you include in the HT
 
 ## 9. Open a Pull Request for changes.
 
-If you wish to propose a change, make your change on a new fork/branch and open a pull request. PRs are reviewed by many factors: test coverage, browser-compatibility, privacy-sensitivity, backwards-compatibility, filesize,
+If you wish to propose a change, make your change on a new fork/branch and open
+a pull request. PRs are reviewed by many factors: test coverage,
+browser-compatibility, privacy-sensitivity, backwards-compatibility, filesize,
 
 ## 9. Understand the file structure.
 
