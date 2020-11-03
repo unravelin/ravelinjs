@@ -11,6 +11,8 @@ Gathering these values accurately, and ensuring they are made available to
 Ravelin through our API or by calls made directly from this SDK, is critical to
 a successful Ravelin integration.
 
+Please feel welcome to create issues or submit pull requests on the project. [CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for ravelinjs.
+
 ---
 
 ## Quickstart
