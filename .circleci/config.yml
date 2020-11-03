@@ -43,6 +43,10 @@ jobs:
             if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
             PARALLEL=5 npm run test:integration
 
+      - run:
+          name: "Release"
+          command: npm run release
+
       - store_test_results:
           path: ~/repo/reports/junit
       - store_artifacts:
