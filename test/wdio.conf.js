@@ -403,7 +403,7 @@ exports.config = {
       caps.browserName,
       caps.browserVersion, caps.browser_version,
       '-',
-      o && o.os, caps.os,
+      o && o.os, caps.os, !(o && o.os) && caps.browserName == 'iPhone'  && 'iOS',
       o && o.osVersion, caps.os_version,
       '-',
       o && o.deviceName,
