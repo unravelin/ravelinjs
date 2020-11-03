@@ -61,6 +61,11 @@ describe('ravelin.track', function() {
         props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 0'}
       },
       {
+        paste: '尺卂ᐯ乇ㄥ丨几',
+        into: '<input name=name />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: 'XXXXXXX'}
+      },
+      {
         paste: '4234 5678 9012 34',
         into: '<input name=name data-rvn-pan />',
         props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000 0000 00', panCleaned: true}
