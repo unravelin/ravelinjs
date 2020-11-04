@@ -2,6 +2,8 @@
 
 If you're looking to change some code in RavelinJS, read this first.
 
+<!-- toc -->
+
 ## 1. Familiarise yourself with the library.
 
 Have a read of the [README](README.md) to understand which parts of our library
@@ -155,13 +157,18 @@ HTML file you write for you test, but most will use:
   test/ravelin.js)
 * Utilities in test/common.js, such as query-string parsing and error-sniffing.
 
-## 9. Open a Pull Request for changes.
+## 9. New pull requests should target branch v1.
 
-If you wish to propose a change, make your change on a new fork/branch and open
-a pull request. PRs are reviewed by many factors: test coverage,
-browser-compatibility, privacy-sensitivity, backwards-compatibility, filesize,
+The main branches of the ravelinjs repo follow their major semver version:
+[v1](https://github.com/unravelin/ravelinjs/tree/v1) (latest, default) and
+[v0](https://github.com/unravelin/ravelinjs/tree/v0).
 
-## 9. Understand the file structure.
+If you wish to propose a change, make your change on a new fork/branch of the
+version branch and open a pull request re-targeting that branch. PRs are
+reviewed by many factors: test coverage, browser-compatibility,
+privacy-sensitivity, backwards-compatibility, filesize,
+
+## 10. Understand the file structure.
 
 tl;dr: ./lib for real code; ./test for test code.
 

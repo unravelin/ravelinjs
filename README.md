@@ -16,6 +16,8 @@ project](https://github.com/unravelin/ravelinjs).
 [CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for
 ravelinjs.
 
+<!-- toc -->
+
 ---
 
 ## Quickstart
@@ -80,6 +82,30 @@ API to the `connect-src` directive:
 
 ```http
 Content-Security-Policy: connect-src 'self' https://*.ravelin.click;
+```
+
+## Script Integrity
+
+If you are including a ravelin bundle directly on your page, rather than in your
+build system, we recommended setting the `integrity` attribute on the script tag
+to the corresponding value from the integrity file of the release. For example,
+if the integrity file reads:
+
+```
+sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c  ravelin-1.0.0-rc1-core+promise.js
+```
+
+then your HTML becomes:
+
+```html
+<script src="ravelin-1.0.0-rc1-core+promise.js" integrity="sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c">
+```
+
+If the integrity file is next to the script in question, you can validate the
+contents using:
+
+```
+sed s/^sha384-// integrity | shasum -c
 ```
 
 ## Browser Compatibility
