@@ -4,6 +4,19 @@ If you're looking to change some code in RavelinJS, read this first.
 
 <!-- toc -->
 
+- [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
+- [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
+- [3. Install a JSHint extention in your editor.](#3-install-a-jshint-extention-in-your-editor)
+- [4. Learn how to build & test.](#4-learn-how-to-build--test)
+- [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
+- [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
+- [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
+  * [Process](#process)
+- [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
+- [10. Understand the file structure.](#10-understand-the-file-structure)
+
+<!-- tocstop -->
+
 ## 1. Familiarise yourself with the library.
 
 Have a read of the [README](README.md) to understand which parts of our library

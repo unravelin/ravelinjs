@@ -18,6 +18,24 @@ ravelinjs.
 
 <!-- toc -->
 
+- [Quickstart](#quickstart)
+- [Bundles](#bundles)
+- [Content-Security-Policy](#content-security-policy)
+- [Script Integrity](#script-integrity)
+- [Browser Compatibility](#browser-compatibility)
+- [Reference](#reference)
+  * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
+  * [`ravelin.core.id(): Promise`](#ravelincoreid-promise)
+  * [`ravelin.encrypt.card(card: object): object`](#ravelinencryptcardcard-object-object)
+  * [`ravelin.track.load()`](#ravelintrackload)
+  * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
+- [Vendored Code](#vendored-code)
+- [Upgrading](#upgrading)
+  * [Upgrading to ravelinjs v1 from ravelinjs v0](#upgrading-to-ravelinjs-v1-from-ravelinjs-v0)
+  * [Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v1-from-cdnravelinnet-script-snippet)
+
+<!-- tocstop -->
+
 ---
 
 ## Quickstart
