@@ -38,8 +38,8 @@ event, and then allow you to call:
   to Ravelin.
 * `ravelin.track.load()` to track a page load.
 
-If you are wanting to track paste events than lastly add a `data-rvn-pan`
-attribute to any inputs the user types a credit/debit card PAN into, and a
+If you are wanting to track paste events then lastly add a `data-rvn-pan`
+attribute to any inputs the user types a credit/debit card number into, and a
 `data-rvn-sensitive` to or around any elements you don't want Ravelin to report
 any content from.
 
