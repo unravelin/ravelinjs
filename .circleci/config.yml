@@ -25,8 +25,6 @@ jobs:
           name: "Build"
           command: npm run build
 
-      # run tests!
-
       - run:
           name: "Await build slot"
           command: node_modules/.bin/circle-wait
@@ -35,7 +33,7 @@ jobs:
           name: "Encryption E2E tests: npm run test:e2e"
           command: |
             if [ ! "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY not set. Skipping... && exit 0; fi
-            env E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test:e2e
+            E2E_CIPHERTEXT_FILE=~/repo/cipher.txt npm run test:e2e
 
       - run:
           name: "Browser tests: npm run test:integration"
@@ -45,12 +43,14 @@ jobs:
 
       - run:
           name: "Release"
-          command: npm run release
+          command: |
+            npm run release
+            mkdir -p /tmp/release
+            cp releases/*.tar.gz /tmp/release
 
       - store_test_results:
           path: ~/repo/reports/junit
       - store_artifacts:
           path: ~/repo/cipher.txt
       - store_artifacts:
-          path: ~/repo/releases/*.tar.gz
-          destination: release
+          path: /tmp/release
