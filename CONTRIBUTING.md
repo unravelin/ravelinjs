@@ -26,7 +26,7 @@ is meant to do what.
 
 CI runs [circleci/node:10](.circleci/config.yml).
 
-## 3. Install a JSHint extention in your editor.
+## 3. Install a JSHint extension in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node JS. Some are config files, others are executable, some assume test
