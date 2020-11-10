@@ -81,7 +81,7 @@ Function.prototype.bind so use lib/util#bind.
 
 Unit tests in the test/*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
-very quick to run in CI. As a result, **attempt to write all new tests at unit tests**.
+very quick to run in CI. As a result, **attempt to write all new tests as unit tests**.
 
 You can run unit tests locally using `npm run test:unit` which spawns Chrome
 (optionally from the `CHROME_BIN` envvar) using Karma, but we also run these
