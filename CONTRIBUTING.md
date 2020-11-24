@@ -6,7 +6,7 @@ If you're looking to change some code in RavelinJS, read this first.
 
 - [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
 - [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
-- [3. Install a JSHint extension in your editor.](#3-install-a-jshint-extension-in-your-editor)
+- [3. Install a JSHint extention in your editor.](#3-install-a-jshint-extention-in-your-editor)
 - [4. Learn how to build & test.](#4-learn-how-to-build--test)
 - [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
 - [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
@@ -26,7 +26,7 @@ is meant to do what.
 
 CI runs [circleci/node:10](.circleci/config.yml).
 
-## 3. Install a JSHint extension in your editor.
+## 3. Install a JSHint extention in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node JS. Some are config files, others are executable, some assume test
@@ -81,7 +81,8 @@ Function.prototype.bind so use lib/util#bind.
 
 Unit tests in the test/*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
-very quick to run in CI. As a result, **attempt to write all new tests as unit tests**.
+very quick to run in CI. As a result, **attempt to write all new tests at unit
+tests**.
 
 You can run unit tests locally using `npm run test:unit` which spawns Chrome
 (optionally from the `CHROME_BIN` envvar) using Karma, but we also run these
@@ -109,6 +110,10 @@ of these events does not guarantee your script will work in those browsers.
 
 Adding new integration tests dramatically slows the completion time, so do
 **prefer unit tests where possible**.
+
+Before running integration tests you will need authentication credentials to
+connect to [BrowserStack](https://automate.browserstack.com/) which runs the
+browsers we test in. Ask from @icio.
 
 To run integration tests in test/\*/\*.spec.js:
 
