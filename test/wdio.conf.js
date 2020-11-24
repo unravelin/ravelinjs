@@ -336,17 +336,8 @@ exports.config = {
     'spec',
     ['junit', {
       outputDir: path.join(__dirname, '../reports/junit'),
-      outputFileFormat: function (options) {
-        const c = options.capabilities, o = c["bstack:options"];
-        const cap = [
-          c.browserName,
-          c.browserVersion,
-          o && o.os,
-          o && o.osVersion,
-          o && o.deviceName,
-        ].filter(Boolean).join("-");
-        return `results-${cap}.xml`;
-      },
+      addFileAttribute: true,
+      outputFileFormat: options => `ravelinjs - ${options.capabilities.name}.xml`,
       suiteNameFormat: '.',
     }],
   ],
@@ -403,8 +394,21 @@ exports.config = {
    * @param  {[type]} args     object that will be merged with the main configuration once worker is initialised
    * @param  {[type]} execArgv list of string arguments passed to the worker process
    */
-  // onWorkerStart: function (cid, caps, specs, args, execArgv) {
-  // },
+  onWorkerStart: function setCapName(cid, caps, specs, args, execArgv) {
+    // Set the capability name to describe the spec, browser and os.
+    const o = caps["bstack:options"];
+    caps.name = [
+      specs && specs[0].split('/').pop(),
+      '-',
+      caps.browserName,
+      caps.browserVersion, caps.browser_version,
+      '-',
+      o && o.os, caps.os, !(o && o.os) && caps.browserName == 'iPhone'  && 'iOS',
+      o && o.osVersion, caps.os_version,
+      '-',
+      o && o.deviceName,
+    ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
+  },
   /**
    * Gets executed just before initialising the webdriver session and test framework. It allows you
    * to manipulate configurations depending on the capability or spec.
@@ -412,7 +416,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  // beforeSession: function (config) {
+  // beforeSession: function (config, capabilities, specs) {
   // },
   /**
    * Gets executed before test execution begins. At this point you can access to all global

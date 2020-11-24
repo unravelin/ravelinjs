@@ -2,6 +2,21 @@
 
 If you're looking to change some code in RavelinJS, read this first.
 
+<!-- toc -->
+
+- [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
+- [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
+- [3. Install a JSHint extension in your editor.](#3-install-a-jshint-extension-in-your-editor)
+- [4. Learn how to build & test.](#4-learn-how-to-build--test)
+- [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
+- [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
+- [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
+  * [Process](#process)
+- [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
+- [10. Understand the file structure.](#10-understand-the-file-structure)
+
+<!-- tocstop -->
+
 ## 1. Familiarise yourself with the library.
 
 Have a read of the [README](README.md) to understand which parts of our library
@@ -11,7 +26,7 @@ is meant to do what.
 
 CI runs [circleci/node:10](.circleci/config.yml).
 
-## 3. Install a JSHint extention in your editor.
+## 3. Install a JSHint extension in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node JS. Some are config files, others are executable, some assume test
@@ -66,7 +81,7 @@ Function.prototype.bind so use lib/util#bind.
 
 Unit tests in the test/*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
-very quick to run in CI. As a result, **attempt to write all new tests at unit tests**.
+very quick to run in CI. As a result, **attempt to write all new tests as unit tests**.
 
 You can run unit tests locally using `npm run test:unit` which spawns Chrome
 (optionally from the `CHROME_BIN` envvar) using Karma, but we also run these
@@ -74,7 +89,8 @@ unit tests from an integration test (piggy-backing on the browser-spawning)
 which you can run with `npm run test:integration -- --spec
 test/unit/unit.spec.js` (see below for running integration tests).
 
-Unit tests run in the browser and therefore must be written in IE-compatible JavaScript, as with code in the lib. The tests have access to:
+Unit tests run in the browser and therefore must be written in IE-compatible
+JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
 * the [Mocha test framework](https://mochajs.org/);
@@ -112,7 +128,8 @@ These environment variables can be used to configure what gets run:
 
 * `PARALLEL` (int) The number of tests that can be run simultaneously
 * `LOG_LEVEL` (debug|info|warn|error) The level of logs shown
-* `BROWSERS` (string) A comma-separated list of strings to search for in the browser spec definitions, for example: `BROWSERS=safari,7`.
+* `BROWSERS` (string) A comma-separated list of strings to search for in the
+  browser spec definitions, for example: `BROWSERS=safari,7`.
 * `LIMIT` (int) A maximum number of browsers to run tests on.
 
 ### Process
@@ -146,17 +163,25 @@ clicking buttons, and pressing keys. The configuration lives in
 7. wdio collects and reports on the results, finishing with an exit code of 1 if
    any tests failed.
 
-The utilities available to your spec tests depends on what you include in the HTML file you write for you test, but most will use:
+The utilities available to your spec tests depends on what you include in the
+HTML file you write for you test, but most will use:
 
 * `Ravelin` from build/ravelinjs-core+track+encrypt+promise.min.js (via symlink
   test/ravelin.js)
 * Utilities in test/common.js, such as query-string parsing and error-sniffing.
 
-## 9. Open a Pull Request for changes.
+## 9. New pull requests should target branch v1.
 
-If you wish to propose a change, make your change on a new fork/branch and open a pull request. PRs are reviewed by many factors: test coverage, browser-compatibility, privacy-sensitivity, backwards-compatibility, filesize,
+The main branches of the ravelinjs repo follow their major semver version:
+[v1](https://github.com/unravelin/ravelinjs/tree/v1) (latest, default) and
+[v0](https://github.com/unravelin/ravelinjs/tree/v0).
 
-## 9. Understand the file structure.
+If you wish to propose a change, make your change on a new fork/branch of the
+version branch and open a pull request re-targeting that branch. PRs are
+reviewed by many factors: test coverage, browser-compatibility,
+privacy-sensitivity, backwards-compatibility, filesize,
+
+## 10. Understand the file structure.
 
 tl;dr: ./lib for real code; ./test for test code.
 

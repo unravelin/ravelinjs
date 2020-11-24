@@ -11,7 +11,30 @@ Gathering these values accurately, and ensuring they are made available to
 Ravelin through our API or by calls made directly from this SDK, is critical to
 a successful Ravelin integration.
 
-Please feel welcome to create issues or submit pull requests on the project. [CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for ravelinjs.
+Please feel welcome to create issues or submit pull requests on [the
+project](https://github.com/unravelin/ravelinjs).
+[CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for
+ravelinjs.
+
+<!-- toc -->
+
+- [Quickstart](#quickstart)
+- [Bundles](#bundles)
+- [Content-Security-Policy](#content-security-policy)
+- [Script Integrity](#script-integrity)
+- [Browser Compatibility](#browser-compatibility)
+- [Reference](#reference)
+  * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
+  * [`ravelin.core.id(): Promise`](#ravelincoreid-promise)
+  * [`ravelin.encrypt.card(card: object): object`](#ravelinencryptcardcard-object-object)
+  * [`ravelin.track.load()`](#ravelintrackload)
+  * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
+- [Vendored Code](#vendored-code)
+- [Upgrading](#upgrading)
+  * [Upgrading to ravelinjs v1 from ravelinjs v0](#upgrading-to-ravelinjs-v1-from-ravelinjs-v0)
+  * [Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v1-from-cdnravelinnet-script-snippet)
+
+<!-- tocstop -->
 
 ---
 
@@ -35,8 +58,8 @@ event, and then allow you to call:
   to Ravelin.
 * `ravelin.track.load()` to track a page load.
 
-If you are wanting to track paste events than lastly add a `data-rvn-pan`
-attribute to any inputs the user types a credit/debit card PAN into, and a
+If you are wanting to track paste events then lastly add a `data-rvn-pan`
+attribute to any inputs the user types a credit/debit card number into, and a
 `data-rvn-sensitive` to or around any elements you don't want Ravelin to report
 any content from.
 
@@ -77,6 +100,30 @@ API to the `connect-src` directive:
 
 ```http
 Content-Security-Policy: connect-src 'self' https://*.ravelin.click;
+```
+
+## Script Integrity
+
+If you are including a ravelin bundle directly on your page, rather than in your
+build system, we recommended setting the `integrity` attribute on the script tag
+to the corresponding value from the integrity file of the release. For example,
+if the integrity file reads:
+
+```
+sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c  ravelin-1.0.0-rc1-core+promise.js
+```
+
+then your HTML becomes:
+
+```html
+<script src="ravelin-1.0.0-rc1-core+promise.js" integrity="sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c">
+```
+
+If the integrity file is next to the script in question, you can validate the
+contents using:
+
+```
+sed s/^sha384-// integrity | shasum -c
 ```
 
 ## Browser Compatibility
@@ -140,7 +187,8 @@ var rav = new Ravelin({
 string. This will eventually match the `ravelinDeviceId` cookie. Your goal is to
 make a server-side API request to Ravelin where you send the customer's order
 and device - using this deviceId - together in a [v2/checkout][postv2checkout]
-or [v2/order][postv2order] API request.
+or [v2/order][postv2order] API request, or the customer and device in a
+[v2/connect][postv2connect] API request.
 
 HTML example:
 
@@ -192,8 +240,9 @@ cardholder data for use with [Ravelin's client-side
 encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details).
 This object can then be sent via your server to Ravelin without increasing the
 scope of PCI compliance required of your server. The object can be used directly
-as a paymentMethod in a [v2/checkout][postv2checkout] or
-[v2/paymentmethod][postv2paymentmethod] request, for example.
+as a paymentMethod in a [v2/checkout][postv2checkout],
+[v2/paymentmethod][postv2paymentmethod] or [v2/connect][postv2connect] request,
+for example.
 
 Encrypting cardholder data is only necessary for non-PCI compliant merchants (PCI
 SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide cardholder data
@@ -386,6 +435,7 @@ substitutions to complete the upgrade:
 [postv2order]: https://developer.ravelin.com/apis/v2/#postv2order "Ravelin API: POST /v2/order"
 [postv2checkout]: https://developer.ravelin.com/apis/v2/#postv2checkout "Ravelin API: POST /v2/checkout"
 [postv2paymentmethod]: https://developer.ravelin.com/apis/v2/#postv2paymentmethod "Ravelin API: POST /v2/paymentmethod"
+[postv2connect]: https://developer.ravelin.com/apis/connect/#postv2connect "Ravelin Connect API: POST /v2/connect"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "MDN: JavaScript Promises"
 [popstate]: https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event "MDN: Window popstate event"
 [csp-connect]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src "MDN: Content-Security-Policy connect-src"
