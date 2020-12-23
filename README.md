@@ -12,9 +12,9 @@ Ravelin through our API or by calls made directly from this SDK, is critical to
 a successful Ravelin integration.
 
 Please feel welcome to create issues or submit pull requests on [the
-project](https://github.com/unravelin/ravelinjs).
-[CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for
-ravelinjs.
+project](https://github.com/unravelin/ravelinjs). The [Contribution
+Guidelines](https://github.com/unravelin/ravelinjs/blob/v1/CONTRIBUTING.md)
+detail how to write and test code for ravelinjs.
 
 Note that this documentation is for version 1 of ravelinjs. For version 0,
 please see its [usage guide](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/usage-guide/),
