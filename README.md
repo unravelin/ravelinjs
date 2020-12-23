@@ -16,6 +16,11 @@ project](https://github.com/unravelin/ravelinjs).
 [CONTRIBUTING.md](CONTRIBUTING.md) details how to write and test code for
 ravelinjs.
 
+Note that this documentation is for version 1 of ravelinjs. For version 0,
+please see its [usage guide](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/usage-guide/),
+[reference](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/reference/)
+and [source](https://github.com/unravelin/ravelinjs/tree/v0).
+
 <!-- toc -->
 
 - [Quickstart](#quickstart)
