@@ -232,7 +232,8 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
         device: {
             deviceId: form.getValue('device-id'),
             userAgent: req.header('User-Agent'),
-            ipAddress: req.ip // X-Forwarded-For in Express JS.
+            ipAddress: req.ip, // X-Forwarded-For in Express JS.
+            language: req.header('Accept-Language'),
         }
     })
 });
