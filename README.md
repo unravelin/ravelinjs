@@ -166,6 +166,11 @@ var rav = new Ravelin({
      */
     // api: 'https://live.ravelin.click/',
     /**
+     * @prop {number} [idExpiryDays] The number of days that a device ID will live.
+     * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
+     */
+    // idExpiryDays: 365,
+    /**
      * @prop {string} [cookieDomain] The top-most domain that we can store
      * cookies on. If you expect your customer to navigate between multiple
      * subdomains, e.g. catalog.store.com, checkout.store.com, then set
