@@ -335,6 +335,12 @@ single-page app. To ensure the correct page title is collected, call after the
 page content has loaded - so the [Window popstate][popstate] event may be too
 early.
 
+### `ravelin.track.event(name, [props])`
+
+Send a named event to attach to the session, with optional descriptive
+properties. The name looks best like "...". Returns a Promise that resolves once
+the event has been sent.
+
 ### `ravelin.track.paste(event: ClipboardEvent)`
 
 Send a paste event to Ravelin. This is done automatically if the paste happens

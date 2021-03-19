@@ -33,6 +33,46 @@ describe('ravelin.track', function() {
     });
   });
 
+  describe('#event', function() {
+    it('sends custom events', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.id().then(function(deviceId) {
+          var e = JSON.parse(req.body).events[0];
+          expect(e).to.have.property('eventType', 'custom-event');
+          expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
+          expect(e.eventData).to.eql({eventName: 'track'});
+          expect(e.eventMeta.trackingSource).to.be('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin({key: key, api: '/', init: false});
+      r.track.event('custom-event');
+    });
+
+    it('sends custom events with properties', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.id().then(function(deviceId) {
+          var e = JSON.parse(req.body).events[0];
+          expect(e).to.have.property('eventType', 'custom-event');
+          expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
+          expect(e.eventData).to.eql({eventName: 'track', properties: {extra: true}});
+          expect(e.eventMeta.trackingSource).to.be('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin({key: key, api: '/', init: false});
+      r.track.event('custom-event', {extra: true});
+    });
+  });
+
   describe('#paste', function() {
     // IE8 doesn't support createEvent or paste handling at all.
     var capable = !!document.createEvent;
