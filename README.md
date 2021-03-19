@@ -167,7 +167,7 @@ var rav = new Ravelin({
     // api: 'https://live.ravelin.click/',
     /**
      * @prop {number} [idTTLDays] The number of days that a device ID will live.
-     * Defaults to 365 in accordance with the GCPR's ePrivacy Directive.
+     * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
      */
     // idTTLDays: 365,
     /**
