@@ -21,9 +21,9 @@ describe('ravelin.track', function() {
 
         r.core.id().then(function(deviceId) {
           var loadEvent = JSON.parse(req.body).events[0];
-          expect(loadEvent).to.have.property('eventType', 'PAGE_LOADED');
+          expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent).to.have.property('libVer', '1.1.2-ravelinjs');
-          expect(loadEvent.eventData).to.eql({eventName: 'track'});
+          expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED'});
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(deviceId);
         }).then(done, done);
@@ -41,9 +41,9 @@ describe('ravelin.track', function() {
 
         r.core.id().then(function(deviceId) {
           var e = JSON.parse(req.body).events[0];
-          expect(e).to.have.property('eventType', 'custom-event');
+          expect(e).to.have.property('eventType', 'track');
           expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
-          expect(e.eventData).to.eql({eventName: 'track'});
+          expect(e.eventData).to.eql({eventName: 'custom-event'});
           expect(e.eventMeta.trackingSource).to.be('browser');
           expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
         }).then(done, done);
@@ -60,9 +60,9 @@ describe('ravelin.track', function() {
 
         r.core.id().then(function(deviceId) {
           var e = JSON.parse(req.body).events[0];
-          expect(e).to.have.property('eventType', 'custom-event');
+          expect(e).to.have.property('eventType', 'track');
           expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
-          expect(e.eventData).to.eql({eventName: 'track', properties: {extra: true}});
+          expect(e.eventData).to.eql({eventName: 'custom-event', properties: {extra: true}});
           expect(e.eventMeta.trackingSource).to.be('browser');
           expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
         }).then(done, done);
