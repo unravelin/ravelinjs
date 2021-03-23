@@ -338,8 +338,10 @@ early.
 ### `ravelin.track.event(name, [props])`
 
 Send a named event to attach to the session, with optional descriptive
-properties. The name looks best like "...". Returns a Promise that resolves once
-the event has been sent.
+properties. Most event names use "UPPER_SNAKE_CASE" but the most important thing
+is to have consistency between your browser and mobile applications where they
+have common events. Returns a Promise that resolves once the event has been
+sent.
 
 ### `ravelin.track.paste(event: ClipboardEvent)`
 
