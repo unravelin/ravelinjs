@@ -4,6 +4,48 @@ describe('ravelin.core', function() {
   });
 
   describe('#id', function() {
+    it('can be configured with a string', function() {
+      var r = new Ravelin({
+        id: 'my-device-id'
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.equal('my-device-id');
+      });
+    });
+
+    it('can be configured with a Promise', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(resolve) {
+          resolve('my-device-id');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.equal('my-device-id');
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs if empty', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(resolve) {
+          resolve('');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs upon errors', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(_, reject) {
+          reject('Something went wrong.');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+      });
+    });
+
     it('returns IDs that expire after idExpiryDays', function() {
       var r = new Ravelin({
         init: false,         // Don't persist the cookie after it expires.
