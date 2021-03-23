@@ -23,25 +23,25 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 
 <!-- toc -->
 
-- [Quickstart](#quickstart)
-- [Bundles](#bundles)
-- [Content-Security-Policy](#content-security-policy)
-- [Script Integrity](#script-integrity)
-- [Browser Compatibility](#browser-compatibility)
-- [Reference](#reference)
+* [Quickstart](#quickstart)
+* [Bundles](#bundles)
+* [Content-Security-Policy](#content-security-policy)
+* [Script Integrity](#script-integrity)
+* [Browser Compatibility](#browser-compatibility)
+* [Reference](#reference)
   * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
   * [`ravelin.core.id(): Promise`](#ravelincoreid-promise)
   * [`ravelin.encrypt.card(card: object): object`](#ravelinencryptcardcard-object-object)
   * [`ravelin.track.load()`](#ravelintrackload)
   * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
-- [Vendored Code](#vendored-code)
-- [Upgrading](#upgrading)
+* [Vendored Code](#vendored-code)
+* [Upgrading](#upgrading)
   * [Upgrading to ravelinjs v1 from ravelinjs v0](#upgrading-to-ravelinjs-v1-from-ravelinjs-v0)
   * [Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v1-from-cdnravelinnet-script-snippet)
 
 <!-- tocstop -->
 
----
+***
 
 ## Quickstart
 
@@ -70,7 +70,7 @@ any content from.
 
 → Read on for more details.
 
----
+***
 
 ## Bundles
 
@@ -114,9 +114,7 @@ build system, we recommended setting the `integrity` attribute on the script tag
 to the corresponding value from the integrity file of the release. For example,
 if the integrity file reads:
 
-```
-sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c  ravelin-1.0.0-rc1-core+promise.js
-```
+    sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c  ravelin-1.0.0-rc1-core+promise.js
 
 then your HTML becomes:
 
@@ -127,9 +125,7 @@ then your HTML becomes:
 If the integrity file is next to the script in question, you can validate the
 contents using:
 
-```
-sed s/^sha384-// integrity | shasum -c
-```
+    sed s/^sha384-// integrity | shasum -c
 
 ## Browser Compatibility
 
@@ -145,7 +141,6 @@ a pseudo-random number generator which collects user movements and keypresses as
 a source of entropy. If insufficient events have been collected before
 encryption is attempted, an Error is thrown to prevent insecure transmission of
 cardholder data.
-
 
 ## Reference
 
@@ -420,33 +415,53 @@ cdn.ravelin.net from your Content-Security-Policy, and make the following
 substitutions to complete the upgrade:
 
 * `ravelin('setApiKey', 'k')` → Set during instantiation in `new Ravelin({key: 'k'})`.
+
 * `ravelin('setCookieDomain', 'c')` → Set during instantiation in `new
   Ravelin({cookieDomain: 'c.com'})`.
+
 * `ravelin('track')` → Removed.
+
 * `ravelin('trackPage')` → [`ravelin.track.load()`][ravelin.track.load] is now
   called when Ravelin is instantiated, but you can call this method again when
   the user navigates if you have a single-page application.
+
 * `ravelin('trackLogin')` → Removed.
+
 * `ravelin('trackLogout')` → Removed.
 
 * `ravelin('fingerprint')` → Removed. This method implemented some
   privacy-insensitive browser fingerprinting that Ravelin no longer wishes to be
   part of. Instead, follow the instructions of
   [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
+
 * `ravelin('send')` → Removed
+
 * `ravelin('setCustomerId')` → Removed.
+
 * `ravelin('setTempCustomerId')` → Removed.
+
 * `ravelin('setOrderId')` → Removed.
 
 [ravelin.encrypt.card]: #ravelinencryptcardcard-object-object
+
 [ravelin.track.load]: #ravelintrackload
+
 [ravelin.core.id]: #ravelincoreid-promisestring
+
 [quickstart]: #quickstart "RavelinJS Quickstart Instructions"
+
 [releases]: https://www.github.com/unravelin/ravelinjs/releases "RavelinJS GitHub Releases"
+
 [postv2order]: https://developer.ravelin.com/apis/v2/#postv2order "Ravelin API: POST /v2/order"
+
 [postv2checkout]: https://developer.ravelin.com/apis/v2/#postv2checkout "Ravelin API: POST /v2/checkout"
+
 [postv2paymentmethod]: https://developer.ravelin.com/apis/v2/#postv2paymentmethod "Ravelin API: POST /v2/paymentmethod"
+
 [postv2connect]: https://developer.ravelin.com/apis/connect/#postv2connect "Ravelin Connect API: POST /v2/connect"
+
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "MDN: JavaScript Promises"
+
 [popstate]: https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event "MDN: Window popstate event"
+
 [csp-connect]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src "MDN: Content-Security-Policy connect-src"
