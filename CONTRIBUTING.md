@@ -2,7 +2,7 @@
 
 If you're looking to change some code in RavelinJS, read this first.
 
-<!-- toc -->
+## Table of Contents
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
 * [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
@@ -14,8 +14,6 @@ If you're looking to change some code in RavelinJS, read this first.
   * [Process](#process)
 * [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
-
-<!-- tocstop -->
 
 ## 1. Familiarise yourself with the library.
 
