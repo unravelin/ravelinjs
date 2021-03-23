@@ -33,6 +33,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
   * [`ravelin.core.id(): Promise<string>`](#ravelincoreid-promisestring)
   * [`ravelin.encrypt.card(card: object): object`](#ravelinencryptcardcard-object-object)
   * [`ravelin.track.load()`](#ravelintrackload)
+  * [`ravelin.track.event(name, [props])`](#ravelintrackeventname-props)
   * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
 * [Vendored Code](#vendored-code)
 * [Upgrading](#upgrading)
