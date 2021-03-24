@@ -21,15 +21,55 @@ describe('ravelin.track', function() {
 
         r.core.id().then(function(deviceId) {
           var loadEvent = JSON.parse(req.body).events[0];
-          expect(loadEvent).to.have.property('eventType', 'PAGE_LOADED');
+          expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent).to.have.property('libVer', '1.1.2-ravelinjs');
-          expect(loadEvent.eventData).to.eql({eventName: 'track'});
+          expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED'});
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(deviceId);
         }).then(done, done);
         return {status: 204};
       });
       r = new Ravelin({key: key, api: '/'});
+    });
+  });
+
+  describe('#event', function() {
+    it('sends custom events', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.id().then(function(deviceId) {
+          var e = JSON.parse(req.body).events[0];
+          expect(e).to.have.property('eventType', 'track');
+          expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
+          expect(e.eventData).to.eql({eventName: 'custom-event'});
+          expect(e.eventMeta.trackingSource).to.be('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin({key: key, api: '/', init: false});
+      r.track.event('custom-event');
+    });
+
+    it('sends custom events with properties', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.id().then(function(deviceId) {
+          var e = JSON.parse(req.body).events[0];
+          expect(e).to.have.property('eventType', 'track');
+          expect(e).to.have.property('libVer', '1.1.2-ravelinjs');
+          expect(e.eventData).to.eql({eventName: 'custom-event', properties: {extra: true}});
+          expect(e.eventMeta.trackingSource).to.be('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin({key: key, api: '/', init: false});
+      r.track.event('custom-event', {extra: true});
     });
   });
 

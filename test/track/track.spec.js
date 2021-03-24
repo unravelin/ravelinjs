@@ -44,7 +44,7 @@ describe('ravelin.track', function () {
           query: { key: key },
           "bodyJSON.events": {
             "$elemMatch": {
-              eventType: 'PAGE_LOADED',
+              eventData: {eventName: 'PAGE_LOADED'},
             }
           }
         })
@@ -54,8 +54,8 @@ describe('ravelin.track', function () {
     objDiff(
       loadEvent.bodyJSON.events[0],
       {
-        eventType: 'PAGE_LOADED',
-        eventData: { eventName: "track" },
+        eventType: 'track',
+        eventData: { eventName: 'PAGE_LOADED' },
         eventMeta: {
           trackingSource: "browser",
           pageTitle: "track test",
