@@ -4,10 +4,54 @@ describe('ravelin.core', function() {
   });
 
   describe('#id', function() {
-    it('returns IDs that expire after idExpiryDays', function() {
+    it('can be configured with a string', function() {
+      var r = new Ravelin({
+        id: 'my-device-id'
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.equal('my-device-id');
+      });
+    });
+
+    it('can be configured with a Promise', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(resolve) {
+          resolve('my-device-id');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.equal('my-device-id');
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs if empty', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(resolve) {
+          resolve('');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs upon errors', function() {
+      var r = new Ravelin({
+        id: new Ravelin.Promise(function(_, reject) {
+          reject('Something went wrong.');
+        })
+      });
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+      });
+    });
+
+    it('returns IDs that expire after cookieExpiryDays', function() {
+      // This test must happen before other Ravelin instances start persisting a
+      // cookie.
       var r = new Ravelin({
         init: false,         // Don't persist the cookie after it expires.
-        idExpiryDays: 0.0000001 // < 10ms.
+        cookieExpiryDays: 0.0000001 // < 10ms.
       });
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
@@ -36,10 +80,19 @@ describe('ravelin.core', function() {
       });
     });
 
-    it('sets the ravelinDeviceId cookie', function() {
+    it('sets the ravelinDeviceId cookie by default', function() {
       var r = new Ravelin({});
       return r.core.id().then(function(id) {
         expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + id + '\\b'));
+      });
+    });
+
+    it('sets a customisable cookie', function() {
+      var r = new Ravelin({
+        cookie: 'custom-guid'
+      });
+      return r.core.id().then(function(id) {
+        expect(document.cookie).to.match(new RegExp('\\bcustom-guid=' + id + '\\b'));
       });
     });
 

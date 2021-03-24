@@ -157,10 +157,23 @@ var rav = new Ravelin({
      */
     // api: 'https://live.ravelin.click/',
     /**
-     * @prop {number} [idExpiryDays] The number of days that a device ID will live.
+     * @prop {string|Promise<string>} [id] An explicit deviceId to use. If set,
+     * Ravelin won't attempt to maintain a deviceId of its own. However, if the
+     * given Promise errors or resolves to an empty value, we fall back to the
+     * built-in behaviour.
+     */
+    // id: 'my-device-id',
+    // id: new Promise(r => r('my-device-id')),
+    /**
+     * @prop {string} [cookie=ravelinDeviceId] The cookie that the deviceId is
+     * persisted in.
+     */
+    // cookie: 'my-guid',
+    /**
+     * @prop {number} [cookieExpiryDays] The number of days that a device ID will live.
      * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
      */
-    // idExpiryDays: 365,
+    // cookieExpiryDays: 365,
     /**
      * @prop {string} [cookieDomain] The top-most domain that we can store
      * cookies on. If you expect your customer to navigate between multiple
@@ -171,7 +184,7 @@ var rav = new Ravelin({
     /**
      * @prop {PromiseConstructor} [Promise] An injectable Promise implementation
      * to use. If not provided, defaults to window.Promise or a polyfill if the
-     * +promise component is included.
+     * +promise component is included. Ravelin.Promise contains the default.
      */
     // Promise: window.Promise,
 
