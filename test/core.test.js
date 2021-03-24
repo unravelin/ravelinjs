@@ -47,6 +47,8 @@ describe('ravelin.core', function() {
     });
 
     it('returns IDs that expire after cookieExpiryDays', function() {
+      // This test must happen before other Ravelin instances start persisting a
+      // cookie.
       var r = new Ravelin({
         init: false,         // Don't persist the cookie after it expires.
         cookieExpiryDays: 0.0000001 // < 10ms.
@@ -78,10 +80,19 @@ describe('ravelin.core', function() {
       });
     });
 
-    it('sets the ravelinDeviceId cookie', function() {
+    it('sets the ravelinDeviceId cookie by default', function() {
       var r = new Ravelin({});
       return r.core.id().then(function(id) {
         expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + id + '\\b'));
+      });
+    });
+
+    it('sets a customisable cookie', function() {
+      var r = new Ravelin({
+        cookie: 'custom-guid'
+      });
+      return r.core.id().then(function(id) {
+        expect(document.cookie).to.match(new RegExp('\\bcustom-guid=' + id + '\\b'));
       });
     });
 
