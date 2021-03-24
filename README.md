@@ -165,6 +165,11 @@ var rav = new Ravelin({
     // id: 'my-device-id',
     // id: new Promise(r => r('my-device-id')),
     /**
+     * @prop {string} [cookie=ravelinDeviceId] The cookie that the deviceId is
+     * persisted in.
+     */
+    // cookie: 'my-guid',
+    /**
      * @prop {number} [cookieExpiryDays] The number of days that a device ID will live.
      * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
      */
