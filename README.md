@@ -157,6 +157,14 @@ var rav = new Ravelin({
      */
     // api: 'https://live.ravelin.click/',
     /**
+     * @prop {string|Promise<string>} [id] An explicit deviceId to use. If set,
+     * Ravelin won't attempt to maintain a deviceId of its own. However, if the
+     * given Promise errors or resolves to an empty value, we fall back to the
+     * built-in behaviour.
+     */
+    // id: 'my-device-id',
+    // id: new Promise(r => r('my-device-id')),
+    /**
      * @prop {number} [idExpiryDays] The number of days that a device ID will live.
      * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
      */
