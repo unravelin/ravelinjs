@@ -165,10 +165,10 @@ var rav = new Ravelin({
     // id: 'my-device-id',
     // id: new Promise(r => r('my-device-id')),
     /**
-     * @prop {number} [idExpiryDays] The number of days that a device ID will live.
+     * @prop {number} [cookieExpiryDays] The number of days that a device ID will live.
      * Defaults to 365 in accordance with the GDPR's ePrivacy Directive.
      */
-    // idExpiryDays: 365,
+    // cookieExpiryDays: 365,
     /**
      * @prop {string} [cookieDomain] The top-most domain that we can store
      * cookies on. If you expect your customer to navigate between multiple

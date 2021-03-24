@@ -46,10 +46,10 @@ describe('ravelin.core', function() {
       });
     });
 
-    it('returns IDs that expire after idExpiryDays', function() {
+    it('returns IDs that expire after cookieExpiryDays', function() {
       var r = new Ravelin({
         init: false,         // Don't persist the cookie after it expires.
-        idExpiryDays: 0.0000001 // < 10ms.
+        cookieExpiryDays: 0.0000001 // < 10ms.
       });
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
