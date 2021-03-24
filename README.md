@@ -179,7 +179,7 @@ var rav = new Ravelin({
     /**
      * @prop {PromiseConstructor} [Promise] An injectable Promise implementation
      * to use. If not provided, defaults to window.Promise or a polyfill if the
-     * +promise component is included.
+     * +promise component is included. Ravelin.Promise contains the default.
      */
     // Promise: window.Promise,
 
