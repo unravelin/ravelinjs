@@ -10,6 +10,7 @@ describe('ravelin.core', function() {
       });
       return r.core.id().then(function(id) {
         expect(id).to.equal('my-device-id');
+        expect(document.cookie).to.not.match(new RegExp('\\bravelinDeviceId=my-device-id'));
       });
     });
 
@@ -21,6 +22,7 @@ describe('ravelin.core', function() {
       });
       return r.core.id().then(function(id) {
         expect(id).to.equal('my-device-id');
+        expect(document.cookie).to.not.match(new RegExp('\\bravelinDeviceId=my-device-id'));
       });
     });
 
@@ -32,6 +34,7 @@ describe('ravelin.core', function() {
       });
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+        expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId='+id));
       });
     });
 
