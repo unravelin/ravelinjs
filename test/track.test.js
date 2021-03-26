@@ -1,3 +1,5 @@
+/* globals isolate */
+
 describe('ravelin.track', function() {
   var r;
 
@@ -29,7 +31,7 @@ describe('ravelin.track', function() {
         }).then(done, done);
         return {status: 204};
       });
-      r = new Ravelin({key: key, api: '/'});
+      r = new Ravelin(isolate({key: key, api: '/'}));
     });
   });
 
@@ -49,7 +51,7 @@ describe('ravelin.track', function() {
         }).then(done, done);
         return {status: 204};
       });
-      r = new Ravelin({key: key, api: '/', init: false});
+      r = new Ravelin(isolate({key: key, api: '/', init: false}));
       r.track.event('custom-event');
     });
 
@@ -68,7 +70,7 @@ describe('ravelin.track', function() {
         }).then(done, done);
         return {status: 204};
       });
-      r = new Ravelin({key: key, api: '/', init: false});
+      r = new Ravelin(isolate({key: key, api: '/', init: false}));
       r.track.event('custom-event', {extra: true});
     });
   });
@@ -205,7 +207,7 @@ describe('ravelin.track', function() {
           return {status: 204};
         });
 
-        r = new Ravelin({key: key, api: '/'});
+        r = new Ravelin(isolate({key: key, api: '/'}));
 
         var input = $(test.into).appendTo(document.body);
         input = input.find('input')[0] || input[0];
@@ -244,7 +246,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: key, api: '/'});
+      r = new Ravelin(isolate({key: key, api: '/'}));
 
       var input = $('<form action=/ name="form-name"><input name=hello data-rvn-sensitive=true></form>')
         .appendTo(document.body)
@@ -283,7 +285,7 @@ describe('ravelin.track', function() {
         return {status: 204};
       });
 
-      r = new Ravelin({key: key, api: '/'});
+      r = new Ravelin(isolate({key: key, api: '/'}));
 
       var input = $('<form action=/ name="form-name"><input type=password name=action></form>')
         .appendTo(document.body)
