@@ -86,6 +86,10 @@ unit tests from an integration test (piggy-backing on the browser-spawning)
 which you can run with `npm run test:integration -- --spec
 test/unit/unit.spec.js` (see below for running integration tests).
 
+Running `test/server.js` will give you an ngrok URL through which you can access
+the Mocha unit test page in any browser. Use this if you want to step through
+using a remote browser.
+
 Unit tests run in the browser and therefore must be written in IE-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
