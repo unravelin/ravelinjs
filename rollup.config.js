@@ -33,15 +33,9 @@ var plugins = [
   }),
 ];
 
-glob.sync("lib/bundle/*.js").forEach(bundle => builds.push(
-  {
-    input: bundle,
-    output: {
-      file: 'build/ravelin-' + basename(bundle),
-      ...output,
-    },
-    plugins: plugins,
-  },
+glob.sync("lib/bundle/*.js")
+.sort((a, b) => b.length - a.length)
+.forEach(bundle => builds.push(
   {
     input: bundle,
     output: {
@@ -57,5 +51,13 @@ glob.sync("lib/bundle/*.js").forEach(bundle => builds.push(
         safari10: true,
       }),
     ]),
+  },
+  {
+    input: bundle,
+    output: {
+      file: 'build/ravelin-' + basename(bundle),
+      ...output,
+    },
+    plugins: plugins,
   },
 ));
