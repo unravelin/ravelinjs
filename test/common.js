@@ -18,6 +18,9 @@
   if (!('cookie' in cfg)) {
     cfg.cookie = 'ravelinDeviceId-' + ns;
   }
+  if (!('sessionCookie' in cfg)) {
+    cfg.sessionCookie = 'ravelinSessionId-' + ns;
+  }
   if (!('syncMs' in cfg)) {
     cfg.syncMs = 30000;
   }

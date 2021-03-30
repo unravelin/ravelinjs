@@ -21,13 +21,14 @@ describe('ravelin.track', function() {
       xhook.before(function(req) {
         if (!keysMatch(req, key)) return {status: 204};
 
-        r.core.id().then(function(deviceId) {
+        r.core.ids().then(function(ids) {
           var loadEvent = JSON.parse(req.body).events[0];
           expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent).to.have.property('libVer', '1.2.0-ravelinjs');
           expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED'});
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
-          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
         }).then(done, done);
         return {status: 204};
       });
@@ -41,13 +42,14 @@ describe('ravelin.track', function() {
       xhook.before(function(req) {
         if (!keysMatch(req, key)) return {status: 204};
 
-        r.core.id().then(function(deviceId) {
+        r.core.ids().then(function(ids) {
           var e = JSON.parse(req.body).events[0];
           expect(e).to.have.property('eventType', 'track');
           expect(e).to.have.property('libVer', '1.2.0-ravelinjs');
           expect(e.eventData).to.eql({eventName: 'custom-event'});
           expect(e.eventMeta.trackingSource).to.be('browser');
-          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
         }).then(done, done);
         return {status: 204};
       });
@@ -60,13 +62,14 @@ describe('ravelin.track', function() {
       xhook.before(function(req) {
         if (!keysMatch(req, key)) return {status: 204};
 
-        r.core.id().then(function(deviceId) {
+        r.core.ids().then(function(ids) {
           var e = JSON.parse(req.body).events[0];
           expect(e).to.have.property('eventType', 'track');
           expect(e).to.have.property('libVer', '1.2.0-ravelinjs');
           expect(e.eventData).to.eql({eventName: 'custom-event', properties: {extra: true}});
           expect(e.eventMeta.trackingSource).to.be('browser');
-          expect(e.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
         }).then(done, done);
         return {status: 204};
       });
@@ -193,12 +196,13 @@ describe('ravelin.track', function() {
           }
 
           // Validate the event.
-          r.core.id().then(function(deviceId) {
+          r.core.ids().then(function(ids) {
             event = event.events[0];
             expect(event).to.have.property('eventType', 'paste');
             expect(event).to.have.property('libVer', '1.2.0-ravelinjs');
             expect(event.eventMeta.trackingSource).to.be('browser');
-            expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+            expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
+            expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
             expect(event.eventData).to.eql({
               eventName: 'paste',
               properties: test.props
@@ -228,12 +232,13 @@ describe('ravelin.track', function() {
         }
 
         // Validate the event.
-        r.core.id().then(function(deviceId) {
+        r.core.ids().then(function(ids) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.2.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
@@ -267,12 +272,13 @@ describe('ravelin.track', function() {
         }
 
         // Validate the event.
-        r.core.id().then(function(deviceId) {
+        r.core.ids().then(function(ids) {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event).to.have.property('libVer', '1.2.0-ravelinjs');
           expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(deviceId);
+          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {

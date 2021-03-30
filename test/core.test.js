@@ -15,28 +15,221 @@ describe('ravelin.core', function() {
     }
   });
 
+  describe('#sync', function() {
+    // Test cases generated using:
+    //
+    //    var tc = [];
+    //    [undefined, "dev-cook"].forEach(
+    //      d => [undefined, "sess-cook", "sess-dev-cook:sess-cook"].forEach(
+    //        s => [undefined, "opt-id"].forEach(
+    //          id => tc.push({
+    //            cookies: {device: d, session: s},
+    //            cfg: {id},
+    //            exp: {device: "", session: ""}
+    //          })
+    //        )
+    //      )
+    //    )
+    //    console.log(JSON.stringify(tc, null, 2));
+
+    /**
+     * @typedef {object} IDsTest
+     * @prop {object} cfg The pre-isolation config for the Ravelin instance.
+     * @prop {object} cookies Cookies to set before running the tes
+     * @prop {string} cookies.device The value to set the device ID to in cookies.
+     * @prop {string} cookies.session The value to set the session ID to in cookies.
+     * @prop {Regexp} exp.device The expected device ID pattern.
+     * @prop {Regexp} exp.session The expected session ID pattern.
+     */
+    /**
+     * @type {IDsTest[]}
+     */
+    var tc = [
+      {
+        "cookies": {},
+        "cfg": {},
+        "exp": {
+          "device":  /rjs-[a-z0-9-]{30,}/,
+          "session": /[a-z0-9-]{30,}/
+        }
+      },
+      {
+        "cookies": {},
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/[a-z0-9-]{30,}/
+        }
+      },
+      {
+        "cookies": {
+          "session": "sess-cook"
+        },
+        "cfg": {},
+        "exp": {
+          "device": /rjs-[a-z0-9-]{30,}/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "session": "sess-cook"
+        },
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "session": "sess-dev-cook:sess-cook"
+        },
+        "cfg": {},
+        "exp": {
+          "device": /sess-dev-cook/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "session": "sess-dev-cook:sess-cook"
+        },
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook"
+        },
+        "cfg": {},
+        "exp": {
+          "device": /dev-cook/,
+          "session":/[a-z0-9-]{30,}/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook"
+        },
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/[a-z0-9-]{30,}/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook",
+          "session": "sess-cook"
+        },
+        "cfg": {},
+        "exp": {
+          "device": /dev-cook/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook",
+          "session": "sess-cook"
+        },
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook",
+          "session": "sess-dev-cook:sess-cook"
+        },
+        "cfg": {},
+        "exp": {
+          "device": /sess-dev-cook/,
+          "session":/sess-cook/
+        }
+      },
+      {
+        "cookies": {
+          "device": "dev-cook",
+          "session": "sess-dev-cook:sess-cook"
+        },
+        "cfg": {
+          "id": "opt-id"
+        },
+        "exp": {
+          "device": /opt-id/,
+          "session":/sess-cook/
+        }
+      }
+    ];
+    tc.forEach(function(t) {
+      it('passes ' + JSON.stringify(t), function() {
+        var cfg = isolate(t.cfg || {});
+        if (t.cookies) {
+          if (t.cookies.device) document.cookie = cfg.cookie + '=' + t.cookies.device;
+          if (t.cookies.session) document.cookie = cfg.sessionCookie + '=' + t.cookies.session;
+        }
+        var r = new Ravelin(cfg);
+        return r.core.ids().then(function(ids) {
+          expect(ids.device).to.match(t.exp.device);
+          expect(ids.session).to.match(t.exp.session);
+          expect(r.core.cookies.get(cfg.sessionCookie)).to.be(ids.device + ':' + ids.session);
+          if (!(cfg.cookieExpiryDays <= 0)) {
+            expect(r.core.cookies.get(cfg.cookie)).to.be(ids.device);
+          }
+        });
+      });
+    });
+  });
+
   describe('#id', function() {
     it('can be configured with a string', function() {
-      var r = new Ravelin(isolate({
-        cookie: 'unused',
+      var cfg = isolate({
         id: 'my-device-id'
-      }));
+      });
+      var r = new Ravelin(cfg);
       return r.core.id().then(function(id) {
         expect(id).to.equal('my-device-id');
-        expect(r.core.cookies.get('unused')).to.be(undefined);
+
+        // This is a different behaviour to 1.2, which would not set the cookie
+        // at all if an explicit `id` was given. So long as `id` continues to be
+        // set we will still use it. But if it's omitted anywhere, we can
+        // restore the cookie from here.
+        expect(r.core.cookies.get(cfg.cookie)).to.be('my-device-id');
       });
     });
 
     it('can be configured with a Promise', function() {
-      var r = new Ravelin(isolate({
-        cookie: 'unused',
+      var cfg = isolate({
         id: new Ravelin.Promise(function(resolve) {
           resolve('my-device-id');
         })
-      }));
+      });
+      var r = new Ravelin(cfg);
       return r.core.id().then(function(id) {
         expect(id).to.equal('my-device-id');
-        expect(r.core.cookies.get('unused')).to.be(undefined);
+
+        // This is a different behaviour to 1.2, which would not set the cookie
+        // at all if an explicit `id` was given. So long as `id` continues to be
+        // set we will still use it. But if it's omitted anywhere, we can
+        // restore the cookie from here.
+        expect(r.core.cookies.get(cfg.cookie)).to.be('my-device-id');
       });
     });
 
@@ -108,13 +301,33 @@ describe('ravelin.core', function() {
       });
     });
 
-    it('sets the ravelinDeviceId cookie by default', function() {
-      var r = new Ravelin(isolate({
-        cookie: 'ravelinDeviceId'
-      }));
-      return r.core.id().then(function(id) {
-        expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + id + '\\b'));
-        expect(r.core.cookies.get('ravelinDeviceId')).to.be(id); // Test our cookie getter works!
+    it('returns the same device ID in id() and ids()', function() {
+      var r = new Ravelin(isolate({}));
+      return r.core.id().then(function(device) {
+        return r.core.ids().then(function(ids) {
+          expect(device).to.eql(ids.device);
+        });
+      });
+    });
+
+    it('sets the ravelinDeviceId and ravelinSessionId cookies by default', function() {
+      var r = new Ravelin({});
+      return r.core.ids().then(function(ids) {
+        expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + ids.device + '\\b'));
+        expect(r.core.cookies.get('ravelinDeviceId')).to.be(ids.device);
+
+        expect(document.cookie).to.match(new RegExp('\\bravelinSessionId=' + ids.device + ':' + ids.session + '\\b'));
+        expect(r.core.cookies.get('ravelinSessionId')).to.be(ids.device + ':' + ids.session);
+      });
+    });
+
+    it('doesnt set a device ID cookie if cookieExpiryDays <= 0', function() {
+      var cfg = isolate({
+        cookieExpiryDays: -1
+      });
+      var r = new Ravelin(cfg);
+      return r.core.id().then(function() {
+        expect(r.core.cookies.get(cfg.cookie)).to.be(undefined);
       });
     });
 
