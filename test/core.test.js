@@ -260,7 +260,7 @@ describe('ravelin.core', function() {
     });
 
     it('returns IDs that expire after cookieExpiryDays', function() {
-      this.timeout(2500);
+      this.timeout(4000);
       function msToDays(ms) { return ms / (86400 * 1000); }
 
       // This test must happen before other Ravelin instances start persisting a
