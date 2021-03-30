@@ -29,7 +29,7 @@ describe('ravelin.track', function () {
   it('sends page-load events', function () {
     // Read the device and session IDs from the cookies.
     const cookies = browser.getCookies();
-    sessionId = cookies.filter(({ name }) => name === 'ravelinSessionId')[0].value;
+    sessionId = cookies.filter(({ name }) => name === 'ravelinSessionId')[0].value.replace(/^.+?:/, '');
     deviceId = cookies.filter(({ name }) => name === 'ravelinDeviceId')[0].value;
     if (!deviceId.match(/^rjs-/)) {
       throw new Error('Expected cookie ravelinDeviceId to start with "rjs-" but got ' + deviceId);
