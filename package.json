@@ -74,7 +74,6 @@
     "serve-index": "1.9.1",
     "sinon": "7.5.0",
     "xhook": "1.4.9",
-    "xunit-viewer": "6.3.12",
     "yaku": "1.0.1"
   },
   "remarkConfig": {
