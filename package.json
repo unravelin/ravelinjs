@@ -46,7 +46,7 @@
     "@wdio/logger": "6.10.10",
     "@wdio/mocha-framework": "6.11.0",
     "@wdio/spec-reporter": "6.11.0",
-    "@wdio/sync": "6.11.0",
+    "@wdio/sync": "7.3.0",
     "build-url": "6.0.1",
     "chai": "4.3.4",
     "circle-wait": "1.0.2",
