@@ -22,6 +22,7 @@ var output = {
 };
 var plugins = [
   replace({
+    preventAssignment: true,
     'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version + '-ravelinjs'),
   }),
   resolve(),
