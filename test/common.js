@@ -7,6 +7,7 @@
  * @param {string} [cfg.ns=testn] A namespace added to the cookie names. Not
  * used by this function.
  * @param {string} [cfg.cookie=ravelinDeviceId-ns]
+ * @param {int} [cfg.syncMs=30000]
  * @returns {object} The mutated cfg.
  */
  function isolate(cfg) {
@@ -16,6 +17,9 @@
 
   if (!('cookie' in cfg)) {
     cfg.cookie = 'ravelinDeviceId-' + ns;
+  }
+  if (!('syncMs' in cfg)) {
+    cfg.syncMs = 30000;
   }
   return cfg;
 }
