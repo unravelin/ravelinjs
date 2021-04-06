@@ -151,8 +151,7 @@ async function disconnectProxy(url) {
  * It is an error for the pattern to anything other than one request.
  *
  * @param {string} api The server whose /requests we're checking.
- * @param {object} pattern A joqular query object to match {@type {RequestLog}}:
- *                         https://www.npmjs.com/package/joqular/v/2.0.4-b.
+ * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
  * @returns {RequestLog} The matched request.
  */
 async function fetchRequest(api, pattern) {
