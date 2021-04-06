@@ -190,9 +190,7 @@ describe('ravelin.core', function() {
           expect(ids.device).to.match(t.exp.device);
           expect(ids.session).to.match(t.exp.session);
           expect(r.core.cookies.get(cfg.sessionCookie)).to.be(ids.device + ':' + ids.session);
-          if (!(cfg.cookieExpiryDays <= 0)) {
-            expect(r.core.cookies.get(cfg.cookie)).to.be(ids.device);
-          }
+          expect(r.core.cookies.get(cfg.cookie)).to.be(ids.device);
         });
       });
     });
