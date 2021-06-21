@@ -70,3 +70,4 @@ dist/
 releases/
 build
 .vscode
+.env
