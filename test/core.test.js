@@ -260,7 +260,7 @@ describe('ravelin.core', function() {
 
     it('retries 500s at most 3 times', function() {
       xhook.before(function(req) {
-        return {status: 500};
+        return {status: 500, text: '{"derp": true}'};
       });
       var rav = new Ravelin(isolate({
         api: '/',
@@ -270,14 +270,11 @@ describe('ravelin.core', function() {
         retryTest: 'hello'
       }).then(
         function (r) {
-          throw r;
+          throw new Error('Expected an error but got ' + JSON.stringify(r));
         },
-        function(r) {
-          expect(r).to.eql({
-            status: 500,
-            attempt: 3,
-            text: ""
-          });
+        function(err) {
+          expect(err).to.be.an(Error);
+          expect(err.message).to.equal('ravelin/core: POST /z?key=retries attempt 3 returned status 500 and body {"derp": true}');
         }
       );
     });
