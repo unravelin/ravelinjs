@@ -258,6 +258,27 @@ describe('ravelin.core', function() {
       });
     });
 
+    it('retries 0s at most 3 times', function() {
+      xhook.before(function(req) {
+        return {status: 0};
+      });
+      var rav = new Ravelin(isolate({
+        api: '/',
+        key: 'retries'
+      }));
+      return rav.core.send('POST', 'z', {
+        retryTest: 'hello'
+      }).then(
+        function (r) {
+          throw new Error('Expected an error but got ' + JSON.stringify(r));
+        },
+        function(err) {
+          expect(err).to.be.an(Error);
+          expect(err.message).to.equal('ravelin/core: POST /z?key=retries attempt 3 returned status 0');
+        }
+      );
+    });
+
     it('retries 500s at most 3 times', function() {
       xhook.before(function(req) {
         return {status: 500, text: '{"derp": true}'};
