@@ -17,7 +17,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      path.resolve(path.join(__dirname, '../node_modules/jquery/dist/jquery.js')),
+      'https://unpkg.com/jquery@1.12.4/dist/jquery.js',
       path.resolve(path.join(__dirname, '../node_modules/xhook/dist/xhook.js')),
       path.join(__dirname, '../build/ravelin-core+track+encrypt+promise.js'),
       path.join(__dirname, 'common.js'),
