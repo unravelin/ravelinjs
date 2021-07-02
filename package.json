@@ -27,7 +27,7 @@
     "release:integrity": "cd releases/ravelinjs-$npm_package_version; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
     "release:integrity:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
     "release:tarball": "cd releases; tar -czf ravelinjs-$npm_package_version.tar.gz ravelinjs-$npm_package_version",
-    "test": "BROWSERS=ie,8 LIMIT=1 LOG_LEVEL=error PARALLEL=4 run-s build test:integration",
+    "test": "BROWSERS=ie,8 LIMIT=1 LOG_LEVEL=error PARALLEL=4 run-s build test:unit test:integration",
     "test:e2e": "BROWSERS=chrome,latest LIMIT=1 npm run test:integration -- --spec test/encrypt/encrypt.spec.js",
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
