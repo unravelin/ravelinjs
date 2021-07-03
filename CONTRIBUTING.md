@@ -14,6 +14,7 @@ If you're looking to change some code in RavelinJS, read this first.
   * [Process](#process)
 * [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
+* [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
 
 ## 1. Familiarise yourself with the library.
 
@@ -330,3 +331,11 @@ tl;dr: ./lib for real code; ./test for test code.
             ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js.map
             ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js
             └── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js.map
+
+## 11. Keep Dependencies Up-to-Date
+
+Dependabot is configured on the repository to ping us when there are updates to
+run. Sometimes these can come thick and fast. If you want to bundle them all
+together, you can run `npm run update` in a fresh branch of your own which will
+install all available updates. This uses [`ncu --doctor`](https://www.npmjs.com/package/npm-check-updates#doctor-mode)
+which confirms the updates are valid by running `npm test`.
