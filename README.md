@@ -52,6 +52,15 @@ instantiate your Ravelin instance on the page:
 <script>var ravelin = new Ravelin({key: 'publishable_key_...'})</script>
 ```
 
+> Or, if you want to load [ravelinjs from npm](npmjs.com/ravelinjs):
+>
+> ```js
+> import Ravelin from 'ravelinjs/core+track+encrypt'; // or
+> const Ravelin = require('ravelinjs/core+track+encrypt');
+>
+> var ravelin = new Ravelin{key: 'publishable_key_...'});
+> ```
+
 This will set the `ravelinDeviceId` cookie on your domain, send a page-load
 event, and then allow you to call:
 
