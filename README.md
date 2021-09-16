@@ -52,12 +52,13 @@ instantiate your Ravelin instance on the page:
 <script>var ravelin = new Ravelin({key: 'publishable_key_...'})</script>
 ```
 
-> Or, if you want to load [ravelinjs from npm](npmjs.com/ravelinjs):
+> If you have a build system, you can instead install [ravelinjs with
+> npm](https://npmjs.com/ravelinjs) using `npm i ravelinjs@1` and require or
+> import Ravelin for instantiating:
 >
 > ```js
 > import Ravelin from 'ravelinjs/core+track+encrypt'; // or
 > const Ravelin = require('ravelinjs/core+track+encrypt');
->
 > var ravelin = new Ravelin{key: 'publishable_key_...'});
 > ```
 
