@@ -57,8 +57,8 @@ instantiate your Ravelin instance on the page:
 > import Ravelin for instantiating:
 >
 > ```js
-> import Ravelin from 'ravelinjs/core+track+encrypt'; // or
-> const Ravelin = require('ravelinjs/core+track+encrypt');
+> import Ravelin from 'ravelinjs/core+track+encrypt+promise';
+> /* or */ const Ravelin = require('ravelinjs/core+track+encrypt+promise');
 > var ravelin = new Ravelin{key: 'publishable_key_...'});
 > ```
 
