@@ -68,6 +68,7 @@ glob.sync("lib/bundle/*.js")
       format: 'umd',
       name: 'Ravelin',
       esModule: false,
+      exports: 'default',
 
       // Prevent Object.freeze being used for namespace references.
       // https://www.rollupjs.org/guide/en/#outputfreeze.
