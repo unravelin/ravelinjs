@@ -310,16 +310,31 @@ tl;dr: ./lib for real code; ./test for test code.
     │   =========
     │
     ├── build
-    │   │   ./build contains the working release of the local code. Built once using
-    │   │   Rollup with `npm run build` or continuously with `npm run build:watch`
-    │   │   from the files in ./lib/bundle. These files are copied into
-    │   │   ./releases/ravelinjs-$vers before being published. The below example
-    │   │   files are generated from ./lib/bundle/core+track+encrypt+promise.js.
+    │   │   ./build contains the working release of the local code as IIFE:
+    │   │   var Ravelin = (function() { /* code */; return Ravelin; })();
+    │   │   Built once using Rollup with `npm run build` or continuously with
+    │   │   `npm run build:watch` from the files in ./lib/bundle. These files
+    │   │   are copied into ./releases/ravelinjs-$vers before being published.
+    │   │   The below example files are generated from
+    │   │   ./lib/bundle/core+track+encrypt+promise.js.
     │   │  
     │   ├── ravelin-core+track+encrypt+promise.js
     │   ├── ravelin-core+track+encrypt+promise.js.map
     │   ├── ravelin-core+track+encrypt+promise.min.js
     │   └── ravelin-core+track+encrypt+promise.min.js.map
+    │
+    ├── dist
+    │   │   ./dist contains the working release of the local code as a CommonJS
+    │   │   UMD module. Built once using Rollup with `npm run build` or
+    │   │   continuously with `npm run build:watch` from the files in
+    │   │   ./lib/bundle, and converted into a publishable npm package with
+    |   |   `npm run dist`:
+    │   │  
+    │   ├── core.js
+    │   ├── core+track.js
+    │   ├── core+track+encrypt.js
+    │   ├── core+track+encrypt+promise.ks
+    │   └── ...
     │
     └── releases
         └── ravelinjs-1.0.0-rc1
@@ -339,3 +354,63 @@ run. Sometimes these can come thick and fast. If you want to bundle them all
 together, you can run `npm run update` in a fresh branch of your own which will
 install all available updates. This uses [`ncu --doctor`](https://www.npmjs.com/package/npm-check-updates#doctor-mode)
 which confirms the updates are valid by running `npm test`.
+
+## 12. Publish new versions according to [semantic versioning](https://semver.org/).
+
+Which for this project means:
+
+* Major version bumps: should never happen - there's no good reason to be making
+  breaking changes yet.
+* Minor version bumps: should happen often - any time you add new features.
+* Patch version bumps: should not happen often - only when we fix a bug.
+
+We publish new versions project to two places:
+
+* [GitHub releases](https://github.com/unravelin/ravelinjs/releases/); and
+* [npm](https://www.npmjs.com/package/ravelinjs/v/1).
+
+New versions should be published after merging new features or bug fixes into
+the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using [np (a
+better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
+for you, including run `npm test` which will require that you have the
+`BROWSERSTACK` envvars set. To test it, run:
+
+```
+$ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+$ npm run np -- --preview
+
+Publish a new version of ravelinjs (current: 1.3.1-0)
+
+Commits:
+- publish docs wip  af4e471
+
+Commit Range:
+v1.3.1-0...v1
+
+Registry:
+https://registry.npmjs.org/
+
+  ✔ Prerequisite check
+  ✔ Git
+  ✔ Installing dependencies using npm
+  ✔ Running tests using npm
+  ↓ Bumping version using npm [skipped]
+    → [Preview] Command not executed: npm version prerelease.
+  ↓ Publishing package using npm [skipped]
+    → [Preview] Command not executed: npm publish dist --tag beta.
+  ↓ Pushing tags [skipped]
+    → [Preview] Command not executed: git push --follow-tags.
+  ↓ Creating release draft on GitHub [skipped]
+    → [Preview] GitHub Releases draft will not be opened in preview mode.
+```
+
+The last four `[Preview]` steps when run without `--preview` will:
+
+* Update the version in package.json, then clean and rebuild the library.
+* Publish the contents of the `dist` directory as the npm package.
+* Create and push a version git tag.
+* Open the GitHub release page with some contents pre-filled.
+
+The GitHub release should have New Features and/or Bug Fixes headings in the
+style of previous releases, and ideally some nice works about one of the many
+Ravelin pets.

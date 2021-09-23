@@ -52,6 +52,16 @@ instantiate your Ravelin instance on the page:
 <script>var ravelin = new Ravelin({key: 'publishable_key_...'})</script>
 ```
 
+> If you have a build system, you can instead install [ravelinjs with
+> npm](https://npmjs.com/ravelinjs) using `npm i ravelinjs@1` and require or
+> import Ravelin for instantiating:
+>
+> ```js
+> import Ravelin from 'ravelinjs/core+track+encrypt+promise';
+> /* or */ const Ravelin = require('ravelinjs/core+track+encrypt+promise');
+> var ravelin = new Ravelin{key: 'publishable_key_...'});
+> ```
+
 This will set the `ravelinDeviceId` cookie on your domain, send a page-load
 event, and then allow you to call:
 
@@ -92,6 +102,31 @@ The [release files][releases] indicate which components they include using a
 `+component` naming convention. For example, `ravelin-core+track.min.js`
 contains only the core and track components and so cannot be used to encrypt
 cards and doesn't guarantee Internet Explorer compatibility.
+
+### npm
+
+If you have a JavaScript build system and would prefer to include ravelinjs
+using it, you can install [ravelinjs from
+npm](https://www.npmjs.com/package/ravelinjs) with:
+
+```bash
+npm install ravelinjs@1
+```
+
+You can then import the desired bundle within the ravelinjs library. For
+example, to load the core+track bundle using `require` is:
+
+```js
+var Ravelin = require('ravelinjs/core+track');
+```
+
+Or to load card encryption with ES6 imports is:
+
+```js
+import Ravelin from 'ravelinjs/core+encrypt';
+```
+
+The bundles published to npm are in [Universal Module Definition format](https://www.davidbcalhoun.com/2014/what-is-amd-commonjs-and-umd/).
 
 ## Content-Security-Policy
 

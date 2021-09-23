@@ -12,6 +12,7 @@ var output = {
   format: 'iife',
   sourcemap: true,
   name: 'Ravelin',
+  esModule: false,
 
   // Prevent Object.freeze being used for namespace references.
   // https://www.rollupjs.org/guide/en/#outputfreeze.
@@ -60,4 +61,22 @@ glob.sync("lib/bundle/*.js")
     },
     plugins: plugins,
   },
+  {
+    input: bundle,
+    output: {
+      file: 'dist/' + basename(bundle),
+      format: 'umd',
+      name: 'Ravelin',
+      esModule: false,
+      exports: 'default',
+
+      // Prevent Object.freeze being used for namespace references.
+      // https://www.rollupjs.org/guide/en/#outputfreeze.
+      freeze: false,
+      // Prevent Object.defineProperty being used for dynamic exports.
+      // https://www.rollupjs.org/guide/en/#outputexternallivebindings.
+      externalLiveBindings: false,
+    },
+    plugins: plugins,
+  }
 ));
