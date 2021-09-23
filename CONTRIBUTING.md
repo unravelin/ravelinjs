@@ -339,3 +339,33 @@ run. Sometimes these can come thick and fast. If you want to bundle them all
 together, you can run `npm run update` in a fresh branch of your own which will
 install all available updates. This uses [`ncu --doctor`](https://www.npmjs.com/package/npm-check-updates#doctor-mode)
 which confirms the updates are valid by running `npm test`.
+
+## 12. Publish new release according to [semantic versioning](https://semver.org/).
+
+Which for this project means:
+
+* Major version bumps: should never happen - there's no good reason to be making
+  breaking changes yet.
+* Minor version bumps: should happen often - any time you add new features.
+* Patch version bumps: should not happen often - only when we fix a bug.
+
+We publish new versions project to two places:
+
+* [GitHub releases](https://github.com/unravelin/ravelinjs/releases/); and
+* [npm](https://www.npmjs.com/package/ravelinjs/v/1.3.0).
+
+New versions should be published after merging new features or bug fixes into
+the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using the
+following command:
+
+```
+npm run np -- --preview
+```
+
+to test what's going to happen.
+
+```
+npm run np
+```
+
+Will actually perform the steps it says it's going to.
