@@ -12,6 +12,7 @@ var output = {
   format: 'iife',
   sourcemap: true,
   name: 'Ravelin',
+  esModule: false,
 
   // Prevent Object.freeze being used for namespace references.
   // https://www.rollupjs.org/guide/en/#outputfreeze.
@@ -66,6 +67,7 @@ glob.sync("lib/bundle/*.js")
       file: 'dist/' + basename(bundle),
       format: 'umd',
       name: 'Ravelin',
+      esModule: false,
 
       // Prevent Object.freeze being used for namespace references.
       // https://www.rollupjs.org/guide/en/#outputfreeze.
