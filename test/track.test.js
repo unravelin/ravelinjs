@@ -35,6 +35,45 @@ describe('ravelin.track', function() {
       });
       r = new Ravelin(isolate({key: key, api: '/'}));
     });
+
+    it('sends page props upon instantiation', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.ids().then(function(ids) {
+          var loadEvent = JSON.parse(req.body).events[0];
+          expect(loadEvent).to.have.property('eventType', 'track');
+          expect(loadEvent.libVer).to.match(expectedVersion);
+          expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED', properties: {section: 'test'}});
+          expect(loadEvent.eventMeta.trackingSource).to.be('browser');
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin(isolate({key: key, api: '/', page: {section: 'test'}}));
+    });
+
+    it('sends custom fields', function(done) {
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        r.core.ids().then(function(ids) {
+          var loadEvent = JSON.parse(req.body).events[0];
+          expect(loadEvent).to.have.property('eventType', 'track');
+          expect(loadEvent.libVer).to.match(expectedVersion);
+          expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED', properties: {section: 'manually-invoked'}});
+          expect(loadEvent.eventMeta.trackingSource).to.be('browser');
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+        }).then(done, done);
+        return {status: 204};
+      });
+      r = new Ravelin(isolate({key: key, api: '/', init: false}));
+      r.track.load({section: 'manually-invoked'});
+    });
   });
 
   describe('#event', function() {
