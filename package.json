@@ -32,7 +32,6 @@
     "update": "ncu --doctor -u -x @wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
-
     "np": "np",
     "version": "run-s clean build dist release # (note: auto-executed by np)"
   },
@@ -74,6 +73,11 @@
     "serve-index": "1.9.1",
     "xhook": "1.4.9",
     "yaku": "1.0.1"
+  },
+  "np": {
+    "yarn": false,
+    "branch": "v1",
+    "contents": "dist"
   },
   "remarkConfig": {
     "settings": {
