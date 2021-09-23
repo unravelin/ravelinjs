@@ -355,17 +355,17 @@ We publish new versions project to two places:
 * [npm](https://www.npmjs.com/package/ravelinjs/v/1.3.0).
 
 New versions should be published after merging new features or bug fixes into
-the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using the
-following command:
+the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using [np: a
+better `npm publish`](https://www.npmjs.com/package/np). `np` do quite a lot for
+you, including run `npm test` which will require that you have the
+`BROWSERSTACK` envvars set. To use it, run:
 
 ```
+export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
 npm run np -- --preview
 ```
 
-to test what's going to happen.
+to test what's going to happen. It will report something like:
 
 ```
-npm run np
 ```
-
-Will actually perform the steps it says it's going to.
