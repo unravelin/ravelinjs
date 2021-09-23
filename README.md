@@ -228,6 +228,12 @@ var rav = new Ravelin({
      * @prop {string} [rsaKey] The public key used to encrypt cardholder data.
      */
     // rsaKey: '0|...',
+
+    /**
+     * @prop {Object} [page] Additional properties to describe the initial page
+     * load event. Must be JSON-encodable.
+     */
+    // page: {section: 'about'}
 });
 ```
 
