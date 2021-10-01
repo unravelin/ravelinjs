@@ -67,7 +67,7 @@
     "on-finished": "2.3.0",
     "remark-cli": "9.0.0",
     "remark-toc": "8.0.0",
-    "rollup": "2.56.3",
+    "rollup": "2.58.0",
     "rollup-plugin-license": "2.5.0",
     "rollup-plugin-terser": "7.0.2",
     "serve-index": "1.9.1",
