@@ -59,7 +59,7 @@ instantiate your Ravelin instance on the page:
 > ```js
 > import Ravelin from 'ravelinjs/core+track+encrypt+promise';
 > /* or */ const Ravelin = require('ravelinjs/core+track+encrypt+promise');
-> var ravelin = new Ravelin{key: 'publishable_key_...'});
+> var ravelin = new Ravelin({key: 'publishable_key_...'});
 > ```
 
 This will set the `ravelinDeviceId` cookie on your domain, send a page-load
