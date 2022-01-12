@@ -25,6 +25,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 
 * [Quickstart](#quickstart)
 * [Bundles](#bundles)
+  * [npm](#npm)
 * [Content-Security-Policy](#content-security-policy)
 * [Script Integrity](#script-integrity)
 * [Browser Compatibility](#browser-compatibility)
@@ -393,7 +394,7 @@ early.
 ### `ravelin.track.event(name, [props])`
 
 Send a named event to attach to the session, with optional descriptive
-properties. Most event names use "UPPER_SNAKE_CASE" but the most important thing
+properties. Most event names use "UPPER\_SNAKE\_CASE" but the most important thing
 is to have consistency between your browser and mobile applications where they
 have common events. Returns a Promise that resolves once the event has been
 sent.

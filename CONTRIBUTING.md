@@ -15,6 +15,7 @@ If you're looking to change some code in RavelinJS, read this first.
 * [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
 * [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
+* [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
 
 ## 1. Familiarise yourself with the library.
 
@@ -375,34 +376,32 @@ better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
 for you, including run `npm test` which will require that you have the
 `BROWSERSTACK` envvars set. To test it, run:
 
-```
-$ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
-$ npm run np -- --preview
+    $ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+    $ npm run np -- --preview
 
-Publish a new version of ravelinjs (current: 1.3.1-0)
+    Publish a new version of ravelinjs (current: 1.3.1-0)
 
-Commits:
-- publish docs wip  af4e471
+    Commits:
+    - publish docs wip  af4e471
 
-Commit Range:
-v1.3.1-0...v1
+    Commit Range:
+    v1.3.1-0...v1
 
-Registry:
-https://registry.npmjs.org/
+    Registry:
+    https://registry.npmjs.org/
 
-  ✔ Prerequisite check
-  ✔ Git
-  ✔ Installing dependencies using npm
-  ✔ Running tests using npm
-  ↓ Bumping version using npm [skipped]
-    → [Preview] Command not executed: npm version prerelease.
-  ↓ Publishing package using npm [skipped]
-    → [Preview] Command not executed: npm publish dist --tag beta.
-  ↓ Pushing tags [skipped]
-    → [Preview] Command not executed: git push --follow-tags.
-  ↓ Creating release draft on GitHub [skipped]
-    → [Preview] GitHub Releases draft will not be opened in preview mode.
-```
+      ✔ Prerequisite check
+      ✔ Git
+      ✔ Installing dependencies using npm
+      ✔ Running tests using npm
+      ↓ Bumping version using npm [skipped]
+        → [Preview] Command not executed: npm version prerelease.
+      ↓ Publishing package using npm [skipped]
+        → [Preview] Command not executed: npm publish dist --tag beta.
+      ↓ Pushing tags [skipped]
+        → [Preview] Command not executed: git push --follow-tags.
+      ↓ Creating release draft on GitHub [skipped]
+        → [Preview] GitHub Releases draft will not be opened in preview mode.
 
 The last four `[Preview]` steps when run without `--preview` will:
 
