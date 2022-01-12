@@ -5,7 +5,7 @@ If you're looking to change some code in RavelinJS, read this first.
 ## Table of Contents
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
-* [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
+* [2. Use the expected NodeJS v16.](#2-use-the-expected-nodejs-v16)
 * [3. Install a JSHint extention in your editor.](#3-install-a-jshint-extention-in-your-editor)
 * [4. Learn how to build & test.](#4-learn-how-to-build--test)
 * [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
@@ -21,9 +21,9 @@ If you're looking to change some code in RavelinJS, read this first.
 Have a read of the [README](README.md) to understand which parts of our library
 is meant to do what.
 
-## 2. Use the expected NodeJS v10.
+## 2. Use the expected NodeJS v16.
 
-CI runs [circleci/node:10](.circleci/config.yml).
+CI runs [circleci/node:16](.circleci/config.yml).
 
 ## 3. Install a JSHint extention in your editor.
 
