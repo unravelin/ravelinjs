@@ -214,6 +214,18 @@ describe('ravelin.track', function() {
         paste: 'hello',
         into: '<form action=/ name="form-name"><input type=password name=action></form>',
         props: {fieldName: 'action', formName: 'form-name', formAction: '/'}
+      },
+      {
+        paste: 'h3ll0, wor1d.',
+        into: '<input name=name custom-pan-paste />',
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: 'X0XX0, XXX0X.'},
+        cfg: { 
+          classifyPaste: function(e) {
+            return {
+              sensitive: e.target.hasAttribute('custom-pan-paste')
+            };
+          }
+        }
       }
     ]).each(function(n, test) {
       it('sends redacted paste events of ' + JSON.stringify(test), function(done) {
@@ -252,6 +264,10 @@ describe('ravelin.track', function() {
         });
 
         r = new Ravelin(isolate({key: key, api: '/'}));
+
+        if (test.cfg && test.cfg.classifyPaste) {
+          r.classifyPaste = test.cfg.classifyPaste;
+        }
 
         var input = $(test.into).appendTo(document.body);
         input = input.find('input')[0] || input[0];
@@ -334,6 +350,54 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/'}));
 
       var input = $('<form action=/ name="form-name"><input type=password name=action></form>')
+        .appendTo(document.body)
+        .find("input")[0];
+      input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
+    });
+
+    it('sends empty paste events from custom sensitive fields', function(done) {
+      if (!capable) this.skip();
+
+      var key = this.test.fullTitle();
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
+          return {status: 204};
+        }
+
+        // Validate the event.
+        r.core.ids().then(function(ids) {
+          event = event.events[0];
+          expect(event).to.have.property('eventType', 'paste');
+          expect(event.libVer).to.match(expectedVersion);
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventData).to.eql({
+            eventName: 'paste',
+            properties: {
+              fieldName: 'action',
+              formName: 'form-name',
+              formAction: '/'
+            }
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      r = new Ravelin(isolate({
+        key: key, 
+        api: '/', 
+        classifyPaste: function(e) {
+          return {
+            sensitive: e.target.hasAttribute('sensitive-data')
+          };
+        }
+      }));
+
+      var input = $('<form action=/ name="form-name"><input type=text name=action sensitive-data></form>')
         .appendTo(document.body)
         .find("input")[0];
       input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));

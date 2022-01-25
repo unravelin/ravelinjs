@@ -223,17 +223,26 @@ var rav = new Ravelin({
      * +promise component is included. Ravelin.Promise contains the default.
      */
     // Promise: window.Promise,
-
     /**
      * @prop {string} [rsaKey] The public key used to encrypt cardholder data.
      */
     // rsaKey: '0|...',
-
     /**
      * @prop {Object} [page] Additional properties to describe the initial page
      * load event. Must be JSON-encodable.
      */
     // page: {section: 'about'}
+    /**
+     * @prop {function} [classifyPaste] Override logic for detecting pasted PANs or sensitive values.
+     * @param {ClipboardEvent} e The paste event
+     * @returns {Object} c
+     * @returns {Boolean} [c.pan] Whether the user pasted into a PAN field. If omitted, we look for the data-rvn-pan attribute.
+     * @returns {Boolean} [c.sensitive] Whether the user pasted into a sensitive field. Prevents the pasted value's shape being shared with Ravelin if true. If omitted, we look for the data-rvn-sensitive attribute.
+     */
+    // classifyPaste: e => {{
+    //  pan: e.target.hasAttribute('data-rvn-pan'),
+    //  sensitive: treeHasAttr(e.target, 'data-rvn-sensitive')
+    // }}
 });
 ```
 
@@ -410,11 +419,13 @@ attributes:
 * `data-rvn-pan` if the user enters a credit-card number into that input; or
 * `data-rvn-sensitive` if no values should be shared in the event back to Ravelin.
 
+> Note: It is possible to override these attributes by providing custom `classifyPaste` logic in your `Ravelin` instance. See [Reference](#reference).
+
 The paste event contains information about where the paste happened and
 approximate shape of the paste content. For example, if a user pastes "h3ll0,
-wor1d." into a field Ravelin will receive "X0XX0, XXX0X.". However, if the
-pasted content is an `<input type=password>`, a `<input data-rvn-sensitive>`, or
-a child of any `<div data-rvn-sensitive>` field we will not include any form of
+wor1d." into a field, Ravelin will receive "X0XX0, XXX0X.". However, if the
+pasted content is an `<input type=password>`, a `<input data-rvn-sensitive>` or
+a child of any `<div data-rvn-sensitive>` (if using the default attributes) field we will not include any form of
 pasted value - only that a paste event occurred.
 
 ## Vendored Code
