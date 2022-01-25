@@ -216,13 +216,13 @@ describe('ravelin.track', function() {
         props: {fieldName: 'action', formName: 'form-name', formAction: '/'}
       },
       {
-        paste: 'h3ll0, wor1d.',
+        paste: '4234 5678-9012 3456 7',
         into: '<input name=name custom-pan-paste />',
-        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: 'X0XX0, XXX0X.'},
+        props: {fieldName: 'name', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: true },
         cfg: { 
           classifyPaste: function(e) {
             return {
-              sensitive: e.target.hasAttribute('custom-pan-paste')
+              pan: e.target.hasAttribute('custom-pan-paste')
             };
           }
         }
@@ -263,11 +263,7 @@ describe('ravelin.track', function() {
           return {status: 204};
         });
 
-        r = new Ravelin(isolate({key: key, api: '/'}));
-
-        if (test.cfg && test.cfg.classifyPaste) {
-          r.classifyPaste = test.cfg.classifyPaste;
-        }
+        r = new Ravelin(isolate($.extend({}, test.cfg, {key: key, api: '/'})));
 
         var input = $(test.into).appendTo(document.body);
         input = input.find('input')[0] || input[0];
