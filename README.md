@@ -239,10 +239,10 @@ var rav = new Ravelin({
      * @returns {Boolean} [c.pan] Whether the user pasted into a PAN field. If omitted, we look for the data-rvn-pan attribute.
      * @returns {Boolean} [c.sensitive] Whether the user pasted into a sensitive field. Prevents the pasted value's shape being shared with Ravelin if true. If omitted, we look for the data-rvn-sensitive attribute.
      */
-    // classifyPaste: e => {{
+    // classifyPaste: e => ({
     //  pan: e.target.hasAttribute('data-rvn-pan'),
     //  sensitive: treeHasAttr(e.target, 'data-rvn-sensitive')
-    // }}
+    // })
 });
 ```
 
