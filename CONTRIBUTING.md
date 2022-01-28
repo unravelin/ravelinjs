@@ -25,7 +25,14 @@ is meant to do what.
 
 CI runs [circleci/node:10](.circleci/config.yml).
 
-## 3. Install a JSHint extention in your editor.
+## 3. Log into ngrok.
+
+1. Sign up for an ngrok account: https://dashboard.ngrok.com/signup.
+2. Acquire your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken.
+3. If you have not already done so: `npm install`
+4. From the ravelinjs directory: `node_modules/.bin/ngrok authtoken $TOKEN`.
+
+## 4. Install a JSHint extention in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node JS. Some are config files, others are executable, some assume test
@@ -34,7 +41,7 @@ frameworks are installed in the global scope.
 [JSHint has been configured](./.jshintrc) to know which files run where so that
 your editor can give you accurate errors and validation of a source file.
 
-## 4. Learn how to build & test.
+## 5. Learn how to build & test.
 
 CI will run all tests when a commit is pushed to GitHub, essentially:
 
@@ -58,7 +65,7 @@ There are auto-running commands:
 
 **`npm run watch`** will run these two commands together.
 
-## 5. Write IE-compatible code in ./lib.
+## 6. Write IE-compatible code in ./lib.
 
 There is no transpilation in the ravelinjs build except for the resolution of
 ES6-style imports handled by Rollup and minification handled by Terser, so this
@@ -74,7 +81,7 @@ handling rejections with `p.catch(function(err) { ... })`, use
 `p.then(undefined, function(err) { ... })`. Some IEs don't have
 Function.prototype.bind so use lib/util#bind.
 
-## 6. Prefer testing in unit tests.
+## 7. Prefer testing in unit tests.
 
 Unit tests in the test/\*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
@@ -100,7 +107,7 @@ JavaScript, as with code in the lib. The tests have access to:
 * [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 * [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
 
-## 7. Use integration tests where necessary.
+## 8. Use integration tests where necessary.
 
 Integration tests help us test scenarios that unit tests cannot cover: where we
 want to test that real HTTP requests are made in various same/cross-origin
