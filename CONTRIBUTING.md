@@ -127,7 +127,7 @@ browsers we test in. Ask from @icio.
 
 To run integration tests in test/\*/\*.spec.js:
 
-    export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+    export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
     npm install
     LOG_LEVEL=warn PARALLEL=5 npm run test:integration
 
@@ -384,7 +384,7 @@ better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
 for you, including run `npm test` which will require that you have the
 `BROWSERSTACK` envvars set. To test it, run:
 
-    $ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+    $ export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
     $ npm run np -- --preview
 
     Publish a new version of ravelinjs (current: 1.3.1-0)
