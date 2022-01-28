@@ -6,15 +6,17 @@ If you're looking to change some code in RavelinJS, read this first.
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
 * [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
-* [3. Install a JSHint extention in your editor.](#3-install-a-jshint-extention-in-your-editor)
-* [4. Learn how to build & test.](#4-learn-how-to-build--test)
-* [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
-* [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
-* [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
+* [3. Log into ngrok.](#3-log-into-ngrok)
+* [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
+* [5. Learn how to build & test.](#5-learn-how-to-build--test)
+* [6. Write IE-compatible code in ./lib.](#6-write-ie-compatible-code-in-lib)
+* [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
+* [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
   * [Process](#process)
 * [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
 * [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
+* [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
 
 ## 1. Familiarise yourself with the library.
 
@@ -382,34 +384,32 @@ better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
 for you, including run `npm test` which will require that you have the
 `BROWSERSTACK` envvars set. To test it, run:
 
-```
-$ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
-$ npm run np -- --preview
+    $ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+    $ npm run np -- --preview
 
-Publish a new version of ravelinjs (current: 1.3.1-0)
+    Publish a new version of ravelinjs (current: 1.3.1-0)
 
-Commits:
-- publish docs wip  af4e471
+    Commits:
+    - publish docs wip  af4e471
 
-Commit Range:
-v1.3.1-0...v1
+    Commit Range:
+    v1.3.1-0...v1
 
-Registry:
-https://registry.npmjs.org/
+    Registry:
+    https://registry.npmjs.org/
 
-  ✔ Prerequisite check
-  ✔ Git
-  ✔ Installing dependencies using npm
-  ✔ Running tests using npm
-  ↓ Bumping version using npm [skipped]
-    → [Preview] Command not executed: npm version prerelease.
-  ↓ Publishing package using npm [skipped]
-    → [Preview] Command not executed: npm publish dist --tag beta.
-  ↓ Pushing tags [skipped]
-    → [Preview] Command not executed: git push --follow-tags.
-  ↓ Creating release draft on GitHub [skipped]
-    → [Preview] GitHub Releases draft will not be opened in preview mode.
-```
+      ✔ Prerequisite check
+      ✔ Git
+      ✔ Installing dependencies using npm
+      ✔ Running tests using npm
+      ↓ Bumping version using npm [skipped]
+        → [Preview] Command not executed: npm version prerelease.
+      ↓ Publishing package using npm [skipped]
+        → [Preview] Command not executed: npm publish dist --tag beta.
+      ↓ Pushing tags [skipped]
+        → [Preview] Command not executed: git push --follow-tags.
+      ↓ Creating release draft on GitHub [skipped]
+        → [Preview] GitHub Releases draft will not be opened in preview mode.
 
 The last four `[Preview]` steps when run without `--preview` will:
 

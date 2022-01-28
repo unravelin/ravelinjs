@@ -25,6 +25,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 
 * [Quickstart](#quickstart)
 * [Bundles](#bundles)
+  * [npm](#npm)
 * [Content-Security-Policy](#content-security-policy)
 * [Script Integrity](#script-integrity)
 * [Browser Compatibility](#browser-compatibility)
