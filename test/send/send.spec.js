@@ -17,7 +17,7 @@ describe('ravelinjs.core.send', function () {
 
   it('sends to remote URLs', function () {
     // http://test.browserstack.com/send/ -> http://test.ngrok.io/z/err
-    // test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
+    test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
 
     fetch(process.env.TEST_REMOTE)
       .then(data => {
