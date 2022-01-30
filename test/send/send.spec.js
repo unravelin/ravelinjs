@@ -27,7 +27,8 @@ describe('ravelinjs.core.send', function () {
         console.error('[Error]:', error);
       });
 
-    fetch(process.env.TEST_REMOTE.replace(/^https:/, 'http:'))
+    const rem = process.env.TEST_REMOTE.replace(/^https:/, 'http:');
+    fetch(rem)
       .then(data => {
         console.log('[Success]:', data);
       })
@@ -35,7 +36,7 @@ describe('ravelinjs.core.send', function () {
         console.error('[Error]:', error);
       });
 
-    fetch(`${process.env.TEST_REMOTE}/z?msg=test123`, {
+    fetch(`${process.env.TEST_REMOTE}/z?key=a0cf2b30fa4c81f5a91db12b6115ab6304cdd741`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json, text/plain, */*',
@@ -46,6 +47,19 @@ describe('ravelinjs.core.send', function () {
       console.log('[Test123]:', data);
     }).catch((error) => {
       console.error('[Error123]:', error);
+    });
+
+    fetch(`${rem}/z?key=a0cf2b30fa4c81f5a91db12b6115ab6304cdd741`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ msg: 'test678' })
+    }).then(data => {
+      console.log('[Test678]:', data);
+    }).catch((error) => {
+      console.error('[Error678]:', error);
     });
   });
 });
