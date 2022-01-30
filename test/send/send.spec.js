@@ -26,14 +26,27 @@ describe('ravelinjs.core.send', function () {
       .catch((error) => {
         console.error('[Error]:', error);
       });
+
     fetch(process.env.TEST_REMOTE.replace(/^https:/, 'http:'))
-      // .then(response => response.json())
       .then(data => {
         console.log('[Success]:', data);
       })
       .catch((error) => {
         console.error('[Error]:', error);
       });
+
+    fetch(`${process.env.TEST_REMOTE}/z?msg=test123`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ msg: 'test1234' })
+    }).then(data => {
+      console.log('[Test123]:', data);
+    }).catch((error) => {
+      console.error('[Error123]:', error);
+    });
   });
 });
 
