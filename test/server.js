@@ -112,11 +112,12 @@ async function launchProxy(app) {
 
   // Spin up an ngrok tunnel pointing to our app.
   return ngrok.connect({
+    authtoken: process.env.NGROK_AUTH_TOKEN,
     addr: local.port,
     onStatusChange: function(status) {
       // Shut down the express app when ngrok is closed.
       if (status == 'closed') listener.close();
-    },
+    }
   }).then(url => ({
     internal: `http://${local.address}:${local.port}`,
     internalPort: local.port,
