@@ -217,52 +217,50 @@ describe('ravelin.track', function() {
       },
       {
         paste: '4234 5678-9012 3456 7',
-        into: '<input name=custom-pan custom-pan-paste />',
-        props: {fieldName: 'custom-pan', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: true },
-        cfg: { 
+        into: '<input name=custom-pan />',
+        props: {fieldName: 'custom-pan', selectionStart: 0, selectionEnd: 0, pastedValue: '0000 0000-0000 0000 0', panCleaned: true},
+        cfg: {
           classifyPaste: function(e) {
             return {
-              pan: e.target.hasAttribute('custom-pan-paste')
+              pan: true
             };
           }
         }
       },
       {
         paste: '4234 5678-9012 3456 7',
-        into: '<input name=custom-sensitive custom-sensitive-paste />',
-        props: {fieldName: 'custom-sensitive' },
-        cfg: { 
+        into: '<input name=custom-sensitive />',
+        props: {fieldName: 'custom-sensitive'},
+        cfg: {
           classifyPaste: function(e) {
             return {
-              sensitive: e.target.hasAttribute('custom-sensitive-paste')
+              sensitive: true
             };
           }
         }
       },
       {
         paste: 'hello',
-        into: '<input name=custom-sensitive custom-sensitive-paste />',
-        props: {fieldName: 'custom-sensitive' },
-        cfg: { 
+        into: '<input name=custom-sensitive />',
+        props: {fieldName: 'custom-sensitive', panCleaned: true},
+        cfg: {
           classifyPaste: function(e) {
             return {
-              pan: e.target.hasAttribute('custom-pan-paste'),
-              sensitive: e.target.hasAttribute('custom-sensitive-paste')
+              pan: true,
+              sensitive: true
             };
           }
         }
       },
       {
         paste: 'hello',
-        into: '<input name=custom-pan custom-pan-paste />',
-        props: {fieldName: 'custom-pan', selectionStart: 0, selectionEnd: 0, pastedValue: 'XXXXX', panCleaned: false },
-        cfg: { 
-          classifyPaste: function(e) {
-            return {
-              pan: e.target.hasAttribute('custom-pan-paste'),
-              sensitive: e.target.hasAttribute('custom-sensitive-paste')
-            };
-          }
+        into: '<input name=custom-pan />',
+        props: {fieldName: 'custom-pan', selectionStart: 0, selectionEnd: 0, pastedValue: 'XXXXX'},
+        classifyPaste: function(e) {
+          return {
+            pan: false,
+            sensitive: false
+          };
         }
       }
     ]).each(function(n, test) {
