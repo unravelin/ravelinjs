@@ -6,15 +6,17 @@ If you're looking to change some code in RavelinJS, read this first.
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
 * [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
-* [3. Install a JSHint extention in your editor.](#3-install-a-jshint-extention-in-your-editor)
-* [4. Learn how to build & test.](#4-learn-how-to-build--test)
-* [5. Write IE-compatible code in ./lib.](#5-write-ie-compatible-code-in-lib)
-* [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
-* [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
+* [3. Log into ngrok.](#3-log-into-ngrok)
+* [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
+* [5. Learn how to build & test.](#5-learn-how-to-build--test)
+* [6. Write IE-compatible code in ./lib.](#6-write-ie-compatible-code-in-lib)
+* [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
+* [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
   * [Process](#process)
 * [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
 * [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
+* [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
 
 ## 1. Familiarise yourself with the library.
 
@@ -25,7 +27,14 @@ is meant to do what.
 
 CI runs [circleci/node:10](.circleci/config.yml).
 
-## 3. Install a JSHint extention in your editor.
+## 3. Log into ngrok.
+
+1. Sign up for an ngrok account: https://dashboard.ngrok.com/signup.
+2. Acquire your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken.
+3. If you have not already done so: `npm install`
+4. From the ravelinjs directory: `node_modules/.bin/ngrok authtoken $TOKEN`.
+
+## 4. Install a JSHint extention in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node JS. Some are config files, others are executable, some assume test
@@ -34,7 +43,7 @@ frameworks are installed in the global scope.
 [JSHint has been configured](./.jshintrc) to know which files run where so that
 your editor can give you accurate errors and validation of a source file.
 
-## 4. Learn how to build & test.
+## 5. Learn how to build & test.
 
 CI will run all tests when a commit is pushed to GitHub, essentially:
 
@@ -58,7 +67,7 @@ There are auto-running commands:
 
 **`npm run watch`** will run these two commands together.
 
-## 5. Write IE-compatible code in ./lib.
+## 6. Write IE-compatible code in ./lib.
 
 There is no transpilation in the ravelinjs build except for the resolution of
 ES6-style imports handled by Rollup and minification handled by Terser, so this
@@ -74,7 +83,7 @@ handling rejections with `p.catch(function(err) { ... })`, use
 `p.then(undefined, function(err) { ... })`. Some IEs don't have
 Function.prototype.bind so use lib/util#bind.
 
-## 6. Prefer testing in unit tests.
+## 7. Prefer testing in unit tests.
 
 Unit tests in the test/\*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
@@ -100,7 +109,7 @@ JavaScript, as with code in the lib. The tests have access to:
 * [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 * [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
 
-## 7. Use integration tests where necessary.
+## 8. Use integration tests where necessary.
 
 Integration tests help us test scenarios that unit tests cannot cover: where we
 want to test that real HTTP requests are made in various same/cross-origin
@@ -118,7 +127,7 @@ browsers we test in. Ask from @icio.
 
 To run integration tests in test/\*/\*.spec.js:
 
-    export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
+    export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
     npm install
     LOG_LEVEL=warn PARALLEL=5 npm run test:integration
 
@@ -375,34 +384,32 @@ better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
 for you, including run `npm test` which will require that you have the
 `BROWSERSTACK` envvars set. To test it, run:
 
-```
-$ export BROWSERSTACK_USERNAME=paulscott15 BROWSERSTACK_ACCESS_KEY=x
-$ npm run np -- --preview
+    $ export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
+    $ npm run np -- --preview
 
-Publish a new version of ravelinjs (current: 1.3.1-0)
+    Publish a new version of ravelinjs (current: 1.3.1-0)
 
-Commits:
-- publish docs wip  af4e471
+    Commits:
+    - publish docs wip  af4e471
 
-Commit Range:
-v1.3.1-0...v1
+    Commit Range:
+    v1.3.1-0...v1
 
-Registry:
-https://registry.npmjs.org/
+    Registry:
+    https://registry.npmjs.org/
 
-  ✔ Prerequisite check
-  ✔ Git
-  ✔ Installing dependencies using npm
-  ✔ Running tests using npm
-  ↓ Bumping version using npm [skipped]
-    → [Preview] Command not executed: npm version prerelease.
-  ↓ Publishing package using npm [skipped]
-    → [Preview] Command not executed: npm publish dist --tag beta.
-  ↓ Pushing tags [skipped]
-    → [Preview] Command not executed: git push --follow-tags.
-  ↓ Creating release draft on GitHub [skipped]
-    → [Preview] GitHub Releases draft will not be opened in preview mode.
-```
+      ✔ Prerequisite check
+      ✔ Git
+      ✔ Installing dependencies using npm
+      ✔ Running tests using npm
+      ↓ Bumping version using npm [skipped]
+        → [Preview] Command not executed: npm version prerelease.
+      ↓ Publishing package using npm [skipped]
+        → [Preview] Command not executed: npm publish dist --tag beta.
+      ↓ Pushing tags [skipped]
+        → [Preview] Command not executed: git push --follow-tags.
+      ↓ Creating release draft on GitHub [skipped]
+        → [Preview] GitHub Releases draft will not be opened in preview mode.
 
 The last four `[Preview]` steps when run without `--preview` will:
 
