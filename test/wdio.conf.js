@@ -142,14 +142,16 @@ exports.config = {
     },
 
     // iOS
-    {
-      'bstack:options': {
-        "osVersion": "11",
-        "deviceName": "iPhone 8",
-        "realMobile": "true",
-      },
-      "browserName": "iPhone",
-    },
+    // iOS11 currently failing to start with "COULD NOT START MOBILE BROWSER".
+    // https://automate.browserstack.com/dashboard/v2/builds/2840b7364373dc5f6f27be58d7bb33374d492668?overallStatus=error
+    // {
+    //   'bstack:options': {
+    //     "osVersion": "11",
+    //     "deviceName": "iPhone 8",
+    //     "realMobile": "true",
+    //   },
+    //   "browserName": "iPhone",
+    // },
     {
       'bstack:options': {
         "osVersion": "12",
