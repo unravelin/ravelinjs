@@ -28,7 +28,7 @@
     "test:e2e": "BROWSERS=chrome,latest LIMIT=1 npm run test:integration -- --spec test/encrypt/encrypt.spec.js",
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
-    "test:integration": "wdio ./test/wdio.conf.js",
+    "test:integration": "wdio ./test/wdio.conf.mjs",
     "update": "ncu --doctor -u -x @wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
