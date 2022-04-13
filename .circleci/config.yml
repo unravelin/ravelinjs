@@ -25,9 +25,9 @@ jobs:
           name: "Build"
           command: npm run build
 
-      - run:
-          name: "Await build slot"
-          command: node_modules/.bin/circle-wait
+      # - run:
+      #     name: "Await build slot"
+      #     command: node_modules/.bin/circle-wait
 
       - run:
           name: "Encryption E2E tests: npm run test:e2e"
@@ -41,16 +41,16 @@ jobs:
             if [ "${E2E_RSA_KEY:-}" ]; then echo E2E_RSA_KEY set. Skipping... && exit 0; fi
             PARALLEL=5 npm run test:integration
 
-      - run:
-          name: "Release"
-          command: |
-            npm run release
-            mkdir -p /tmp/release
-            cp releases/*.tar.gz /tmp/release
+      # - run:
+      #     name: "Release"
+      #     command: |
+      #       npm run release
+      #       mkdir -p /tmp/release
+      #       cp releases/*.tar.gz /tmp/release
 
-      - store_test_results:
-          path: ~/repo/reports/junit
-      - store_artifacts:
-          path: ~/repo/cipher.txt
-      - store_artifacts:
-          path: /tmp/release
+      # - store_test_results:
+      #     path: ~/repo/reports/junit
+      # - store_artifacts:
+      #     path: ~/repo/cipher.txt
+      # - store_artifacts:
+      #     path: /tmp/release
