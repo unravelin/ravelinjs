@@ -55,6 +55,19 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/', page: {section: 'test'}}));
     });
 
+    it('is suppressed by page: false', function(done) {
+      var key = this.test.fullTitle();
+      var errored = false;
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+        errored = true;
+        done('received an API request but should have gotten none: ' + JSON.stringify(req));
+        return {status: 204};
+      });
+      setTimeout(function() { if (!errored) done(); }, 200);
+      r = new Ravelin(isolate({key: key, api: '/', page: false}));
+    });
+
     it('sends custom fields', function(done) {
       var key = this.test.fullTitle();
       xhook.before(function(req) {
@@ -420,8 +433,8 @@ describe('ravelin.track', function() {
       });
 
       r = new Ravelin(isolate({
-        key: key, 
-        api: '/', 
+        key: key,
+        api: '/',
         classifyPaste: function(e) {
           return {
             sensitive: e.target.hasAttribute('sensitive-data')
