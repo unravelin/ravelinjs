@@ -229,8 +229,9 @@ var rav = new Ravelin({
      */
     // rsaKey: '0|...',
     /**
-     * @prop {Object} [page] Additional properties to describe the initial page
-     * load event. Must be JSON-encodable.
+     * @prop {Object|Boolean} [page] Additional properties to describe the
+     * initial page load event. If false, suppresses the initial page-load event.
+     * Must be JSON-encodable.
      */
     // page: {section: 'about'}
     /**
