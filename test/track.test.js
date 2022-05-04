@@ -86,7 +86,74 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/', track: false}));
     });
 
-    it('is suppressed by page: false', function(done) {
+    it('doesnt send any events when initialised with track:false', function(done) {
+      var key = this.test.fullTitle();
+      var errored = false;
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+        errored = true;
+        done('received an API request but should have gotten none: ' + JSON.stringify(req));
+        return {status: 204};
+      });
+      setTimeout(function() { if (!errored) done(); }, 200);
+      r = new Ravelin(isolate({key: key, api: '/', track: false}));
+    });
+
+    it('sends resize events', function(done) {
+      var test = this;
+      var key = this.test.fullTitle();
+      var props = {
+        resolutionOld: {w: window.outerWidth, h: window.outerHeight},
+        resolutionNew: {w: window.outerWidth+20, h: window.outerHeight}
+      };
+
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+
+        var event = JSON.parse(req.body);
+        if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'resize') {
+          return {status: 204};
+        }
+
+        // Validate the event.
+        r.core.ids().then(function(ids) {
+          event = event.events[0];
+          expect(event).to.have.property('eventType', 'resize');
+          expect(event.libVer).to.match(expectedVersion);
+          expect(event.eventMeta.trackingSource).to.be('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventData).to.eql({
+            eventName: 'resize',
+            properties: props
+          });
+        }).then(done, done);
+        return {status: 204};
+      });
+
+      // Load the library.
+      r = new Ravelin(isolate({key: key, api: '/'}));
+
+      // Send two resize events. Should only get one request after debouncing.
+      if (typeof(Event) === 'function') {
+        var event = new Event('resize', { bubbles: true });
+        window.outerWidth += 10;
+        window.dispatchEvent(event);
+        window.outerWidth += 10;
+        window.dispatchEvent(event);
+      } else {
+        try {
+          var uievent = document.createEvent('UIEvents');
+          uievent.initUIEvent('resize', true, false, window, 0);
+          window.dispatchEvent(uievent);
+        } catch(e) {
+          // How do we fake a resize event in IE8?
+          test.skip();
+        }
+      }
+    });
+
+    it('doesnt send a page-loaded event when initialised with page:false', function(done) {
       var key = this.test.fullTitle();
       var errored = false;
       xhook.before(function(req) {
