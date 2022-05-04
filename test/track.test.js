@@ -55,6 +55,38 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/', page: {section: 'test'}}));
     });
 
+    it('doesnt send a page-loaded event when initialised with page:false', function(done) {
+      var key = this.test.fullTitle();
+      var errored = false;
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+        errored = true;
+        done('received an API request but should have gotten none: ' + JSON.stringify(req));
+        return {status: 204};
+      });
+      r = new Ravelin(isolate({key: key, api: '/', page: false}));
+      setTimeout(function() { if (!errored) done(); }, 200);
+    });
+
+    it('doesnt send resize or page-loaded events when initialised with track:false', function(done) {
+      var key = this.test.fullTitle();
+      var errored = false;
+      xhook.before(function(req) {
+        if (!keysMatch(req, key)) return {status: 204};
+        errored = true;
+        done('received an API request but should have gotten none: ' + JSON.stringify(req));
+        return {status: 204};
+      });
+
+      r = new Ravelin(isolate({key: key, api: '/', track: false}));
+      try {
+        triggerResize(10, 0);
+      } catch (e) {
+        // If triggerResize fails, we can still test we sent no page-load event.
+      }
+      setTimeout(function() { if (!errored) done(); }, 200);
+    });
+
     it('can be manually initialised', function(done) {
       var key = this.test.fullTitle();
       var errored = false;
@@ -78,29 +110,15 @@ describe('ravelin.track', function() {
         }
         return {status: 204};
       });
+      r = new Ravelin(isolate({key: key, api: '/', track: false}));
       setTimeout(function() {
         if (errored) return;
         waited = true;
         r.track.init({section: 'test'});
       }, 200);
-      r = new Ravelin(isolate({key: key, api: '/', track: false}));
-    });
-
-    it('doesnt send any events when initialised with track:false', function(done) {
-      var key = this.test.fullTitle();
-      var errored = false;
-      xhook.before(function(req) {
-        if (!keysMatch(req, key)) return {status: 204};
-        errored = true;
-        done('received an API request but should have gotten none: ' + JSON.stringify(req));
-        return {status: 204};
-      });
-      setTimeout(function() { if (!errored) done(); }, 200);
-      r = new Ravelin(isolate({key: key, api: '/', track: false}));
     });
 
     it('sends resize events', function(done) {
-      var test = this;
       var key = this.test.fullTitle();
       var props = {
         resolutionOld: {w: window.outerWidth, h: window.outerHeight},
@@ -135,35 +153,14 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/'}));
 
       // Send two resize events. Should only get one request after debouncing.
-      if (typeof(Event) === 'function') {
-        var event = new Event('resize', { bubbles: true });
-        window.outerWidth += 10;
-        window.dispatchEvent(event);
-        window.outerWidth += 10;
-        window.dispatchEvent(event);
-      } else {
-        try {
-          var uievent = document.createEvent('UIEvents');
-          uievent.initUIEvent('resize', true, false, window, 0);
-          window.dispatchEvent(uievent);
-        } catch(e) {
-          // How do we fake a resize event in IE8?
-          test.skip();
-        }
+      try {
+        triggerResize(10, 0);
+        triggerResize(10, 0);
+      } catch (e) {
+        // If we fail to trigger a resize, we can fall back on the more reliable
+        // integration test which definitely works.
+        this.skip();
       }
-    });
-
-    it('doesnt send a page-loaded event when initialised with page:false', function(done) {
-      var key = this.test.fullTitle();
-      var errored = false;
-      xhook.before(function(req) {
-        if (!keysMatch(req, key)) return {status: 204};
-        errored = true;
-        done('received an API request but should have gotten none: ' + JSON.stringify(req));
-        return {status: 204};
-      });
-      setTimeout(function() { if (!errored) done(); }, 200);
-      r = new Ravelin(isolate({key: key, api: '/', page: false}));
     });
 
     it('sends custom fields', function(done) {
@@ -580,4 +577,37 @@ function fakePasteEvent(type, content) {
     }
   };
   return e;
+}
+
+/**
+ * triggerResize triggers the brower's resize event handlers in browsers that
+ * support window.outerWidth.
+ * @param {Number} dw Increase in window width.
+ * @param {Number} dh Increase in window height.
+ */
+function triggerResize(dw, dh) {
+  if (!window.outerWidth) {
+    // IE8 doesn't support window.outerWidth, but we don't know how to
+    // programmatically trigger a resize event for it anyway.
+    throw new Error('triggerResize: outerWidth doesnt exist');
+  }
+
+  var ow = window.outerWidth;
+  window.outerWidth += dw || 0;
+  if (window.outerWidth === ow) {
+    // IE9-10 don't let us artificially change outerWidth. It will always return
+    // the width of the browser chrome.
+    throw new Error('triggerResize: outerWidth not adjustable');
+  }
+
+  window.outerHeight += dh || 0;
+
+  var e;
+  try {
+    e = new Event('resize', {bubbles: true});
+  } catch(_) {
+    e = window.document.createEvent('UIEvents');
+    e.initUIEvent('resize', true, false, window, 0);
+  }
+  window.dispatchEvent(e);
 }
