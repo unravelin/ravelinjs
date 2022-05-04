@@ -10,7 +10,6 @@ var builds = module.exports = [];
 
 var output = {
   format: 'iife',
-  sourcemap: true,
   name: 'Ravelin',
   esModule: false,
 
@@ -29,7 +28,6 @@ var plugins = [
   resolve(),
   commonjs(),
   license({
-    sourcemap: true,
     banner: `/*! <%= pkg.name %> <%= pkg.version %> - https://github.com/unravelin/ravelinjs. Copyright <%= moment().format('YYYY') %> */`,
   }),
 ];
