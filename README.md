@@ -305,7 +305,7 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
 
 The device ID in the `ravelinDeviceId` cookie or returned by `ravelin.core.id()`
 should be treated as an opaque string. Do not attempt to parse or validate the
-format of the ID as we may change it without warning in future.
+format of the ID as we may change it without warning in the future.
 
 ### `ravelin.encrypt.card(card: object): object`
 
