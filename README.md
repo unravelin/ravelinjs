@@ -447,8 +447,8 @@ it relies:
 ## Upgrading
 
 Note that the format of the deviceId was changed in v1 to include a "rjs-"
-prefix. If you have any validations or parsing that depend on a particular
-format of deviceId, please remove this logic and instead treat the deviceId as
+prefix. If you do any validation or parsing that checks for a particular
+format of the deviceId, please remove this logic and instead treat the deviceId as
 an opaque string.
 
 ### Upgrading to ravelinjs v1 from ravelinjs v0
