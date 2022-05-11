@@ -290,6 +290,15 @@ describe('ravelin.core', function() {
       });
     });
 
+    it('returns IDs with a custom prefix', function() {
+      var r = new Ravelin(isolate({
+        prefix: ''
+      }));
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/^\w{8}[-]\w{4}[-]\w{4}[-]\w{4}[-]\w{12}$/);
+      });
+    });
+
     it('keeps returning the same ID', function() {
       var r = new Ravelin(isolate({}));
       return r.core.id().then(function(id1) {
