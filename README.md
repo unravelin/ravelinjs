@@ -301,6 +301,12 @@ var action = fetch('https://api.ravelin.com/v2/order?score=true', {
 });
 ```
 
+#### Device ID Format
+
+The device ID in the `ravelinDeviceId` cookie or returned by `ravelin.core.id()`
+should be treated as an opaque string. Do not attempt to parse or validate the
+format of the ID as we may change it without warning in the future.
+
 ### `ravelin.encrypt.card(card: object): object`
 
 `ravelin.encrypt.card` returns an object describing the encrypted form of
@@ -440,6 +446,11 @@ it relies:
 
 ## Upgrading
 
+Note that the format of the deviceId was changed in v1 to include a "rjs-"
+prefix. If you do any validation or parsing that checks for a particular
+format of the deviceId, please remove this logic and instead treat the deviceId as
+an opaque string.
+
 ### Upgrading to ravelinjs v1 from ravelinjs v0
 
 If you are using RavelinJS v0 from a script or loaded via npm then equivalent
@@ -487,31 +498,21 @@ cdn.ravelin.net from your Content-Security-Policy, and make the following
 substitutions to complete the upgrade:
 
 * `ravelin('setApiKey', 'k')` → Set during instantiation in `new Ravelin({key: 'k'})`.
-
 * `ravelin('setCookieDomain', 'c')` → Set during instantiation in `new
   Ravelin({cookieDomain: 'c.com'})`.
-
 * `ravelin('track')` → Removed.
-
 * `ravelin('trackPage')` → [`ravelin.track.load()`][ravelin.track.load] is now
   called when Ravelin is instantiated, but you can call this method again when
   the user navigates if you have a single-page application.
-
 * `ravelin('trackLogin')` → Removed.
-
 * `ravelin('trackLogout')` → Removed.
-
 * `ravelin('fingerprint')` → Removed. This method implemented some
   privacy-insensitive browser fingerprinting that Ravelin no longer wishes to be
   part of. Instead, follow the instructions of
   [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
-
 * `ravelin('send')` → Removed
-
 * `ravelin('setCustomerId')` → Removed.
-
 * `ravelin('setTempCustomerId')` → Removed.
-
 * `ravelin('setOrderId')` → Removed.
 
 [ravelin.encrypt.card]: #ravelinencryptcardcard-object-object
