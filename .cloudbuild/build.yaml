@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+logsBucket: gs://ravelin-cloudbuild-logs
+options:
+  logging: GCS_ONLY
+
+steps:
+  - id: npm_install
+    name: gcr.io/cloud-builders/npm
+    args:
+      - install
+
+  - id: npm_run_build
+    name: gcr.io/cloud-builders/npm
+    args:
+      - run
+      - build
+
+  - id: npm_run_test
+    name: eu.gcr.io/ravelin-builds/chromium
+    dir: /workspace
+    args:
+      - npm
+      - run
+      - test
