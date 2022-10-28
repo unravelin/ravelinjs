@@ -371,7 +371,7 @@ exports.config = {
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = baseUrl;
       process.env.TEST_REMOTE = api.remote;
-      console.log(`🤖 ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
+      console.log(`🤖 ${api.internalPort}\n   ↖ ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
