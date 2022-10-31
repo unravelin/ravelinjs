@@ -371,6 +371,7 @@ exports.config = {
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = baseUrl;
       process.env.TEST_REMOTE = api.remote;
+      console.log(`ENV VARS: NAME ON CARD: [${process.env.E2E_NAME_ON_CARD}], RSA KEY: [${E2E_RSA_KEY}]`)
       console.log(`🤖 ${api.internalPort}\n   ↖ ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
     },
     function filterLimit(config, capabilities) {
