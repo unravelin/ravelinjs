@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+substitutions: _TEST='$(body.message)'
 availableSecrets:
   secretManager:
     - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
@@ -13,6 +14,14 @@ options:
   logging: GCS_ONLY
 
 steps:
+  - id: test
+    name: gcr.io/cloud-builders/npm
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        echo "$_TEST"
+
   - id: npm_install
     name: gcr.io/cloud-builders/npm
     args:
