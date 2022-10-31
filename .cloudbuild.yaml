@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
-substitutions: _TEST='$(body.message)'
 availableSecrets:
   secretManager:
     - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
@@ -12,6 +11,9 @@ availableSecrets:
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
   logging: GCS_ONLY
+
+substitutions:
+  _TEST: '$(body.message)'
 
 steps:
   - id: test
