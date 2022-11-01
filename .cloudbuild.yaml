@@ -12,10 +12,6 @@ logsBucket: gs://ravelin-cloudbuild-logs
 options:
   logging: GCS_ONLY
 
-substitutions:
-  _NAME_ON_CARD: $(body.cardName)
-  _RSA_KEY: $(body.rsaKey)
-
 steps:
   - id: npm_install
     name: gcr.io/cloud-builders/npm
