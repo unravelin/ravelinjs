@@ -30,7 +30,7 @@ steps:
     env:
       - E2E_NAME_ON_CARD=$_NAME_ON_CARD
       - E2E_RSA_KEY=$_RSA_KEY
-      - E2E_CIPHERTEXT_FILE=~/repo/cipher.txt
+      - E2E_CIPHERTEXT_FILE=/workspace/cipher.txt
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
@@ -59,4 +59,4 @@ steps:
 artifacts:
   objects:
     location: "gs://ravelinjs-integration-tests/$BUILD_ID"
-    paths: ["~/repo/cipher.txt", "/tmp/release", "~/repo/reports/junit"]
+    paths: ["/workspace/cipher.txt", "/tmp/release", "/workspace/reports/junit"]
