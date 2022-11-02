@@ -59,4 +59,5 @@ steps:
 artifacts:
   objects:
     location: "gs://ravelinjs-integration-tests/$BUILD_ID"
-    paths: ["/workspace/cipher.txt", "/tmp/release", "/workspace/reports/junit"]
+    paths:
+      - "/workspace/cipher.txt"
