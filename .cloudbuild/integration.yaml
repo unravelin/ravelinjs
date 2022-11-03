@@ -40,22 +40,6 @@ steps:
       - run
       - test:e2e
 
-  # - id: npm_run_test_integration
-  #   name: eu.gcr.io/ravelin-builds/chromium:10.24
-  #   dir: /workspace
-  #   env:
-  #     - E2E_NAME_ON_CARD=$_NAME_ON_CARD
-  #     - E2E_RSA_KEY=$_RSA_KEY
-  #     - PARALLEL=5
-  #   secretEnv:
-  #     - BROWSERSTACK_ACCESS_KEY
-  #     - BROWSERSTACK_USERNAME
-  #     - NGROK_AUTH_TOKEN
-  #   args:
-  #     - npm
-  #     - run
-  #     - test:integration
-
 artifacts:
   objects:
     location: "gs://ravelinjs-integration-tests/$BUILD_ID"
