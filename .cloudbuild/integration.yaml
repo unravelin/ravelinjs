@@ -27,7 +27,7 @@ steps:
       - build
 
   - id: npm_run_test_e2e
-    name: node:10.24.1-alpine
+    name: eu.gcr.io/ravelin-builds/chromium:10.24
     dir: /workspace
     env:
       - E2E_NAME_ON_CARD=$_NAME_ON_CARD
