@@ -14,12 +14,12 @@ options:
 
 steps:
   - id: npm_install
-    name: gcr.io/cloud-builders/npm
+    name: eu.gcr.io/ravelin-builds/chromium:10.24
     args:
       - install
 
   - id: npm_run_build
-    name: gcr.io/cloud-builders/npm
+    name: eu.gcr.io/ravelin-builds/chromium:10.24
     args:
       - run
       - build
