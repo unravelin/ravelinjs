@@ -29,9 +29,8 @@ steps:
   - id: npm_run_test_e2e
     name: node:10.24.1-alpine
     entrypoint: npm
-    dir: /workspace
     env:
-      - HEAD_BRANCH=$_HEAD_BRANCH
+      - HEAD_BRANCH=$BRANCH_NAME
       - COMMIT_SHA=$COMMIT_SHA
       - BUILD_ID=$BUILD_ID
       - E2E_NAME_ON_CARD=$_NAME_ON_CARD
