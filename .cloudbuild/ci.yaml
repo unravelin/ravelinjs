@@ -29,6 +29,9 @@ steps:
     dir: /workspace
     env:
       - PARALLEL=5
+      - HEAD_BRANCH=$_HEAD_BRANCH
+      - COMMIT_SHA=$COMMIT_SHA
+      - BUILD_ID=$BUILD_ID
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
