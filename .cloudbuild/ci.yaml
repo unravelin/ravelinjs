@@ -21,15 +21,27 @@ steps:
 
   - id: npm_run_build
     name: node:10.24.1-alpine
+    waitFor:
+      - npm_install
     entrypoint: npm
     args:
       - run
       - build
 
+  - id: npm_run_unit
+    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    waitFor:
+      - npm_run_build
+    entrypoint: npm
+    args:
+      - run
+      - test:unit
+
   - id: npm_run_test_integration
     name: node:10.24.1-alpine
+    waitFor:
+      - npm_run_build
     entrypoint: npm
-    dir: /workspace
     env:
       - PARALLEL=5
       - HEAD_BRANCH=$_HEAD_BRANCH
