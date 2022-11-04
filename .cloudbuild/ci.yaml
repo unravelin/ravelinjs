@@ -14,18 +14,18 @@ options:
 
 steps:
   - id: npm_install
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     args:
       - install
 
   - id: npm_run_build
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     args:
       - run
       - build
 
   - id: npm_run_test_integration
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     dir: /workspace
     env:
       - PARALLEL=5

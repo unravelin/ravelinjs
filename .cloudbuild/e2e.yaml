@@ -14,20 +14,20 @@ options:
 
 steps:
   - id: npm_install
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     entrypoint: npm
     args:
       - install
 
   - id: npm_run_build
-    name: neu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     entrypoint: npm
     args:
       - run
       - build
 
   - id: npm_run_test_e2e
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    name: node:10.24.1-alpine
     dir: /workspace
     env:
       - HEAD_BRANCH=$_HEAD_BRANCH
