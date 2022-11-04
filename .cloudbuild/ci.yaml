@@ -15,17 +15,20 @@ options:
 steps:
   - id: npm_install
     name: node:10.24.1-alpine
+    entrypoint: npm
     args:
       - install
 
   - id: npm_run_build
     name: node:10.24.1-alpine
+    entrypoint: npm
     args:
       - run
       - build
 
   - id: npm_run_test_integration
     name: node:10.24.1-alpine
+    entrypoint: npm
     dir: /workspace
     env:
       - PARALLEL=5
@@ -37,6 +40,5 @@ steps:
       - BROWSERSTACK_USERNAME
       - NGROK_AUTH_TOKEN
     args:
-      - npm
       - run
       - test:integration

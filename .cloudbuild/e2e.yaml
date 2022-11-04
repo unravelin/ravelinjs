@@ -28,6 +28,7 @@ steps:
 
   - id: npm_run_test_e2e
     name: node:10.24.1-alpine
+    entrypoint: npm
     dir: /workspace
     env:
       - HEAD_BRANCH=$_HEAD_BRANCH
@@ -41,7 +42,6 @@ steps:
       - BROWSERSTACK_USERNAME
       - NGROK_AUTH_TOKEN
     args:
-      - npm
       - run
       - test:e2e
 
