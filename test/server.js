@@ -100,9 +100,13 @@ function maybeJSON(b) {
  *
  * @returns {string} The ngrok proxy address to access the server.
  */
-async function launchProxy(app) {
+async function launchProxy(app, config, runBrowstack) {
   // Start express listening on a random port.
   var listener;
+
+  if !runBrowstack {
+
+  }
   const local = await (new Promise((resolve) => {
     listener = app.listen(0, "127.0.0.1", function() {
       // TODO: Any error handling needed here?
@@ -110,19 +114,22 @@ async function launchProxy(app) {
     });
   }));
 
-  // Spin up an ngrok tunnel pointing to our app.
-  return ngrok.connect({
-    authtoken: process.env.NGROK_AUTH_TOKEN,
-    addr: local.port,
-    onStatusChange: function(status) {
-      // Shut down the express app when ngrok is closed.
-      if (status == 'closed') listener.close();
-    }
-  }).then(url => ({
-    internal: `http://${local.address}:${local.port}`,
-    internalPort: local.port,
-    remote: url,
-  }));
+  if runBrowstack {
+    // Spin up an ngrok tunnel pointing to our app.
+    return ngrok.connect({
+      authtoken: process.env.NGROK_AUTH_TOKEN,
+      addr: local.port,
+      onStatusChange: function(status) {
+        // Shut down the express app when ngrok is closed.
+        if (status == 'closed') listener.close();
+      }
+    }).then(url => ({
+      internal: `http://${local.address}:${local.port}`,
+      internalPort: local.port,
+      remote: url,
+    }));
+  }
+
 }
 
 /**

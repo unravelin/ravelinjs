@@ -13,9 +13,24 @@ const browserStackOpts = {
   'disable-dashboard': true,
 };
 
-if (!user || !key) {
-  throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.');
-}
+//
+const runBrowstack = (user && key) ? true : false;
+
+const services = runBrowstack ?
+  [
+    'browserstack', {
+      browserstackLocal: true,
+      opts: browserStackOpts,
+    }
+  ]
+  :
+  [
+    'chromedriver', {
+      logFileName: 'wdio-chromedriver.log',
+      outputDir: 'driver-logs',
+      args: ['--silent']
+    }
+  ]
 
 async function capabilityDefaults() {
   const b = await build();
@@ -308,12 +323,7 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: [
-    ['browserstack', {
-      browserstackLocal: true,
-      opts: browserStackOpts,
-    }],
-  ],
+  services: [services],
   user: user,
   key: key,
 
@@ -365,8 +375,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: [
-    async function launchAPIServer() {
-      const api = await launchProxy(app());
+    async function launchAPIServer(config) {
+      const api = await launchProxy(app(), config, runBrowstack);
       browserStackOpts.localProxyPort = api.internalPort;
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = baseUrl;
