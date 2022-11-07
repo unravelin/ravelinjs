@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+availableSecrets:
+  secretManager:
+    - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
+      env: BROWSERSTACK_ACCESS_KEY
+    - versionName: projects/ravelin-builds/secrets/ci-browserstack-username/versions/latest
+      env: BROWSERSTACK_USERNAME
+    - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
+      env: NGROK_AUTH_TOKEN
+
+logsBucket: gs://ravelin-cloudbuild-logs
+options:
+  logging: GCS_ONLY
+
+steps:
+  - id: npm_install
+    name: node:10.24.1-alpine
+    entrypoint: npm
+    args:
+      - install
+
+  - id: npm_run_build
+    name: node:10.24.1-alpine
+    entrypoint: npm
+    args:
+      - run
+      - build
+
+  - id: npm_run_test_e2e
+    name: node:10.24.1-alpine
+    entrypoint: npm
+    env:
+      - HEAD_BRANCH=$BRANCH_NAME
+      - COMMIT_SHA=$COMMIT_SHA
+      - BUILD_ID=$BUILD_ID
+      - E2E_NAME_ON_CARD=$_NAME_ON_CARD
+      - E2E_RSA_KEY=$_RSA_KEY
+      - E2E_CIPHERTEXT_FILE=/workspace/cipher.txt
+    secretEnv:
+      - BROWSERSTACK_ACCESS_KEY
+      - BROWSERSTACK_USERNAME
+      - NGROK_AUTH_TOKEN
+    args:
+      - run
+      - test:e2e
+
+artifacts:
+  objects:
+    location: "gs://ravelinjs-integration-tests/$BUILD_ID"
+    paths:
+      - "/workspace/cipher.txt"

@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+availableSecrets:
+  secretManager:
+    - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
+      env: BROWSERSTACK_ACCESS_KEY
+    - versionName: projects/ravelin-builds/secrets/ci-browserstack-username/versions/latest
+      env: BROWSERSTACK_USERNAME
+    - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
+      env: NGROK_AUTH_TOKEN
+
+logsBucket: gs://ravelin-cloudbuild-logs
+options:
+  logging: GCS_ONLY
+
+steps:
+  - id: npm_install
+    name: node:10.24.1-alpine
+    entrypoint: npm
+    args:
+      - install
+
+  - id: npm_run_build
+    name: node:10.24.1-alpine
+    waitFor:
+      - npm_install
+    entrypoint: npm
+    args:
+      - run
+      - build
+
+  - id: npm_run_unit
+    name: eu.gcr.io/ravelin-builds/chromium:10.24
+    waitFor:
+      - npm_run_build
+    entrypoint: npm
+    args:
+      - run
+      - test:unit
+
+  - id: npm_run_test_integration
+    name: node:10.24.1-alpine
+    waitFor:
+      - npm_run_build
+    entrypoint: npm
+    env:
+      - PARALLEL=5
+      - HEAD_BRANCH=$_HEAD_BRANCH
+      - COMMIT_SHA=$COMMIT_SHA
+      - BUILD_ID=$BUILD_ID
+    secretEnv:
+      - BROWSERSTACK_ACCESS_KEY
+      - BROWSERSTACK_USERNAME
+      - NGROK_AUTH_TOKEN
+    args:
+      - run
+      - test:integration

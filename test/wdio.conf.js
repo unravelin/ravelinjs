@@ -519,11 +519,8 @@ exports.config = {
  * build returns an identifier for the build in question.
  */
 async function build() {
-  if (process.env.CIRCLE_TAG) {
-    return 'tag/' + process.env.CIRCLE_TAG + '-' + process.env.CIRCLE_BUILD_NUM;
-  }
-  if (process.env.CIRCLE_BRANCH) {
-    return 'ci/' + process.env.CIRCLE_BRANCH + '-' + process.env.CIRCLE_SHA1.substr(0, 7) + '-' + process.env.CIRCLE_BUILD_NUM;
+  if (process.env.HEAD_BRANCH) {
+    return 'ci/' + process.env.HEAD_BRANCH + '-' + process.env.COMMIT_SHA.substr(0, 7) + '-' + process.env.BUILD_ID;
   }
   return await gitBuild();
 }
