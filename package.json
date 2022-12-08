@@ -36,7 +36,7 @@
     "version": "run-s clean build dist release # (note: auto-executed by np)"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "20.0.0",
+    "@rollup/plugin-commonjs": "23.0.4",
     "@rollup/plugin-node-resolve": "13.0.4",
     "@rollup/plugin-replace": "3.0.0",
     "@wdio/browserstack-service": "6.12.1",
