@@ -1,4 +1,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+substitutions:
+  _NODE10: node:10.24.1-slim
+
 availableSecrets:
   secretManager:
     - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
@@ -14,13 +17,13 @@ options:
 
 steps:
   - id: npm_install
-    name: node:10.24.1-alpine
+    name: $_NODE10
     entrypoint: npm
     args:
       - install
 
   - id: npm_run_build
-    name: node:10.24.1-alpine
+    name: $_NODE10
     waitFor:
       - npm_install
     entrypoint: npm
@@ -38,7 +41,7 @@ steps:
       - test:unit
 
   - id: npm_run_test_integration
-    name: node:10.24.1-alpine
+    name: $_NODE10
     waitFor:
       - npm_run_build
     entrypoint: npm
