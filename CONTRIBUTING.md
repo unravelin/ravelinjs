@@ -25,7 +25,7 @@ is meant to do what.
 
 ## 2. Use the expected NodeJS v10.
 
-CI runs [circleci/node:10](.circleci/config.yml).
+CI runs [node:10-slim](.cloudbuild/ci.yaml).
 
 ## 3. Log into ngrok.
 
