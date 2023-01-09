@@ -88,5 +88,8 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {},
+  "volta": {
+    "node": "10.24.1"
+  }
 }
