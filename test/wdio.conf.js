@@ -114,7 +114,7 @@ class GitHubStatus {
 const gh = new GitHubStatus({
   context: 'browserstack',
   sha: process.env.COMMIT_SHA,
-  repo: process.env._HEAD_REPO_URL,
+  repo: process.env.HEAD_REPO_URL,
   token: process.env.GITHUB_TOKEN,
 });
 
