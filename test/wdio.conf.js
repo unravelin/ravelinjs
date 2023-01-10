@@ -94,7 +94,6 @@ exports.config = {
       "browserName": "IE",
       "browser_version": "11.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
@@ -102,7 +101,6 @@ exports.config = {
       "browserName": "IE",
       "browser_version": "10.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
@@ -110,14 +108,12 @@ exports.config = {
       "browserName": "IE",
       "browser_version": "9.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
       "os_version": "7",
       "browserName": "IE",
       "browser_version": "8.0",
-      "browserstack.selenium_version": "3.5.2",
       'browserstack.sendKeys': 'true',
     },
 
