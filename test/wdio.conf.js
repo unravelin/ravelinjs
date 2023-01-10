@@ -1,15 +1,13 @@
 const path = require('path');
 const { launchProxy, app } = require('./server');
 const { exec } = require('child_process');
+const BrowserstackLauncherService = require('@wdio/browserstack-service/build/launcher').default;
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
 const baseUrl = 'http://' + user + '.browserstack.com';
 
 const browserStackOpts = {
-  // forceProxy: true,
-  localProxyHost: 'localhost',
-  localProxyPort: 'unknown', // Set in launchAPIServer.
   'disable-dashboard': true,
 };
 
@@ -309,10 +307,11 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: [
-    ['browserstack', {
-      browserstackLocal: true,
-      opts: browserStackOpts,
-    }],
+    // browserstack is not instructed to run browserstack-local here. We
+    // run it ourselves in launchTunnels. Note that this will cause
+    // "browserstackLocal is not enabled - skipping..." to be logged, but we
+    // manually instantiate the tunnel in launchTunnels below.
+    ['browserstack', {opts: browserStackOpts}],
   ],
   user: user,
   key: key,
@@ -365,13 +364,22 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: [
-    async function launchAPIServer() {
+    async function launchTunnels(config, caps) {
       const api = await launchProxy(app());
-      browserStackOpts.localProxyPort = api.internalPort;
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = baseUrl;
       process.env.TEST_REMOTE = api.remote;
       console.log(`🤖 ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
+
+      const bs = new BrowserstackLauncherService({
+        browserstackLocal: true,
+        opts: {
+          localProxyHost: 'localhost',
+          localProxyPort: api.internalPort,
+          ...browserStackOpts,
+        },
+      }, caps, config);
+      return bs.onPrepare(config, caps);
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;

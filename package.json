@@ -29,6 +29,7 @@
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
     "test:integration": "wdio ./test/wdio.conf.js",
+    "test:integration:quickunit": "env BROWSERS=firefox,latest LIMIT=1 wdio ./test/wdio.conf.js --spec test/unit/unit.spec.js",
     "update": "ncu --doctor -u -x @wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
