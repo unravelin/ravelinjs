@@ -74,10 +74,15 @@ class GitHubStatus {
     if (status.description && status.description.length > 140) {
       status.description = status.description.substr(0, 140);
     }
-    console.log('GitHub', status);
 
     // Discard.
-    if (!this.sha || !this.repo || !this.token) return;
+    if (!this.sha || !this.repo || !this.token) {
+      this.token = '<masked>';
+      console.log('GitHub (status disabed)', this, status);
+      return;
+    }
+
+    console.log('GitHub status', status);
 
     if (this.controller) this.controller.abort();
     this.controller = new AbortController();
