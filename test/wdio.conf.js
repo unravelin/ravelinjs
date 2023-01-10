@@ -84,9 +84,6 @@ class GitHubStatus {
 
     console.log('GitHub status', status);
 
-    if (this.controller) this.controller.abort();
-    this.controller = new AbortController();
-
     const api = this.repo.replace(/\/\/github.com\//, '//api.github.com/repos/');
     const apiStatus = api + '/statuses/' + encodeURIComponent(process.env.COMMIT_SHA);
     fetch(apiStatus, {
@@ -98,7 +95,6 @@ class GitHubStatus {
         'X-GitHub-Api-Version': '2022-11-28',
       },
       body: JSON.stringify(status),
-      signal: this.controller.signal,
     })
     .then(async res => {
       if (!res.ok) {
