@@ -10,6 +10,8 @@ availableSecrets:
       env: BROWSERSTACK_USERNAME
     - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
       env: NGROK_AUTH_TOKEN
+    - versionName: projects/ravein-builds/secrets/github-token/versions/latest
+      env: GITHUB_TOKEN
 
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
