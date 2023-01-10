@@ -5,7 +5,7 @@ const BrowserstackLauncherService = require('@wdio/browserstack-service/build/la
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
-const baseUrl = 'http://' + user + '.browserstack.com';
+const baseUrl = 'http://bs-local.com';
 
 const browserStackOpts = {
   'disable-dashboard': true,
