@@ -53,14 +53,7 @@ class GitHubStatus {
 
     this.targetPriority = priority;
     this.target = target;
-
-    if (this.lastStatus) {
-      this._send(this.lastStatus);
-    } else {
-      this.update({
-        state: 'pending'
-      })
-    }
+    this.update(this.lastStatus || {state: 'pending'});
   }
 
   update(status) {
