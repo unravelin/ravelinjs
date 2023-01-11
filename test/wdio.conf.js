@@ -180,13 +180,16 @@ exports.config = {
       "browser_version": "11.0",
       'browserstack.sendKeys': 'true',
     },
-    {
-      "os": "Windows",
-      "os_version": "7",
-      "browserName": "IE",
-      "browser_version": "10.0",
-      'browserstack.sendKeys': 'true',
-    },
+    // IE10 is proving horrendously flakey at 11-01-2023. I've set a reminder
+    // to check whether we should re-enable it in a month.
+    // e.g. https://automate.browserstack.com/dashboard/v2/public-build/Umo5RlVZVWZycmVYQkpxVncybkhPU1RLREgweHA5THpLK3BCQWRmNnIxc0c3OFdtMWhGcGJoTHJJeXZ3cEVEZ1FBM1FmZVdyaXZpT240REkzZmZQZ1E9PS0tWm91NjBzZ0NRUEdsUDNmdmZBVmUzQT09--66f8781f7583608f37367b532438fd5948ea2a59?overallStatus=error
+    // {
+    //   "os": "Windows",
+    //   "os_version": "7",
+    //   "browserName": "IE",
+    //   "browser_version": "10.0",
+    //   'browserstack.sendKeys': 'true',
+    // },
     {
       "os": "Windows",
       "os_version": "7",
