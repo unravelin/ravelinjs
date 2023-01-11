@@ -10,6 +10,8 @@ availableSecrets:
       env: BROWSERSTACK_USERNAME
     - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
       env: NGROK_AUTH_TOKEN
+    - versionName: projects/ravelin-builds/secrets/github-token/versions/latest
+      env: GITHUB_TOKEN
 
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
@@ -50,10 +52,12 @@ steps:
       - HEAD_BRANCH=$_HEAD_BRANCH
       - COMMIT_SHA=$COMMIT_SHA
       - BUILD_ID=$BUILD_ID
+      - HEAD_REPO_URL=$_HEAD_REPO_URL
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
       - NGROK_AUTH_TOKEN
+      - GITHUB_TOKEN
     args:
       - run
       - test:integration

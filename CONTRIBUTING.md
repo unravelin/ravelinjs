@@ -27,6 +27,9 @@ is meant to do what.
 
 CI runs [node:10-slim](.cloudbuild/ci.yaml).
 
+If you use [Volta](https://volta.sh/) to manage your Node/NPM installation, you
+should find the package.json is already configured to use Node v10.
+
 ## 3. Log into ngrok.
 
 1. Sign up for an ngrok account: https://dashboard.ngrok.com/signup.

@@ -29,6 +29,7 @@
     "test:unit": "karma start ./test/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
     "test:integration": "wdio ./test/wdio.conf.js",
+    "test:integration:quickunit": "env BROWSERS=firefox,latest LIMIT=1 wdio ./test/wdio.conf.js --spec test/unit/unit.spec.js",
     "update": "ncu --doctor -u -x @wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
@@ -58,7 +59,7 @@
     "karma-expect": "1.1.3",
     "karma-mocha": "2.0.1",
     "mingo": "4.1.4",
-    "ngrok": "4.2.2",
+    "ngrok": "4.3.3",
     "node-fetch": "2.6.1",
     "np": "7.5.0",
     "npm-check-updates": "11.8.5",
@@ -88,5 +89,8 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {},
+  "volta": {
+    "node": "10.24.1"
+  }
 }

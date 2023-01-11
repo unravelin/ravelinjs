@@ -1,15 +1,14 @@
 const path = require('path');
 const { launchProxy, app } = require('./server');
 const { exec } = require('child_process');
+const fetch = require('node-fetch');
+const BrowserstackLauncherService = require('@wdio/browserstack-service/build/launcher').default;
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
-const baseUrl = 'http://' + user + '.browserstack.com';
+const baseUrl = 'http://bs-local.com';
 
 const browserStackOpts = {
-  // forceProxy: true,
-  localProxyHost: 'localhost',
-  localProxyPort: 'unknown', // Set in launchAPIServer.
   'disable-dashboard': true,
 };
 
@@ -17,8 +16,9 @@ if (!user || !key) {
   throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.');
 }
 
-async function capabilityDefaults() {
-  const b = await build();
+const buildP = build();
+async function capabilityConstants() {
+  const b = await buildP;
   return {
     'project': 'ravelinjs',
     'build': b,
@@ -30,6 +30,82 @@ async function capabilityDefaults() {
     },
   };
 }
+
+class GitHubStatus {
+  /**
+   * @param {Object} p
+   * @param {string} p.sha
+   * @param {string} p.repo
+   * @param {string} p.token
+   * @param {string} p.context
+   */
+  constructor({sha, repo, token, context}) {
+    this.sha = sha;
+    this.repo = repo;
+    this.token = token;
+    this.context = context;
+  }
+
+  setTarget(priority, target) {
+    if (this.targetPriority > priority) {
+      return;
+    }
+
+    this.targetPriority = priority;
+    this.target = target;
+    this.update(this.lastStatus || {state: 'pending'});
+  }
+
+  update(status) {
+    this.lastStatus = status;
+    this._send(status);
+  }
+
+  _send(status) {
+    status.context = this.context;
+    status.target_url = this.target;
+    if (status.description && status.description.length > 140) {
+      status.description = status.description.substr(0, 140);
+    }
+
+    // Discard.
+    if (!this.sha || !this.repo || !this.token) {
+      this.token = '<masked>';
+      console.log('GitHub (status disabed)', this, status);
+      return;
+    }
+
+    console.log('GitHub status', status);
+
+    const api = this.repo.replace(/\/\/github.com\//, '//api.github.com/repos/');
+    const apiStatus = api + '/statuses/' + encodeURIComponent(process.env.COMMIT_SHA);
+    fetch(apiStatus, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + this.token,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify(status),
+    })
+    .then(async res => {
+      if (!res.ok) {
+        throw new Error(res.url + ' returned status code ' + res.statusCode + ' and body: ' + (await res.text()));
+      }
+    })
+    .catch(err => {
+      console.error('Error updating github commit status', err)
+    });
+  }
+}
+
+const gh = new GitHubStatus({
+  context: 'browserstack',
+  sha: process.env.COMMIT_SHA,
+  repo: process.env.HEAD_REPO_URL,
+  token: process.env.GITHUB_TOKEN,
+});
 
 exports.config = {
   // ====================
@@ -92,19 +168,17 @@ exports.config = {
     // Internet Explorer.
     {
       "os": "Windows",
-      "os_version": "7",
+      "os_version": "10",
       "browserName": "IE",
       "browser_version": "11.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
-      "os_version": "7",
+      "os_version": "8",
       "browserName": "IE",
       "browser_version": "10.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
@@ -112,26 +186,26 @@ exports.config = {
       "browserName": "IE",
       "browser_version": "9.0",
       'browserstack.sendKeys': 'true',
-      "browserstack.selenium_version": "3.5.2",
     },
     {
       "os": "Windows",
       "os_version": "7",
       "browserName": "IE",
       "browser_version": "8.0",
-      "browserstack.selenium_version": "3.5.2",
       'browserstack.sendKeys': 'true',
     },
 
     // Android
-    {
-      'bstack:options': {
-        "osVersion": "5.0",
-        "deviceName": "Samsung Galaxy S6",
-        "realMobile": "true"
-      },
-      "browserName": "Android"
-    },
+    // Reminder set for 16-01-2023 to uncomment this next block and check if
+    // BROWSERS=s6 npm run test:integration passes. If so, open a PR :)
+    // {
+    //   'bstack:options': {
+    //     "osVersion": "5.0",
+    //     "deviceName": "Samsung Galaxy S6",
+    //     "realMobile": "true"
+    //   },
+    //   "browserName": "Android"
+    // },
     {
       'bstack:options': {
         "osVersion": "7.0",
@@ -309,10 +383,11 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: [
-    ['browserstack', {
-      browserstackLocal: true,
-      opts: browserStackOpts,
-    }],
+    // browserstack is not instructed to run browserstack-local here. We
+    // run it ourselves in launchTunnels. Note that this will cause
+    // "browserstackLocal is not enabled - skipping..." to be logged, but we
+    // manually instantiate the tunnel in launchTunnels below.
+    ['browserstack', {opts: browserStackOpts}],
   ],
   user: user,
   key: key,
@@ -365,13 +440,22 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: [
-    async function launchAPIServer() {
+    async function launchTunnels(config, caps) {
       const api = await launchProxy(app());
-      browserStackOpts.localProxyPort = api.internalPort;
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = baseUrl;
       process.env.TEST_REMOTE = api.remote;
       console.log(`🤖 ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
+
+      const bs = new BrowserstackLauncherService({
+        browserstackLocal: true,
+        opts: {
+          localProxyHost: 'localhost',
+          localProxyPort: api.internalPort,
+          ...browserStackOpts,
+        },
+      }, caps, config);
+      return bs.onPrepare(config, caps);
     },
     function filterLimit(config, capabilities) {
       if (!process.env.LIMIT) return;
@@ -381,10 +465,49 @@ exports.config = {
         capabilities.splice(limit, capabilities.length - limit);
       }
     },
-    async function setCapabilityDefaults(config, capabilities) {
-      const def = await capabilityDefaults();
-      console.log('🤖 https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(def.build));
+
+    async function setCapabilityConstants(config, capabilities) {
+      const def = await capabilityConstants();
       capabilities.forEach(cap => Object.assign(cap, def));
+    },
+
+    /**
+     * Construct the private build URL from data we've already got and give it
+     * github for inclusion on commit statuses. Overridden by sharePublicBrowserstackURL.
+     */
+    async function sharePrivateBrowserstackURL(config, capabilities) {
+      const b = await buildP;
+      const url = 'https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(b);
+      console.log('🤖 ' + url);
+      gh.setTarget(0, url);
+    },
+
+    /**
+     * Poll the browserstack API to find the public URL of our build and give it
+     * to the github client for inclusion on commit statuses, overriding any
+     * URL generated by sharePrivateBrowserstackURL.
+     */
+    async function sharePublicBrowserstackURL(config, capabilities) {
+      const buildName = await buildP;
+      setTimeout(findBuild, 2000);
+      function findBuild() {
+        fetch(
+          'https://api.browserstack.com/automate/builds.json',
+          {headers: {'Authorization': 'Basic '+Buffer.from(user + ':' + key).toString('base64')}}
+        )
+        .then(res => {
+          if (!res.ok) throw new Error(res.url + ' returned status ' + res.statusCode);
+          return res.json();
+        })
+        .then(builds => Array.isArray(builds) && builds.filter(b => b.automation_build && b.automation_build.name == buildName).pop())
+        .then(build => build
+          ? gh.setTarget(1, build.automation_build.public_url)
+          : setTimeout(findBuild, 1000))
+        .catch(err => {
+          console.error('Error fetching browserstack builds list', err);
+          setTimeout(findBuild, 1000);
+        });
+      }
     },
   ],
   /**
@@ -505,7 +628,18 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results)
+  onComplete: function(exitCode, config, capabilities, results) {
+    const build = capabilities[0].build;
+    console.error('RESULTS', build, results);
+
+    // Avoid updating the build status for e2e runs.
+    if (process.env.E2E_RSA_KEY) return;
+
+    gh.update({
+      state: exitCode ? 'failure' : 'success',
+      description: JSON.stringify(results),
+    });
+  },
   /**
   * Gets executed when a refresh happens.
   * @param {String} oldSessionId session ID of the old session
@@ -520,7 +654,8 @@ exports.config = {
  */
 async function build() {
   if (process.env.HEAD_BRANCH) {
-    return 'ci/' + process.env.HEAD_BRANCH + '-' + process.env.COMMIT_SHA.substr(0, 7) + '-' + process.env.BUILD_ID;
+    const trigger = process.env.E2E_RSA_KEY ? 'e2e' : 'ci';
+    return trigger + '/' + process.env.HEAD_BRANCH + '-' + process.env.COMMIT_SHA.substring(0, 7) + '-' + process.env.BUILD_ID;
   }
   return await gitBuild();
 }
