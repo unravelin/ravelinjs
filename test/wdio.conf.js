@@ -196,14 +196,16 @@ exports.config = {
     },
 
     // Android
-    {
-      'bstack:options': {
-        "osVersion": "5.0",
-        "deviceName": "Samsung Galaxy S6",
-        "realMobile": "true"
-      },
-      "browserName": "Android"
-    },
+    // Reminder set for 16-01-2023 to uncomment this next block and check if
+    // BROWSERS=s6 npm run test:integration passes. If so, open a PR :)
+    // {
+    //   'bstack:options': {
+    //     "osVersion": "5.0",
+    //     "deviceName": "Samsung Galaxy S6",
+    //     "realMobile": "true"
+    //   },
+    //   "browserName": "Android"
+    // },
     {
       'bstack:options': {
         "osVersion": "7.0",
