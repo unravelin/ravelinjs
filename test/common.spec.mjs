@@ -1,6 +1,8 @@
 /* jshint esversion: 9, node: true, browser: false */
-const { diff } = require('deep-diff');
-const log = require('@wdio/logger').default('common.spec');
+import { diff } from 'deep-diff';
+import wdioLog from '@wdio/logger';
+
+const log = wdioLog('common.spec');
 
 /** @typedef {(browser) => void} NavTest */
 
@@ -18,10 +20,10 @@ const log = require('@wdio/logger').default('common.spec');
  * @param {number} [page.attempts=2]
  * @param {object} [page.waitOpts] Options for browser.waitUntil
  */
-function navigate(browser, {url, tests, attempts, waitOpts}) {
+export async function navigate(browser, {url, tests, attempts, waitOpts}) {
   var errs = [];
   for (var r = 0; r < (attempts || 2); r++) {
-    browser.url(url);
+    await browser.url(url);
     try {
       // Confirm that the page loaded with the title we expected.
       tests.forEach(f => browser.waitUntil(() => (f(browser), true), waitOpts));
@@ -46,7 +48,7 @@ function navigate(browser, {url, tests, attempts, waitOpts}) {
  * @param {string} substr The substring to be found in the page title.
  * @returns {NavTest}
  */
-function hasTitle(substr) {
+export function hasTitle(substr) {
   return function(browser) {
     const title = browser.getTitle();
     if (title.indexOf(substr) === -1) {
@@ -61,7 +63,7 @@ function hasTitle(substr) {
  * @param {string} substr The substring to be found in the page url.
  * @returns {NavTest}
  */
-function hasURL(substr) {
+export function hasURL(substr) {
   return function(browser) {
     const url = browser.getUrl();
     if (url.indexOf(substr) === -1) {
@@ -76,7 +78,7 @@ function hasURL(substr) {
  * @param {string} selector
  * @returns {NavTest}
  */
-function hasElement(selector) {
+export function hasElement(selector) {
   return browser => browser.$(selector).isExisting();
 }
 
@@ -87,7 +89,7 @@ function hasElement(selector) {
  * @param {object} exp
  * @param {string} [msg]
  */
-function objDiff(act, exp, msg) {
+export function objDiff(act, exp, msg) {
   const d = diff(exp, act)
     .filter(c => c.kind != 'A' && c.kind != 'N')
     .map(c => `- ${c.path.join(".")}: ${c.lhs}` + (c.kind == 'E' ? `\n+ ${c.path.join(".")}: ${c.rhs}` : ''))
@@ -96,11 +98,3 @@ function objDiff(act, exp, msg) {
     throw new Error(msg + (msg ? ': ' : '') + 'expected (-) but got (+):\n' + d);
   }
 }
-
-module.exports = {
-  navigate,
-  hasTitle,
-  hasURL,
-  hasElement,
-  objDiff,
-};

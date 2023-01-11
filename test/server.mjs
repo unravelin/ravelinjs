@@ -1,21 +1,27 @@
 #!/usr/bin/env node
 
 /* jshint esversion: 9, node: true */
-const { parse: parseURL } = require('url');
-const onFinished = require('on-finished');
-const logger = require('@wdio/logger').default('test/server');
-const buildURL = require('build-url');
-const fetch = require('node-fetch');
-const express = require('express');
-const cors = require('cors');
-const serveIndex = require('serve-index');
-const ngrok = require('ngrok');
-const mingo = require('mingo');
+import { parse as parseURL } from 'node:url';
+import onFinished from 'on-finished';
+import wdioLog from '@wdio/logger';
+import buildURL from 'build-url';
+import fetch from 'node-fetch';
+import express from 'express';
+import cors from 'cors';
+import serveIndex from 'serve-index';
+import ngrok from 'ngrok';
+import mingo from 'mingo';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const logger = wdioLog('test/server');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * app returns the express application of our test server.
  */
-function app() {
+export function app() {
   /** @type {RequestLog[]} */
   const requests = [];
 
@@ -77,7 +83,7 @@ function app() {
   return app;
 }
 
-function noContent(req, res) {
+export function noContent(req, res) {
   try {
     JSON.parse(req.body);
     res.status(204).send();
@@ -86,7 +92,7 @@ function noContent(req, res) {
   }
 }
 
-function maybeJSON(b) {
+export function maybeJSON(b) {
   try {
     return JSON.parse(b);
   } catch(e) {}
@@ -100,7 +106,7 @@ function maybeJSON(b) {
  *
  * @returns {string} The ngrok proxy address to access the server.
  */
-async function launchProxy(app) {
+export async function launchProxy(app) {
   // Start express listening on a random port.
   var listener;
   const local = await (new Promise((resolve) => {
@@ -129,7 +135,7 @@ async function launchProxy(app) {
  * disconnectProxy kills any servers started.
  * @param {string} [url] The URL of one server to kill. Defaults to all.
  */
-async function disconnectProxy(url) {
+export async function disconnectProxy(url) {
   await ngrok.disconnect(url);
 }
 
@@ -155,7 +161,7 @@ async function disconnectProxy(url) {
  * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
  * @returns {RequestLog} The matched request.
  */
-async function fetchRequest(api, pattern) {
+export async function fetchRequest(api, pattern) {
   const q = JSON.stringify(pattern);
   const url = buildURL(api, {path: '/requests', queryParams: {q}});
   return fetch(url).then(function(res) {
@@ -180,7 +186,7 @@ class EmptyFetchError extends Error {
   }
 }
 
-async function expectNoRequest(api, pattern) {
+export async function expectNoRequest(api, pattern) {
   let r;
   try {
     r = await fetchRequest(api, pattern);
@@ -201,7 +207,7 @@ class NonemptyFetchError extends Error {
   }
 }
 
-async function expectNoError(api, key) {
+export async function expectNoError(api, key) {
   try {
     await expectNoRequest(api, {
       'path': '/z/err',
@@ -219,18 +225,17 @@ async function expectNoError(api, key) {
   }
 }
 
-module.exports = { launchProxy, app, disconnectProxy, fetchRequest, expectNoRequest, expectNoError };
-
-if (require.main === module) {
-  const a = app();
-  if (process.argv.length <= 2) {
-    // Launch behind ngrok.
-    launchProxy(a).then(url => console.log('🚆', url));
-  } else {
-    // Launch on the given port.
-    const port = parseInt(process.argv[2], 10);
-    if (isNaN(port)) throw new Error('invalid port');
-    a.listen(port, 'localhost');
-    console.log('http://localhost:' + port);
-  }
-}
+// TODO https://stackoverflow.com/questions/57838022/detect-whether-es-module-is-run-from-command-line-in-node
+// if (require.main === module) {
+//   const a = app();
+//   if (process.argv.length <= 2) {
+//     // Launch behind ngrok.
+//     launchProxy(a).then(url => console.log('🚆', url));
+//   } else {
+//     // Launch on the given port.
+//     const port = parseInt(process.argv[2], 10);
+//     if (isNaN(port)) throw new Error('invalid port');
+//     a.listen(port, 'localhost');
+//     console.log('http://localhost:' + port);
+//   }
+// }

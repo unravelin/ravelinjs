@@ -1,8 +1,13 @@
-const path = require('path');
-const { launchProxy, app } = require('./server');
-const { exec } = require('child_process');
-const fetch = require('node-fetch');
-const BrowserstackLauncherService = require('@wdio/browserstack-service/build/launcher').default;
+import path from 'node:path';
+import merge from 'deepmerge';
+import { launchProxy, app } from './server.mjs';
+import { exec } from 'node:child_process';
+import fetch from 'node-fetch';
+import { fileURLToPath } from 'node:url';
+import { launcher as BrowserstackLauncherService } from '@wdio/browserstack-service';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -17,17 +22,18 @@ if (!user || !key) {
 }
 
 const buildP = build();
-async function capabilityConstants() {
+async function capabilityDefaults() {
   const b = await buildP;
   return {
-    'project': 'ravelinjs',
-    'build': b,
-    'browserstack.debug': 'true',
-    'browserstack.console': 'verbose',
-    'browserstack.networkLogs': 'true',
-    'browserstack.networkLogsOptions': {
-        captureContent: true
-    },
+    'bstack:options': {
+      'projectName': 'ravelinjs',
+      'buildName': b,
+      'debug': 'true',
+      'networkLogs': 'true',
+      'networkLogsOptions': {
+          captureContent: true
+      },
+    }
   };
 }
 
@@ -68,12 +74,7 @@ class GitHubStatus {
       status.description = status.description.substr(0, 140);
     }
 
-    // Discard.
-    if (!this.sha || !this.repo || !this.token) {
-      this.token = '<masked>';
-      console.log('GitHub (status disabed)', this, status);
-      return;
-    }
+    if (!this.sha || !this.repo || !this.token) return;
 
     console.log('GitHub status', status);
 
@@ -106,8 +107,9 @@ const gh = new GitHubStatus({
   repo: process.env.HEAD_REPO_URL,
   token: process.env.GITHUB_TOKEN,
 });
+let bs;
 
-exports.config = {
+export const config = {
   // ====================
   // Runner Configuration
   // ====================
@@ -167,32 +169,41 @@ exports.config = {
 
     // Internet Explorer.
     {
-      "os": "Windows",
-      "os_version": "10",
-      "browserName": "IE",
-      "browser_version": "11.0",
-      'browserstack.sendKeys': 'true',
+      'browserName': 'IE',
+      'bstack:options': {
+        'os': 'Windows',
+        'osVersion': '10',
+        'browserVersion': '11.0',
+        'seleniumVersion': '4.7.2',
+        'sendKeys': true,
+      }
     },
     {
-      "os": "Windows",
-      "os_version": "8",
-      "browserName": "IE",
-      "browser_version": "10.0",
-      'browserstack.sendKeys': 'true',
+      'browserName': 'IE',
+      'bstack:options': {
+        'os': 'Windows',
+        'osVersion': '8',
+        'browserVersion': '10.0',
+        'sendKeys': true,
+      }
     },
     {
-      "os": "Windows",
-      "os_version": "7",
-      "browserName": "IE",
-      "browser_version": "9.0",
-      'browserstack.sendKeys': 'true',
+      'browserName': 'IE',
+      'bstack:options': {
+        'os': 'Windows',
+        'osVersion': '7',
+        'browserVersion': '9.0',
+        'sendKeys': true,
+      }
     },
     {
-      "os": "Windows",
-      "os_version": "7",
-      "browserName": "IE",
-      "browser_version": "8.0",
-      'browserstack.sendKeys': 'true',
+      'browserName': 'IE',
+      'bstack:options': {
+        'os': 'Windows',
+        'osVersion': '7',
+        'browserVersion': '8.0',
+        'sendKeys': true,
+      }
     },
 
     // Android
@@ -411,12 +422,6 @@ exports.config = {
   // see also: https://webdriver.io/docs/dot-reporter.html
   reporters: [
     'spec',
-    ['junit', {
-      outputDir: path.join(__dirname, '../reports/junit'),
-      addFileAttribute: true,
-      outputFileFormat: options => `ravelinjs - ${options.capabilities.name}.xml`,
-      suiteNameFormat: '.',
-    }],
   ],
 
   // Options to be passed to Mocha.
@@ -447,7 +452,7 @@ exports.config = {
       process.env.TEST_REMOTE = api.remote;
       console.log(`🤖 ${api.internal}\n   ↖ ${baseUrl}\n   ↖ ${api.remote}`);
 
-      const bs = new BrowserstackLauncherService({
+      bs = new BrowserstackLauncherService({
         browserstackLocal: true,
         opts: {
           localProxyHost: 'localhost',
@@ -466,9 +471,11 @@ exports.config = {
       }
     },
 
-    async function setCapabilityConstants(config, capabilities) {
-      const def = await capabilityConstants();
-      capabilities.forEach(cap => Object.assign(cap, def));
+    async function setCapabilityDefaults(config, caps) {
+      const def = await capabilityDefaults();
+      for (let i = 0; i < caps.length; i++) {
+        caps[i] = merge(caps[i], def);
+      }
     },
 
     /**
@@ -522,16 +529,16 @@ exports.config = {
   onWorkerStart: function setCapName(cid, caps, specs, args, execArgv) {
     // Set the capability name to describe the spec, browser and os.
     const o = caps["bstack:options"];
-    caps.name = [
+    o.sessionName = [
       specs && specs[0].split('/').pop(),
       '-',
       caps.browserName,
-      caps.browserVersion, caps.browser_version,
+      o.browserVersion,
       '-',
-      o && o.os, caps.os, !(o && o.os) && caps.browserName == 'iPhone'  && 'iOS',
-      o && o.osVersion, caps.os_version,
+      o.os, caps.os, !o.os && caps.browserName == 'iPhone' && 'iOS',
+      o.osVersion, caps.os_version,
       '-',
-      o && o.deviceName,
+      o.deviceName,
     ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
   },
   /**
@@ -628,18 +635,24 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  onComplete: function(exitCode, config, capabilities, results) {
-    const build = capabilities[0].build;
-    console.error('RESULTS', build, results);
+  onComplete: [
+    function killBrowserstackLocal(exitCode, config, capabilities, results) {
+      return bs.onComplete(exitCode, config, capabilities, results)
+    },
 
-    // Avoid updating the build status for e2e runs.
-    if (process.env.E2E_RSA_KEY) return;
+    function finalGitHubStatus(exitCode, config, capabilities, results) {
+      const build = capabilities[0].build;
+      console.error('RESULTS', build, results);
 
-    gh.update({
-      state: exitCode ? 'failure' : 'success',
-      description: JSON.stringify(results),
-    });
-  },
+      // Avoid updating the build status for e2e runs.
+      if (process.env.E2E_RSA_KEY) return;
+
+      gh.update({
+        state: exitCode ? 'failure' : 'success',
+        description: JSON.stringify(results),
+      });
+    },
+  ],
   /**
   * Gets executed when a refresh happens.
   * @param {String} oldSessionId session ID of the old session
