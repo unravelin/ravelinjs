@@ -104,13 +104,15 @@ export function maybeJSON(b) {
  * and provides an API for recording and reviewing AJAX requests. This allows
  * integration tests to validate that the browser successfully made requests.
  *
+ * @param {express.Application} app
+ * @param {Number} [port]
  * @returns {string} The ngrok proxy address to access the server.
  */
-export async function launchProxy(app) {
+export async function launchProxy(app, port) {
   // Start express listening on a random port.
   var listener;
   const local = await (new Promise((resolve) => {
-    listener = app.listen(0, "127.0.0.1", function() {
+    listener = app.listen(port, "127.0.0.1", function() {
       // TODO: Any error handling needed here?
       resolve(listener.address());
     });
