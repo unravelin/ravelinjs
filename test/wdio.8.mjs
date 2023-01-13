@@ -3,9 +3,37 @@ import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
 
+const port = 9999;
+const user = process.env.BROWSERSTACK_USERNAME;
+const key = process.env.BROWSERSTACK_ACCESS_KEY;
+if (!user || !key) {
+  throw new Error('Envvars BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be set.')
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const port = 9999;
+function filterCaps(caps) {
+  if (process.env.BROWSERS) {
+    const toks = process.env.BROWSERS.toLowerCase().split(',');
+    caps = caps.filter(v => {
+      const j = JSON.stringify(v).toLowerCase();
+      for (const tok of toks) {
+        if (!j.includes(tok)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  if (process.env.LIMIT) {
+    const lim = parseInt(process.env.LIMIT, 10);
+    if (!lim) throw new Error('LIMIT envvar cannot be parsed as integer');
+    caps = caps.slice(0, lim);
+  }
+
+  return caps;
+}
 
 export const config = {
   runner: 'local',
@@ -90,7 +118,8 @@ export const config = {
   // https://docs.npmjs.com/cli/run-script), then the current working directory
   // is where your `package.json` resides, so `wdio` will be called from there.
   specs: [
-    path.join(__dirname, '**/unit.spec.mjs'),
+    path.join(__dirname, '*/unit.spec.mjs'),
+    // path.join(__dirname, '*/encrypt.spec.mjs'),
   ],
   // Patterns to exclude.
   exclude: [],
@@ -217,7 +246,7 @@ export const config = {
         const bs = c['bstack:options'];
 
         bs.seleniumVersion ??= '4.7.2';
-        bs.debug ??= true;
+        // bs.debug ??= true;
         bs.networkLogs ??= true;
         bs.consoleLogs ??= 'verbose';
       });
@@ -473,7 +502,7 @@ export const config = {
   // If you have trouble getting all important capabilities together, check out the
   // BrowserStack platform configurator - a great tool to configure your capabilities:
   // https://www.browserstack.com/automate/capabilities?tag=selenium-4.
-  capabilities: [
+  capabilities: filterCaps([
       /*{
         browserName: 'chrome',
         'goog:chromeOptions': {
@@ -686,5 +715,5 @@ export const config = {
         'osVersion': '11',
       },
     },
-  ],
+  ]),
 }

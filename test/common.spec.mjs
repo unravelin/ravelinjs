@@ -1,10 +1,10 @@
 /* jshint esversion: 9, node: true, browser: false */
-import { diff } from 'deep-diff';
-import wdioLog from '@wdio/logger';
+import diff from 'deep-diff';
+import wdiolog from '@wdio/logger';
 
-const log = wdioLog('common.spec');
+const log = wdiolog('common.spec');
 
-/** @typedef {(browser) => void} NavTest */
+/** @typedef {async (browser) => void} NavTest */
 
 /**
  * navigate attempts to load a page into the browser from the list of urls. For
@@ -24,9 +24,11 @@ export async function navigate(browser, {url, tests, attempts, waitOpts}) {
   var errs = [];
   for (var r = 0; r < (attempts || 2); r++) {
     await browser.url(url);
+
     try {
-      // Confirm that the page loaded with the title we expected.
-      tests.forEach(f => browser.waitUntil(() => (f(browser), true), waitOpts));
+      for (const test of tests) {
+        await browser.waitUntil(async () => (await test(browser), true), waitOpts);
+      }
       return;
     } catch (e) {
       const m = e.message.replace(/^waitUntil condition failed with the following reason: /, '');
@@ -36,10 +38,10 @@ export async function navigate(browser, {url, tests, attempts, waitOpts}) {
 
     // If none of the pages we tried worked, perhaps we've got a network issue?
     // Try getting a fresh session to kick things off.
-    log.warn(`Session ${browser.sessionId} failed to load all URLs once. Reloading.`);
-    browser.reloadSession();
+    log.warn(`Session ${browser.sessionId} failed to pass init tests. Reloading.`);
+    await browser.reloadSession();
   }
-  throw new Error(`Failed to load all pages: ${errs.join("; ")}`);
+  throw new Error(`Failed to load page: ${errs.join("; ")}`);
 }
 
 /**
@@ -49,8 +51,8 @@ export async function navigate(browser, {url, tests, attempts, waitOpts}) {
  * @returns {NavTest}
  */
 export function hasTitle(substr) {
-  return function(browser) {
-    const title = browser.getTitle();
+  return async function hasTitleTest(browser) {
+    const title = await browser.getTitle();
     if (title.indexOf(substr) === -1) {
       throw new Error(`Expected page title containing ${substr} but found: ${title}`);
     }
@@ -64,8 +66,8 @@ export function hasTitle(substr) {
  * @returns {NavTest}
  */
 export function hasURL(substr) {
-  return function(browser) {
-    const url = browser.getUrl();
+  return async function hasURLTest(browser) {
+    const url = await browser.getUrl();
     if (url.indexOf(substr) === -1) {
       throw new Error(`Expected page title containing ${substr} but found: ${url}`);
     }
@@ -79,7 +81,14 @@ export function hasURL(substr) {
  * @returns {NavTest}
  */
 export function hasElement(selector) {
-  return browser => browser.$(selector).isExisting();
+  return async function hasElementTest(browser) {
+    try {
+      const e = await browser.$(selector);
+      return await e.isExisting();
+    } catch(err) {
+      return false;
+    }
+  }
 }
 
 /**
@@ -90,41 +99,11 @@ export function hasElement(selector) {
  * @param {string} [msg]
  */
 export function objDiff(act, exp, msg) {
-  const d = diff(exp, act)
+  const d = diff.diff(exp, act)
     .filter(c => c.kind != 'A' && c.kind != 'N')
     .map(c => `- ${c.path.join(".")}: ${c.lhs}` + (c.kind == 'E' ? `\n+ ${c.path.join(".")}: ${c.rhs}` : ''))
     .join("\n");
   if (d) {
     throw new Error(msg + (msg ? ': ' : '') + 'expected (-) but got (+):\n' + d);
-  }
-}
-
-const couldNotFindElement = /Could not find element/;
-
-/**
- * Usually, `const e = $(selector); e.waitForExists()` will wait until e is on
- * the page. On old versions of selenium, `$` will throw an exception before we
- * can get to `waitForExists`. This resolves that problem.
- *
- * @param {Object} p
- * @param {String} p.selector The argument passed to $.
- * @param {Number} [p.retries=3]
- * @param {Number} [p.retryDelayMs=3000]
- * @param {RegExp} [p.retryPattern=/Could not find element/]
- */
-export async function retry$({selector, retries=3, retryDelayMs=3000, retryPattern=couldNotFindElement}){
-  let attempt = 0;
-  while (true) {
-    try {
-      return await $(selector);
-    } catch(err) {
-      if (retryPattern && typeof err?.message === 'string' && !retryPattern.test(err.message)) {
-        throw err;
-      }
-      if (++attempt >= retries) {
-        throw err;
-      }
-      await new Promise(resolve => setTimeout(resolve, retryDelayMs));
-    }
   }
 }
