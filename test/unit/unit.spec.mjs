@@ -1,4 +1,4 @@
-import { retry$ } from '../libspec.mjs';
+import { retry$ } from '../common.spec.mjs';
 
 describe('ravelinjs unit tests', function() {
   it('passes', async function() {
