@@ -1,16 +1,19 @@
-const log = require('@wdio/logger').default('track.spec');
-const { navigate, hasTitle, hasElement, objDiff } = require('../common.spec.js');
-const { fetchRequest } = require('../server');
+import { Key } from 'webdriverio'
+import wdio from '@wdio/logger';
+import { navigate, hasTitle, hasElement, objDiff } from '../common.spec.mjs';
+import { fetchRequest } from '../server.mjs';
+
+const log = wdio('track.spec');
 
 describe('ravelin.track', function () {
   var key;
   var sessionId, deviceId;
 
-  it('loads', function () {
+  it('loads', async function () {
     key = browser.sessionId;
 
     // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
-    navigate(browser, {
+    await navigate(browser, {
       attempts: 3,
       url: '/track/?key=' + encodeURIComponent(key),
       tests: [
@@ -22,13 +25,13 @@ describe('ravelin.track', function () {
     });
 
     // Check whether the browser reported any errors.
-    const e = $('#error').getText();
+    const e = await $('#error').getText();
     if (e) throw new Error(e);
   });
 
-  it('sends page-load events', function () {
+  it('sends page-load events', async function () {
     // Read the device and session IDs from the cookies.
-    const cookies = browser.getCookies();
+    const cookies = await browser.getCookies();
     sessionId = cookies.filter(({ name }) => name === 'ravelinSessionId')[0].value.replace(/^.+?:/, '');
     deviceId = cookies.filter(({ name }) => name === 'ravelinDeviceId')[0].value;
     if (!deviceId.match(/^rjs-/)) {
@@ -37,8 +40,8 @@ describe('ravelin.track', function () {
 
     // Confirm that we received a page-load event.
     let loadEvent;
-    browser.waitUntil(function () {
-      loadEvent = browser.call(
+    await browser.waitUntil(async function () {
+      loadEvent = await browser.call(
         () => fetchRequest(process.env.TEST_INTERNAL, {
           path: '/z',
           query: { key: key },
@@ -70,29 +73,29 @@ describe('ravelin.track', function () {
     );
   });
 
-  it('sends redacted paste events of pan text', function () {
+  it('sends redacted paste events of pan text', async function () {
     // Write into <input id=clip-stage onclick=this.select()> then copy out.
     const c = $('#clip-stage');
-    c.setValue('4111 1111 1111 1111');
-    c.click();
-    c.addValue(["Control", "Insert"]);
+    await c.setValue('4111 1111 1111 1111');
+    await c.click();
+    await browser.keys(['Control', 'Insert']);
 
     // Paste into <input name=name id=in-tracked />
     const e = $('#in-pan');
-    e.clearValue();
-    e.click();
-    e.addValue(["Shift", "Insert"]);
+    await e.clearValue();
+    await e.click();
+    await browser.keys(['Shift', 'Insert']);
 
     // Check if the paste worked.
-    if (e.getValue() === "") {
+    if (await e.getValue() === "") {
       log.warn('Copy-paste failed so skipping all paste tests. ' + browser.sessionId);
       this.skip();
     }
 
     // Fetch the paste event we shared.
     let pasteEvent;
-    browser.waitUntil(function () {
-      pasteEvent = browser.call(
+    await browser.waitUntil(async function () {
+      pasteEvent = await browser.call(
         () => fetchRequest(process.env.TEST_INTERNAL, {
           method: 'POST',
           path: '/z',
@@ -146,12 +149,12 @@ describe('ravelin.track', function () {
     );
   });
 
-  it('sends resize events', function() {
+  it('sends resize events', async function() {
     try {
       // Make the browser smaller.
-      var d1 = browser.getWindowSize();
-      browser.setWindowSize(d1.width - 10, d1.height - 10);
-      var d2 = browser.getWindowSize();
+      var d1 = await browser.getWindowSize();
+      await browser.setWindowSize(d1.width - 10, d1.height - 10);
+      var d2 = await browser.getWindowSize();
 
       if (d1.width == d2.width && d1.height == d2.height) {
         log.warn('Resizing the browser had no effect. Skipping test.');
@@ -164,8 +167,8 @@ describe('ravelin.track', function () {
 
     // Validate that we got an event of the expected format.
     let resizeEvent;
-    browser.waitUntil(function () {
-      resizeEvent = browser.call(
+    await browser.waitUntil(async function () {
+      resizeEvent = await browser.call(
         () => fetchRequest(process.env.TEST_INTERNAL, {
           method: 'POST',
           path: '/z',
