@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 substitutions:
   _NODE10: node:10.24.1-slim
+  _CLOUD_SDK_VERSION: 413.0.0
 
 availableSecrets:
   secretManager:
@@ -47,8 +48,7 @@ steps:
       - run
       - test:e2e
 
-artifacts:
-  objects:
-    location: "gs://ravelinjs-integration-tests/$BUILD_ID"
-    paths:
-      - "/workspace/cipher.txt"
+  - id: upload_cipher
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:$_CLOUD_SDK_VERSION
+    entrypoint: gsutil
+    args: ["cp", "/workspace/cipher.txt", "gs://ravelinjs-integration-tests/$BUILD_ID"]
