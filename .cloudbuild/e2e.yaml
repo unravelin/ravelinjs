@@ -51,4 +51,4 @@ steps:
   - id: upload_cipher
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:$_CLOUD_SDK_VERSION
     entrypoint: gsutil
-    args: ["cp", "/workspace/cipher.txt", "gs://ravelinjs-integration-tests/$BUILD_ID"]
+    args: ["cp", "/workspace/cipher.txt", "gs://ravelinjs-integration-tests/$BUILD_ID/cipher.txt"]
