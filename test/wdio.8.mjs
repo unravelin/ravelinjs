@@ -66,12 +66,46 @@ export const config = {
   key: process.env.BROWSERSTACK_ACCESS_KEY,
   services: [
     [class RavelinJSServerLauncher {
-      async onPrepare(config, capabilities) {
+      async onPrepare(config, caps) {
         try {
+          // Launch our local server and ngrok proxy.
           const api = await launchProxy(app(), port);
           process.env.TEST_INTERNAL = api.internal;
           process.env.TEST_LOCAL = config.baseUrl;
           process.env.TEST_REMOTE = api.remote;
+
+          // Set default properties on the capabilities.
+          caps.forEach(c => {
+            c['bstack:options'] ||= {};
+            const bs = c['bstack:options'];
+
+            if (bs.realMobile !== 'true') {
+              bs.seleniumVersion ??= '4.7.2';
+            }
+            // bs.debug ??= true;
+            bs.networkLogs ??= true;
+            bs.consoleLogs ??= 'verbose';
+          });
+        } catch(err) {
+          throw new SevereServiceError(err);
+        }
+      }
+
+      async onWorkerStart(cid, cap, specs, args, execArgv) {
+        try {
+          // Set a session title.
+          const o = cap['bstack:options'];
+          o.sessionName = [
+            specs && specs[0].split('/').pop(),
+            '-',
+            cap.browserName,
+            cap.browserVersion, o.browserVersion,
+            '-',
+            o.os, cap.os, !o.os && cap.browserName == 'iPhone' && 'iOS',
+            o.osVersion, cap.os_version,
+            '-',
+            o.deviceName,
+          ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
         } catch(err) {
           throw new SevereServiceError(err);
         }
@@ -79,6 +113,7 @@ export const config = {
     }],
     ['browserstack', {
       browserstackLocal: true,
+      setSessionName: false,
       opts: {
         kill: true,
         force: true,
@@ -228,30 +263,14 @@ export const config = {
   // returns with a promise, WebdriverIO will wait until that promise is
   // resolved to continue.
 
-  /**
-   * Gets executed once before all workers get launched.
-   * @param {Object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   */
-  onPrepare: [
-    async function setupCapabilities(config, caps) {
-      // Filter capabilities but those which match process.env.BROWSER.
-      // Limit capabilities according to process.env.LIMIT.
-      // Set default properties on the capabilities.
-      caps.forEach(c => {
-        c['bstack:options'] ||= {};
-        const bs = c['bstack:options'];
-
-        if (bs.realMobile !== 'true') {
-          bs.seleniumVersion ??= '4.7.2';
-        }
-        // bs.debug ??= true;
-        bs.networkLogs ??= true;
-        bs.consoleLogs ??= 'verbose';
-      });
-    },
-  ],
-
+  // /**
+  //  * Gets executed once before all workers get launched.
+  //  * @param {Object} config wdio configuration object
+  //  * @param {Array.<Object>} capabilities list of capabilities details
+  //  */
+  // onPrepare: function(config, capabilities) {
+  //   console.log('onPrepare', config, capabilities);
+  // },
   // /**
   //  * Gets executed before a worker process is spawned and can be used to initialize specific service
   //  * for that worker as well as modify runtime environments in an async fashion.
