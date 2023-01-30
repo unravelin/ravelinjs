@@ -171,22 +171,22 @@ export const config = {
         }
       }
 
-      after(result, capabilities, specs) {
+      onWorkerEnd(cid, exitCode, specs, retries) {
         this.finished++;
-        if (result) {
-          this.counts.failed++;
-        } else {
+        if (exitCode == 0) {
           this.counts.passed++;
+        } else {
+          this.counts.failed++;
         }
         this.gh.update({
           state: 'pending',
-          description: 'Pending: ' + JSON.stringify(this.counts),
+          description: JSON.stringify(this.counts),
         });
       }
 
-      onComplete(exitCode, config, capabilities, results) {
+      async onComplete(exitCode, config, capabilities, results) {
         this.counts = results;
-        this.gh.update({
+        await this.gh.update({
           state: exitCode ? 'failure' : 'success',
           description: JSON.stringify(counts),
         });

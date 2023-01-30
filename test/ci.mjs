@@ -25,12 +25,12 @@ export class GitHubStatus {
     this.update(this.lastStatus || {state: 'pending'});
   }
 
-  update(status) {
+  async update(status) {
     this.lastStatus = status;
-    this._send(status);
+    await this._send(status);
   }
 
-  _send(status) {
+  async _send(status) {
     status.context = this.context;
     status.target_url = this.target;
     if (status.description && status.description.length > 140) {
@@ -42,8 +42,8 @@ export class GitHubStatus {
     console.log('GitHub status', status);
 
     const api = this.repo.replace(/\/\/github.com\//, '//api.github.com/repos/');
-    const apiStatus = api + '/statuses/' + encodeURIComponent(process.env.COMMIT_SHA);
-    fetch(apiStatus, {
+    const apiStatus = api + '/statuses/' + encodeURIComponent(this.sha);
+    return fetch(apiStatus, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
