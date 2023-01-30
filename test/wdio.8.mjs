@@ -457,6 +457,7 @@ class GitHubService {
       repo: process.env.HEAD_REPO_URL,
       token: process.env.GITHUB_TOKEN,
     });
+    this.specs = new Set();
   }
 
   onPrepare(config, caps) {
