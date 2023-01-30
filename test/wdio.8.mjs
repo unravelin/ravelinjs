@@ -172,7 +172,7 @@ export const config = {
       }
 
       onWorkerEnd(cid, exitCode, specs, retries) {
-        this.finished++;
+        this.counts.finished++;
         if (exitCode == 0) {
           this.counts.passed++;
         } else {
@@ -188,7 +188,7 @@ export const config = {
         this.counts = results;
         await this.gh.update({
           state: exitCode ? 'failure' : 'success',
-          description: JSON.stringify(counts),
+          description: JSON.stringify(this.counts),
         });
       }
     }],
