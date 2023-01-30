@@ -1,3 +1,5 @@
+import { exec } from 'node:child_process';
+
 export class GitHubStatus {
   /**
    * @param {Object} p
@@ -60,4 +62,31 @@ export class GitHubStatus {
       console.error('Error updating github commit status', err)
     });
   }
+}
+
+/**
+ * build returns an identifier for the build in question.
+ */
+export async function build() {
+  if (process.env.HEAD_BRANCH) {
+    const trigger = process.env.E2E_RSA_KEY ? 'e2e' : 'ci';
+    return trigger + '/' + process.env.HEAD_BRANCH + '-' + process.env.COMMIT_SHA.substring(0, 7) + '-' + process.env.BUILD_ID;
+  }
+  return await gitBuild();
+}
+
+/**
+ * gitBuild returns a description of the git revision of the working directory.
+ * @returns {Promise}
+ */
+export function gitBuild() {
+  return new Promise(function (resolve, reject) {
+    exec('git describe --all --long --dirty', function (err, stdout, stderr) {
+      if (err) {
+        reject('git describe: ' + err + ' stderr: ' + stderr);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
 }
