@@ -182,7 +182,7 @@ export const config = {
             this.specs.add(spec);
           }
           this.counts.running++;
-          this.counts.total = this.counts.caps * this.specs.length;
+          this.counts.total = this.counts.caps * this.specs.size;
           this.ghUpdate('pending');
         } catch(err) {
           throw new SevereServiceError(err);
