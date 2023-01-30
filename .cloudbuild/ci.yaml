@@ -83,3 +83,8 @@ steps:
       "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
       "gcr.io/$PROJECT_ID/gcb2gh",
     ]
+
+  # Optional step to debug gcb2gh.
+  - id: gcb2gh_logs
+    name: "gcr.io/cloud-builders/docker"
+    args: [logs, gcb2gh]
