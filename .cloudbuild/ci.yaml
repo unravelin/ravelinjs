@@ -62,3 +62,24 @@ steps:
     args:
       - run
       - test:integration
+
+  - id: gcb2gh
+    waitFor: ["-"]
+    name: "gcr.io/cloud-builders/docker"
+    secretEnv: [GITHUB_TOKEN]
+    args: [
+      "run", "--name", "gcb2gh", "--detach",
+      # Configure: the GitHub repo.
+      "--env", "GITHUB_TOKEN",
+      "--env", "GITHUB_USER=unravelin",
+      "--env", "GITHUB_REPO=ravelinjs",
+      # Configure: the build manifest.
+      "--mount", "type=bind,source=/workspace,target=/workspace,bind-propagation=rprivate",
+      "--env", "BUILD_MANIFEST=/workspace/.cloudbuild/ci.yaml",
+      # GCB specifics.
+      "--env", "BUILD_ID=$BUILD_ID",
+      "--env", "PROJECT_ID=$PROJECT_ID",
+      "--env", "COMMIT_SHA=$COMMIT_SHA",
+      "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
+      "gcr.io/$PROJECT_ID/gcb2gh",
+    ]

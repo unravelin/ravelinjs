@@ -504,7 +504,8 @@ class GitHubService {
     const c = this.counts;
     return this.gh.update({
       state: state,
-      description: `${c.running}🏃 ${c.passed}✔️ ${c.failed}❌ of ${c.total} (${(100*c.finished/c.total).toFixed(2)}%)`,
+      // Emoji shortcodes because "description doesn't accept 4-byte Unicode".
+      description: `${c.running}:running: ${c.passed}:heavy_check_mark: ${c.failed}:x: of ${c.total} (${(100*c.finished/c.total).toFixed(2)}%)`,
     });
   }
 
