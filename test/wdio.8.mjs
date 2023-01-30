@@ -4,6 +4,12 @@ import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
 import { GitHubStatus, build } from './ci.mjs';
 
+/**
+ * The hooks available to a service added to the config.
+ * @typedef {import("@wdio/types").Services.ServiceClass} ServiceClass
+ * @typedef {import("@wdio/types").Services.ServiceInstance} ServiceInstance
+ */
+
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -46,8 +52,7 @@ function buildConfig() {
     user: process.env.BROWSERSTACK_USERNAME,
     key: process.env.BROWSERSTACK_ACCESS_KEY,
     services: [
-      // Launch the test API server, an ngrok tunnel, set some defaults, and
-      // send updates to GitHub.
+      // Launch the test API server, an ngrok tunnel, set some defaults.
       [RavelinJSServerLauncher],
       // Launch the browserstack local tunnel and create selenium sessions.
       ['browserstack', {
@@ -61,6 +66,8 @@ function buildConfig() {
           'disable-dashboard': true,
         },
       }],
+      // Send updates to GitHub.
+      [GitHubService],
     ],
 
     // ==================
@@ -381,38 +388,17 @@ function buildConfig() {
   };
 }
 
-/**
- * The hooks available to a service added to the config.
- * @typedef {import("@wdio/types").Services.HookFunctions} HookFunctions
- */
+const buildP = build();
 
 /**
- * @implements {HookFunctions}
+ * @implements {ServiceClass}
  */
 class RavelinJSServerLauncher {
   constructor() {
-    this.build = build();
-    this.counts = {
-      caps: 0,
-      specs: 0,
-      total: 0,
-      running: 0,
-      finished: 0,
-      passed: 0,
-      failed: 0,
-    };
-    this.specs = new Set();
-    this.gh = new GitHubStatus({
-      context: 'browserstack',
-      sha: process.env.COMMIT_SHA,
-      repo: process.env.HEAD_REPO_URL,
-      token: process.env.GITHUB_TOKEN,
-    });
+    this.build = buildP;
   }
 
   async onPrepare(config, caps) {
-    // TODO: Match all the files to config.specs and use that as a count
-    // from the very beginning.
     try {
       // Launch our local server and ngrok proxy.
       const api = await launchProxy(app(), port);
@@ -439,11 +425,6 @@ class RavelinJSServerLauncher {
     } catch(err) {
       throw new SevereServiceError(err);
     }
-
-    // Initiate the post to GitHub.
-    this.counts.caps = caps.length;
-    this._ghInitPvt();
-    this._ghInitPublic();
   }
 
   async onWorkerStart(cid, cap, specs, args, execArgv) {
@@ -461,18 +442,45 @@ class RavelinJSServerLauncher {
         '-',
         o.deviceName,
       ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
-
-      // Estimate how many tasks there are.
-      for (let spec of specs) {
-        this.specs.add(spec);
-      }
-      this.counts.specs = this.specs.size;
-      this.counts.total = this.counts.caps * this.counts.specs;
-      this.counts.running++;
-      this.ghUpdate('pending');
     } catch(err) {
       throw new SevereServiceError(err);
     }
+  }
+}
+
+class GitHubService {
+  constructor(opts, caps, config) {
+    this.build = buildP;
+    this.gh = new GitHubStatus({
+      context: 'browserstack',
+      sha: process.env.COMMIT_SHA,
+      repo: process.env.HEAD_REPO_URL,
+      token: process.env.GITHUB_TOKEN,
+    });
+  }
+
+  onPrepare(config, caps) {
+    this.counts = {
+      caps: caps.length,
+      specs: 0,
+      total: 0,
+      running: 0,
+      finished: 0,
+      passed: 0,
+      failed: 0,
+    };
+    this._ghInitPvt();
+    this._ghInitPublic();
+  }
+
+  onWorkerStart(cid, cap, specs, args, execArgv) {
+    for (let spec of specs) {
+      this.specs.add(spec);
+    }
+    this.counts.specs = this.specs.size;
+    this.counts.total = this.counts.caps * this.counts.specs;
+    this.counts.running++;
+    this.update('pending');
   }
 
   onWorkerEnd(cid, exitCode, specs, retries) {
@@ -483,15 +491,15 @@ class RavelinJSServerLauncher {
     } else {
       this.counts.failed++;
     }
-    this.ghUpdate('pending');
+    this.update('pending');
   }
 
-  async onComplete(exitCode, config, capabilities, results) {
+  onComplete(exitCode, config, capabilities, results) {
     this.counts = {...this.counts, ...results};
-    this.ghUpdate(exitCode ? 'failure' : 'success');
+    return this.update(exitCode ? 'failure' : 'success');
   }
 
-  async ghUpdate(state) {
+  update(state) {
     return this.gh.update({
       state: state,
       description: JSON.stringify(this.counts),
