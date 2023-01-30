@@ -71,6 +71,7 @@ export const config = {
         this.build = build();
         this.counts = {
           caps: 0,
+          specs: 0,
           total: 0,
           running: 0,
           finished: 0,
@@ -181,8 +182,9 @@ export const config = {
           for (let spec of specs) {
             this.specs.add(spec);
           }
+          this.counts.specs = this.specs.size;
+          this.counts.total = this.counts.caps * this.counts.size;
           this.counts.running++;
-          this.counts.total = this.counts.caps * this.specs.size;
           this.ghUpdate('pending');
         } catch(err) {
           throw new SevereServiceError(err);
