@@ -13,6 +13,7 @@ export class GitHubStatus {
     this.repo = repo;
     this.token = token;
     this.context = context;
+    this.cancel = new AbortController();
   }
 
   setTarget(priority, target) {
@@ -37,6 +38,8 @@ export class GitHubStatus {
       status.description = status.description.substr(0, 140);
     }
 
+    this.cancel.abort();
+    this.cancel = new AbortController();
     if (!this.sha || !this.repo || !this.token) return;
 
     console.log('GitHub status', status);
@@ -52,6 +55,7 @@ export class GitHubStatus {
         'X-GitHub-Api-Version': '2022-11-28',
       },
       body: JSON.stringify(status),
+      signal: this.cancel.signal,
     })
     .then(async res => {
       if (!res.ok) {
