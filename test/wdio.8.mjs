@@ -180,9 +180,7 @@ export const config = {
   // Test reporter for stdout. The only one supported by default is 'dot'.
   // See also: https://webdriver.io/docs/dot-reporter.html , and click on
   // 'Reporters' in left column.
-  reporters: [
-    'spec',
-  ],
+  reporters: ['dot'],
 
   // Options to be passed to Mocha.
   // See the full list at: http://mochajs.org
