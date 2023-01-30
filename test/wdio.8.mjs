@@ -242,7 +242,9 @@ export const config = {
         c['bstack:options'] ||= {};
         const bs = c['bstack:options'];
 
-        bs.seleniumVersion ??= '4.7.2';
+        if (bs.realMobile !== 'true') {
+          bs.seleniumVersion ??= '4.7.2';
+        }
         // bs.debug ??= true;
         bs.networkLogs ??= true;
         bs.consoleLogs ??= 'verbose';
