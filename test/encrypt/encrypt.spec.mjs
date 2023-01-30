@@ -28,7 +28,7 @@ describe('Ravelin.encrypt', function () {
 
       // Retry with a seeded generator, if necessary.
       if (errText.indexOf("generator not ready") !== -1) {
-        log.warn('Generator not seeded so jiggling the mouse a bit.', browser.capabilities);
+        log.info('Generator not seeded so jiggling the mouse a bit.', browser.capabilities);
 
         // The browser needs some user actions as a source of entropy for the
         // pseudo-random number generator. Move the mouse between a few elements
