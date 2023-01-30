@@ -183,7 +183,7 @@ export const config = {
             this.specs.add(spec);
           }
           this.counts.specs = this.specs.size;
-          this.counts.total = this.counts.caps * this.counts.size;
+          this.counts.total = this.counts.caps * this.counts.specs;
           this.counts.running++;
           this.ghUpdate('pending');
         } catch(err) {
