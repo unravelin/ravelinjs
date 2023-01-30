@@ -69,7 +69,15 @@ export const config = {
     [class RavelinJSServerLauncher {
       constructor() {
         this.build = build();
-        this.counts = {'finished': 0, 'passed': 0, 'failed': 0};
+        this.counts = {
+          caps: 0,
+          total: 0,
+          running: 0,
+          finished: 0,
+          passed: 0,
+          failed: 0,
+        };
+        this.specs = new Set();
         this.gh = new GitHubStatus({
           context: 'browserstack',
           sha: process.env.COMMIT_SHA,
@@ -80,6 +88,8 @@ export const config = {
 
       async onPrepare(config, caps) {
         try {
+          this.counts.caps = caps.length;
+
           // Launch our local server and ngrok proxy.
           const api = await launchProxy(app(), port);
           process.env.TEST_INTERNAL = api.internal;
@@ -166,28 +176,38 @@ export const config = {
             '-',
             o.deviceName,
           ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
+
+          // Estimate how many tasks there are.
+          for (let spec of specs) {
+            this.specs.add(spec);
+          }
+          this.counts.running++;
+          this.counts.total = this.counts.caps * this.specs.length;
+          this.ghUpdate('pending');
         } catch(err) {
           throw new SevereServiceError(err);
         }
       }
 
       onWorkerEnd(cid, exitCode, specs, retries) {
+        this.counts.running--;
         this.counts.finished++;
         if (exitCode == 0) {
           this.counts.passed++;
         } else {
           this.counts.failed++;
         }
-        this.gh.update({
-          state: 'pending',
-          description: JSON.stringify(this.counts),
-        });
+        this.ghUpdate('pending');
       }
 
       async onComplete(exitCode, config, capabilities, results) {
-        this.counts = results;
-        await this.gh.update({
-          state: exitCode ? 'failure' : 'success',
+        this.counts = {...this.counts, ...results};
+        this.ghUpdate(exitCode ? 'failure' : 'success');
+      }
+
+      async ghUpdate(state) {
+        return this.gh.update({
+          state: state,
           description: JSON.stringify(this.counts),
         });
       }
