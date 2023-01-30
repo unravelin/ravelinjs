@@ -505,7 +505,7 @@ class GitHubService {
     return this.gh.update({
       state: state,
       // Emoji shortcodes because "description doesn't accept 4-byte Unicode".
-      description: `${c.running}:running: ${c.passed}:heavy_check_mark: ${c.failed}:x: of ${c.total} (${(100*c.finished/c.total).toFixed(2)}%)`,
+      description: `${c.running} running with ${c.passed} passed & ${c.failed} failed of ${c.total} total (${(100*c.finished/c.total).toFixed(0)}%)`,
     });
   }
 
