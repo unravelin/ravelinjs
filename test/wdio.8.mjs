@@ -502,10 +502,12 @@ class GitHubService {
 
   #update(state) {
     const c = this.counts;
+    const desc = state === 'pending'
+      ? `${c.running} running with ${c.passed} passed & ${c.failed} failed of ${c.total} total (${(100*c.finished/c.total).toFixed(0)}%)`
+      : `${c.passed} passed & ${c.failed} failed`;
     return this.gh.update({
       state: state,
-      // Emoji shortcodes because "description doesn't accept 4-byte Unicode".
-      description: `${c.running} running with ${c.passed} passed & ${c.failed} failed of ${c.total} total (${(100*c.finished/c.total).toFixed(0)}%)`,
+      description: desc,
     });
   }
 
