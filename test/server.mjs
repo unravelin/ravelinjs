@@ -50,7 +50,7 @@ export function app() {
         logger.warn(`Unexpected OPTIONS ${req.originalUrl} request from ${req.headers["user-agent"]}`);
       }
       if (req.method === 'POST' && !log.bodyJSON) {
-        logger.error('request with invalid JSON body', log);
+        logger.warn('request with invalid JSON body', log);
       } else if (req.path.match(/\/err/)) {
         logger.warn('error request', log);
       } else {
