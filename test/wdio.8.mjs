@@ -69,6 +69,7 @@ export const config = {
     [class RavelinJSServerLauncher {
       constructor() {
         this.build = build();
+        this.counts = {'finished': 0, 'passed': 0, 'failed': 0};
         this.gh = new GitHubStatus({
           context: 'browserstack',
           sha: process.env.COMMIT_SHA,
@@ -168,6 +169,27 @@ export const config = {
         } catch(err) {
           throw new SevereServiceError(err);
         }
+      }
+
+      after(result, capabilities, specs) {
+        this.finished++;
+        if (result) {
+          this.counts.failed++;
+        } else {
+          this.counts.passed++;
+        }
+        this.gh.update({
+          state: 'pending',
+          description: 'Pending: ' + JSON.stringify(this.counts),
+        });
+      }
+
+      onComplete(exitCode, config, capabilities, results) {
+        this.counts = results;
+        this.gh.update({
+          state: exitCode ? 'failure' : 'success',
+          description: JSON.stringify(counts),
+        });
       }
     }],
     ['browserstack', {
