@@ -89,8 +89,6 @@ export const config = {
 
       async onPrepare(config, caps) {
         try {
-          this.counts.caps = caps.length;
-
           // Launch our local server and ngrok proxy.
           const api = await launchProxy(app(), port);
           process.env.TEST_INTERNAL = api.internal;
@@ -113,13 +111,14 @@ export const config = {
             bs.networkLogs ??= true;
             bs.consoleLogs ??= 'verbose';
           });
-
-          // Initiate the post to GitHub.
-          this._ghInitPvt();
-          this._ghInitPublic();
         } catch(err) {
           throw new SevereServiceError(err);
         }
+
+        // Initiate the post to GitHub.
+        this.counts.caps = caps.length;
+        this._ghInitPvt();
+        this._ghInitPublic();
       }
 
       /**
