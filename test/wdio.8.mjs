@@ -3,7 +3,7 @@ import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
 
-const port = 9999;
+const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
 if (!user || !key) {
