@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 substitutions:
-  _NODE: node:18-slim
+  _NODE: node:18-alpine
 
 availableSecrets:
   secretManager:
