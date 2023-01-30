@@ -74,11 +74,19 @@ describe('ravelin.track', function () {
   });
 
   it('sends redacted paste events of pan text', async function () {
+    const fakePAN = '4111 1111 1111 1111';
+
     // Write into <input id=clip-stage onclick=this.select()> then copy out.
-    const c = $('#clip-stage');
-    await c.setValue('4111 1111 1111 1111');
+    const c = await $('#clip-stage');
+    await c.setValue(fakePAN);
     await c.click();
-    await browser.keys(['Control', 'Insert']);
+    try {
+      await browser.keys(['Control', 'Insert']);
+    } catch(e) {
+      // TODO: iOS is refusing to let us send key.
+      log.warn('Failed to send control+insert keypress so skipping ' + browser.sessionId + '. Error: ' + e.toString());
+      this.skip();
+    }
 
     // Paste into <input name=name id=in-tracked />
     const e = $('#in-pan');
