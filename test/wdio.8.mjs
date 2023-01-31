@@ -54,8 +54,8 @@ function buildConfig() {
         repo: process.env.HEAD_REPO_URL,
         token: process.env.GITHUB_TOKEN,
         links: [
-          buildP.then(b => browserstackPrivateURL(b)),
-          buildP.then(b => browserstackPublicURL(b))
+          async () => browserstackPrivateURL(await buildP),
+          async (caps, cfg) => browserstackPublicURL(cfg.user, cfg.key, await buildP),
         ],
       }],
     ],
