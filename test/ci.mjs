@@ -114,7 +114,7 @@ export class GitHubService {
   }
 
   onPrepare(config, caps) {
-    opts.links?.forEach(async link => {
+    this.links?.forEach(async link => {
       const {priority, url} = await link(caps, config)
       this.gh.setTarget(priority, url);
     });
