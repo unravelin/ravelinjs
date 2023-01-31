@@ -18,35 +18,23 @@ options:
   logging: GCS_ONLY
 
 steps:
-  - id: npm_install
+  - id: install
     name: $_NODE
     entrypoint: npm
     args:
       - install
 
-  - id: npm_run_build
+  - id: build
     name: $_NODE
-    waitFor:
-      - npm_install
     entrypoint: npm
     args:
       - run
       - build
 
-  # TODO: Upgrade to Node 18.
-  # - id: npm_run_unit
-  #   name: eu.gcr.io/ravelin-builds/chromium:10.24
-  #   waitFor:
-  #     - npm_run_build
-  #   entrypoint: npm
-  #   args:
-  #     - run
-  #     - test:unit
-
-  - id: npm_run_test_integration
+  - id: browserstack
     name: $_NODE
     waitFor:
-      - npm_run_build
+      - build
     entrypoint: npm
     env:
       - PARALLEL=5
@@ -83,8 +71,3 @@ steps:
       "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
       "eu.gcr.io/$PROJECT_ID/gcb2gh",
     ]
-
-  # Optional step to debug gcb2gh.
-  - id: gcb2gh_logs
-    name: "gcr.io/cloud-builders/docker"
-    args: [logs, gcb2gh]
