@@ -38,11 +38,13 @@ export class GitHubStatus {
       status.description = status.description.substr(0, 140);
     }
 
-    this.cancel.abort();
-    this.cancel = new AbortController();
     if (!this.sha || !this.repo || !this.token) return;
 
-    console.log('GitHub status', status);
+    console.log('GitHub status', JSON.stringify(status));
+
+    this.cancel.abort();
+    const cancel = new AbortController();
+    this.cancel = cancel;
 
     const api = this.repo.replace(/\/\/github.com\//, '//api.github.com/repos/');
     const apiStatus = api + '/statuses/' + encodeURIComponent(this.sha);
@@ -63,6 +65,9 @@ export class GitHubStatus {
       }
     })
     .catch(err => {
+      if (cancel.signal.aborted) {
+        return;
+      }
       console.error('Error updating github commit status', err)
     });
   }
