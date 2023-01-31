@@ -32,6 +32,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 * [Reference](#reference)
   * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
   * [`ravelin.core.id(): Promise<string>`](#ravelincoreid-promisestring)
+    * [Device ID Format](#device-id-format)
   * [`ravelin.encrypt.card(card: object): object`](#ravelinencryptcardcard-object-object)
   * [`ravelin.track.load()`](#ravelintrackload)
   * [`ravelin.track.event(name, [props])`](#ravelintrackeventname-props)
@@ -410,7 +411,7 @@ early.
 ### `ravelin.track.event(name, [props])`
 
 Send a named event to attach to the session, with optional descriptive
-properties. Most event names use "UPPER_SNAKE_CASE" but the most important thing
+properties. Most event names use "UPPER\_SNAKE\_CASE" but the most important thing
 is to have consistency between your browser and mobile applications where they
 have common events. Returns a Promise that resolves once the event has been
 sent.
