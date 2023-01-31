@@ -127,7 +127,7 @@ function buildConfig() {
     framework: 'mocha',
 
     // The number of times to retry the entire specfile when it fails as a whole.
-    specFileRetries: 0,
+    specFileRetries: 1,
     // Delay in seconds between the spec file retry attempts.
     specFileRetriesDelay: 0,
     // Whether or not retried specfiles should be retried immediately or deferred
