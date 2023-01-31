@@ -47,7 +47,7 @@
     "@wdio/logger": "8.1.0",
     "@wdio/mocha-framework": "8.1.2",
     "build-url": "6.0.1",
-    "chai": "4.3.4",
+    "chai": "4.3.7",
     "cors": "2.8.5",
     "deep-diff": "1.0.2",
     "deepmerge": "4.2.2",
