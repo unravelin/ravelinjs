@@ -1,30 +1,32 @@
-const log = require('@wdio/logger').default('send.spec');
-const { navigate, hasTitle, hasElement, hasURL } = require('../common.spec.js');
-const { fetchRequest } = require('../server');
-const buildURL = require('build-url');
+import wdiolog from '@wdio/logger';
+import { navigate, hasTitle, hasElement, hasURL } from '../common.spec.mjs';
+import { fetchRequest } from '../server.mjs';
+import buildURL from 'build-url';
+
+const log = wdiolog('send.spec');
 
 describe('ravelinjs.core.send', function() {
-  it('sends to paths', function() {
+  it('sends to paths', async function() {
     // http://test.browserstack.com/send/ -> /z/err
-    test('/', '/', 'path');
+    await test('/', '/', 'path');
   });
 
-  it('sends to samesite URLs', function() {
+  it('sends to samesite URLs', async function() {
     // http://test.browserstack.com/send/ -> http://test.browserstack.com/z/err/
-    test('/', process.env.TEST_LOCAL, 'samesite');
+    await test('/', process.env.TEST_LOCAL, 'samesite');
   });
 
-  it('sends to remote URLs', function() {
+  it('sends to remote URLs', async function() {
     // http://test.browserstack.com/send/ -> http://test.ngrok.io/z/err
-    test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
+    await test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
   });
 });
 
-function test(page, api, msg) {
+async function test(page, api, msg) {
   const key = browser.sessionId;
 
   // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
-  navigate(browser, {
+  await navigate(browser, {
     attempts: 3,
     url: buildURL(page, {path: '/send/', queryParams: {api, key, msg}}),
     tests: [
@@ -36,22 +38,20 @@ function test(page, api, msg) {
   });
 
   // Check whether the browser reported any errors.
-  const e = $('#error').getText();
+  const e = await $('#error').getText();
   if (e) throw new Error(e);
 
   // Confirm that an AJAX request with the error was received.
-  browser.waitUntil(function() {
-    return browser.call(
-      () => fetchRequest(process.env.TEST_INTERNAL, {
-        'path': '/z',
-        'query': {'key': key},
-        'bodyJSON.msg': {'$eq': msg},
-      })
-    );
-  });
+  await browser.waitUntil(async () => await browser.call(
+    () => fetchRequest(process.env.TEST_INTERNAL, {
+      'path': '/z',
+      'query': {'key': key},
+      'bodyJSON.msg': {'$eq': msg},
+    })
+  ));
 
   // Warn if it took several attempts to send.
-  const r = $('#output').getText();
+  const r = await $('#output').getText();
   log.debug('stats', r);
   if (r) {
     const stats = JSON.parse(r);

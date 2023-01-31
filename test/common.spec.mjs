@@ -1,8 +1,10 @@
 /* jshint esversion: 9, node: true, browser: false */
-const { diff } = require('deep-diff');
-const log = require('@wdio/logger').default('common.spec');
+import diff from 'deep-diff';
+import wdiolog from '@wdio/logger';
 
-/** @typedef {(browser) => void} NavTest */
+const log = wdiolog('common.spec');
+
+/** @typedef {async (browser) => void} NavTest */
 
 /**
  * navigate attempts to load a page into the browser from the list of urls. For
@@ -18,13 +20,15 @@ const log = require('@wdio/logger').default('common.spec');
  * @param {number} [page.attempts=2]
  * @param {object} [page.waitOpts] Options for browser.waitUntil
  */
-function navigate(browser, {url, tests, attempts, waitOpts}) {
+export async function navigate(browser, {url, tests, attempts, waitOpts}) {
   var errs = [];
   for (var r = 0; r < (attempts || 2); r++) {
-    browser.url(url);
+    await browser.url(url);
+
     try {
-      // Confirm that the page loaded with the title we expected.
-      tests.forEach(f => browser.waitUntil(() => (f(browser), true), waitOpts));
+      for (const test of tests) {
+        await browser.waitUntil(async () => (await test(browser), true), waitOpts);
+      }
       return;
     } catch (e) {
       const m = e.message.replace(/^waitUntil condition failed with the following reason: /, '');
@@ -34,10 +38,10 @@ function navigate(browser, {url, tests, attempts, waitOpts}) {
 
     // If none of the pages we tried worked, perhaps we've got a network issue?
     // Try getting a fresh session to kick things off.
-    log.warn(`Session ${browser.sessionId} failed to load all URLs once. Reloading.`);
-    browser.reloadSession();
+    log.warn(`Session ${browser.sessionId} failed to pass init tests. Reloading.`);
+    await browser.reloadSession();
   }
-  throw new Error(`Failed to load all pages: ${errs.join("; ")}`);
+  throw new Error(`Failed to load page: ${errs.join("; ")}`);
 }
 
 /**
@@ -46,9 +50,9 @@ function navigate(browser, {url, tests, attempts, waitOpts}) {
  * @param {string} substr The substring to be found in the page title.
  * @returns {NavTest}
  */
-function hasTitle(substr) {
-  return function(browser) {
-    const title = browser.getTitle();
+export function hasTitle(substr) {
+  return async function hasTitleTest(browser) {
+    const title = await browser.getTitle();
     if (title.indexOf(substr) === -1) {
       throw new Error(`Expected page title containing ${substr} but found: ${title}`);
     }
@@ -61,9 +65,9 @@ function hasTitle(substr) {
  * @param {string} substr The substring to be found in the page url.
  * @returns {NavTest}
  */
-function hasURL(substr) {
-  return function(browser) {
-    const url = browser.getUrl();
+export function hasURL(substr) {
+  return async function hasURLTest(browser) {
+    const url = await browser.getUrl();
     if (url.indexOf(substr) === -1) {
       throw new Error(`Expected page title containing ${substr} but found: ${url}`);
     }
@@ -76,8 +80,15 @@ function hasURL(substr) {
  * @param {string} selector
  * @returns {NavTest}
  */
-function hasElement(selector) {
-  return browser => browser.$(selector).isExisting();
+export function hasElement(selector) {
+  return async function hasElementTest(browser) {
+    try {
+      const e = await browser.$(selector);
+      return await e.isExisting();
+    } catch(err) {
+      return false;
+    }
+  }
 }
 
 /**
@@ -87,8 +98,8 @@ function hasElement(selector) {
  * @param {object} exp
  * @param {string} [msg]
  */
-function objDiff(act, exp, msg) {
-  const d = diff(exp, act)
+export function objDiff(act, exp, msg) {
+  const d = diff.diff(exp, act)
     .filter(c => c.kind != 'A' && c.kind != 'N')
     .map(c => `- ${c.path.join(".")}: ${c.lhs}` + (c.kind == 'E' ? `\n+ ${c.path.join(".")}: ${c.rhs}` : ''))
     .join("\n");
@@ -96,11 +107,3 @@ function objDiff(act, exp, msg) {
     throw new Error(msg + (msg ? ': ' : '') + 'expected (-) but got (+):\n' + d);
   }
 }
-
-module.exports = {
-  navigate,
-  hasTitle,
-  hasURL,
-  hasElement,
-  objDiff,
-};

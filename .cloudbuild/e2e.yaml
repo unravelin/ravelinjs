@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 substitutions:
-  _NODE10: node:10.24.1-slim
+  _NODE: node:18-alpine
   _CLOUD_SDK_VERSION: 413.0.0
 
 availableSecrets:
@@ -18,20 +18,20 @@ options:
 
 steps:
   - id: npm_install
-    name: $_NODE10
+    name: $_NODE
     entrypoint: npm
     args:
       - install
 
   - id: npm_run_build
-    name: $_NODE10
+    name: $_NODE
     entrypoint: npm
     args:
       - run
       - build
 
   - id: npm_run_test_e2e
-    name: $_NODE10
+    name: $_NODE
     entrypoint: npm
     env:
       - HEAD_BRANCH=$BRANCH_NAME

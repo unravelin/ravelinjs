@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 substitutions:
-  _NODE10: node:10.24.1-slim
+  _NODE: node:18-alpine
 
 availableSecrets:
   secretManager:
@@ -18,34 +18,23 @@ options:
   logging: GCS_ONLY
 
 steps:
-  - id: npm_install
-    name: $_NODE10
+  - id: install
+    name: $_NODE
     entrypoint: npm
     args:
       - install
 
-  - id: npm_run_build
-    name: $_NODE10
-    waitFor:
-      - npm_install
+  - id: build
+    name: $_NODE
     entrypoint: npm
     args:
       - run
       - build
 
-  - id: npm_run_unit
-    name: eu.gcr.io/ravelin-builds/chromium:10.24
+  - id: browserstack
+    name: $_NODE
     waitFor:
-      - npm_run_build
-    entrypoint: npm
-    args:
-      - run
-      - test:unit
-
-  - id: npm_run_test_integration
-    name: $_NODE10
-    waitFor:
-      - npm_run_build
+      - build
     entrypoint: npm
     env:
       - PARALLEL=5
@@ -61,3 +50,24 @@ steps:
     args:
       - run
       - test:integration
+
+  - id: gcb2gh
+    waitFor: ["-"]
+    name: "gcr.io/cloud-builders/docker"
+    secretEnv: [GITHUB_TOKEN]
+    args: [
+      "run", "--name", "gcb2gh", "--detach",
+      # Configure: the GitHub repo.
+      "--env", "GITHUB_TOKEN",
+      "--env", "GITHUB_USER=unravelin",
+      "--env", "GITHUB_REPO=ravelinjs",
+      # Configure: the build manifest.
+      "--mount", "type=bind,source=/workspace,target=/workspace,bind-propagation=rprivate",
+      "--env", "BUILD_MANIFEST=/workspace/.cloudbuild/ci.yaml",
+      # GCB specifics.
+      "--env", "BUILD_ID=$BUILD_ID",
+      "--env", "PROJECT_ID=$PROJECT_ID",
+      "--env", "COMMIT_SHA=$COMMIT_SHA",
+      "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
+      "eu.gcr.io/$PROJECT_ID/gcb2gh",
+    ]
