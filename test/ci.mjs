@@ -110,16 +110,17 @@ export class GitHubService {
 
   onPrepare(config, caps) {
     this.counts = {
+      // TODO: Find a way to calculate totals without doing caps*specs or find a
+      // way to know specs up-front without counting new specs in onWorkerStart.
+      // We're currently undercounting totals at the start.
+      total: 0,
       caps: caps.length,
       specs: 0,
-      total: 0,
       running: 0,
       finished: 0,
       passed: 0,
       failed: 0,
     };
-    this.#buildPrivateURL();
-    this.#findPublicURL();
   }
 
   onWorkerStart(cid, cap, specs, args, execArgv) {
