@@ -161,8 +161,8 @@ export class GitHubService {
   #update(state) {
     const c = this.counts;
     const desc = state === 'pending'
-      ? `${c.running} running with ${c.passed} passed & ${c.failed} failed of ${c.total} total (${(100*c.finished/c.total).toFixed(0)}%)`
-      : `${c.passed} passed & ${c.failed} failed`;
+      ? `${c.running} Running with ${c.passed} Passed & ${c.failed} Failed of ${c.total} Total (${(100*c.finished/c.total).toFixed(0)}%)`
+      : `${c.passed} Passed & ${c.failed} Failed`;
     return this.gh.update({
       state: state,
       description: desc,
