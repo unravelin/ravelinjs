@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { realpathSync } from "fs";
+import { pathToFileURL } from "url";
 
 /* jshint esversion: 9, node: true */
 import { parse as parseURL } from 'node:url';
@@ -227,17 +229,16 @@ export async function expectNoError(api, key) {
   }
 }
 
-// TODO https://stackoverflow.com/questions/57838022/detect-whether-es-module-is-run-from-command-line-in-node
-// if (require.main === module) {
-//   const a = app();
-//   if (process.argv.length <= 2) {
-//     // Launch behind ngrok.
-//     launchProxy(a).then(url => console.log('🚆', url));
-//   } else {
-//     // Launch on the given port.
-//     const port = parseInt(process.argv[2], 10);
-//     if (isNaN(port)) throw new Error('invalid port');
-//     a.listen(port, 'localhost');
-//     console.log('http://localhost:' + port);
-//   }
-// }
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
+  const a = app();
+  if (process.argv.length <= 2) {
+    // Launch behind ngrok.
+    launchProxy(a).then(url => console.log('🚆', url));
+  } else {
+    // Launch on the given port.
+    const port = parseInt(process.argv[2], 10);
+    if (isNaN(port)) throw new Error('invalid port');
+    a.listen(port, 'localhost');
+    console.log('http://localhost:' + port);
+  }
+}
