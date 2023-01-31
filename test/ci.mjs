@@ -103,20 +103,21 @@ export function gitBuild() {
 
 export class GitHubService {
   constructor(opts, caps, config) {
+    this.links = opts.links;
     this.gh = new GitHubStatus({
       context: opts.context,
       sha: opts.sha,
       repo: opts.repo,
       token: opts.token,
     });
-    opts.links?.forEach(async link => {
-      const {priority, url} = await link(caps, config)
-      this.gh.setTarget(priority, url);
-    });
     this.specs = new Set();
   }
 
   onPrepare(config, caps) {
+    opts.links?.forEach(async link => {
+      const {priority, url} = await link(caps, config)
+      this.gh.setTarget(priority, url);
+    });
     this.counts = {
       // TODO: Find a way to calculate totals without doing caps*specs or find a
       // way to know specs up-front without counting new specs in onWorkerStart.
