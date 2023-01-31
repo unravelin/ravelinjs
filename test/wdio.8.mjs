@@ -2,7 +2,7 @@ import path from 'path';
 import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
-import { GitHubStatus, build } from './ci.mjs';
+import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } from './ci.mjs';
 
 /**
  * The hooks available to a service added to the config.
@@ -10,6 +10,7 @@ import { GitHubStatus, build } from './ci.mjs';
  * @typedef {import("@wdio/types").Services.ServiceInstance} ServiceInstance
  */
 
+const buildP = build();
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -18,29 +19,6 @@ if (!user || !key) {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-function filterCaps(caps) {
-  if (process.env.BROWSERS) {
-    const toks = process.env.BROWSERS.toLowerCase().split(',');
-    caps = caps.filter(v => {
-      const j = JSON.stringify(v).toLowerCase();
-      for (const tok of toks) {
-        if (!j.includes(tok)) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }
-
-  if (process.env.LIMIT) {
-    const lim = parseInt(process.env.LIMIT, 10);
-    if (!lim) throw new Error('LIMIT envvar cannot be parsed as integer');
-    caps = caps.slice(0, lim);
-  }
-
-  return caps;
-}
 
 function buildConfig() {
   return {
@@ -53,7 +31,10 @@ function buildConfig() {
     key: process.env.BROWSERSTACK_ACCESS_KEY,
     services: [
       // Launch the test API server, an ngrok tunnel, set some defaults.
-      [RavelinJSServerLauncher],
+      [RavelinJSServerLauncher, {
+        port: port,
+        build: buildP,
+      }],
       // Launch the browserstack local tunnel and create selenium sessions.
       ['browserstack', {
         browserstackLocal: true,
@@ -67,7 +48,16 @@ function buildConfig() {
         },
       }],
       // Send updates to GitHub.
-      [GitHubService],
+      [GitHubService, {
+        context: 'browserstack',
+        sha: process.env.COMMIT_SHA,
+        repo: process.env.HEAD_REPO_URL,
+        token: process.env.GITHUB_TOKEN,
+        links: [
+          buildP.then(b => browserstackPrivateURL(b)),
+          buildP.then(b => browserstackPublicURL(b))
+        ],
+      }],
     ],
 
     // ==================
@@ -388,20 +378,19 @@ function buildConfig() {
   };
 }
 
-const buildP = build();
-
 /**
  * @implements {ServiceClass}
  */
 class RavelinJSServerLauncher {
-  constructor() {
-    this.build = buildP;
+  constructor(opts) {
+    this.port = opts.port;
+    this.build = opts.build;
   }
 
   async onPrepare(config, caps) {
     try {
       // Launch our local server and ngrok proxy.
-      const api = await launchProxy(app(), port);
+      const api = await launchProxy(app(), this.port);
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = config.baseUrl;
       process.env.TEST_REMOTE = api.remote;
@@ -448,108 +437,27 @@ class RavelinJSServerLauncher {
   }
 }
 
-class GitHubService {
-  constructor(opts, caps, config) {
-    this.build = buildP;
-    this.gh = new GitHubStatus({
-      context: 'browserstack',
-      sha: process.env.COMMIT_SHA,
-      repo: process.env.HEAD_REPO_URL,
-      token: process.env.GITHUB_TOKEN,
-    });
-    this.specs = new Set();
-  }
-
-  onPrepare(config, caps) {
-    this.counts = {
-      caps: caps.length,
-      specs: 0,
-      total: 0,
-      running: 0,
-      finished: 0,
-      passed: 0,
-      failed: 0,
-    };
-    this.#buildPrivateURL();
-    this.#findPublicURL();
-  }
-
-  onWorkerStart(cid, cap, specs, args, execArgv) {
-    for (let spec of specs) {
-      this.specs.add(spec);
-    }
-    this.counts.specs = this.specs.size;
-    this.counts.total = this.counts.caps * this.counts.specs;
-    this.counts.running++;
-    this.#update('pending');
-  }
-
-  onWorkerEnd(cid, exitCode, specs, retries) {
-    this.counts.running--;
-    this.counts.finished++;
-    if (exitCode == 0) {
-      this.counts.passed++;
-    } else {
-      this.counts.failed++;
-    }
-    this.#update('pending');
-  }
-
-  onComplete(exitCode, config, capabilities, results) {
-    this.counts = {...this.counts, ...results};
-    return this.#update(exitCode ? 'failure' : 'success');
-  }
-
-  #update(state) {
-    const c = this.counts;
-    const desc = state === 'pending'
-      ? `${c.running} running with ${c.passed} passed & ${c.failed} failed of ${c.total} total (${(100*c.finished/c.total).toFixed(0)}%)`
-      : `${c.passed} passed & ${c.failed} failed`;
-    return this.gh.update({
-      state: state,
-      description: desc,
+function filterCaps(caps) {
+  if (process.env.BROWSERS) {
+    const toks = process.env.BROWSERS.toLowerCase().split(',');
+    caps = caps.filter(v => {
+      const j = JSON.stringify(v).toLowerCase();
+      for (const tok of toks) {
+        if (!j.includes(tok)) {
+          return false;
+        }
+      }
+      return true;
     });
   }
 
-  /**
-   * Construct the private build URL from data we've already got and give it
-   * github for inclusion on commit statuses. Overridden by _ghInitPublic.
-   */
-  async #buildPrivateURL() {
-    const b = await this.build;
-    const url = 'https://automate.browserstack.com/dashboard/v2/search?type=builds&query=' + encodeURIComponent(b);
-    console.log('🤖 ' + url);
-    this.gh.setTarget(0, url);
+  if (process.env.LIMIT) {
+    const lim = parseInt(process.env.LIMIT, 10);
+    if (!lim) throw new Error('LIMIT envvar cannot be parsed as integer');
+    caps = caps.slice(0, lim);
   }
 
-  /**
-   * Poll the browserstack API to find the public URL of our build and give
-   * it to the github client for inclusion on commit statuses, overriding
-   * any URL generated by _ghInitPvt.
-   */
-  async #findPublicURL() {
-    const buildName = await this.build;
-    const gh = this.gh;
-    setTimeout(findBuild, 2000);
-    function findBuild() {
-      fetch(
-        'https://api.browserstack.com/automate/builds.json',
-        {headers: {'Authorization': 'Basic '+Buffer.from(user + ':' + key).toString('base64')}}
-      )
-      .then(res => {
-        if (!res.ok) throw new Error(res.url + ' returned status ' + res.statusCode);
-        return res.json();
-      })
-      .then(builds => Array.isArray(builds) && builds.filter(b => b.automation_build && b.automation_build.name == buildName).pop())
-      .then(build => build
-        ? gh.setTarget(1, build.automation_build.public_url)
-        : setTimeout(findBuild, 1000))
-      .catch(err => {
-        console.error('Error fetching browserstack builds list', err);
-        setTimeout(findBuild, 1000);
-      });
-    }
-  }
+  return caps;
 }
 
 export const config = buildConfig();
