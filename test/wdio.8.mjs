@@ -96,7 +96,7 @@ function buildConfig() {
     // },
 
     // Set directory to store all logs into
-    outputDir: __dirname,
+    // outputDir: __dirname,
 
     // If you only want to run your tests until a specific amount of tests have
     // failed use bail (default is 0 - don't bail, run all tests).
