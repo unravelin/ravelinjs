@@ -71,3 +71,4 @@ releases/
 build
 .vscode
 .env
+browserstack.err
