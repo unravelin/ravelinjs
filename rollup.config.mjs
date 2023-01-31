@@ -1,12 +1,21 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import license from 'rollup-plugin-license';
-import { basename } from 'path';
-import glob from 'glob';
 
-var builds = module.exports = [];
+import { readFile } from 'fs/promises';
+import glob from 'glob';
+import { basename } from 'path';
+
+const pkg = JSON.parse(
+  await readFile(
+    new URL('./package.json', import.meta.url)
+  )
+);
+
+const builds = [];
+export default builds;
 
 var output = {
   format: 'iife',
@@ -23,7 +32,7 @@ var output = {
 var plugins = [
   replace({
     preventAssignment: true,
-    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version + '-ravelinjs'),
+    'RAVELINJS_VERSION': JSON.stringify(pkg.version + '-ravelinjs'),
   }),
   resolve(),
   commonjs(),
@@ -36,6 +45,7 @@ glob.sync("lib/bundle/*.js")
 .sort((a, b) => b.length - a.length)
 .forEach(bundle => builds.push(
   {
+    strictDeprecations: true,
     input: bundle,
     output: {
       file: 'build/ravelin-' + basename(bundle).replace(/\.js$/, '.min.js'),
@@ -52,6 +62,7 @@ glob.sync("lib/bundle/*.js")
     ]),
   },
   {
+    strictDeprecations: true,
     input: bundle,
     output: {
       file: 'build/ravelin-' + basename(bundle),
@@ -60,6 +71,7 @@ glob.sync("lib/bundle/*.js")
     plugins: plugins,
   },
   {
+    strictDeprecations: true,
     input: bundle,
     output: {
       file: 'dist/' + basename(bundle),
