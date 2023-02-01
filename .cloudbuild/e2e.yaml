@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
+tags:
+  - ravelinjs
 substitutions:
   _NODE: node:18-alpine
   _CLOUD_SDK_VERSION: 416.0.0
