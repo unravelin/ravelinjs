@@ -11,7 +11,7 @@ import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } f
  */
 
 const buildName = await build();
-const localIdentifier = buildName.replace(/[^a-b0-9_]+/gi, '_');
+const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
 
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
