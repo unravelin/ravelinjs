@@ -11,6 +11,8 @@ import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } f
  */
 
 const buildName = await build();
+const localIdentifier = buildName.replace(/[^a-b0-9_]+/i, '_');
+
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -34,6 +36,7 @@ function buildConfig() {
       [RavelinJSServerLauncher, {
         port: port,
         build: buildName,
+        localIdentifier: localIdentifier,
       }],
       // Launch the browserstack local tunnel and create selenium sessions.
       ['browserstack', {
@@ -44,10 +47,8 @@ function buildConfig() {
           force: true,
           localProxyHost: 'localhost',
           localProxyPort: port,
+          localIdentifier: localIdentifier,
           'disable-dashboard': true,
-
-          // Copied into capabilities' localIdentifier by RavelinJSServerLauncher.
-          localIdentifier: buildName,
         },
       }],
       // Send updates to GitHub.
@@ -388,6 +389,7 @@ class RavelinJSServerLauncher {
   constructor(opts) {
     this.port = opts.port;
     this.build = opts.build;
+    this.localIdentifier = opts.localIdentifier;
   }
 
   async onPrepare(config, caps) {
@@ -399,13 +401,13 @@ class RavelinJSServerLauncher {
       process.env.TEST_REMOTE = api.remote;
 
       // Set default properties on the capabilities.
-      const b = await this.build;
       caps.forEach(c => {
         c['bstack:options'] ||= {};
         const bs = c['bstack:options'];
 
         bs.projectName = 'ravelinjs';
-        bs.buildName = b;
+        bs.buildName = this.build;
+        bs.localIdentifier = this.localIdentifier;
 
         if (bs.realMobile !== 'true') {
           bs.seleniumVersion ??= '4.7.2';
@@ -413,9 +415,6 @@ class RavelinJSServerLauncher {
         // bs.debug ??= true;
         bs.networkLogs ??= true;
         bs.consoleLogs ??= 'verbose';
-
-        // Matches browserstack-service's localIdentifier option.
-        bs.localIdentifier = b;
       });
     } catch(err) {
       console.error(err);
