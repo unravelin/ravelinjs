@@ -412,6 +412,7 @@ class RavelinJSServerLauncher {
         bs.consoleLogs ??= 'verbose';
       });
     } catch(err) {
+      console.error(err);
       throw new SevereServiceError(err);
     }
   }
@@ -432,6 +433,7 @@ class RavelinJSServerLauncher {
         o.deviceName,
       ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
     } catch(err) {
+      console.error(err);
       throw new SevereServiceError(err);
     }
   }
