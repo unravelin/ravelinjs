@@ -10,7 +10,9 @@ import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } f
  * @typedef {import("@wdio/types").Services.ServiceInstance} ServiceInstance
  */
 
-const buildP = build();
+const buildName = await build();
+const localIdentifier = buildName.replace(/[^a-b0-9_]+/i, '_');
+
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -33,7 +35,8 @@ function buildConfig() {
       // Launch the test API server, an ngrok tunnel, set some defaults.
       [RavelinJSServerLauncher, {
         port: port,
-        build: buildP,
+        build: buildName,
+        localIdentifier: localIdentifier,
       }],
       // Launch the browserstack local tunnel and create selenium sessions.
       ['browserstack', {
@@ -44,6 +47,7 @@ function buildConfig() {
           force: true,
           localProxyHost: 'localhost',
           localProxyPort: port,
+          localIdentifier: localIdentifier,
           'disable-dashboard': true,
         },
       }],
@@ -54,8 +58,8 @@ function buildConfig() {
         repo: process.env.HEAD_REPO_URL,
         token: process.env.GITHUB_TOKEN,
         links: [
-          async () => browserstackPrivateURL(await buildP),
-          async (caps, cfg) => browserstackPublicURL(cfg.user, cfg.key, await buildP),
+          async () => browserstackPrivateURL(buildName),
+          async (caps, cfg) => browserstackPublicURL(cfg.user, cfg.key, buildName),
         ],
       }],
     ],
@@ -385,6 +389,7 @@ class RavelinJSServerLauncher {
   constructor(opts) {
     this.port = opts.port;
     this.build = opts.build;
+    this.localIdentifier = opts.localIdentifier;
   }
 
   async onPrepare(config, caps) {
@@ -396,13 +401,13 @@ class RavelinJSServerLauncher {
       process.env.TEST_REMOTE = api.remote;
 
       // Set default properties on the capabilities.
-      const b = await this.build;
       caps.forEach(c => {
         c['bstack:options'] ||= {};
         const bs = c['bstack:options'];
 
         bs.projectName = 'ravelinjs';
-        bs.buildName = b;
+        bs.buildName = this.build;
+        bs.localIdentifier = this.localIdentifier;
 
         if (bs.realMobile !== 'true') {
           bs.seleniumVersion ??= '4.7.2';
@@ -412,6 +417,7 @@ class RavelinJSServerLauncher {
         bs.consoleLogs ??= 'verbose';
       });
     } catch(err) {
+      console.error(err);
       throw new SevereServiceError(err);
     }
   }
@@ -432,6 +438,7 @@ class RavelinJSServerLauncher {
         o.deviceName,
       ].filter(Boolean).join(" ").replace(/^[ -]+|[ -]+$/g, '');
     } catch(err) {
+      console.error(err);
       throw new SevereServiceError(err);
     }
   }
