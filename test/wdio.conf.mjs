@@ -10,7 +10,7 @@ import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } f
  * @typedef {import("@wdio/types").Services.ServiceInstance} ServiceInstance
  */
 
-const buildP = build();
+const buildName = await build();
 const port = 9998;
 const user = process.env.BROWSERSTACK_USERNAME;
 const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -33,7 +33,7 @@ function buildConfig() {
       // Launch the test API server, an ngrok tunnel, set some defaults.
       [RavelinJSServerLauncher, {
         port: port,
-        build: buildP,
+        build: buildName,
       }],
       // Launch the browserstack local tunnel and create selenium sessions.
       ['browserstack', {
@@ -45,6 +45,9 @@ function buildConfig() {
           localProxyHost: 'localhost',
           localProxyPort: port,
           'disable-dashboard': true,
+
+          // Copied into capabilities' localIdentifier by RavelinJSServerLauncher.
+          localIdentifier: buildName,
         },
       }],
       // Send updates to GitHub.
@@ -54,8 +57,8 @@ function buildConfig() {
         repo: process.env.HEAD_REPO_URL,
         token: process.env.GITHUB_TOKEN,
         links: [
-          async () => browserstackPrivateURL(await buildP),
-          async (caps, cfg) => browserstackPublicURL(cfg.user, cfg.key, await buildP),
+          async () => browserstackPrivateURL(buildName),
+          async (caps, cfg) => browserstackPublicURL(cfg.user, cfg.key, buildName),
         ],
       }],
     ],
@@ -410,6 +413,9 @@ class RavelinJSServerLauncher {
         // bs.debug ??= true;
         bs.networkLogs ??= true;
         bs.consoleLogs ??= 'verbose';
+
+        // Matches browserstack-service's localIdentifier option.
+        bs.localIdentifier = b;
       });
     } catch(err) {
       console.error(err);
