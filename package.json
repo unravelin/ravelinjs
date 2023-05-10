@@ -61,7 +61,7 @@
     "ngrok": "4.3.3",
     "node-fetch": "3.3.0",
     "np": "7.6.3",
-    "npm-check-updates": "16.6.3",
+    "npm-check-updates": "16.10.12",
     "npm-run-all": "4.1.5",
     "on-finished": "2.4.1",
     "remark-cli": "11.0.0",
