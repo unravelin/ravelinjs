@@ -125,6 +125,7 @@ export async function launchProxy(app, port) {
     authtoken: process.env.NGROK_AUTH_TOKEN,
     addr: local.port,
     scheme: ['http', 'https'],
+    onLogEvent: msg => logger.info('ngrok:', msg),
     onStatusChange: function(status) {
       // Shut down the express app when ngrok is closed.
       if (status == 'closed') listener.close();
