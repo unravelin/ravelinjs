@@ -7,18 +7,18 @@ const log = wdiolog('send.spec');
 
 describe('ravelinjs.core.send', function() {
   it('sends to paths', async function() {
-    // http://test.browserstack.com/send/ -> /z/err
+    // https://bs-local.com/send/ -> /z/err
     await test('/', '/', 'path');
   });
 
   it('sends to samesite URLs', async function() {
-    // http://test.browserstack.com/send/ -> http://test.browserstack.com/z/err/
+    // https://bs-local.com/send/ -> https://bs-local.com/z/err/
     await test('/', process.env.TEST_LOCAL, 'samesite');
   });
 
   it('sends to remote URLs', async function() {
-    // http://test.browserstack.com/send/ -> http://test.ngrok.io/z/err
-    await test('/', process.env.TEST_REMOTE.replace(/^https:/, 'http:'), 'remote');
+    // https://bs-local.com/send/ -> https://test.ngrok.io/z/err
+    await test('/', process.env.TEST_REMOTE, 'remote');
   });
 });
 

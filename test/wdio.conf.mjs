@@ -110,7 +110,7 @@ function buildConfig() {
     // parameter starts with `/`, the `baseUrl` is prepended, not including the
     // path portion of `baseUrl`. If your `url` parameter starts without a scheme
     // or `/` (like `some/path`), the `baseUrl` gets prepended directly.
-    baseUrl: 'http://bs-local.com',
+    baseUrl: 'https://bs-local.com',
 
     // Default timeout for all waitForXXX commands.
     waitforTimeout: 1000,
