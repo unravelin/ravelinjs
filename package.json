@@ -33,7 +33,7 @@
     "update": "ncu --doctor -u -x @wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
-    "np": "np",
+    "np": "npm run dist && np",
     "version": "run-s clean build dist release # (note: auto-executed by np)"
   },
   "devDependencies": {
