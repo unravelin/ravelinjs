@@ -30,7 +30,7 @@
     "test:unit:watch": "karma start ./test/karma.conf.js --auto",
     "test:integration": "wdio run ./test/wdio.conf.mjs",
     "test:integration:quickunit": "env BROWSERS=firefox,latest LIMIT=1 wdio ./test/wdio.conf.mjs --spec test/unit/unit.spec.mjs",
-    "update": "ncu --doctor -u -x @wdio/*",
+    "update": "ncu -u -x rollup,rollup-*,@rollup/*,@wdio/*",
     "md": "remark . -o",
     "md:watch": "remark . -o --watch",
     "np": "npm run dist && np",
