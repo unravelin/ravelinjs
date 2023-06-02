@@ -5,7 +5,7 @@ If you're looking to change some code in RavelinJS, read this first.
 ## Table of Contents
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
-* [2. Use the expected NodeJS v10.](#2-use-the-expected-nodejs-v10)
+* [2. Use the expected NodeJS v18.](#2-use-the-expected-nodejs-v18)
 * [3. Log into ngrok.](#3-log-into-ngrok)
 * [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
 * [5. Learn how to build & test.](#5-learn-how-to-build--test)
@@ -23,19 +23,19 @@ If you're looking to change some code in RavelinJS, read this first.
 Have a read of the [README](README.md) to understand which parts of our library
 is meant to do what.
 
-## 2. Use the expected NodeJS v10.
+## 2. Use the expected NodeJS v18.
 
-CI runs [node:10-slim](.cloudbuild/ci.yaml).
+CI runs [node:18-alpine](.cloudbuild/ci.yaml).
 
 If you use [Volta](https://volta.sh/) to manage your Node/NPM installation, you
-should find the package.json is already configured to use Node v10.
+should find the package.json is already configured to use Node v18.
 
 ## 3. Log into ngrok.
 
 1. Sign up for an ngrok account: https://dashboard.ngrok.com/signup.
 2. Acquire your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken.
 3. If you have not already done so: `npm install`
-4. From the ravelinjs directory: `node_modules/.bin/ngrok authtoken $TOKEN`.
+4. From the ravelinjs directory: `node_modules/.bin/ngrok config add-authtoken $TOKEN`.
 
 ## 4. Install a JSHint extention in your editor.
 

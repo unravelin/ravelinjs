@@ -235,6 +235,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
       {
         'browserName': 'IE',
@@ -245,6 +246,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
       {
         'browserName': 'IE',
@@ -255,6 +257,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
 
       // Android
