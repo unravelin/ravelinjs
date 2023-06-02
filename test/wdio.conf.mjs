@@ -110,7 +110,7 @@ function buildConfig() {
     // parameter starts with `/`, the `baseUrl` is prepended, not including the
     // path portion of `baseUrl`. If your `url` parameter starts without a scheme
     // or `/` (like `some/path`), the `baseUrl` gets prepended directly.
-    baseUrl: 'https://bs-local.com',
+    baseUrl: 'http://bs-local.com',
 
     // Default timeout for all waitForXXX commands.
     waitforTimeout: 1000,
@@ -235,6 +235,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
       {
         'browserName': 'IE',
@@ -245,6 +246,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
       {
         'browserName': 'IE',
@@ -255,6 +257,7 @@ function buildConfig() {
           'sendKeys': true,
           'seleniumVersion': '3.5.2',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
 
       // Android
