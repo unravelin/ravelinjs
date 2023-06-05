@@ -30,6 +30,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
       });
@@ -49,6 +50,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
       });
@@ -106,6 +108,7 @@ describe('ravelin.track', function() {
             expect(loadEvent.eventMeta.trackingSource).to.be('browser');
             expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+            expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           }).then(done, done);
         }
         return {status: 204};
@@ -141,6 +144,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'resize',
             properties: props
@@ -176,6 +180,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
       });
@@ -198,6 +203,7 @@ describe('ravelin.track', function() {
           expect(e.eventMeta.trackingSource).to.be('browser');
           expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(e.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
       });
@@ -218,6 +224,7 @@ describe('ravelin.track', function() {
           expect(e.eventMeta.trackingSource).to.be('browser');
           expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(e.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
       });
@@ -399,6 +406,7 @@ describe('ravelin.track', function() {
             expect(event.eventMeta.trackingSource).to.be('browser');
             expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
             expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+            expect(event.eventMeta.timezoneOffset).to.be.a('number');
             expect(event.eventData).to.eql({
               eventName: 'paste',
               properties: test.props
@@ -435,6 +443,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
@@ -475,6 +484,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
@@ -515,6 +525,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
             properties: {
