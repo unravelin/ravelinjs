@@ -1,4 +1,4 @@
-import { navigate, hasTitle, hasElement } from '../common.spec.mjs';
+import { navigate, hasTitle, hasElement } from '../common.spec.js';
 
 describe('ravelinjs unit tests', function() {
   it('passes', async function() {
