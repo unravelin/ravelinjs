@@ -163,9 +163,7 @@ contents using:
 
 ## Browser Compatibility
 
-RavelinJS v1.0.0 is [tested on IE8-11 and all newer
-browsers](test/wdio.conf.js). We plan to drop support for IE8-IE10 soon, so
-please contact us if you still support these browsers.
+RavelinJS v1.0.0 is [tested on IE11 and all newer browsers](test/wdio.conf.js).
 
 A Promise/A+ polyfill is required for Internet Explorer support. If you do not
 have one, or are not sure, then use a +promise ravelinjs bundle.
@@ -394,12 +392,6 @@ var action = fetch('https://api.ravelin.com/v2/checkout?score=true', {
 });
 ```
 
-Note that [browsers which do not support
-`window.crypto`](https://caniuse.com/cryptography) (including IE8-IE10) rely on
-a pseudo-random number generator based on collecting user events from the page
-and that if this generator has not collected enough events it may throw an
-exception when trying to encrypt.
-
 ### `ravelin.track.load()`
 
 Send a page-load event. This is automatically triggered when Ravelin is
@@ -419,8 +411,7 @@ sent.
 ### `ravelin.track.paste(event: ClipboardEvent)`
 
 Send a paste event to Ravelin. This is done automatically if the paste happens
-in the same frame Ravelin is instantiated - except on IE8 which does not support
-paste-event listening at the document level.
+in the same frame Ravelin is instantiated.
 
 To correctly identify the paste contents you should annotate your forms with
 attributes:
