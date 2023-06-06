@@ -317,7 +317,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │   ├── encrypt.test.js
     │   ├── track.test.js
     │   │
-    │   └── karma.conf.js
+    │   └── karma.conf.cjs
     │           Karma JS configuration for loading the *.test.js unit test files
     │           into a browser and executing them.
     │
