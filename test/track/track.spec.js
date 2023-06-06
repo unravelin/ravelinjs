@@ -1,7 +1,7 @@
 import { Key } from 'webdriverio'
 import wdio from '@wdio/logger';
-import { navigate, hasTitle, hasElement, objDiff } from '../common.spec.mjs';
-import { fetchRequest } from '../server.mjs';
+import { navigate, hasTitle, hasElement, objDiff } from '../common.spec.js';
+import { fetchRequest } from '../server.js';
 
 const log = wdio('track.spec');
 

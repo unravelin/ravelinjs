@@ -88,7 +88,7 @@ Function.prototype.bind so use lib/util#bind.
 
 ## 7. Prefer testing in unit tests.
 
-Unit tests in the test/\*.test.mjs files have the benefit of running in a single
+Unit tests in the test/\*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
 very quick to run in CI. As a result, **attempt to write all new tests at unit
 tests**.
@@ -97,9 +97,9 @@ You can run unit tests locally using `npm run test:unit` which spawns Chrome
 (optionally from the `CHROME_BIN` envvar) using Karma, but we also run these
 unit tests from an integration test (piggy-backing on the browser-spawning)
 which you can run with `npm run test:integration -- --spec
-test/unit/unit.spec.mjs` (see below for running integration tests).
+test/unit/unit.spec.js` (see below for running integration tests).
 
-Running `test/server.mjs` will give you an ngrok URL through which you can access
+Running `test/server.js` will give you an ngrok URL through which you can access
 the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
@@ -128,7 +128,7 @@ Before running integration tests you will need authentication credentials to
 connect to [BrowserStack](https://automate.browserstack.com/) which runs the
 browsers we test in. Ask from @icio.
 
-To run integration tests in test/\*/\*.spec.mjs:
+To run integration tests in test/\*/\*.spec.js:
 
     export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
     npm install
@@ -148,20 +148,20 @@ These environment variables can be used to configure what gets run:
 
 ### Process
 
-Integration tests in test/\*/\*.spec.mjs run under
+Integration tests in test/\*/\*.spec.js run under
 [WebdriverIO](https://webdriver.io/) in Node using its `browser` to instruct a
 real browser run by BrowserStack to perform actions like navigation to URLs,
 clicking buttons, and pressing keys. The configuration lives in
-[test/wdio.conf.mjs](./test/wdio.conf.mjs) and the process is as follows:
+[test/wdio.conf.js](./test/wdio.conf.js) and the process is as follows:
 
 1. `npm run test:integration` is called by the user.
-2. `wdio test/wdio.conf.mjs` is invoked by npm.
-3. `test/server.mjs` is run in the background by wdio. This serves the files in
+2. `wdio test/wdio.conf.js` is invoked by npm.
+3. `test/server.js` is run in the background by wdio. This serves the files in
    test and offers a fake API implementation at /z and /z/err, and a /requests
    endpoint for introspecting what API requests have been made.
-4. A BrowserStack tunnel is pointed at `test/server.mjs`'s HTTP server. We use
+4. A BrowserStack tunnel is pointed at `test/server.js`'s HTTP server. We use
    this tunnel for default testing because there are no usage limits.
-5. An ngrok tunnel is pointed at `test/server.mjs`. This alternative tunnel
+5. An ngrok tunnel is pointed at `test/server.js`. This alternative tunnel
    allows us to create cross-origin scenarios. Ngrok has limits on the number of
    clients that can connect so you may need to authenticate with `ngrok
    authtoken`.
@@ -271,24 +271,24 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   example spec test.
     │   │
     │   ├── encrypt
-    │   │   ├── encrypt.spec.mjs
+    │   │   ├── encrypt.spec.js
     │   │   └── index.html
     │   ├── send
     │   │   ├── index.html
-    │   │   └── send.spec.mjs
+    │   │   └── send.spec.js
     │   ├── track
     │   │   ├── index.html
-    │   │   └── track.spec.mjs
+    │   │   └── track.spec.js
     │   ├── unit
     │   │   │   Runs the ./test/*.test.js mocha tests in-browser, similar to Karma.
     │   │   ├── index.html
-    │   │   └── unit.spec.mjs
+    │   │   └── unit.spec.js
     │   │
-    │   │── wdio.conf.mjs
+    │   │── wdio.conf.js
     │   │       Points webdriverio at the browsers and spec tests to run, and
     │   │       configures the local test/server.js and BrowserStack tunnel.
     │   │
-    │   ├── server.mjs
+    │   ├── server.js
     │   │       An executable JS file which creates an express server listening on a
     │   │       local port with public ngrok tunnel. It acts as a local ./test file
     │   │       server with a fake Ravelin API on /z and /z/err and a request
@@ -296,10 +296,10 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │       to ensure that the browser under their control made a certain HTTP
     │   │       request.
     │   │
-    │   ├── common.spec.mjs
-    │   │       Helpers for node *.spec.mjs tests.
-    │   ├── ci.mjs
-    │   │       Utilities used when running wdio.conf.mjs in CI, such as
+    │   ├── common.spec.js
+    │   │       Helpers for node *.spec.js tests.
+    │   ├── ci.js
+    │   │       Utilities used when running wdio.conf.js in CI, such as
     │   │       updating GitHub with progress messages.
     │   ├── style.css
     │   │       Shared style for integration test pages.
@@ -332,7 +332,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   are copied into ./releases/ravelinjs-$vers before being published.
     │   │   The below example files are generated from
     │   │   ./lib/bundle/core+track+encrypt+promise.js.
-    │   │  
+    │   │
     │   ├── ravelin-core+track+encrypt+promise.js
     │   ├── ravelin-core+track+encrypt+promise.js.map
     │   ├── ravelin-core+track+encrypt+promise.min.js
@@ -344,7 +344,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   continuously with `npm run build:watch` from the files in
     │   │   ./lib/bundle, and converted into a publishable npm package with
     |   |   `npm run dist`:
-    │   │  
+    │   │
     │   ├── core.js
     │   ├── core+track.js
     │   ├── core+track+encrypt.js
@@ -355,7 +355,7 @@ tl;dr: ./lib for real code; ./test for test code.
         └── ravelinjs-1.0.0-rc1
             │   ./releases/ravelinjs-$vers contains a version-stamped copy of the
             │   files in ./build. `npm run build && npm run release` to make.
-            │  
+            │
             ├── integrity
             ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js
             ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js.map
