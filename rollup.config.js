@@ -46,7 +46,6 @@ glob.sync("lib/bundle/*.js")
         compress: {
           typeofs: false,
         },
-        ie8: true,
         safari10: true,
       }),
     ]),
