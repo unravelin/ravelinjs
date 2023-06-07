@@ -13,10 +13,10 @@ a successful Ravelin integration.
 
 Please feel welcome to create issues or submit pull requests on [the
 project](https://github.com/unravelin/ravelinjs). The [Contribution
-Guidelines](https://github.com/unravelin/ravelinjs/blob/v1/CONTRIBUTING.md)
+Guidelines](https://github.com/unravelin/ravelinjs/blob/v2/CONTRIBUTING.md)
 detail how to write and test code for ravelinjs.
 
-Note that this documentation is for version 1 of ravelinjs. For version 0,
+Note that this documentation is for version 2 of RavelinJS. For version 0,
 please see its [usage guide](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/usage-guide/),
 [reference](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/reference/)
 and [source](https://github.com/unravelin/ravelinjs/tree/v0).
@@ -39,8 +39,9 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
   * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
 * [Vendored Code](#vendored-code)
 * [Upgrading](#upgrading)
-  * [Upgrading to ravelinjs v1 from ravelinjs v0](#upgrading-to-ravelinjs-v1-from-ravelinjs-v0)
-  * [Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v1-from-cdnravelinnet-script-snippet)
+  * [Upgrading to RavelinJS v2 from RavelinJS v1](#upgrading-to-ravelinjs-v2-from-ravelinjs-v1)
+  * [Upgrading to RavelinJS v2 from RavelinJS v0](#upgrading-to-ravelinjs-v2-from-ravelinjs-v0)
+  * [Upgrading to RavelinJS v2 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v2-from-cdnravelinnet-script-snippet)
 
 ## Quickstart
 
@@ -163,7 +164,7 @@ contents using:
 
 ## Browser Compatibility
 
-RavelinJS v1.0.0 is [tested on IE11 and all newer browsers](test/wdio.conf.js).
+RavelinJS v2.0.0 is [tested on IE11 and all newer browsers](test/wdio.conf.js).
 
 A Promise/A+ polyfill is required for Internet Explorer support. If you do not
 have one, or are not sure, then use a +promise ravelinjs bundle.
@@ -433,11 +434,20 @@ it relies:
 ## Upgrading
 
 Note that the format of the deviceId was changed in v1 to include a "rjs-"
-prefix. If you do any validation or parsing that checks for a particular
-format of the deviceId, please remove this logic and instead treat the deviceId as
-an opaque string.
+prefix. If you do any validation or parsing that checks for a particular format
+of the deviceId, please remove this logic and instead treat the deviceId as an
+opaque string.
 
-### Upgrading to ravelinjs v1 from ravelinjs v0
+### Upgrading to RavelinJS v2 from RavelinJS v1
+
+There are no breaking API changes between v1 and v2. This major version release
+was made to signify the end of our support for browsers IE8 to IE10. IE11
+continues to be supported. If you are unable to upgrade to v2 because you want
+to continue supporting any these browsers, please let us know.
+
+If you don't care about IE8-IE10, just go ahead and upgrade.
+
+### Upgrading to RavelinJS v2 from RavelinJS v0
 
 If you are using RavelinJS v0 from a script or loaded via npm then equivalent
 functionality is now covered by bundles  with the core+track+encrypt components.
@@ -464,7 +474,7 @@ the upgrade:
   [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
 * `ravelinjs.setOrderId(orderId)` → Removed.
 
-### Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet
+### Upgrading to RavelinJS v2 from cdn.ravelin.net script snippet
 
 If you previously used a snippet such as
 
