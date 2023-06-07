@@ -168,12 +168,6 @@ RavelinJS v1.0.0 is [tested on IE11 and all newer browsers](test/wdio.conf.js).
 A Promise/A+ polyfill is required for Internet Explorer support. If you do not
 have one, or are not sure, then use a +promise ravelinjs bundle.
 
-Card encryption uses window.crypto where available, and otherwise falls back to
-a pseudo-random number generator which collects user movements and keypresses as
-a source of entropy. If insufficient events have been collected before
-encryption is attempted, an Error is thrown to prevent insecure transmission of
-cardholder data.
-
 ## Reference
 
 ### `var ravelin = new Ravelin({cfg: object})`
