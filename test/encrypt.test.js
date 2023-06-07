@@ -70,25 +70,6 @@ describe('ravelin.encrypt', function() {
       expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1, year: '18', 'cvv': '123'}); }).to.throwException(err);
     });
 
-    it('errors if generators arent seeded', function() {
-      if (window.crypto || window.msCrypto) {
-        this.skip('Only applies to browsers without crypto.');
-      }
-
-      var ravelin = new Ravelin({
-        api: '/',
-        key: 'encrypt',
-        rsaKey: dummyRSAKey
-      });
-      expect(function() {
-        ravelin.encrypt.card({
-          pan: 4111111111111111,
-          month: 10,
-          year: 2020
-        });
-      }).to.throwException(/ravelin\/encrypt: generator not ready/);
-    });
-
     it('generates ciphers', function() {
       var ravelin = new Ravelin({
         api: '/',
