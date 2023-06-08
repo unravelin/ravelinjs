@@ -187,8 +187,8 @@ HTML file you write for you test, but most will use:
 ## 9. New pull requests should target branch v2.
 
 The main branches of the ravelinjs repo follow their major semver version:
-[v2](https://github.com/unravelin/ravelinjs/tree/v1) (latest, default - largely
-the same as v2 but without IE8-10 support),
+[v2](https://github.com/unravelin/ravelinjs/tree/v2) (latest, default - largely
+the same as v1 but without IE8-10 support),
 [v1](https://github.com/unravelin/ravelinjs/tree/v1) and
 [v0](https://github.com/unravelin/ravelinjs/tree/v0).
 
