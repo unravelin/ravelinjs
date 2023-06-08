@@ -103,12 +103,12 @@ Running `test/server.js` will give you an ngrok URL through which you can access
 the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
-Unit tests run in the browser and therefore must be written in IE-compatible
+Unit tests run in the browser and therefore must be written in IE11-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
 * the [Mocha test framework](https://mochajs.org/);
-* [jQuery v1](https://api.jquery.com/category/version/1.12-and-2.2/) for simple DOM manipulation;
+* [jQuery v2](https://api.jquery.com/category/version/1.12-and-2.2/) for simple DOM manipulation;
 * [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 * [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
 
