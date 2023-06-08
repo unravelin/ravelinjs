@@ -76,7 +76,7 @@
   },
   "np": {
     "yarn": false,
-    "branch": "v1",
+    "branch": "v2",
     "contents": "./dist"
   },
   "remarkConfig": {
