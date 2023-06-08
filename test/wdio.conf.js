@@ -226,39 +226,6 @@ function buildConfig() {
           'sendKeys': true,
         },
       },
-      {
-        'browserName': 'IE',
-        'browserVersion': '10.0',
-        'bstack:options': {
-          'os': 'Windows',
-          'osVersion': '8',
-          'sendKeys': true,
-          'seleniumVersion': '3.5.2',
-        },
-        'rav:send:skipCrossDomainTest': true,
-      },
-      {
-        'browserName': 'IE',
-        'browserVersion': '9.0',
-        'bstack:options': {
-          'os': 'Windows',
-          'osVersion': '7',
-          'sendKeys': true,
-          'seleniumVersion': '3.5.2',
-        },
-        'rav:send:skipCrossDomainTest': true,
-      },
-      {
-        'browserName': 'IE',
-        'browserVersion': '8.0',
-        'bstack:options': {
-          'os': 'Windows',
-          'osVersion': '7',
-          'sendKeys': true,
-          'seleniumVersion': '3.5.2',
-        },
-        'rav:send:skipCrossDomainTest': true,
-      },
 
       // Android
       // Reminder set for 16-01-2023 to uncomment this next block and check if

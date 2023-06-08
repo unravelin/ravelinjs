@@ -1,12 +1,14 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import license from 'rollup-plugin-license';
 import { basename } from 'path';
 import glob from 'glob';
+import { readFileSync } from 'fs';
 
-var builds = module.exports = [];
+const builds = [];
+export default builds;
 
 var output = {
   format: 'iife',
@@ -20,10 +22,11 @@ var output = {
   // https://www.rollupjs.org/guide/en/#outputexternallivebindings.
   externalLiveBindings: false,
 };
+var version = JSON.parse(readFileSync('./package.json')).version;
 var plugins = [
   replace({
     preventAssignment: true,
-    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version + '-ravelinjs'),
+    'RAVELINJS_VERSION': JSON.stringify(version + '-ravelinjs'),
   }),
   resolve(),
   commonjs(),
@@ -46,7 +49,6 @@ glob.sync("lib/bundle/*.js")
         compress: {
           typeofs: false,
         },
-        ie8: true,
         safari10: true,
       }),
     ]),

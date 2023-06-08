@@ -13,7 +13,7 @@ If you're looking to change some code in RavelinJS, read this first.
 * [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
 * [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
   * [Process](#process)
-* [9. New pull requests should target branch v1.](#9-new-pull-requests-should-target-branch-v1)
+* [9. New pull requests should target branch v2.](#9-new-pull-requests-should-target-branch-v2)
 * [10. Understand the file structure.](#10-understand-the-file-structure)
 * [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
 * [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
@@ -103,12 +103,12 @@ Running `test/server.js` will give you an ngrok URL through which you can access
 the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
-Unit tests run in the browser and therefore must be written in IE-compatible
+Unit tests run in the browser and therefore must be written in IE11-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
 * the [Mocha test framework](https://mochajs.org/);
-* [jQuery v1](https://api.jquery.com/category/version/1.12-and-2.2/) for simple DOM manipulation;
+* [jQuery v2](https://api.jquery.com/category/version/1.12-and-2.2/) for simple DOM manipulation;
 * [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 * [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
 
@@ -184,10 +184,12 @@ HTML file you write for you test, but most will use:
   test/ravelin.js)
 * Utilities in test/common.js, such as query-string parsing and error-sniffing.
 
-## 9. New pull requests should target branch v1.
+## 9. New pull requests should target branch v2.
 
 The main branches of the ravelinjs repo follow their major semver version:
-[v1](https://github.com/unravelin/ravelinjs/tree/v1) (latest, default) and
+[v2](https://github.com/unravelin/ravelinjs/tree/v2) (latest, default - largely
+the same as v1 but without IE8-10 support),
+[v1](https://github.com/unravelin/ravelinjs/tree/v1) and
 [v0](https://github.com/unravelin/ravelinjs/tree/v0).
 
 If you wish to propose a change, make your change on a new fork/branch of the
@@ -317,7 +319,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │   ├── encrypt.test.js
     │   ├── track.test.js
     │   │
-    │   └── karma.conf.js
+    │   └── karma.conf.cjs
     │           Karma JS configuration for loading the *.test.js unit test files
     │           into a browser and executing them.
     │
@@ -385,7 +387,7 @@ We publish new versions project to two places:
 * [npm](https://www.npmjs.com/package/ravelinjs/v/1).
 
 New versions should be published after merging new features or bug fixes into
-the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using [np (a
+the [v2](https://github.com/unravelin/ravelinjs/tree/v2/) branch, using [np (a
 better `npm publish`)](https://www.npmjs.com/package/np). `np` does quite a lot
 for you, including run `npm test` which will require that you have the
 `BROWSERSTACK` envvars set. To test it, run:
