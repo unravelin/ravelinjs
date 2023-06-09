@@ -5,7 +5,7 @@ If you're looking to change some code in RavelinJS, read this first.
 ## Table of Contents
 
 * [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
-* [2. Use the expected NodeJS v18.](#2-use-the-expected-nodejs-v18)
+* [2. Use the expected Node.js v18.](#2-use-the-expected-nodejs-v18)
 * [3. Log into ngrok.](#3-log-into-ngrok)
 * [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
 * [5. Learn how to build & test.](#5-learn-how-to-build--test)
@@ -23,7 +23,7 @@ If you're looking to change some code in RavelinJS, read this first.
 Have a read of the [README](README.md) to understand which parts of our library
 is meant to do what.
 
-## 2. Use the expected NodeJS v18.
+## 2. Use the expected Node.js v18.
 
 CI runs [node:18-alpine](.cloudbuild/ci.yaml).
 
@@ -40,7 +40,7 @@ should find the package.json is already configured to use Node v18.
 ## 4. Install a JSHint extention in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
-use by Node JS. Some are config files, others are executable, some assume test
+use by Node.js. Some are config files, others are executable, some assume test
 frameworks are installed in the global scope.
 
 [JSHint has been configured](./.jshintrc) to know which files run where so that
@@ -126,7 +126,7 @@ Adding new integration tests dramatically slows the completion time, so do
 
 Before running integration tests you will need authentication credentials to
 connect to [BrowserStack](https://automate.browserstack.com/) which runs the
-browsers we test in. Ask from @icio.
+browsers we test in. Ask for help from a Ravelin engineer.
 
 To run integration tests in test/\*/\*.spec.js:
 
@@ -382,7 +382,7 @@ Which for this project means:
 We publish new versions project to two places:
 
 * [GitHub releases](https://github.com/unravelin/ravelinjs/releases/); and
-* [npm](https://www.npmjs.com/package/ravelinjs/v/1).
+* [npm](https://www.npmjs.com/package/ravelinjs).
 
 New versions should be published after merging new features or bug fixes into
 the [v1](https://github.com/unravelin/ravelinjs/tree/v1/) branch, using [np (a
@@ -411,7 +411,7 @@ for you, including run `npm test` which will require that you have the
       ↓ Bumping version using npm [skipped]
         → [Preview] Command not executed: npm version prerelease.
       ↓ Publishing package using npm [skipped]
-        → [Preview] Command not executed: npm publish dist --tag beta.
+        → [Preview] Command not executed: npm publish ./dist --tag beta.
       ↓ Pushing tags [skipped]
         → [Preview] Command not executed: git push --follow-tags.
       ↓ Creating release draft on GitHub [skipped]
@@ -425,5 +425,6 @@ The last four `[Preview]` steps when run without `--preview` will:
 * Open the GitHub release page with some contents pre-filled.
 
 The GitHub release should have New Features and/or Bug Fixes headings in the
-style of previous releases, and ideally some nice works about one of the many
-Ravelin pets.
+style of previous releases. Finally, you should run `npm run release` and drag
+the files from `./releases/ravelinjs-$vers` into the assets section of the
+GitHub release.
