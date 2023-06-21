@@ -398,7 +398,7 @@ class RavelinJSServerLauncher {
   async onPrepare(config, caps) {
     try {
       // Launch our local server and ngrok proxy.
-      const api = await launchProxy(app(), this.port, process.env.NGROK_ENABLED !== '0');
+      const api = await launchProxy(app(), this.port);
       process.env.TEST_INTERNAL = api.internal;
       process.env.TEST_LOCAL = config.baseUrl;
       process.env.TEST_REMOTE = api.remote;

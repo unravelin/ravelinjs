@@ -108,10 +108,9 @@ export function maybeJSON(b) {
  *
  * @param {express.Application} app
  * @param {Number} [port]
- * @param {Boolean} [withNgrok]
  * @returns {string} The ngrok proxy address to access the server.
  */
-export async function launchProxy(app, port, withNgrok=true) {
+export async function launchProxy(app, port) {
   // Start express listening on a random port.
   var listener;
   const local = await (new Promise((resolve) => {
@@ -122,19 +121,15 @@ export async function launchProxy(app, port, withNgrok=true) {
   }));
 
   // Spin up an ngrok tunnel pointing to our app.
-  const n = (withNgrok !== false)
-    ? ngrok.connect({
-      authtoken: process.env.NGROK_AUTH_TOKEN,
-      addr: local.port,
-      onLogEvent: msg => logger.info('ngrok:', msg),
-      onStatusChange: function(status) {
-        // Shut down the express app when ngrok is closed.
-        if (status == 'closed') listener.close();
-      }
-    })
-    : Promise.resolve(null);
-
-  return n.then(url => ({
+  return ngrok.connect({
+    authtoken: process.env.NGROK_AUTH_TOKEN,
+    addr: local.port,
+    onLogEvent: msg => logger.info('ngrok:', msg),
+    onStatusChange: function(status) {
+      // Shut down the express app when ngrok is closed.
+      if (status == 'closed') listener.close();
+    }
+  }).then(url => ({
     internal: `http://${local.address}:${local.port}`,
     internalPort: local.port,
     remote: url,
