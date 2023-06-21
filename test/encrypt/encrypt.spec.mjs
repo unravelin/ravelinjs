@@ -1,5 +1,5 @@
 import wdiolog from '@wdio/logger'
-import { navigate, hasTitle, hasElement } from '../common.spec.js'
+import { navigate, hasTitle, hasElement } from '../common.spec.mjs'
 
 const log = wdiolog('encrypt.spec')
 

@@ -1,6 +1,6 @@
 import wdiolog from '@wdio/logger';
-import { navigate, hasTitle, hasElement, hasURL } from '../common.spec.js';
-import { fetchRequest } from '../server.js';
+import { navigate, hasTitle, hasElement, hasURL } from '../common.spec.mjs';
+import { fetchRequest } from '../server.mjs';
 import buildURL from 'build-url';
 
 const log = wdiolog('send.spec');

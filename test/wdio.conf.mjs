@@ -1,8 +1,8 @@
 import path from 'path';
-import { launchProxy, app } from './server.js';
+import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
-import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } from './ci.js';
+import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } from './ci.mjs';
 
 /**
  * The hooks available to a service added to the config.
@@ -79,7 +79,7 @@ function buildConfig() {
     // https://docs.npmjs.com/cli/run-script), then the current working directory
     // is where your `package.json` resides, so `wdio` will be called from there.
     specs: [
-      path.join(__dirname, '*/*.spec.js'),
+      path.join(__dirname, '*/*.spec.mjs'),
     ],
     // Patterns to exclude.
     exclude: [],
