@@ -164,7 +164,7 @@ contents using:
 ## Browser Compatibility
 
 RavelinJS v1.0.0 is [tested on IE8-11 and all newer
-browsers](test/wdio.conf.js). We plan to drop support for IE8-IE10 soon, so
+browsers](test/wdio.conf.mjs). We plan to drop support for IE8-IE10 soon, so
 please contact us if you still support these browsers.
 
 A Promise/A+ polyfill is required for Internet Explorer support. If you do not
