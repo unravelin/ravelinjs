@@ -29,6 +29,9 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 * [Content-Security-Policy](#content-security-policy)
 * [Script Integrity](#script-integrity)
 * [Browser Compatibility](#browser-compatibility)
+* [Examples](#examples)
+  * [deviceId Prefix](#device-id-prefix)
+  * [API Endpoint](#api-endpoint)
 * [Reference](#reference)
   * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
   * [`ravelin.core.id(): Promise<string>`](#ravelincoreid-promisestring)
@@ -175,6 +178,37 @@ a pseudo-random number generator which collects user movements and keypresses as
 a source of entropy. If insufficient events have been collected before
 encryption is attempted, an Error is thrown to prevent insecure transmission of
 cardholder data.
+
+## Examples
+
+### Device ID Prefix
+
+RavelinJS prefixes the deviceId with `ravjs-` by default. If you wish to use
+something else, for example if you are [upgrading](#upgrading) from a previous
+version and wish to maintain the opaque string format, simply specify your desired
+prefix or omit entirely:
+
+```
+var rav = new Ravelin({key: 'publishable_key_...', prefix: ''})
+```
+
+or
+
+```
+var rav = new Ravelin({key: 'publishable_key_...', prefix: 'myid-'})
+```
+
+### API Endpoint
+
+RavelinJS supports sending events to a defined API base URL, useful for bypassing
+Ad-Blockers that rely on matching the ravelin.click domain. If you do this, there's
+no need to update your [Content-Security-Policy](#content-security-policy).
+
+Speak to your Ravelin Account Manager for help setting up a custom subdomain.
+
+```
+var rav = new Ravelin({key: 'publishable_key_...', api: 'https://foo.store.com'})
+```
 
 ## Reference
 
@@ -449,8 +483,8 @@ it relies:
 
 Note that the format of the deviceId was changed in v1 to include a "rjs-"
 prefix. If you do any validation or parsing that checks for a particular
-format of the deviceId, please remove this logic and instead treat the deviceId as
-an opaque string.
+format of the deviceId, please [remove this logic](#device-id-prefix) and
+instead treat the deviceId as an opaque string.
 
 ### Upgrading to ravelinjs v1 from ravelinjs v0
 
