@@ -195,9 +195,9 @@ var rav = new Ravelin({
      */
     // api: 'https://live.ravelin.click/',
     /**
-     * @prop {string} [prefix=ravjs-] The prefix of the generated deviceId
+     * @prop {string} [prefix=rjs-] The prefix of the generated deviceId
      */
-    // prefix: 'ravjs-',
+    // prefix: 'rjs-',
     /**
      * @prop {string|Promise<string>} [id] An explicit deviceId to use. If set,
      * Ravelin won't attempt to maintain a deviceId of its own. However, if the
