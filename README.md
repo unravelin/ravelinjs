@@ -30,7 +30,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 * [Script Integrity](#script-integrity)
 * [Browser Compatibility](#browser-compatibility)
 * [Examples](#examples)
-  * [deviceId Prefix](#device-id-prefix)
+  * [deviceId Prefix](#deviceid-prefix)
   * [API base URL](#api-base-url)
 * [Reference](#reference)
   * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
@@ -181,7 +181,7 @@ cardholder data.
 
 ## Examples
 
-### Device ID Prefix
+### deviceId Prefix
 
 RavelinJS prefixes the deviceId with `rjs-` by default. If you wish to use
 something else, for example if you are [upgrading](#upgrading) from a previous
@@ -487,7 +487,7 @@ it relies:
 
 Note that the format of the deviceId was changed in v1 to include a "rjs-"
 prefix. If you do any validation or parsing that checks for a particular
-format of the deviceId, please [remove this logic](#device-id-prefix) and
+format of the deviceId, please [remove this logic](#deviceid-prefix) and
 instead treat the deviceId as an opaque string.
 
 ### Upgrading to ravelinjs v1 from ravelinjs v0
