@@ -183,7 +183,7 @@ cardholder data.
 
 ### Device ID Prefix
 
-RavelinJS prefixes the deviceId with `ravjs-` by default. If you wish to use
+RavelinJS prefixes the deviceId with `rjs-` by default. If you wish to use
 something else, for example if you are [upgrading](#upgrading) from a previous
 version and wish to maintain the opaque string format, simply specify your desired
 prefix or omit entirely:
