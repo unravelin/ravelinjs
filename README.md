@@ -195,7 +195,7 @@ var rav = new Ravelin({
      */
     // api: 'https://live.ravelin.click/',
     /**
-     * @prop {string} [prefix=rjs-] The prefix of the generated deviceId
+     * @prop {string} [prefix=rjs-] The prefix of the generated deviceId.
      */
     // prefix: 'rjs-',
     /**
