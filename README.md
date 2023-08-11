@@ -31,7 +31,7 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 * [Browser Compatibility](#browser-compatibility)
 * [Examples](#examples)
   * [deviceId Prefix](#device-id-prefix)
-  * [API Endpoint](#api-endpoint)
+  * [API base URL](#api-base-url)
 * [Reference](#reference)
   * [`var ravelin = new Ravelin({cfg: object})`](#var-ravelin--new-ravelincfg-object)
   * [`ravelin.core.id(): Promise<string>`](#ravelincoreid-promisestring)
@@ -198,9 +198,9 @@ or
 var rav = new Ravelin({key: 'publishable_key_...', prefix: 'myid-'})
 ```
 
-### API Endpoint
+### API base URL
 
-RavelinJS supports sending events to a defined API base URL, useful for bypassing
+RavelinJS supports sending events to a user defined API base URL, useful for bypassing
 Ad-Blockers that rely on matching the ravelin.click domain. If you do this, there's
 no need to update your [Content-Security-Policy](#content-security-policy).
 
