@@ -188,13 +188,13 @@ something else, for example if you are [upgrading](#upgrading) from a previous
 version and wish to maintain the opaque string format, simply specify your desired
 prefix or omit entirely:
 
-```
+```js
 var rav = new Ravelin({key: 'publishable_key_...', prefix: ''})
 ```
 
 or
 
-```
+```js
 var rav = new Ravelin({key: 'publishable_key_...', prefix: 'myid-'})
 ```
 
