@@ -3,8 +3,6 @@ tags:
   - ravelinjs
 substitutions:
   _NODE: node:18-alpine
-  # TODO: When 416.0.0 is pushed, upgrade this. See: https://console.cloud.google.com/gcr/images/google.com:cloudsdktool/GLOBAL/cloud-sdk
-  _CLOUD_SDK_VERSION: 413.0.0
 
 availableSecrets:
   secretManager:
@@ -52,6 +50,6 @@ steps:
       - test:e2e
 
   - id: upload_cipher
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:$_CLOUD_SDK_VERSION
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
     entrypoint: gsutil
     args: ["cp", "/workspace/cipher.txt", "gs://ravelinjs-integration-tests/$BUILD_ID/cipher.txt"]
