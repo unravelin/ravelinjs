@@ -1,8 +1,10 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 tags:
   - ravelinjs
+
 substitutions:
   _NODE: node:18-alpine
+  _RCLONE_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/rclone/rclone:1.61.1
 
 availableSecrets:
   secretManager:
@@ -50,6 +52,6 @@ steps:
       - test:e2e
 
   - id: upload_cipher
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
-    entrypoint: gsutil
-    args: ["cp", "/workspace/cipher.txt", "gs://ravelinjs-integration-tests/$BUILD_ID/cipher.txt"]
+    name: "$_RCLONE_IMAGE"
+    script: |
+      rclone --config="" copyto /workspace/cipher.txt :gcs: ravelinjs-integration-tests/$BUILD_ID/cipher.txt
