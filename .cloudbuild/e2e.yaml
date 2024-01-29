@@ -54,4 +54,4 @@ steps:
   - id: upload_cipher
     name: "$_RCLONE_IMAGE"
     script: |
-      rclone --config="" copyto /workspace/cipher.txt :gcs: ravelinjs-integration-tests/$BUILD_ID/cipher.txt
+      rclone --config="" copyto /workspace/cipher.txt :gcs:ravelinjs-integration-tests/$BUILD_ID/cipher.txt
