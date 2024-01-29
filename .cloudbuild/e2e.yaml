@@ -18,6 +18,7 @@ availableSecrets:
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
   logging: GCS_ONLY
+  machineType: "E2_HIGHCPU_32"
 
 steps:
   - id: npm_install
