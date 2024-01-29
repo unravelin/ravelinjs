@@ -53,5 +53,7 @@ steps:
 
   - id: upload_cipher
     name: "$_RCLONE_IMAGE"
+    env:
+      - BUILD_ID=$BUILD_ID
     script: |
       rclone --config="" --gcs-bucket-policy-only copyto /workspace/cipher.txt :gcs:ravelinjs-integration-tests/$BUILD_ID/cipher.txt
