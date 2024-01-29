@@ -80,7 +80,7 @@ attribute to any inputs the user types a credit/debit card number into, and a
 `data-rvn-sensitive` to or around any elements you don't want Ravelin to report
 any content from.
 
-→ Read on for more details.
+Read on for more details.
 
 ***
 

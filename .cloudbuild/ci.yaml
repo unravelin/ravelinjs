@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 tags:
   - ravelinjs
+
 substitutions:
   _NODE: node:18-alpine
 
