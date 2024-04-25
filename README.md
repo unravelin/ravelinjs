@@ -17,8 +17,8 @@ Guidelines](https://github.com/unravelin/ravelinjs/blob/v1/CONTRIBUTING.md)
 detail how to write and test code for ravelinjs.
 
 Note that this documentation is for version 1 of ravelinjs. For version 0,
-please see its [usage guide](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/usage-guide/),
-[reference](https://developer.ravelin.com/libraries-and-sdks/ravelinjs/v0/reference/)
+please see its [usage guide](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v0/usage-guide/),
+[reference](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v0/reference/)
 and [source](https://github.com/unravelin/ravelinjs/tree/v0).
 
 ## Table of Contents
@@ -350,7 +350,7 @@ format of the ID as we may change it without warning in the future.
 
 `ravelin.encrypt.card` returns an object describing the encrypted form of
 cardholder data for use with [Ravelin's client-side
-encryption](https://developer.ravelin.com/guides/pci/#submission-of-encrypted-card-details).
+encryption](https://developer.ravelin.com/merchant/guides/pci/#submission-of-encrypted-card-details).
 This object can then be sent via your server to Ravelin without increasing the
 scope of PCI compliance required of your server. The object can be used directly
 as a paymentMethod in a [v2/checkout][postv2checkout],
@@ -360,7 +360,7 @@ for example.
 Encrypting cardholder data is only necessary for non-PCI compliant merchants (PCI
 SAQ-A or SAQ-AEP merchants) who are otherwise unable to provide cardholder data
 (including a valid
-[`instrumentId`](https://developer.ravelin.com/apis/v2/#checkout.paymentMethod.0.instrumentId))
+[`instrumentId`](https://developer.ravelin.com/merchant/api/endpoints/checkout/#checkout.paymentMethod.0.instrumentId))
 to Ravelin when scoring an order.
 
 The full set of fields are:
@@ -564,13 +564,11 @@ substitutions to complete the upgrade:
 
 [releases]: https://www.github.com/unravelin/ravelinjs/releases "RavelinJS GitHub Releases"
 
-[postv2order]: https://developer.ravelin.com/apis/v2/#postv2order "Ravelin API: POST /v2/order"
+[postv2checkout]: https://developer.ravelin.com/merchant/api/endpoints/checkout/ "Ravelin API: POST /v2/checkout"
 
-[postv2checkout]: https://developer.ravelin.com/apis/v2/#postv2checkout "Ravelin API: POST /v2/checkout"
+[postv2paymentmethod]: https://developer.ravelin.com/merchant/api/endpoints/payment-method/ "Ravelin API: POST /v2/paymentmethod"
 
-[postv2paymentmethod]: https://developer.ravelin.com/apis/v2/#postv2paymentmethod "Ravelin API: POST /v2/paymentmethod"
-
-[postv2connect]: https://developer.ravelin.com/apis/connect/#postv2connect "Ravelin Connect API: POST /v2/connect"
+[postv2connect]: https://developer.ravelin.com/merchant/api/endpoints/connect/ "Ravelin Connect API: POST /v2/connect"
 
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "MDN: JavaScript Promises"
 
