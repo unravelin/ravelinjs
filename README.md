@@ -350,7 +350,7 @@ format of the ID as we may change it without warning in the future.
 
 `ravelin.encrypt.card` returns an object describing the encrypted form of
 cardholder data for use with [Ravelin's client-side
-encryption](https://developer.ravelin.com/merchant/guides/pci/#submission-of-encrypted-card-details).
+encryption](https://developer.ravelin.com/merchant/guides/privacy-and-security/pci/#submission-of-encrypted-card-details).
 This object can then be sent via your server to Ravelin without increasing the
 scope of PCI compliance required of your server. The object can be used directly
 as a paymentMethod in a [v2/checkout][postv2checkout],
