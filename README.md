@@ -482,6 +482,7 @@ it relies:
 
 * http://bitwiseshiftleft.github.io/sjcl/ (MIT)
 * http://www-cs-students.stanford.edu/~tjw/jsbn/ (BSD)
+* https://github.com/Joe12387/detectIncognito (MIT)
 
 ## Upgrading
 
