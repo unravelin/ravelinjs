@@ -281,28 +281,10 @@ function buildConfig() {
       },
 
       // iOS
-      // iOS11 currently failing to start with 'COULD NOT START MOBILE BROWSER'.
-      // https://automate.browserstack.com/dashboard/v2/builds/2840b7364373dc5f6f27be58d7bb33374d492668?overallStatus=error
-      // {
-      //   'bstack:options': {
-      //     'osVersion': '11',
-      //     'deviceName': 'iPhone 8',
-      //     'realMobile': 'true',
-      //   },
-      //   'browserName': 'iPhone',
-      // },
       {
         'browserName': 'iPhone',
         'bstack:options': {
-          'osVersion': '12',
-          'deviceName': 'iPhone 8',
-          'realMobile': 'true',
-        },
-      },
-      {
-        'browserName': 'iPhone',
-        'bstack:options': {
-          'osVersion': '13',
+          'osVersion': '11',
           'deviceName': 'iPhone 8',
           'realMobile': 'true',
         },
@@ -312,6 +294,14 @@ function buildConfig() {
         'bstack:options': {
           'osVersion': '14',
           'deviceName': 'iPhone 11',
+          'realMobile': 'true',
+        },
+      },
+      {
+        'browserName': 'iPhone',
+        'bstack:options': {
+          'osVersion': '17',
+          'deviceName': 'iPhone 15',
           'realMobile': 'true',
         },
       },
@@ -370,6 +360,7 @@ function buildConfig() {
           'osVersion': 'Mavericks',
           'seleniumVersion': '3.14.0',
         },
+        'rav:send:skipCrossDomainTest': true,
       },
 
       // Firefox.
