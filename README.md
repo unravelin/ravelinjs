@@ -293,8 +293,8 @@ var rav = new Ravelin({
 string. This will eventually match the `ravelinDeviceId` cookie. Your goal is to
 make a server-side API request to Ravelin where you send the customer's order
 and device - using this deviceId - together in a [v2/checkout][postv2checkout]
-or [v2/order][postv2order] API request, or the customer and device in a
-[v2/connect][postv2connect] API request.
+API request, or the customer and device in a [v2/connect][postv2connect] API
+request.
 
 HTML example:
 
@@ -323,7 +323,7 @@ Server-side example:
 
 ```js
 var card = JSON.parse(form.getValue('card-cipher'));
-var action = fetch('https://api.ravelin.com/v2/order?score=true', {
+var action = fetch('https://api.ravelin.com/v2/checkout?score=checkoutPreAuth', {
     method: 'POST',
     headers: {...},
     body: JSON.stringify({
