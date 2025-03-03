@@ -34,8 +34,7 @@ should find the package.json is already configured to use Node v18.
 
 1. Sign up for an ngrok account: https://dashboard.ngrok.com/signup.
 2. Acquire your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken.
-3. If you have not already done so: `npm install`
-4. From the ravelinjs directory: `node_modules/.bin/ngrok config add-authtoken $TOKEN`.
+3. Authenticate by setting the `NGROK_AUTHTOKEN` envvar (`export NGROK_AUTHTOKEN=x`).
 
 ## 4. Install a JSHint extention in your editor.
 

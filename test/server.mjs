@@ -11,7 +11,7 @@ import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
 import serveIndex from 'serve-index';
-import ngrok from 'ngrok';
+import ngrok from '@ngrok/ngrok';
 import mingo from 'mingo';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -124,7 +124,7 @@ export async function launchProxy(app, port, withNgrok=true) {
   // Spin up an ngrok tunnel pointing to our app.
   const n = (withNgrok !== false)
     ? ngrok.connect({
-      authtoken: process.env.NGROK_AUTH_TOKEN,
+      authtoken_from_env: true,
       addr: local.port,
       onLogEvent: msg => logger.info('ngrok:', msg),
       onStatusChange: function(status) {
@@ -134,10 +134,10 @@ export async function launchProxy(app, port, withNgrok=true) {
     })
     : Promise.resolve(null);
 
-  return n.then(url => ({
+  return n.then(listener => ({
     internal: `http://${local.address}:${local.port}`,
     internalPort: local.port,
-    remote: url,
+    remote: listener?.url(),
   }));
 }
 
