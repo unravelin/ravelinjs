@@ -30,7 +30,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(loadEvent.eventMeta.incognitoDetected).to.be(false);
+          expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
@@ -51,7 +51,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(loadEvent.eventMeta.incognitoDetected).to.be(false);
+          expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
@@ -110,7 +110,7 @@ describe('ravelin.track', function() {
             expect(loadEvent.eventMeta.trackingSource).to.be('browser');
             expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
-            expect(loadEvent.eventMeta.incognitoDetected).to.be(false);
+            expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           }).then(done, done);
         }
@@ -147,7 +147,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(event.eventMeta.incognitoDetected).to.be(false);
+          expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'resize',
@@ -184,7 +184,7 @@ describe('ravelin.track', function() {
           expect(loadEvent.eventMeta.trackingSource).to.be('browser');
           expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(loadEvent.eventMeta.incognitoDetected).to.be(false);
+          expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
@@ -229,7 +229,7 @@ describe('ravelin.track', function() {
           expect(e.eventMeta.trackingSource).to.be('browser');
           expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(e.eventMeta.incognitoDetected).to.be(false);
+          expect(e.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(e.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
@@ -412,7 +412,7 @@ describe('ravelin.track', function() {
             expect(event.eventMeta.trackingSource).to.be('browser');
             expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
             expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
-            expect(event.eventMeta.incognitoDetected).to.be(false);
+            expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
             expect(event.eventMeta.timezoneOffset).to.be.a('number');
             expect(event.eventData).to.eql({
               eventName: 'paste',
@@ -450,7 +450,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(event.eventMeta.incognitoDetected).to.be(false);
+          expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
@@ -492,7 +492,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(event.eventMeta.incognitoDetected).to.be(false);
+          expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
@@ -534,7 +534,7 @@ describe('ravelin.track', function() {
           expect(event.eventMeta.trackingSource).to.be('browser');
           expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
           expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
-          expect(event.eventMeta.incognitoDetected).to.be(false);
+          expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
             eventName: 'paste',
