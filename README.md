@@ -258,6 +258,13 @@ var rav = new Ravelin({
      */
     // cookieDomain: 'store.com',
     /**
+     * @prop {string} [cookieSameSite] The SameSite attribute to control how
+     * cookies are sent in cross-site requests. If not provided, "None;Secure"
+     * will be used by default for HTTPS connections. This is to support clients
+     * who process card payments in iframes or WebViews.
+     */
+    // cookieSameSite: 'None;Secure',
+    /**
      * @prop {PromiseConstructor} [Promise] An injectable Promise implementation
      * to use. If not provided, defaults to window.Promise or a polyfill if the
      * +promise component is included. Ravelin.Promise contains the default.

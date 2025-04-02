@@ -396,6 +396,15 @@ describe('ravelin.core', function() {
       });
     });
 
+    it('respects explicit SameSite attribute', function() {
+      // JavaScript cannot directly read the SameSite attribute of a stored
+      // cookie, so this config option can't be tested easily. At least we can
+      // check that the config is passed through to the cookie jar.
+      var cfg = isolate({ cookieSameSite: 'Strict;Secure' });
+      var r = new Ravelin(cfg);
+      expect(r.core.cookies.cfg.sameSite).to.be('Strict;Secure');
+    });
+
     $([
       {key: 'publishable_key_test_123', api: '', expApi: 'https://live.ravelin.click'},
       {key: 'publishable_key_test_123', expApi: 'https://live.ravelin.click'},
