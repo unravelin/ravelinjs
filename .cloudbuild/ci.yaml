@@ -19,6 +19,8 @@ availableSecrets:
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
   logging: GCS_ONLY
+  pool:
+    name: projects/ravelin-builds/locations/europe-west1/workerPools/highcpu-8-pool
 
 steps:
   - id: install
