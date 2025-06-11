@@ -3,7 +3,7 @@ tags:
   - ravelinjs
 
 substitutions:
-  _NODE: node:18-alpine
+  _NODE: node:22.16.0-alpine
   _RCLONE_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/rclone/rclone:1.61.1
 
 availableSecrets:
@@ -18,7 +18,7 @@ options:
   logging: GCS_ONLY
   pool:
     name: projects/ravelin-builds/locations/europe-west1/workerPools/highcpu-8-pool
-    
+
 steps:
   - id: npm_install
     name: $_NODE
