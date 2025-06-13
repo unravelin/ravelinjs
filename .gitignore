@@ -66,6 +66,7 @@ ravelin.min.js
 cipher.txt
 deviceid.txt
 sessionid.txt
+.DS_Store
 dist/
 releases/
 build
