@@ -1,6 +1,6 @@
 {
   "name": "ravelinjs",
-  "version": "1.10.0",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "description": "Ravelin's Browser SDK",
   "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
@@ -75,7 +75,7 @@
   },
   "np": {
     "yarn": false,
-    "branch": "v1",
+    "branch": "v2",
     "contents": "./dist"
   },
   "remarkConfig": {
