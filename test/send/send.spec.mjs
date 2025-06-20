@@ -17,15 +17,6 @@ describe('ravelinjs.core.send', function() {
   });
 
   it('sends to remote URLs', async function() {
-    // IE8-10 require the "Miscellaneous > Access data sources across domains"
-    // (or maybe one of the other similar options?) option set to Enabled, but
-    // Browserstack is giving us these browsers with the option Disabled. I have
-    // looked for some selenium capabilities we might able to inject to
-    // configure it but haven't found anything.
-    if (browser.requestedCapabilities['rav:send:skipCrossDomainTest']) {
-      this.skip();
-    }
-
     // http://bs-local.com/send/ -> https://....ngrok-free.app/
     await test('/', process.env.TEST_REMOTE, 'remote');
   });
