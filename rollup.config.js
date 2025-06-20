@@ -5,6 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 import license from 'rollup-plugin-license';
 import { basename } from 'path';
 import glob from 'glob';
+import packageJson from './package.json';
 
 var builds = module.exports = [];
 
@@ -23,7 +24,7 @@ var output = {
 var plugins = [
   replace({
     preventAssignment: true,
-    'RAVELINJS_VERSION': JSON.stringify(require('./package.json').version + '-ravelinjs'),
+    'RAVELINJS_VERSION': JSON.stringify(packageJson.version + '-ravelinjs'),
   }),
   resolve(),
   commonjs(),
@@ -32,7 +33,7 @@ var plugins = [
   }),
 ];
 
-glob.sync("lib/bundle/*.js")
+glob.sync('lib/bundle/*.js')
 .sort((a, b) => b.length - a.length)
 .forEach(bundle => builds.push(
   {
@@ -46,7 +47,6 @@ glob.sync("lib/bundle/*.js")
         compress: {
           typeofs: false,
         },
-        ie8: true,
         safari10: true,
       }),
     ]),
