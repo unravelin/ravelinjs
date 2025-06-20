@@ -97,7 +97,7 @@ function run(outId, errId, fn) {
  */
 function parseQuery(queryString) {
   var query = {};
-  var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+  var pairs = (queryString[0] === '?' ? queryString.substring(1) : queryString).split('&');
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
@@ -108,5 +108,5 @@ function parseQuery(queryString) {
 function keysMatch(req, key) {
   var i = req.url.indexOf('?');
   if (i == -1) return false;
-  return parseQuery(req.url.substr(i)).key == key;
+  return parseQuery(req.url.substring(i)).key == key;
 }

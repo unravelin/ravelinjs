@@ -35,7 +35,7 @@ export class GitHubStatus {
     status.context = this.context;
     status.target_url = this.target;
     if (status.description && status.description.length > 140) {
-      status.description = status.description.substr(0, 140);
+      status.description = status.description.substring(0, 140);
     }
 
     if (!this.sha || !this.repo || !this.token) return;
