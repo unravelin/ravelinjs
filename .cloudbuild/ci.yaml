@@ -38,8 +38,7 @@ steps:
 
   - id: browserstack
     name: $_NODE
-    waitFor:
-      - build
+    waitFor: ["build"]
     entrypoint: npm
     env:
       - PARALLEL=5
@@ -54,7 +53,7 @@ steps:
       - GITHUB_TOKEN
     args:
       - run
-      - test:integration
+      - test:int2
 
   - id: gcb2gh
     waitFor: ["-"]

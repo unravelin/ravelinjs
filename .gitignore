@@ -1,4 +1,5 @@
 # Logs
+log
 logs
 *.log
 npm-debug.log*
@@ -73,3 +74,4 @@ build
 .vscode
 .env
 browserstack.err
+browserstack.yml
