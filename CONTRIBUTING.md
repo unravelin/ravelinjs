@@ -107,7 +107,7 @@ JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
 * the [Mocha test framework](https://mochajs.org/);
-* [jQuery v3](https://api.jquery.com/) for simple DOM manipulation;
+* [jQuery v1](https://api.jquery.com/category/version/1.12-and-2.2/) for simple DOM manipulation;
 * [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 * [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
 
