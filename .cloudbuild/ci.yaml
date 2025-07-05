@@ -54,7 +54,7 @@ steps:
       - GITHUB_TOKEN
     args:
       - run
-      - test:integration
+      - test:bs-sdk
 
   - id: gcb2gh
     waitFor: ["-"]

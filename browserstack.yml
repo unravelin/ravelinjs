@@ -1,0 +1,8 @@
+projectName: ravelinjs
+buildName: browserstack test
+browserStackLocal: true
+platforms:
+  - os: Windows
+    osVersion: 10
+    browserName: Chrome
+    browserVersion: latest
