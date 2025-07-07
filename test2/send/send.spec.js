@@ -20,7 +20,7 @@ describe('BStack demo test', () => {
     expect(await driver.getTitle()).toContain('send test');
 
     const output = await driver.findElement(By.id('output'));
-    log.debug('stats', output?.innerText || 'No output found');
+    console.log('stats', output?.innerText || 'No output found');
 
     const err = await driver.findElement(By.id('error'));
     if (err?.innerText) {
