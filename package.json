@@ -57,7 +57,7 @@
     "deep-diff": "1.0.2",
     "deepmerge": "4.3.1",
     "express": "4.18.2",
-    "jest": "30.0.4",
+    "jest": "27.5.1",
     "jest-dev-server": "11.0.0",
     "jshint": "2.13.6",
     "karma": "6.4.2",

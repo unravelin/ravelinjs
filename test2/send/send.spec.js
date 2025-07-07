@@ -1,4 +1,4 @@
-import { Builder, By, Capabilities } from 'selenium-webdriver';
+const { Builder, By, Capabilities } = require('selenium-webdriver');
 
 describe('BStack demo test', () => {
   let driver;
