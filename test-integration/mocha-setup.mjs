@@ -1,4 +1,4 @@
-import { startServer, stopServer } from '../test2/server.mjs';
+import { startServer, stopServer } from './server.mjs';
 
 export const mochaHooks = {
   beforeAll(done) {
