@@ -1,23 +1,24 @@
-const { Builder, By, Capabilities } = require('selenium-webdriver');
+import { expect } from 'chai';
+import { Builder, By, Capabilities } from 'selenium-webdriver';
 
 describe('BStack demo test', () => {
   let driver;
 
-  beforeAll(() => {
+  before(() => {
     driver = new Builder()
       .usingServer('http://localhost:4444/wd/hub')
       .withCapabilities(Capabilities.chrome())
       .build();
   });
 
-  afterAll(async () => {
+  after(async () => {
     await driver.quit();
   })
 
-  test('send test', async () => {
+  it('send test', async () => {
     await driver.get('http://bs-local.com:3000/send/');
 
-    expect(await driver.getTitle()).toContain('send test');
+    expect(await driver.getTitle()).to.contain('send test');
 
     const output = await driver.findElement(By.id('output'));
     console.log('stats', output?.innerText || 'No output found');

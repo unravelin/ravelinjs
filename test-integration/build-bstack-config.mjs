@@ -1,0 +1,65 @@
+import * as fs from 'fs';
+import { exec } from 'child_process';
+import { stringify } from 'yaml';
+
+console.log('Building BrowserStack config…');
+
+const buildName = await buildId();
+// const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
+
+function buildConfig() {
+  return {
+    projectName: 'ravelinjs',
+    buildName,
+    browserstackLocal: true,
+    // localIdentifier,
+    platforms: [
+      {
+        os: 'Windows',
+        osVersion: 10,
+        browserName: 'Chrome',
+        browserVersion: 'latest',
+      },
+    ],
+  };
+}
+
+const bStackYml = stringify(buildConfig());
+
+// Write file to root folder for BrowserStack SDK to pick up
+fs.writeFileSync('./browserstack.yml', bStackYml, 'utf8');
+
+console.log('BrowserStack config written to browserstack.yml');
+
+/**
+ * buildId returns an identifier for the build in question.
+ * @returns {String}
+ */
+async function buildId() {
+  if (process.env.HEAD_BRANCH) {
+    const trigger = process.env.E2E_RSA_KEY ? 'e2e' : 'ci';
+
+    // Example: "ci/main/abc-1234/def-5678"
+    return `${trigger}/${process.env.HEAD_BRANCH}/${process.env.COMMIT_SHA.substring(0, 7)}/${
+      process.env.BUILD_ID
+    }`;
+  }
+
+  return await gitBuildId();
+}
+
+/**
+ * gitBuild returns a description of the git revision of the working directory.
+ * @returns {Promise}
+ */
+function gitBuildId() {
+  return new Promise(function (resolve, reject) {
+    exec('git describe --all --long --dirty', function (err, stdout, stderr) {
+      if (err) {
+        reject('git describe: ' + err + ' stderr: ' + stderr);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
+}

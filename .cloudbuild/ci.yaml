@@ -36,10 +36,21 @@ steps:
       - run
       - build
 
+  - id: test-setup
+    name: $_NODE
+    entrypoint: npm
+    env:
+      - HEAD_BRANCH=$_HEAD_BRANCH
+      - COMMIT_SHA=$COMMIT_SHA
+      - BUILD_ID=$BUILD_ID
+      - HEAD_REPO_URL=$_HEAD_REPO_URL
+    args:
+      - run
+      - test:setup
+
   - id: browserstack
     name: $_NODE
-    waitFor:
-      - build
+    waitFor: ['build', 'test-setup']
     entrypoint: npm
     env:
       - PARALLEL=5
