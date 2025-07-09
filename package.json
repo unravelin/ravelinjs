@@ -86,6 +86,9 @@
     "branch": "v1",
     "contents": "./dist"
   },
+  "mocha": {
+    "timeout": 5000
+  },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,

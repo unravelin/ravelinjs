@@ -11,14 +11,9 @@ function done() {
  * and printed to <div id=error>. If fn returns a promise then that promise is
  * returned, and its pass/fail result is logged.
  */
-function run(outId, errId, fn) {
-  if (arguments.length === 1) {
-    fn = outId;
-    outId = 'output';
-    errId = 'error';
-  }
-  var out = document.getElementById(outId),
-    err = document.getElementById(errId);
+function run(fn) {
+  var out = document.getElementById('output');
+  var err = document.getElementById('error');
   out.innerHTML = '';
   err.innerHTML = '';
   try {

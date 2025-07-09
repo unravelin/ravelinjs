@@ -20,8 +20,14 @@ export function startServer(done) {
   });
 
   // Handle RavelinJS requests
-  app.post('/z', noContent);
-  app.post('/z/err', noContent);
+  app.post('/z', (req, res) => {
+    console.log('Received request on /z');
+    return noContent(req, res);
+  });
+  app.post('/z/err', (req, res) => {
+    console.log('Received request on /z/err');
+    return noContent(req, res);
+  });
 
   // Start the server and listen for incoming requests
   server = app.listen(port, () => {

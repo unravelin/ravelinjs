@@ -13,7 +13,7 @@ describe('BStack demo test', () => {
 
   after(async () => {
     await driver.quit();
-  })
+  });
 
   it('send test', async () => {
     await driver.get('http://bs-local.com:3000/send/');
@@ -21,11 +21,13 @@ describe('BStack demo test', () => {
     expect(await driver.getTitle()).to.contain('send test');
 
     const output = await driver.findElement(By.id('output'));
-    console.log('stats', output?.innerText || 'No output found');
+    const outputText = await output.getText();
+    console.log('stats', outputText || 'No output found');
 
-    const err = await driver.findElement(By.id('error'));
-    if (err?.innerText) {
-      throw new Error(err.innerText);
+    const error = await driver.findElement(By.id('error'));
+    const errorText = await error.getText();
+    if (errorText) {
+      throw new Error(errorText);
     }
-  }, 10 * 1000);
+  });
 });
