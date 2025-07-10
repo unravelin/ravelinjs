@@ -1,33 +1,62 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
+import onFinished from 'on-finished';
 
 let server;
 
 export function startServer(done) {
-  // This Express server serves static files that will act as our test pages
+  // This Express server serves static files that will act as our test pages.
+  // It also handles requests to the RavelinJS API, and logs them for test assertions.
   console.log('Starting server');
 
   const app = express();
   const port = 3000;
+  const requests = [];
 
   // Serve static files from the test directory
   app.use(express.static(path.join(import.meta.dirname)));
 
-  // Add a catch-all route to serve index.html for any other request that doesn't have an extension.
-  // For example, a request to /foo will serve the /foo/index.html file.
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(import.meta.dirname, 'index.html'));
-  });
-
   // Handle RavelinJS requests
-  app.post('/z', (req, res) => {
-    console.log('Received request on /z');
-    return noContent(req, res);
-  });
-  app.post('/z/err', (req, res) => {
-    console.log('Received request on /z/err');
-    return noContent(req, res);
-  });
+  app.use(
+    '/z',
+    // Request all request bodies as text, even if Content-Type is omitted
+    express.text({ type: () => true }),
+    // Record the request
+    function logRequest(req, res, next) {
+      const log = {
+        time: new Date(),
+        method: req.method,
+        path: req.originalUrl,
+        query: req.query,
+        headers: req.headers,
+        body: req.body,
+        bodyJSON: maybeJSON(req.body),
+      };
+      requests.push(log);
+      if (req.method === 'OPTIONS') {
+        console.log(
+          `Unexpected OPTIONS ${req.originalUrl} request from ${req.headers['user-agent']}`
+        );
+      }
+      if (req.method === 'POST' && !log.bodyJSON) {
+        console.log('Request with invalid JSON body:', log);
+      } else if (req.path.match(/\/err/)) {
+        console.log('Error request received:', log);
+      } else {
+        console.log('Request received:', log);
+      }
+      onFinished(res, () => {
+        log.status = res.statusCode;
+      });
+      next();
+    },
+    // Add CORS headers, support CORS requests
+    cors()
+  );
+
+  app.post('/z', noContent);
+  app.post('/z/err', noContent);
 
   // Start the server and listen for incoming requests
   server = app.listen(port, () => {
@@ -61,8 +90,17 @@ function noContent(req, res) {
     // Send 204 No Content
     res.status(204).send();
   } catch (err) {
+    console.log('Error parsing request body:', err);
     // If parsing fails, send 400 Bad Request
     res.status(400).send(err);
+  }
+}
+
+function maybeJSON(body) {
+  try {
+    return JSON.parse(body);
+  } catch (e) {
+    return undefined;
   }
 }
 

@@ -7,7 +7,7 @@ describe('BStack demo test', () => {
   before(() => {
     driver = new Builder()
       .usingServer('http://localhost:4444/wd/hub')
-      .withCapabilities(Capabilities.chrome())
+      .withCapabilities(Capabilities.ie())
       .build();
   });
 
