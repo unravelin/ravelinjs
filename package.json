@@ -36,8 +36,10 @@
     "np": "npm run dist && np",
     "version": "run-s clean build dist release # (note: auto-executed by np)",
     "test:setup": "node ./test-integration/build-bstack-config.mjs",
+    "test:start-server": "node ./test-integration/server-cli.mjs testServer",
+    "test:stop-server": "killall -SIGINT testServer",
     "test:unit2": "karma start ./test-unit/karma.conf.js --single-run",
-    "test:bs-sdk": "browserstack-node-sdk mocha './test-integration/**/*.spec.mjs' --require ./test-integration/mocha-setup.mjs"
+    "test:bs-sdk": "browserstack-node-sdk mocha './test-integration/**/*.spec.mjs'"
   },
   "devDependencies": {
     "@ngrok/ngrok": "1.4.1",
