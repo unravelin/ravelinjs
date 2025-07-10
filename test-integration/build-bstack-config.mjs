@@ -15,12 +15,12 @@ function buildConfig() {
     browserstackLocal: true,
     // localIdentifier,
     platforms: [
-      // {
-      //   os: 'Windows',
-      //   osVersion: 10,
-      //   browserName: 'Chrome',
-      //   browserVersion: 'latest',
-      // },
+      {
+        os: 'Windows',
+        osVersion: 10,
+        browserName: 'Chrome',
+        browserVersion: 'latest',
+      },
       {
         os: 'Windows',
         osVersion: 10,

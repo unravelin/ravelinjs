@@ -1,10 +1,15 @@
 import { expect } from 'chai';
 import { Builder, By, Capabilities } from 'selenium-webdriver';
+import bstackPkg from 'browserstack-node-sdk';
+
+const { BrowserStackSdk } = bstackPkg;
 
 describe('BStack demo test', () => {
   let driver;
 
   before(() => {
+    console.log('BStack platform', BrowserStackSdk.getCurrentPlatform());
+
     driver = new Builder()
       .usingServer('http://localhost:4444/wd/hub')
       .withCapabilities(Capabilities.ie())
