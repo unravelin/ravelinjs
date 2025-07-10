@@ -6,14 +6,14 @@ import { stringify } from 'yaml';
 console.log('Building BrowserStack config…');
 
 const buildName = await buildId();
-// const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
+const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
 
 function buildConfig() {
   return {
     projectName: 'ravelinjs',
     buildName,
+    localIdentifier,
     browserstackLocal: true,
-    // localIdentifier,
     platforms: [
       {
         os: 'Windows',
