@@ -12,6 +12,8 @@ startServer(() => {
     }
   }
 
+  console.log('Tests complete with exit code:', exitCode);
+
   stopServer(() => {
     process.exit(exitCode);
   });

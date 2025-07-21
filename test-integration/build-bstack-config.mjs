@@ -14,6 +14,9 @@ function buildConfig() {
     buildName,
     localIdentifier,
     browserstackLocal: true,
+    browserStackLocalOptions: {
+      forceLocal: true,
+    },
     platforms: [
       {
         os: 'Windows',
