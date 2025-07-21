@@ -36,14 +36,6 @@ steps:
       - run
       - build
 
-  - id: start-server
-    waitFor: ['install']
-    name: $_NODE
-    entrypoint: npm
-    args:
-      - run
-      - test:start-server
-
   - id: test-setup
     name: $_NODE
     entrypoint: npm
@@ -73,15 +65,7 @@ steps:
       - GITHUB_TOKEN
     args:
       - run
-      - test:bs-sdk
-
-  - id: stop-server
-    name: $_NODE
-    waitFor: ['browserstack']
-    entrypoint: npm
-    args:
-      - run
-      - test:stop-server
+      - test:int2
 
   - id: gcb2gh
     waitFor: ["-"]
