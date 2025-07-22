@@ -17,6 +17,9 @@ export function startServer(done) {
   // Serve static files from the test directory
   app.use(express.static(path.join(import.meta.dirname)));
 
+  // Handle favicon requests gracefully
+  app.get('/favicon.ico', (_req, res) => res.status(204).end());
+
   // Handle RavelinJS requests
   app.use(
     '/z',
