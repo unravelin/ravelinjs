@@ -6,17 +6,14 @@ import { stringify } from 'yaml';
 console.log('Building BrowserStack config…');
 
 const buildName = await buildId();
-const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
+// const localIdentifier = buildName.replace(/[^a-z0-9_]+/gi, '_');
 
 function buildConfig() {
   return {
     projectName: 'ravelinjs',
     buildName,
-    localIdentifier,
+    // localIdentifier,
     browserstackLocal: true,
-    browserStackLocalOptions: {
-      forceLocal: true,
-    },
     platforms: [
       {
         os: 'Windows',
@@ -24,12 +21,12 @@ function buildConfig() {
         browserName: 'Chrome',
         browserVersion: 'latest',
       },
-      {
-        os: 'Windows',
-        osVersion: 10,
-        browserName: 'IE',
-        browserVersion: 11.0
-      }
+      // {
+      //   os: 'Windows',
+      //   osVersion: 10,
+      //   browserName: 'IE',
+      //   browserVersion: 11.0
+      // }
     ],
   };
 }
