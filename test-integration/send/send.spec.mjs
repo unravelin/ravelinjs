@@ -1,5 +1,13 @@
 import { By } from 'selenium-webdriver';
-import { buildDriver, buildUrl, hasElement, hasTitle, hasURL, navigate } from '../utils.mjs';
+import {
+  buildDriver,
+  buildUrl,
+  fetchRequestLog,
+  hasElement,
+  hasTitle,
+  hasURL,
+  navigate,
+} from '../utils.mjs';
 
 describe('ravelinjs.core.send', () => {
   /** @type {import('selenium-webdriver').WebDriver} */
@@ -42,18 +50,14 @@ describe('ravelinjs.core.send', () => {
       throw new Error(`Error in test: ${errorText}`);
     }
 
-    // TODO
-    // Confirm that an AJAX request with the error was received.
-    // await browser.waitUntil(
-    //   async () =>
-    //     await browser.call(() =>
-    //       fetchRequest(process.env.TEST_INTERNAL, {
-    //         path: '/z',
-    //         query: { key: key },
-    //         'bodyJSON.msg': { $eq: msg },
-    //       })
-    //     )
-    // );
+    // Confirm that a request to /z was received with the expected value.
+    await driver.wait(() => {
+      return fetchRequestLog({
+        path: '/z',
+        query: { key: key },
+        'bodyJSON.msg': { $eq: msg },
+      });
+    }, 5000);
 
     // Warn if it took several attempts to send.
     const output = await driver.findElement(By.id('output'));

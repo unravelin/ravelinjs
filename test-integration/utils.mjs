@@ -1,6 +1,6 @@
-import { expect } from 'chai';
-import { By, Builder, Capabilities } from 'selenium-webdriver';
 import bstackPkg from 'browserstack-node-sdk';
+import { expect } from 'chai';
+import { Builder, By, Capabilities } from 'selenium-webdriver';
 
 /** @typedef {async (driver) => void} NavTest */
 
@@ -31,8 +31,10 @@ function getCapabilities() {
   }
 }
 
-export function buildUrl({ path, queryParams }) {
-  const url = new URL(path, 'http://bs-local.com:3000');
+export function buildUrl({ baseUrl, path, queryParams }) {
+  // Default to the BrowserStack local URL which will
+  // tunnel requests to our local server.
+  const url = new URL(path, baseUrl || 'http://bs-local.com:3000');
 
   Object.keys(queryParams).forEach((key) => {
     if (queryParams[key] !== undefined) {
@@ -123,4 +125,37 @@ export function hasElement(selector) {
       `Expected to find one element with ID #${selector}, but found ${elements.length}`
     );
   };
+}
+
+/**
+ * fetchRequestLog queries the localhost server to see whether any /z or /z/err
+ * requests were made matching the given pattern. If no pattern is
+ * provided, all requests are returned.
+ *
+ * It is an error for the pattern to anything other than one request.
+ *
+ * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
+ * @returns {object} The matched request.
+ */
+export async function fetchRequestLog(pattern) {
+  const q = JSON.stringify(pattern);
+  const url = buildUrl({
+    // Use localhost instead of bs-local.com as we are calling
+    // from the same machine running the server.
+    baseUrl: 'http://localhost:3000',
+    path: '/requests',
+    queryParams: { q },
+  });
+
+  const res = await fetch(url);
+  if (res.status == 204) {
+    throw new Error(`No requests found matching ${q}`);
+  } else if (!res.ok) {
+    throw new Error('Error fetching ' + url + ': ' + res.statusText);
+  }
+  const logs = await res.json();
+  if (!logs.length) {
+    throw new Error(`No requests found matching ${q}`);
+  }
+  return logs[0];
 }

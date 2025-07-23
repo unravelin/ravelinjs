@@ -1,7 +1,8 @@
-import express from 'express';
-import path from 'path';
 import cors from 'cors';
+import express from 'express';
+import mingo from 'mingo';
 import onFinished from 'on-finished';
+import path from 'path';
 
 let server;
 
@@ -30,7 +31,7 @@ export function startServer(done) {
       const log = {
         time: new Date(),
         method: req.method,
-        path: req.originalUrl,
+        path: getBasePath(req),
         query: req.query,
         headers: req.headers,
         body: req.body,
@@ -60,6 +61,17 @@ export function startServer(done) {
 
   app.post('/z', noContent);
   app.post('/z/err', noContent);
+
+  // Let tests read API requests received, optionally filtering by
+  // providing a query, e.g: `?q={"url":{"$regex": "key=.+"}}`
+  app.get('/requests', function logSearch(req, res) {
+    const r = !req.query.q ? requests : mingo.find(requests, JSON.parse(req.query.q)).all();
+    if (r.length) {
+      res.send(r);
+    } else {
+      res.status(204).send();
+    }
+  });
 
   // Start the server and listen for incoming requests
   server = app.listen(port, () => {
@@ -105,6 +117,10 @@ function maybeJSON(body) {
   } catch (e) {
     return undefined;
   }
+}
+
+function getBasePath(req) {
+  return new URL(req.originalUrl, `http://${req.headers.host}`).pathname;
 }
 
 process.on('SIGTERM', () => {
