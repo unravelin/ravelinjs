@@ -50,7 +50,9 @@ function run(fn) {
     if (m === ({}).toString()) {
       try {
         m = JSON.stringify(v);
-      } catch (e) { }
+      } catch (e) {
+        m = e.message || e.toString();
+      }
     }
     return m;
   }

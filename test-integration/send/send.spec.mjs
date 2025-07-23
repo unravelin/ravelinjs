@@ -1,8 +1,8 @@
-import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
-import { buildDriver } from '../utils.mjs';
+import { buildDriver, buildUrl, hasElement, hasTitle, hasURL, navigate } from '../utils.mjs';
 
-describe('BStack demo test', () => {
+describe('ravelinjs.core.send', () => {
+  /** @type {import('selenium-webdriver').WebDriver} */
   let driver;
 
   before(() => {
@@ -13,19 +13,60 @@ describe('BStack demo test', () => {
     await driver.quit();
   });
 
-  it('send test', async () => {
-    await driver.get('http://bs-local.com:3000/send/');
+  it('sends to paths', async () => {
+    // http://bs-local.com/send/ -> /z/err
+    await runTest('/', 'path');
+  });
 
-    expect(await driver.getTitle()).to.contain('send test');
+  async function runTest(api, msg) {
+    const key = (await driver.getSession()).getId();
 
-    const output = await driver.findElement(By.id('output'));
-    const outputText = await output.getText();
-    console.log('stats', outputText || 'No output found');
+    // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
+    await navigate(driver, {
+      attempts: 3,
+      url: buildUrl({ path: '/send', queryParams: { api, key, msg } }),
+      tests: [
+        // Confirm the page has loaded.
+        hasURL(key),
+        hasTitle('send'),
+        hasElement('output'),
+        // Wait for the test to complete.
+        hasElement('completed'),
+      ],
+    });
 
+    // Check whether the browser reported any errors.
     const error = await driver.findElement(By.id('error'));
     const errorText = await error.getText();
     if (errorText) {
-      throw new Error(errorText);
+      throw new Error(`Error in test: ${errorText}`);
     }
-  });
+
+    // TODO
+    // Confirm that an AJAX request with the error was received.
+    // await browser.waitUntil(
+    //   async () =>
+    //     await browser.call(() =>
+    //       fetchRequest(process.env.TEST_INTERNAL, {
+    //         path: '/z',
+    //         query: { key: key },
+    //         'bodyJSON.msg': { $eq: msg },
+    //       })
+    //     )
+    // );
+
+    // Warn if it took several attempts to send.
+    const output = await driver.findElement(By.id('output'));
+    const outputText = await output.getText();
+    if (outputText) {
+      try {
+        const stats = JSON.parse(outputText);
+        if (stats.attempts > 1) {
+          console.warn(`Succeeded after ${stats.attempts - 1} failures:`, stats.failures);
+        }
+      } catch (e) {
+        console.warn('Failed to parse output stats:', e);
+      }
+    }
+  }
 });
