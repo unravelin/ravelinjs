@@ -1,9 +1,9 @@
-import ngrok from '@ngrok/ngrok';
 import cors from 'cors';
 import express from 'express';
 import mingo from 'mingo';
 import onFinished from 'on-finished';
 import path from 'path';
+import { startTunnel } from './ngrok.mjs';
 
 /** @type {import('node:http').Server} */
 let server;
@@ -79,17 +79,12 @@ export function startServer(done) {
 
   // Start the server and listen for incoming requests
   server = app.listen(port, async () => {
-    let tunnelUrl;
     console.log(`Running at http://localhost:${port}`);
 
     // Start ngrok unless explicitly disabled
     if (process.env.NGROK_ENABLED !== '0') {
       try {
-        console.log('Starting ngrok');
-        tunnel = await connectNgrok(port);
-
-        tunnelUrl = tunnel.url();
-        console.log(`ngrok tunnel established at ${tunnelUrl}`);
+        tunnel = await startTunnel(port);
       } catch (err) {
         // Exit and throw the error if ngrok fails to start
         await stopServer();
@@ -98,7 +93,7 @@ export function startServer(done) {
     }
 
     if (done) {
-      done(tunnelUrl);
+      done(tunnel?.url());
     }
   });
 }
@@ -151,17 +146,6 @@ function maybeJSON(body) {
 
 function getBasePath(req) {
   return new URL(req.originalUrl, `http://${req.headers.host}`).pathname;
-}
-
-function connectNgrok(port) {
-  // Enable ngrok console logging
-  ngrok.consoleLog('WARN');
-  // Start an ngrok connection to expose our local server on the specified port.
-  // This is used to test RavelinJS integration with API URLs that are not on the same domain.
-  return ngrok.forward({
-    addr: port,
-    authtoken_from_env: true,
-  });
 }
 
 process.on('SIGTERM', () => {
