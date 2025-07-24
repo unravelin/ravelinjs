@@ -13,6 +13,7 @@ function buildConfig() {
     projectName: 'ravelinjs',
     buildName,
     // localIdentifier,
+    networkLogs: true,
     browserstackLocal: true,
     browserStackLocalOptions: {
       localProxyHost: 'localhost',

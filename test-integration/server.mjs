@@ -3,8 +3,10 @@ import express from 'express';
 import mingo from 'mingo';
 import onFinished from 'on-finished';
 import path from 'path';
+import { startTunnel } from './localtunnel.mjs';
 
 let server;
+let tunnel;
 
 export function startServer(done) {
   // This Express server serves static files that will act as our test pages.
@@ -74,15 +76,35 @@ export function startServer(done) {
   });
 
   // Start the server and listen for incoming requests
-  server = app.listen(port, () => {
-    console.log('Running at http://localhost:3000');
+  server = app.listen(port, async () => {
+    console.log(`Running at http://localhost:${port}`);
+
+    // Start localtunnel unless explicitly disabled
+    if (process.env.LOCAL_TUNNEL !== '0') {
+      try {
+        tunnel = await startTunnel(port);
+      } catch (err) {
+        // Exit and throw the error if localtunnel fails to start
+        throw err;
+      }
+    }
+
     if (done) {
-      done();
+      done(tunnel.url);
     }
   });
 }
 
 export function stopServer(done) {
+  if (tunnel) {
+    try {
+      console.log('Stopping localtunnel');
+      tunnel.close();
+    } catch (err) {
+      console.error('Error stopping localtunnel:', err);
+    }
+  }
+
   if (server) {
     server.close(() => {
       console.log('Server stopped');

@@ -22,19 +22,26 @@ describe('ravelinjs.core.send', () => {
   });
 
   it('sends to paths', async () => {
-    // http://bs-local.com/send/ -> /z/
+    // http://bs-local.com:3000/send/ -> /z/
     await runTest('/', 'path');
   });
 
   it('sends to samesite URLs', async () => {
-    // http://bs-local.com/send/ -> http://bs-local.com/z/
+    // http://bs-local.com:3000/send/ -> http://bs-local.com/z/
     await runTest('http://bs-local.com/', 'samesite');
+  });
+
+  it('sends to remote URLs', async () => {
+    console.log('Running remote test:', process.env.TUNNEL_URL);
+
+    // http://bs-local.com:3000/send/ -> https://abc..xyz.loca.lt/
+    await runTest(process.env.TUNNEL_URL, 'remote');
   });
 
   async function runTest(api, msg) {
     const key = (await driver.getSession()).getId();
 
-    // Visit `${page}/send/?api=${api}&key=${key}&msg=${msg}`.
+    // Visit `${base}/send/?api=${api}&key=${key}&msg=${msg}`.
     await navigate(driver, {
       attempts: 3,
       url: buildUrl({ path: '/send', queryParams: { api, key, msg } }),

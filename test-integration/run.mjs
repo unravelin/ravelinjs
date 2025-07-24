@@ -1,11 +1,11 @@
 import { spawn } from 'child_process';
 import { startServer, stopServer } from './server.mjs';
 
-startServer(async () => {
+startServer(async (tunnelUrl) => {
   let exitCode = 0;
 
   try {
-    exitCode = await runTests();
+    exitCode = await runTests(tunnelUrl);
   } catch (error) {
     console.error('Error running tests:', error);
     exitCode = 1;
@@ -18,9 +18,13 @@ startServer(async () => {
   });
 });
 
-function runTests() {
+function runTests(tunnelUrl) {
   return new Promise((resolve, reject) => {
-    const p = spawn('npm', ['run', 'test:bs-sdk']);
+    // Spawn a child process to run the BrowserStack SDK and test suite.
+    // This is handled asynchronously to allow the server to run at the same time.
+    const p = spawn('npm', ['run', 'test:bs-sdk'], {
+      env: { ...process.env, TUNNEL_URL: tunnelUrl },
+    });
 
     p.stdout.on('data', (data) => {
       process.stdout.write(data.toString());
