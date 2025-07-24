@@ -24,12 +24,12 @@ export async function buildBrowserStackConfig() {
         browserName: 'Chrome',
         browserVersion: 'latest',
       },
-      // {
-      //   os: 'Windows',
-      //   osVersion: 10,
-      //   browserName: 'IE',
-      //   browserVersion: 11.0
-      // },
+      {
+        os: 'Windows',
+        osVersion: 10,
+        browserName: 'IE',
+        browserVersion: 11.0
+      },
     ],
   };
 
