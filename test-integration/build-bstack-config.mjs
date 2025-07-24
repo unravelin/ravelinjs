@@ -14,6 +14,10 @@ function buildConfig() {
     buildName,
     // localIdentifier,
     browserstackLocal: true,
+    browserStackLocalOptions: {
+      localProxyHost: 'localhost',
+      localProxyPort: 3000,
+    },
     platforms: [
       {
         os: 'Windows',
