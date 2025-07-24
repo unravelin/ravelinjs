@@ -22,8 +22,13 @@ describe('ravelinjs.core.send', () => {
   });
 
   it('sends to paths', async () => {
-    // http://bs-local.com/send/ -> /z/err
+    // http://bs-local.com/send/ -> /z/
     await runTest('/', 'path');
+  });
+
+  it('sends to samesite URLs', async () => {
+    // http://bs-local.com/send/ -> http://bs-local.com/z/
+    await runTest('http://bs-local.com/', 'samesite');
   });
 
   async function runTest(api, msg) {
