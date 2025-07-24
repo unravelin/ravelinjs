@@ -30,7 +30,7 @@ export async function startTunnel(port, maxRetries = 3) {
       console.error(`Attempt ${i + 1} failed:`, err);
 
       if (i < maxRetries - 1) {
-        console.log(`Retrying in ${retryDelay}ms...`);
+        console.log(`Retrying in ${retryDelay}ms…`);
         await setTimeout(retryDelay);
       } else {
         throw new Error('Failed to start ngrok after all attempts');

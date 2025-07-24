@@ -74,3 +74,4 @@ build
 .vscode
 .env
 browserstack.err
+browserstack.yml
