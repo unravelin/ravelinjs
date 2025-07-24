@@ -34,7 +34,7 @@ describe('ravelinjs.core.send', () => {
   it('sends to remote URLs', async () => {
     console.log('Running remote test:', process.env.TUNNEL_URL);
 
-    // http://bs-local.com:3000/send/ -> https://abc..xyz.loca.lt/
+    // http://bs-local.com:3000/send/ -> https://....ngrok-free.app/
     await runTest(process.env.TUNNEL_URL, 'remote');
   });
 
