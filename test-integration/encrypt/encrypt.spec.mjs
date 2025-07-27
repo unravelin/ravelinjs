@@ -1,7 +1,7 @@
 import { By } from 'selenium-webdriver';
 import { buildDriver, buildUrl, hasElement, hasTitle, navigate } from '../utils.mjs';
 
-describe('Ravelin.encrypt', () => {
+describe('ravelinjs.encrypt', () => {
   /** @type {import('selenium-webdriver').WebDriver} */
   let driver;
 
