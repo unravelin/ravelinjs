@@ -114,15 +114,16 @@ export function hasURL(substr) {
 
 /**
  * hasElement checks if the browser has an element matching the given ID.
- * @param {string} selector
+ *
+ * @param {string} id The ID of the element to be found.
  * @returns {NavTest}
  */
-export function hasElement(selector) {
+export function hasElement(id) {
   return async function hasElementTest(driver) {
-    const elements = await driver.findElements(By.id(selector));
+    const elements = await driver.findElements(By.id(id));
     expect(elements.length).to.equal(
       1,
-      `Expected to find one element with ID #${selector}, but found ${elements.length}`
+      `Expected to find one element with ID #${id}, but found ${elements.length}`
     );
   };
 }

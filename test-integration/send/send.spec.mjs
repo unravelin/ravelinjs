@@ -43,7 +43,6 @@ describe('ravelinjs.core.send', () => {
 
     // Visit `${base}/send/?api=${api}&key=${key}&msg=${msg}`.
     await navigate(driver, {
-      attempts: 3,
       url: buildUrl({ path: '/send', queryParams: { api, key, msg } }),
       tests: [
         // Confirm the page has loaded.
