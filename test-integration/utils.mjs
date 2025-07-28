@@ -50,6 +50,9 @@ export function buildUrl({ baseUrl, path, queryParams }) {
     }
   });
 
+  // Ensure the path ends with a slash as we serve index.html from the folder name.
+  url.pathname = url.pathname.endsWith('/') ? url.pathname : url.pathname + '/';
+
   return url.toString();
 }
 

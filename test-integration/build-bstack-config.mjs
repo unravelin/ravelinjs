@@ -11,6 +11,8 @@ export async function buildBrowserStackConfig() {
   const config = {
     projectName: 'ravelinjs',
     buildName,
+    debug: true,
+    consoleLogs: 'verbose',
     networkLogs: true,
     browserstackLocal: true,
     browserStackLocalOptions: {
