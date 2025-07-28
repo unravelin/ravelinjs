@@ -1,12 +1,20 @@
 import bstackPkg from 'browserstack-node-sdk';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import chaiSubset from 'chai-subset';
 import { Builder, By, Capabilities } from 'selenium-webdriver';
 
 /** @typedef {async (driver) => void} NavTest */
 
 const { BrowserStackSdk } = bstackPkg;
 
+// Add the Chai subset plugin for partial object matching.
+// Once we remove support for IE11, we can remove this and upgrade Chai.
+// https://github.com/chaijs/chai/pull/1664
+chai.use(chaiSubset);
+
 export function buildDriver() {
+  // http://localhost:4444/wd/hub connects to the Selenium Grid server running
+  // on BrowserStack, which lets it interact with any supported browser.
   return new Builder()
     .usingServer('http://localhost:4444/wd/hub')
     .withCapabilities(getCapabilities())

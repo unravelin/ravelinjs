@@ -79,7 +79,8 @@ describe('ravelinjs.track', () => {
     });
 
     expect(loadEvent).to.exist;
-    expect(loadEvent.bodyJSON.events[0]).to.deep.include({
+    expect(loadEvent.bodyJSON.events).to.have.length(1);
+    expect(loadEvent.bodyJSON.events[0]).to.containSubset({
       eventType: 'track',
       eventData: { eventName: 'PAGE_LOADED' },
       eventMeta: {
