@@ -52,7 +52,7 @@ export function buildUrl({ baseUrl, path, queryParams }) {
  * again. This process is repeated up to two times by default.
  *
  * @param {WebDriver} driver
- * @param {number} [page.attempts=2]
+ * @param {number} [page.attempts=3]
  * @param {string} page.url
  * @param {NavTest[]} page.tests
  */
@@ -60,7 +60,7 @@ export async function navigate(driver, { attempts, url, tests }) {
   const sessionId = (await driver.getSession()).getId();
   let errs = [];
 
-  for (let i = 0; i < (attempts || 2); i++) {
+  for (let i = 0; i < (attempts || 3); i++) {
     await driver.get(url);
 
     try {
