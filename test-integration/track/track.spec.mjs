@@ -50,8 +50,25 @@ describe('ravelinjs.track', () => {
   });
 
   it('sends page-load events', async () => {
-    const sessionIdCookie = await driver.manage().getCookie('ravelinSessionId');
-    const deviceIdCookie = await driver.manage().getCookie('ravelinDeviceId');
+    const sessionIdCookieDebug = await driver.manage().getCookie('ravelinSessionId');
+    const deviceIdCookieDebug = await driver.manage().getCookie('ravelinDeviceId');
+
+    // get all cookies
+    const cookies = await driver.manage().getCookies();
+    const id = (await driver.getSession()).getId();
+
+    console.log(`Cookies for ${id}:`, cookies);
+
+    console.log(
+      `Old cookies for ${id}:`,
+      sessionIdCookieDebug?.name,
+      sessionIdCookieDebug?.value,
+      deviceIdCookieDebug?.name,
+      deviceIdCookieDebug?.value
+    );
+
+    const sessionIdCookie = cookies.find((c) => c.name === 'ravelinSessionId');
+    const deviceIdCookie = cookies.find((c) => c.name === 'ravelinDeviceId');
 
     expect(sessionIdCookie).to.be.an('object');
     expect(deviceIdCookie).to.be.an('object');
