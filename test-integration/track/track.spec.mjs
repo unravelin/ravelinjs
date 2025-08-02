@@ -102,25 +102,26 @@ describe('ravelinjs.track', () => {
   it('sends redacted paste events of pan text', async () => {
     const fakePAN = '4111 1111 1111 1111';
 
-    const id = (await driver.getSession()).getId();
     const platform = getCurrentPlatform();
-
     const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
 
     // Write into <input id=clip-stage onclick=this.select()> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
-    await clipStage.sendKeys(fakePAN);
-    await clipStage.click();
 
-    // Select all text and copy to clipboard
-    await clipStage.sendKeys(modifierKey, 'a');
-    await clipStage.sendKeys(modifierKey, 'c');
+    await driver
+      .actions()
+      // Focus the input and insert the fake PAN
+      .click(clipStage)
+      .sendKeys(fakePAN)
+      // Select all text and copy to clipboard
+      .sendKeys(modifierKey, 'a')
+      .sendKeys(modifierKey, 'c')
+      .perform();
 
     // Paste into <input name=name id=in-pan />
     const inTracked = await driver.findElement(By.id('in-pan'));
     await inTracked.clear();
-    await inTracked.click();
-    await inTracked.sendKeys(modifierKey, 'v');
+    await driver.actions().click(inTracked).sendKeys(modifierKey, 'v').perform();
 
     // Check if the paste worked
     const pastedValue = await inTracked.getAttribute('value');
@@ -143,12 +144,6 @@ describe('ravelinjs.track', () => {
       });
       return !!pasteEvent;
     });
-
-    console.log(`Debug browserName for ${id}:`, platform.browserName);
-    console.log(
-      `Debug pastedValue for ${id}:`,
-      String(pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.pastedValue)
-    );
 
     // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
     const expectedValue = platform.browserName === 'IE' ? undefined : '0000 0000 0000 0000';
