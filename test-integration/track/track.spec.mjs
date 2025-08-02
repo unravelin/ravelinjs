@@ -50,22 +50,7 @@ describe('ravelinjs.track', () => {
   });
 
   it('sends page-load events', async () => {
-    const sessionIdCookieDebug = await driver.manage().getCookie('ravelinSessionId');
-    const deviceIdCookieDebug = await driver.manage().getCookie('ravelinDeviceId');
-
-    // get all cookies
     const cookies = await driver.manage().getCookies();
-    const id = (await driver.getSession()).getId();
-
-    console.log(`Cookies for ${id}:`, cookies);
-
-    console.log(
-      `Old cookies for ${id}:`,
-      sessionIdCookieDebug?.name,
-      sessionIdCookieDebug?.value,
-      deviceIdCookieDebug?.name,
-      deviceIdCookieDebug?.value
-    );
 
     const sessionIdCookie = cookies.find((c) => c.name === 'ravelinSessionId');
     const deviceIdCookie = cookies.find((c) => c.name === 'ravelinDeviceId');
@@ -76,9 +61,10 @@ describe('ravelinjs.track', () => {
     sessionId = sessionIdCookie.value.replace(/^.+?:/, '');
     deviceId = deviceIdCookie.value;
 
-    if (!deviceId.match(/^rjs-/)) {
-      throw new Error(`Expected cookie ravelinDeviceId to start with "rjs-" but got "${deviceId}"`);
-    }
+    expect(deviceId).to.match(
+      /^rjs-/,
+      `Expected cookie ravelinDeviceId to start with "rjs-" but got "${deviceId}"`
+    );
 
     // Confirm that we received a page-load event.
     let loadEvent;

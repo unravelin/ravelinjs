@@ -13,8 +13,8 @@ const { BrowserStackSdk } = bstackPkg;
 chai.use(chaiSubset);
 
 export function buildDriver() {
-  // http://localhost:4444/wd/hub connects to the Selenium Grid server running
-  // on BrowserStack, which lets it interact with any supported browser.
+  // http://localhost:4444/wd/hub connects to the Selenium server running on BrowserStack,
+  // which acts as a proxy between our code and the browser-specific drivers.
   return new Builder()
     .usingServer('http://localhost:4444/wd/hub')
     .withCapabilities(getCapabilities())
