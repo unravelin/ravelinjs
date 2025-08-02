@@ -30,7 +30,7 @@ export function buildDriver() {
  * @returns {import('selenium-webdriver').Capabilities}
  */
 function getCapabilities() {
-  const platform = BrowserStackSdk.getCurrentPlatform();
+  const platform = getCurrentPlatform();
 
   switch (platform.browserName.toLowerCase()) {
     case 'chrome':
@@ -47,12 +47,18 @@ function getCapabilities() {
   }
 }
 
-/**
- * @returns {string} The name of the current platform OS.
+/** @typedef {object} Platform
+ * @property {string} platform.os The OS name
+ * @property {string} platform.osVersion The OS version
+ * @property {string} platform.browserName The browser name
+ * @property {string} platform.browserVersion The browser version
  */
-export function getPlatformOS() {
-  const platform = BrowserStackSdk.getCurrentPlatform();
-  return platform.os;
+
+/**
+ * @returns {Platform} The current platform information
+ */
+export function getCurrentPlatform() {
+  return BrowserStackSdk.getCurrentPlatform();
 }
 
 /**

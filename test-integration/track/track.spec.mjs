@@ -4,7 +4,7 @@ import {
   buildDriver,
   buildUrl,
   fetchRequestLog,
-  getPlatformOS,
+  getCurrentPlatform,
   hasElement,
   hasTitle,
   navigate,
@@ -103,9 +103,9 @@ describe('ravelinjs.track', () => {
     const fakePAN = '4111 1111 1111 1111';
 
     const id = (await driver.getSession()).getId();
-    console.log(`Debug getPlatformOS for ${id}:`, getPlatformOS());
+    const platform = getCurrentPlatform();
 
-    const modifierKey = getPlatformOS().toLowerCase() === 'windows' ? Key.CONTROL : Key.COMMAND;
+    const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
 
     // Write into <input id=clip-stage onclick=this.select()> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
@@ -144,15 +144,14 @@ describe('ravelinjs.track', () => {
       return !!pasteEvent;
     });
 
-    console.log(`Debug pasteEvent for ${id}:`, pasteEvent);
-    console.log(
-      `Debug panCleaned for ${id}:`,
-      pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.panCleaned
-    );
+    console.log(`Debug browserName for ${id}:`, platform.browserName);
     console.log(
       `Debug pastedValue for ${id}:`,
-      pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.pastedValue
+      String(pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.pastedValue)
     );
+
+    // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
+    const expectedValue = platform.browserName === 'IE' ? undefined : '0000 0000 0000 0000';
 
     expect(pasteEvent).to.exist;
     expect(pasteEvent.bodyJSON.events).to.have.length(1);
@@ -163,7 +162,8 @@ describe('ravelinjs.track', () => {
           fieldName: 'name',
           formName: 'cardForm',
           formAction: '/form-action',
-          fieldValue: fakePAN,
+          panCleaned: true,
+          pastedValue: expectedValue,
           selectionStart: 0,
           selectionEnd: 0,
         },
