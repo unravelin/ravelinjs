@@ -105,20 +105,19 @@ describe('ravelinjs.track', () => {
     const platform = getCurrentPlatform();
     const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
 
-    // Write into <input id=clip-stage onclick=this.select()> then copy out
+    // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
     await clipStage.sendKeys(fakePAN);
-    await clipStage.click();
 
     // Select all text and copy to clipboard
-    await clipStage.sendKeys(modifierKey, 'a');
-    await clipStage.sendKeys(modifierKey, 'c');
+    await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
+    await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
 
-    // Paste into <input name=name id=in-pan />
+    // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
     await inTracked.clear();
     await inTracked.click();
-    await inTracked.sendKeys(modifierKey, 'v');
+    await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
 
     // Check if the paste worked
     const pastedValue = await inTracked.getAttribute('value');
@@ -194,7 +193,10 @@ describe('ravelinjs.track', () => {
       }
     }
 
-    // Validate that we got an event of the expected format.
+    // Wait for the resize event to be processed
+    await driver.sleep(100);
+
+    // Validate that we got an event in the expected format
     let resizeEvent;
     await driver.wait(async () => {
       resizeEvent = await fetchRequestLog({
@@ -207,7 +209,7 @@ describe('ravelinjs.track', () => {
         },
       });
       return !!resizeEvent;
-    }, 500);
+    });
 
     expect(resizeEvent).to.exist;
     expect(resizeEvent.bodyJSON.events).to.have.length(1);
