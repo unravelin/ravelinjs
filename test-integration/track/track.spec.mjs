@@ -107,21 +107,18 @@ describe('ravelinjs.track', () => {
 
     // Write into <input id=clip-stage onclick=this.select()> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
+    await clipStage.sendKeys(fakePAN);
+    await clipStage.click();
 
-    await driver
-      .actions()
-      // Focus the input and insert the fake PAN
-      .click(clipStage)
-      .sendKeys(fakePAN)
-      // Select all text and copy to clipboard
-      .sendKeys(modifierKey, 'a')
-      .sendKeys(modifierKey, 'c')
-      .perform();
+    // Select all text and copy to clipboard
+    await clipStage.sendKeys(modifierKey, 'a');
+    await clipStage.sendKeys(modifierKey, 'c');
 
     // Paste into <input name=name id=in-pan />
     const inTracked = await driver.findElement(By.id('in-pan'));
     await inTracked.clear();
-    await driver.actions().click(inTracked).sendKeys(modifierKey, 'v').perform();
+    await inTracked.click();
+    await inTracked.sendKeys(modifierKey, 'v');
 
     // Check if the paste worked
     const pastedValue = await inTracked.getAttribute('value');
@@ -170,6 +167,66 @@ describe('ravelinjs.track', () => {
         ravelinSessionId: sessionId,
         // "url": {"$regex": "^https?://.+/track/.*"},
         // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
+        // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+      },
+    });
+  });
+
+  it('sends resize events', async function () {
+    const platform = getCurrentPlatform();
+    const window = driver.manage().window();
+
+    // Resize the window smaller
+    const r1 = await window.getRect();
+    await window.setRect({ width: r1.width - 10, height: r1.height - 10 });
+
+    const r2 = await window.getRect();
+
+    // If no resize occurred
+    if (r1.width === r2.width && r1.height === r2.height) {
+      // Resize events are not supported on mobile devices, skip test
+      if (platform.deviceName) {
+        console.warn('Resize events are not supported on mobile devices, skipping test.');
+        this.skip();
+        return;
+      } else {
+        throw new Error('Resize event did not change window size.');
+      }
+    }
+
+    // Validate that we got an event of the expected format.
+    let resizeEvent;
+    await driver.wait(async () => {
+      resizeEvent = await fetchRequestLog({
+        path: '/z',
+        query: { key },
+        'bodyJSON.events': {
+          $elemMatch: {
+            eventType: 'resize',
+          },
+        },
+      });
+      return !!resizeEvent;
+    }, 500);
+
+    expect(resizeEvent).to.exist;
+    expect(resizeEvent.bodyJSON.events).to.have.length(1);
+    expect(resizeEvent.bodyJSON.events[0]).to.containSubset({
+      eventType: 'resize',
+      eventData: {
+        eventName: 'resize',
+        properties: {
+          resolutionOld: { w: r1.width, h: r1.height },
+          resolutionNew: { w: r2.width, h: r2.height },
+        },
+      },
+      eventMeta: {
+        trackingSource: 'browser',
+        pageTitle: 'track test',
+        ravelinDeviceId: deviceId,
+        ravelinSessionId: sessionId,
+        // url: {"$regex": "^https?://.+/track/.*"},
+        // clientEventTimeMilliseconds: {"$gt": 1601315328222},
         // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
       },
     });

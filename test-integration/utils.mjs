@@ -52,6 +52,7 @@ function getCapabilities() {
  * @property {string} platform.osVersion The OS version
  * @property {string} platform.browserName The browser name
  * @property {string} platform.browserVersion The browser version
+ * @property {string} platform.deviceName The device name (if applicable)
  */
 
 /**
