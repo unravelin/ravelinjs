@@ -12,6 +12,11 @@ const { BrowserStackSdk } = bstackPkg;
 // https://github.com/chaijs/chai/pull/1664
 chai.use(chaiSubset);
 
+/**
+ * buildDriver creates a new Selenium WebDriver instance.
+ *
+ * @returns {import('selenium-webdriver').WebDriver} A new WebDriver instance.
+ */
 export function buildDriver() {
   // http://localhost:4444/wd/hub connects to the Selenium server running on BrowserStack,
   // which acts as a proxy between our code and the browser-specific drivers.
@@ -21,6 +26,9 @@ export function buildDriver() {
     .build();
 }
 
+/**
+ * @returns {import('selenium-webdriver').Capabilities}
+ */
 function getCapabilities() {
   const platform = BrowserStackSdk.getCurrentPlatform();
 
@@ -39,6 +47,17 @@ function getCapabilities() {
   }
 }
 
+/**
+ * @returns {string} The name of the current platform OS.
+ */
+export function getPlatformOS() {
+  const platform = BrowserStackSdk.getCurrentPlatform();
+  return platform.os;
+}
+
+/**
+ * @returns {string} URL string from function params.
+ */
 export function buildUrl({ baseUrl, path, queryParams }) {
   // Default to the BrowserStack local URL which will
   // tunnel requests to our local server.

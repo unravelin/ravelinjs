@@ -1,9 +1,10 @@
 import { expect } from 'chai';
-import { By } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import {
   buildDriver,
   buildUrl,
   fetchRequestLog,
+  getPlatformOS,
   hasElement,
   hasTitle,
   navigate,
@@ -94,6 +95,87 @@ describe('ravelinjs.track', () => {
         // "url": {"$regex": "^https?://.+/track/.*"},
         // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
         // "ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
+      },
+    });
+  });
+
+  it('sends redacted paste events of pan text', async () => {
+    const fakePAN = '4111 1111 1111 1111';
+
+    const id = (await driver.getSession()).getId();
+    console.log(`Debug getPlatformOS for ${id}:`, getPlatformOS());
+
+    const modifierKey = getPlatformOS().toLowerCase() === 'windows' ? Key.CONTROL : Key.COMMAND;
+
+    // Write into <input id=clip-stage onclick=this.select()> then copy out
+    const clipStage = await driver.findElement(By.id('clip-stage'));
+    await clipStage.sendKeys(fakePAN);
+    await clipStage.click();
+
+    // Select all text and copy to clipboard
+    await clipStage.sendKeys(modifierKey, 'a');
+    await clipStage.sendKeys(modifierKey, 'c');
+
+    // Paste into <input name=name id=in-pan />
+    const inTracked = await driver.findElement(By.id('in-pan'));
+    await inTracked.clear();
+    await inTracked.click();
+    await inTracked.sendKeys(modifierKey, 'v');
+
+    // Check if the paste worked
+    const pastedValue = await inTracked.getAttribute('value');
+    if (pastedValue === '') {
+      throw new Error(`Failed to paste value into input: ${pastedValue}`);
+    }
+
+    // Fetch the paste event we shared
+    let pasteEvent;
+    await driver.wait(async () => {
+      pasteEvent = await fetchRequestLog({
+        path: '/z',
+        query: { key },
+        'bodyJSON.events': {
+          $elemMatch: {
+            eventType: 'paste',
+            'eventData.properties.fieldName': 'name',
+          },
+        },
+      });
+      return !!pasteEvent;
+    });
+
+    console.log(`Debug pasteEvent for ${id}:`, pasteEvent);
+    console.log(
+      `Debug panCleaned for ${id}:`,
+      pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.panCleaned
+    );
+    console.log(
+      `Debug pastedValue for ${id}:`,
+      pasteEvent?.bodyJSON?.events?.[0]?.eventData?.properties?.pastedValue
+    );
+
+    expect(pasteEvent).to.exist;
+    expect(pasteEvent.bodyJSON.events).to.have.length(1);
+    expect(pasteEvent.bodyJSON.events[0]).to.containSubset({
+      eventType: 'paste',
+      eventData: {
+        properties: {
+          fieldName: 'name',
+          formName: 'cardForm',
+          formAction: '/form-action',
+          fieldValue: fakePAN,
+          selectionStart: 0,
+          selectionEnd: 0,
+        },
+      },
+      eventMeta: {
+        trackingSource: 'browser',
+        pageTitle: 'track test',
+        ravelinDeviceId: deviceId,
+        ravelinSessionId: sessionId,
+        // "url": {"$regex": "^https?://.+/track/.*"},
+        // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
+        // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
       },
     });
   });

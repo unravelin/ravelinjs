@@ -65,7 +65,7 @@ describe('ravelinjs.core.send', () => {
     await driver.wait(() => {
       return fetchRequestLog({
         path: '/z',
-        query: { key: key },
+        query: { key },
         'bodyJSON.msg': { $eq: msg },
       });
     }, 5000);
