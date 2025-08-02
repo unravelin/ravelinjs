@@ -31,7 +31,7 @@ export function startServer(done) {
     // Request all request bodies as text, even if Content-Type is omitted
     express.text({ type: () => true }),
     // Record the request
-    function logRequest(req, res, next) {
+    function handleRequest(req, res, next) {
       const log = {
         time: new Date(),
         method: req.method,
@@ -68,7 +68,12 @@ export function startServer(done) {
 
   // Let tests read API requests received, optionally filtering by
   // providing a query, e.g: `?q={"url":{"$regex": "key=.+"}}`
-  app.get('/requests', function logSearch(req, res) {
+  app.get('/requests', function handleSearch(req, res) {
+    console.log('Finding requests:', {
+      time: new Date(),
+      query: req.query.q,
+    });
+
     const r = !req.query.q ? requests : mingo.find(requests, JSON.parse(req.query.q)).all();
     if (r.length) {
       res.send(r);
