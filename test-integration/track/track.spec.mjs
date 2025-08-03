@@ -69,18 +69,23 @@ describe('ravelinjs.track', () => {
 
     // Confirm that we received a page-load event.
     let loadEvent;
-    await driver.wait(async () => {
-      loadEvent = await fetchRequestLog({
-        path: '/z',
-        query: { key },
-        'bodyJSON.events': {
-          $elemMatch: {
-            eventData: { eventName: 'PAGE_LOADED' },
+    await driver.wait(
+      async () => {
+        loadEvent = await fetchRequestLog({
+          path: '/z',
+          query: { key },
+          'bodyJSON.events': {
+            $elemMatch: {
+              eventData: { eventName: 'PAGE_LOADED' },
+            },
           },
-        },
-      });
-      return !!loadEvent;
-    });
+        });
+        return !!loadEvent;
+      },
+      4000, // Wait up to 4s
+      '',
+      800 // Check every 800ms
+    );
 
     expect(loadEvent).to.exist;
     expect(loadEvent.bodyJSON.events).to.have.length(1);
@@ -105,11 +110,6 @@ describe('ravelinjs.track', () => {
     const platform = getCurrentPlatform();
     const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
 
-    const id = (await driver.getSession()).getId();
-    console.log(
-      `Using modifier key for ${id}: ${modifierKey === Key.CONTROL ? 'Control' : 'Command'}`
-    );
-
     // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
     await clipStage.sendKeys(fakePAN);
@@ -130,19 +130,24 @@ describe('ravelinjs.track', () => {
 
     // Fetch the paste event we shared
     let pasteEvent;
-    await driver.wait(async () => {
-      pasteEvent = await fetchRequestLog({
-        path: '/z',
-        query: { key },
-        'bodyJSON.events': {
-          $elemMatch: {
-            eventType: 'paste',
-            'eventData.properties.fieldName': 'name',
+    await driver.wait(
+      async () => {
+        pasteEvent = await fetchRequestLog({
+          path: '/z',
+          query: { key },
+          'bodyJSON.events': {
+            $elemMatch: {
+              eventType: 'paste',
+              'eventData.properties.fieldName': 'name',
+            },
           },
-        },
-      });
-      return !!pasteEvent;
-    });
+        });
+        return !!pasteEvent;
+      },
+      4000, // Wait up to 4s
+      '',
+      800 // Check every 800ms
+    );
 
     // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
     const expectedValue = platform.browserName === 'IE' ? undefined : '0000 0000 0000 0000';
@@ -201,18 +206,23 @@ describe('ravelinjs.track', () => {
 
     // Validate that we got an event in the expected format
     let resizeEvent;
-    await driver.wait(async () => {
-      resizeEvent = await fetchRequestLog({
-        path: '/z',
-        query: { key },
-        'bodyJSON.events': {
-          $elemMatch: {
-            eventType: 'resize',
+    await driver.wait(
+      async () => {
+        resizeEvent = await fetchRequestLog({
+          path: '/z',
+          query: { key },
+          'bodyJSON.events': {
+            $elemMatch: {
+              eventType: 'resize',
+            },
           },
-        },
-      });
-      return !!resizeEvent;
-    });
+        });
+        return !!resizeEvent;
+      },
+      4000, // Wait up to 4s
+      '',
+      800 // Check every 800ms
+    );
 
     expect(resizeEvent).to.exist;
     expect(resizeEvent.bodyJSON.events).to.have.length(1);

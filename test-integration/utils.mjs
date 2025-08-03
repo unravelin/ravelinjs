@@ -38,6 +38,7 @@ function getCapabilities() {
       return Capabilities.chrome();
     case 'ie':
       const ie = Capabilities.ie();
+      // Potential fix for IE11 not sending modifier keys correctly
       ie.set('nativeEvents', false);
       return ie;
     case 'edge':
@@ -175,7 +176,7 @@ export function hasElement(id) {
  * It is an error for the pattern to anything other than one request.
  *
  * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
- * @returns {object} The matched request.
+ * @returns {Promise<object>} A promise that resolves to the first matching request log.
  */
 export async function fetchRequestLog(pattern) {
   const q = JSON.stringify(pattern);
@@ -187,15 +188,28 @@ export async function fetchRequestLog(pattern) {
     queryParams: { q },
   });
 
+  // const res = await fetch(url);
+  // if (res.status == 204) {
+  //   throw new Error(`No requests found matching ${q}`);
+  // } else if (!res.ok) {
+  //   throw new Error('Error fetching ' + url + ': ' + res.statusText);
+  // }
+  // const logs = await res.json();
+  // if (!logs.length) {
+  //   throw new Error(`No requests found matching ${q}`);
+  // }
+  // return logs[0];
+
   const res = await fetch(url);
-  if (res.status == 204) {
-    throw new Error(`No requests found matching ${q}`);
-  } else if (!res.ok) {
-    throw new Error('Error fetching ' + url + ': ' + res.statusText);
+  if (!res.ok) {
+    throw new Error(`Error fetching ${url}: ${res.statusText}`);
+  }
+  if (res.status === 204) {
+    return undefined;
   }
   const logs = await res.json();
   if (!logs.length) {
-    throw new Error(`No requests found matching ${q}`);
+    return undefined;
   }
   return logs[0];
 }
