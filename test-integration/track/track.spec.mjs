@@ -99,19 +99,35 @@ describe('ravelinjs.track', () => {
     const fakePAN = '4111 1111 1111 1111';
 
     const platform = getCurrentPlatform();
-    const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
+    const modifierKey = platform.os === 'OS X' ? Key.COMMAND : Key.CONTROL;
 
     // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
     await clipStage.sendKeys(fakePAN);
 
     // Select all text and copy to clipboard
-    await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
-    await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
+    // await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
+    // await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
+
+    if (platform.os === 'OS X') {
+      await clipStage.click();
+      await driver.actions().keyDown(modifierKey).sendKeys('a').keyUp(modifierKey).perform();
+      await driver.actions().keyDown(modifierKey).sendKeys('c').keyUp(modifierKey).perform();
+    } else {
+      await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
+      await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
+    }
 
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
-    await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
+    // await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
+
+    if (platform.os === 'OS X') {
+      await inTracked.click();
+      await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
+    } else {
+      await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
+    }
 
     // Check if the paste worked
     const pastedValue = await inTracked.getAttribute('value');

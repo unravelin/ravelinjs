@@ -35,6 +35,12 @@ export async function buildBrowserStackConfig() {
         // https://browserstack.com/docs/automate/selenium/using-sendkeys-on-remote-IE11
         ie: { sendKeys: true },
       },
+      {
+        os: 'OS X',
+        osVersion: 'Sequoia',
+        browserName: 'Safari',
+        browserVersion: '18.4',
+      },
     ],
   };
 

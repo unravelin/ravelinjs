@@ -37,7 +37,6 @@ export function startServer(done) {
         method: req.method,
         path: getBasePath(req),
         query: req.query,
-        headers: req.headers,
         body: req.body,
         bodyJSON: maybeJSON(req.body),
       };

@@ -45,6 +45,8 @@ function getCapabilities() {
       return Capabilities.edge();
     case 'firefox':
       return Capabilities.firefox();
+    case 'safari':
+      return Capabilities.safari();
     default:
       throw new Error(`Unsupported browser: ${platform.browserName}`);
   }
