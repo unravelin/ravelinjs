@@ -6,11 +6,15 @@ import { stringify } from 'yaml';
 export async function buildBrowserStackConfig() {
   console.log('Building BrowserStack config…');
 
-  const buildName = await buildId();
+  // buildName is static, and cannot contain numbers or dates
+  const buildName = `${process.env.E2E_RSA_KEY ? 'auto-' : ''}integration-tests`;
+  // buildIdentifier is dynamic, we can use Git and Cloud Build to create a unique name
+  const buildIdentifier = await generateBuildId();
 
   const config = {
     projectName: 'ravelinjs',
     buildName,
+    buildIdentifier,
     debug: true,
     consoleLogs: 'verbose',
     networkLogs: true,
@@ -56,10 +60,10 @@ export async function buildBrowserStackConfig() {
 }
 
 /**
- * buildId returns an identifier for the build in question.
+ * Returns an identifier for the build in question.
  * @returns {String}
  */
-async function buildId() {
+async function generateBuildId() {
   if (process.env.HEAD_BRANCH) {
     const trigger = process.env.E2E_RSA_KEY ? 'e2e' : 'ci';
 
@@ -73,7 +77,7 @@ async function buildId() {
 }
 
 /**
- * gitBuild returns a description of the git revision of the working directory.
+ * Returns a description of the git revision of the working directory.
  * @returns {Promise}
  */
 function gitBuildId() {

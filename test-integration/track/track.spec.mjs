@@ -105,11 +105,10 @@ describe('ravelinjs.track', () => {
     const clipStage = await driver.findElement(By.id('clip-stage'));
     await clipStage.sendKeys(fakePAN);
 
-    // Select all text and copy to clipboard
-    // await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
-    // await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
-
-    if (platform.os === 'OS X') {
+    // Select all text and copy to clipboard.
+    // Note: Safari fails to register shortcuts when using `sendKeys` directly
+    // so we need to manually manage the key presses instead.
+    if (platform.browserName === 'Safari') {
       await clipStage.click();
       await driver.actions().keyDown(modifierKey).sendKeys('a').keyUp(modifierKey).perform();
       await driver.actions().keyDown(modifierKey).sendKeys('c').keyUp(modifierKey).perform();
@@ -120,9 +119,10 @@ describe('ravelinjs.track', () => {
 
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
-    // await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
 
-    if (platform.os === 'OS X') {
+    // Note: Safari fails to register shortcuts when using `sendKeys` directly
+    // so we need to manually manage the key presses instead.
+    if (platform.browserName === 'Safari') {
       await inTracked.click();
       await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
     } else {
@@ -132,7 +132,7 @@ describe('ravelinjs.track', () => {
     // Check if the paste worked
     const pastedValue = await inTracked.getAttribute('value');
     if (pastedValue === '') {
-      throw new Error(`Failed to paste value into input: ${pastedValue}`);
+      throw new Error('Failed to paste value into input, got empty string.');
     }
 
     // Fetch the paste event we shared
