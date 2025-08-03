@@ -1,20 +1,19 @@
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import path from 'path';
 import { stringify } from 'yaml';
 
-export async function buildBrowserStackConfig() {
+export function buildBrowserStackConfig() {
   console.log('Building BrowserStack config…');
 
-  // buildName is static, and cannot contain numbers or dates
-  const buildName = `${process.env.E2E_RSA_KEY ? 'auto-' : ''}integration-tests`;
-  // buildIdentifier is dynamic, we can use Git and Cloud Build to create a unique name
-  const buildIdentifier = await generateBuildId();
+  const gitBranch = generateBuildName();
+  const buildId = generateBuildId();
 
   const config = {
     projectName: 'ravelinjs',
-    buildName,
-    buildIdentifier,
+    buildName: gitBranch,
+    buildIdentifier: buildId,
+    buildTag: gitBranch,
     debug: true,
     consoleLogs: 'verbose',
     networkLogs: true,
@@ -60,10 +59,22 @@ export async function buildBrowserStackConfig() {
 }
 
 /**
- * Returns an identifier for the build in question.
  * @returns {String}
  */
-async function generateBuildId() {
+function generateBuildName() {
+  if (process.env.E2E_RSA_KEY) {
+    return 'auto-integration-tests';
+  }
+  if (process.env.HEAD_BRANCH) {
+    return process.env.HEAD_BRANCH;
+  }
+  return gitBranch();
+}
+
+/**
+ * @returns {String}
+ */
+function generateBuildId() {
   if (process.env.HEAD_BRANCH) {
     const trigger = process.env.E2E_RSA_KEY ? 'e2e' : 'ci';
 
@@ -73,21 +84,29 @@ async function generateBuildId() {
     }`;
   }
 
-  return await gitBuildId();
+  return gitBuildId();
 }
 
 /**
  * Returns a description of the git revision of the working directory.
- * @returns {Promise}
+ * @returns {String}
  */
 function gitBuildId() {
-  return new Promise(function (resolve, reject) {
-    exec('git describe --all --long --dirty', function (err, stdout, stderr) {
-      if (err) {
-        reject('git describe: ' + err + ' stderr: ' + stderr);
-        return;
-      }
-      resolve(stdout.trim());
-    });
-  });
+  try {
+    return execSync('git describe --all --long --dirty', { encoding: 'utf8' }).trim();
+  } catch (err) {
+    throw new Error('git describe: ' + err.message);
+  }
+}
+
+/**
+ * Returns the current git branch.
+ * @returns {String}
+ */
+function gitBranch() {
+  try {
+    return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+  } catch (err) {
+    throw new Error('git rev-parse: ' + err.message);
+  }
 }

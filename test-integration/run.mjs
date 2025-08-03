@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import { buildBrowserStackConfig } from './build-bstack-config.mjs';
 import { startServer, stopServer } from './server.mjs';
 
-await buildBrowserStackConfig();
+buildBrowserStackConfig();
 
 startServer(async (tunnelUrl) => {
   let exitCode = 0;
