@@ -68,24 +68,15 @@ describe('ravelinjs.track', () => {
     );
 
     // Confirm that we received a page-load event.
-    let loadEvent;
-    await driver.wait(
-      async () => {
-        loadEvent = await fetchRequestLog({
-          path: '/z',
-          query: { key },
-          'bodyJSON.events': {
-            $elemMatch: {
-              eventData: { eventName: 'PAGE_LOADED' },
-            },
-          },
-        });
-        return !!loadEvent;
+    const loadEvent = await fetchRequestLog(driver, {
+      path: '/z',
+      query: { key },
+      'bodyJSON.events': {
+        $elemMatch: {
+          eventData: { eventName: 'PAGE_LOADED' },
+        },
       },
-      4000, // Wait up to 4s
-      '',
-      800 // Check every 800ms
-    );
+    });
 
     expect(loadEvent).to.exist;
     expect(loadEvent.bodyJSON.events).to.have.length(1);
@@ -129,25 +120,16 @@ describe('ravelinjs.track', () => {
     }
 
     // Fetch the paste event we shared
-    let pasteEvent;
-    await driver.wait(
-      async () => {
-        pasteEvent = await fetchRequestLog({
-          path: '/z',
-          query: { key },
-          'bodyJSON.events': {
-            $elemMatch: {
-              eventType: 'paste',
-              'eventData.properties.fieldName': 'name',
-            },
-          },
-        });
-        return !!pasteEvent;
+    const pasteEvent = await fetchRequestLog(driver, {
+      path: '/z',
+      query: { key },
+      'bodyJSON.events': {
+        $elemMatch: {
+          eventType: 'paste',
+          'eventData.properties.fieldName': 'name',
+        },
       },
-      4000, // Wait up to 4s
-      '',
-      800 // Check every 800ms
-    );
+    });
 
     // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
     const expectedValue = platform.browserName === 'IE' ? undefined : '0000 0000 0000 0000';
@@ -205,24 +187,15 @@ describe('ravelinjs.track', () => {
     await driver.sleep(100);
 
     // Validate that we got an event in the expected format
-    let resizeEvent;
-    await driver.wait(
-      async () => {
-        resizeEvent = await fetchRequestLog({
-          path: '/z',
-          query: { key },
-          'bodyJSON.events': {
-            $elemMatch: {
-              eventType: 'resize',
-            },
-          },
-        });
-        return !!resizeEvent;
+    const resizeEvent = await fetchRequestLog(driver, {
+      path: '/z',
+      query: { key },
+      'bodyJSON.events': {
+        $elemMatch: {
+          eventType: 'resize',
+        },
       },
-      4000, // Wait up to 4s
-      '',
-      800 // Check every 800ms
-    );
+    });
 
     expect(resizeEvent).to.exist;
     expect(resizeEvent.bodyJSON.events).to.have.length(1);

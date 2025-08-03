@@ -175,10 +175,32 @@ export function hasElement(id) {
  *
  * It is an error for the pattern to anything other than one request.
  *
+ * @param {import('selenium-webdriver').WebDriver} driver
  * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
  * @returns {Promise<object>} A promise that resolves to the first matching request log.
  */
-export async function fetchRequestLog(pattern) {
+export async function fetchRequestLog(driver, pattern) {
+  let requestLog;
+  await driver.wait(
+    async () => {
+      requestLog = await getRequestLog(pattern);
+      return !!requestLog;
+    },
+    4000, // Wait up to 4s
+    '',
+    800 // Check every 800ms
+  );
+
+  return requestLog;
+}
+
+/**
+ * Wrapper for fetching request logs from the server.
+ *
+ * @param {object} pattern A mingo query object https://github.com/kofrasa/mingo.
+ * @returns {Promise<object>} A promise that resolves to the first matching request log.
+ */
+async function getRequestLog(pattern) {
   const q = JSON.stringify(pattern);
   const url = buildUrl({
     // Use localhost instead of bs-local.com as we are calling
@@ -187,18 +209,6 @@ export async function fetchRequestLog(pattern) {
     path: '/requests',
     queryParams: { q },
   });
-
-  // const res = await fetch(url);
-  // if (res.status == 204) {
-  //   throw new Error(`No requests found matching ${q}`);
-  // } else if (!res.ok) {
-  //   throw new Error('Error fetching ' + url + ': ' + res.statusText);
-  // }
-  // const logs = await res.json();
-  // if (!logs.length) {
-  //   throw new Error(`No requests found matching ${q}`);
-  // }
-  // return logs[0];
 
   const res = await fetch(url);
   if (!res.ok) {

@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import {
   buildDriver,
@@ -62,13 +63,13 @@ describe('ravelinjs.core.send', () => {
     }
 
     // Confirm that a request to /z was received with the expected value.
-    await driver.wait(() => {
-      return fetchRequestLog({
-        path: '/z',
-        query: { key },
-        'bodyJSON.msg': { $eq: msg },
-      });
-    }, 5000);
+    const req = await fetchRequestLog(driver, {
+      path: '/z',
+      query: { key },
+      'bodyJSON.msg': { $eq: msg },
+    });
+
+    expect(req).to.be.an('object');
 
     // Warn if it took several attempts to send.
     const output = await driver.findElement(By.id('output'));
