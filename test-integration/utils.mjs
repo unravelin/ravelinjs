@@ -37,7 +37,9 @@ function getCapabilities() {
     case 'samsung':
       return Capabilities.chrome();
     case 'ie':
-      return Capabilities.ie();
+      const ie = Capabilities.ie();
+      ie.set('nativeEvents', false);
+      return ie;
     case 'edge':
       return Capabilities.edge();
     case 'firefox':

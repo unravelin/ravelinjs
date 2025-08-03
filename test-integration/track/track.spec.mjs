@@ -105,6 +105,11 @@ describe('ravelinjs.track', () => {
     const platform = getCurrentPlatform();
     const modifierKey = platform.os === 'Windows' ? Key.CONTROL : Key.COMMAND;
 
+    const id = (await driver.getSession()).getId();
+    console.log(
+      `Using modifier key for ${id}: ${modifierKey === Key.CONTROL ? 'Control' : 'Command'}`
+    );
+
     // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
     await clipStage.sendKeys(fakePAN);
@@ -115,8 +120,6 @@ describe('ravelinjs.track', () => {
 
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
-    await inTracked.clear();
-    await inTracked.click();
     await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
 
     // Check if the paste worked
