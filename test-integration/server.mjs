@@ -19,8 +19,11 @@ export function startServer(done) {
   const port = 3000;
   const requests = [];
 
-  // Serve static files from the test directory
+  // Serve static files from the integration test directory
   app.use(express.static(path.join(import.meta.dirname)));
+
+  // Serve static files from the unit test directory
+  app.use('/test-unit', express.static(path.join(import.meta.dirname, '../test-unit')));
 
   // Handle favicon requests gracefully
   app.get('/favicon.ico', (_req, res) => res.status(204).end());

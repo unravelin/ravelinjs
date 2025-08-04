@@ -10,7 +10,7 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'https://unpkg.com/jquery@1.12.4/dist/jquery.js',
+      '../node_modules/jquery/dist/jquery.js',
       '../node_modules/xhook/dist/xhook.js',
       'ravelin.js',
       'utils.js',
