@@ -9,6 +9,45 @@
 <body>
   <div id="mocha"></div>
 
+  <pre id="log-out"></pre>
+
+  <script>
+    (function () {
+      // Override console.log and print to page
+      var log = console.log;
+      console.log = function () {
+        var out = document.getElementById('log-out');
+        if (out) {
+          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
+          out.appendChild(document.createElement('br'));
+        }
+        log.apply(console, arguments);
+      };
+
+      // Override console.error and print to page
+      var error = console.error;
+      console.error = function () {
+        var out = document.getElementById('log-out');
+        if (out) {
+          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
+          out.appendChild(document.createElement('br'));
+        }
+        error.apply(console, arguments);
+      };
+
+      // Override console.warn and print to page
+      var warn = console.warn;
+      console.warn = function () {
+        var out = document.getElementById('log-out');
+        if (out) {
+          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
+          out.appendChild(document.createElement('br'));
+        }
+        warn.apply(console, arguments);
+      };
+    })();
+  </script>
+
   <script src="https://unpkg.com/xhook@1.4.9/dist/xhook.js"></script>
   <script src="https://unpkg.com/jquery@1.12.4/dist/jquery.js"></script>
   <script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
