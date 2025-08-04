@@ -98,10 +98,8 @@ export function buildUrl({ baseUrl, path, queryParams }) {
  * @param {number} [options.attempts=3] The number of attempts to load the page.
  * @param {string} options.url The URL to navigate to.
  * @param {NavTest[]} options.tests The tests to run after loading the page.
- * @param {number} [options.testTimeout=4000] The timeout for each test.
- * @param {number} [options.testPollTimeout=800] The poll interval for each test.
  */
-export async function navigate(driver, { attempts, url, tests, testTimeout, testPollTimeout }) {
+export async function navigate(driver, { attempts, url, tests }) {
   const sessionId = (await driver.getSession()).getId();
   let errs = [];
 
@@ -110,12 +108,10 @@ export async function navigate(driver, { attempts, url, tests, testTimeout, test
 
     try {
       for (const test of tests) {
-        await driver.wait(
-          async () => await test(driver),
-          testTimeout || 4000,
-          '',
-          testPollTimeout || 800
-        );
+        await driver.wait(async () => {
+          await test(driver);
+          return true; // Test passed
+        });
       }
       return;
     } catch (e) {
@@ -142,11 +138,10 @@ export async function navigate(driver, { attempts, url, tests, testTimeout, test
 export function hasTitle(substr) {
   return async function hasTitleTest(driver) {
     const title = await driver.getTitle();
-    if (title.indexOf(substr) === -1) {
-      console.warn(`Expected page title to contain "${substr}" but found: "${title}"`);
-      return false;
-    }
-    return true;
+    expect(title).to.contain(
+      substr,
+      `Expected page title to contain ${substr} but found: ${title}`
+    );
   };
 }
 
@@ -159,11 +154,7 @@ export function hasTitle(substr) {
 export function hasURL(substr) {
   return async function hasURLTest(driver) {
     const url = await driver.getCurrentUrl();
-    if (url.indexOf(substr) === -1) {
-      console.warn(`Expected page URL to contain "${substr}" but found: "${url}"`);
-      return false;
-    }
-    return true;
+    expect(url).to.contain(substr, `Expected page URL to contain ${substr} but found: ${url}`);
   };
 }
 
@@ -176,11 +167,10 @@ export function hasURL(substr) {
 export function hasElement(id) {
   return async function hasElementTest(driver) {
     const elements = await driver.findElements(By.id(id));
-    if (elements.length !== 1) {
-      console.warn(`Expected to find an element with ID #${id}, but found ${elements.length}`);
-      return false;
-    }
-    return true;
+    expect(elements.length).to.equal(
+      1,
+      `Expected to find one element with ID #${id}, but found ${elements.length}`
+    );
   };
 }
 

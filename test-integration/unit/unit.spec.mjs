@@ -17,17 +17,23 @@ describe('ravelinjs unit tests', () => {
     // Visit `/unit/`
     await navigate(driver, {
       url: buildUrl({ path: '/unit', queryParams: {} }),
-      testTimeout: 30000,
-      testPollTimeout: 1000,
       tests: [
         // Wait for the page to load.
         hasTitle('Mocha'),
         hasElement('mocha-stats'),
-        // The unit test page will assign this ID to the body
-        // when the final test has run.
-        hasElement('completed'),
       ],
     });
+
+    // Wait for the Mocha tests to complete.
+    await driver.wait(
+      async () => {
+        const c = await driver.findElements(By.id('completed'));
+        return !!c.length;
+      },
+      30000, // Wait up to 30s
+      '',
+      1000 // Poll every 1s
+    );
 
     // Check whether Mocha reported any errors.
     const statsElem = await driver.findElement(By.id('mocha-stats')).getText();

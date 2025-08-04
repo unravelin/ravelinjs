@@ -16,7 +16,8 @@
 
   <script class="mocha-init">
     var expect = chai.expect;
-    mocha.setup('bdd');
+    // Ignore ret_nodes when checking leaks, a Selenium global that is not used in the tests.
+    mocha.setup({ ui: 'bdd', global: ['ret_nodes'] });
     mocha.checkLeaks();
   </script>
 
