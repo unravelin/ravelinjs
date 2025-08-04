@@ -29,6 +29,21 @@ function isolate(cfg) {
 
 function keysMatch(req, key) {
   var i = req.url.indexOf('?');
-  if (i == -1) return false;
-  return parseQuery(req.url.substr(i)).key == key;
+  if (i === -1) return false;
+  return parseQuery(req.url.substr(i)).key === key;
+}
+
+/**
+ * parseQuery returns the queryString as an object of properties.
+ * https://stackoverflow.com/a/13419367/123600
+ * @param {string} queryString window.location.search
+ */
+function parseQuery(queryString) {
+  var query = {};
+  var pairs = (queryString[0] === '?' ? queryString.substring(1) : queryString).split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i].split('=');
+    query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+  }
+  return query;
 }
