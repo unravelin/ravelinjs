@@ -189,8 +189,8 @@ describe('ravelin.core', function() {
         return r.core.ids().then(function(ids) {
           expect(ids.device).to.match(t.exp.device);
           expect(ids.session).to.match(t.exp.session);
-          expect(r.core.cookies.get(cfg.sessionCookie)).to.equal(ids.device + ':' + ids.session);
-          expect(r.core.cookies.get(cfg.cookie)).to.equal(ids.device);
+          expect(r.core.cookies.get(cfg.sessionCookie)).to.be(ids.device + ':' + ids.session);
+          expect(r.core.cookies.get(cfg.cookie)).to.be(ids.device);
         });
       });
     });
@@ -209,7 +209,7 @@ describe('ravelin.core', function() {
         // at all if an explicit `id` was given. So long as `id` continues to be
         // set we will still use it. But if it's omitted anywhere, we can
         // restore the cookie from here.
-        expect(r.core.cookies.get(cfg.cookie)).to.equal('my-device-id');
+        expect(r.core.cookies.get(cfg.cookie)).to.be('my-device-id');
       });
     });
 
@@ -227,7 +227,7 @@ describe('ravelin.core', function() {
         // at all if an explicit `id` was given. So long as `id` continues to be
         // set we will still use it. But if it's omitted anywhere, we can
         // restore the cookie from here.
-        expect(r.core.cookies.get(cfg.cookie)).to.equal('my-device-id');
+        expect(r.core.cookies.get(cfg.cookie)).to.be('my-device-id');
       });
     });
 
@@ -273,12 +273,12 @@ describe('ravelin.core', function() {
       }));
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
-        expect(r.core.cookies.get('expiredDeviceId')).to.equal(id);
+        expect(r.core.cookies.get('expiredDeviceId')).to.be(id);
 
         return new r.core.Promise(function(resolve) {
           setTimeout(resolve, 2000);
         }).then(function() {
-          expect(r.core.cookies.get('expiredDeviceId')).to.equal(undefined);
+          expect(r.core.cookies.get('expiredDeviceId')).to.be(undefined);
         });
       });
     });
@@ -303,7 +303,7 @@ describe('ravelin.core', function() {
       var r = new Ravelin(isolate({}));
       return r.core.id().then(function(id1) {
         return r.core.id().then(function(id2) {
-          expect(id1).to.deep.equal(id2);
+          expect(id1).to.eql(id2);
         });
       });
     });
@@ -312,7 +312,7 @@ describe('ravelin.core', function() {
       var r = new Ravelin(isolate({}));
       return r.core.id().then(function(device) {
         return r.core.ids().then(function(ids) {
-          expect(device).to.deep.equal(ids.device);
+          expect(device).to.eql(ids.device);
         });
       });
     });
@@ -321,10 +321,10 @@ describe('ravelin.core', function() {
       var r = new Ravelin({});
       return r.core.ids().then(function(ids) {
         expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + ids.device + '\\b'));
-        expect(r.core.cookies.get('ravelinDeviceId')).to.equal(ids.device);
+        expect(r.core.cookies.get('ravelinDeviceId')).to.be(ids.device);
 
         expect(document.cookie).to.match(new RegExp('\\bravelinSessionId=' + ids.device + ':' + ids.session + '\\b'));
-        expect(r.core.cookies.get('ravelinSessionId')).to.equal(ids.device + ':' + ids.session);
+        expect(r.core.cookies.get('ravelinSessionId')).to.be(ids.device + ':' + ids.session);
       });
     });
 
@@ -334,7 +334,7 @@ describe('ravelin.core', function() {
       });
       var r = new Ravelin(cfg);
       return r.core.id().then(function() {
-        expect(r.core.cookies.get(cfg.cookie)).to.equal(undefined);
+        expect(r.core.cookies.get(cfg.cookie)).to.be(undefined);
       });
     });
 
@@ -360,7 +360,7 @@ describe('ravelin.core', function() {
           value: 'unset',
           expires: new Date(new Date().getTime() - 10000)
         });
-        expect(r1.core.cookies.get('removed-cookie')).to.equal(undefined);
+        expect(r1.core.cookies.get('removed-cookie')).to.be(undefined);
         expect(document.cookie).to.not.match(/\bremoved-cookie=\b/);
 
         // Wait for the sync to reoccur..
@@ -369,7 +369,7 @@ describe('ravelin.core', function() {
         }).then(function() {
           var r2 = new Ravelin(cfg);
           return r2.core.id().then(function(id2) {
-            expect(id1).to.deep.equal(id2);
+            expect(id1).to.eql(id2);
           });
         });
       });
@@ -392,7 +392,7 @@ describe('ravelin.core', function() {
           key: test.key,
           api: test.api
         }));
-        expect(r.core.api).to.equal(test.expApi);
+        expect(r.core.api).to.be(test.expApi);
       });
     });
 
@@ -402,7 +402,7 @@ describe('ravelin.core', function() {
       // check that the config is passed through to the cookie jar.
       var cfg = isolate({ cookieSameSite: 'Strict;Secure' });
       var r = new Ravelin(cfg);
-      expect(r.core.cookies.cfg.sameSite).to.equal('Strict;Secure');
+      expect(r.core.cookies.cfg.sameSite).to.be('Strict;Secure');
     });
 
     $([
@@ -418,7 +418,7 @@ describe('ravelin.core', function() {
           key: test.key,
           api: test.api
         }));
-        expect(r.core.api).to.equal(test.expApi);
+        expect(r.core.api).to.be(test.expApi);
       });
     });
   });
@@ -438,7 +438,7 @@ describe('ravelin.core', function() {
               throw new Error('Expected an error but got result: ' + JSON.stringify(r));
             },
             function(e) {
-              expect(e).to.be.an.instanceOf(TypeError);
+              expect(e).to.be.a(TypeError);
             }
           );
       } catch (e) {
@@ -457,8 +457,8 @@ describe('ravelin.core', function() {
             throw new Error('Exception expected but got result ' + JSON.stringify(r));
           },
           function fail(err) {
-            expect(err).to.be.an.instanceOf(Error);
-            expect(err.message).to.equal('not retried');
+            expect(err).to.be.an(Error);
+            expect(err.message).to.eql('not retried');
           }
         );
     });
@@ -479,7 +479,7 @@ describe('ravelin.core', function() {
       return rav.core.send('POST', 'z', {
         retryTest: 'hello'
       }).then(function(r) {
-        expect(r).to.deep.equal({
+        expect(r).to.eql({
           status: 204,
           attempt: 2,
           text: ""
@@ -502,7 +502,7 @@ describe('ravelin.core', function() {
           throw new Error('Expected an error but got ' + JSON.stringify(r));
         },
         function(err) {
-          expect(err).to.be.an.instanceOf(Error);
+          expect(err).to.be.an(Error);
           expect(err.message).to.equal('ravelin/core: POST /z?key=retries attempt 3 returned status 0');
         }
       );
@@ -523,7 +523,7 @@ describe('ravelin.core', function() {
           throw new Error('Expected an error but got ' + JSON.stringify(r));
         },
         function(err) {
-          expect(err).to.be.an.instanceOf(Error);
+          expect(err).to.be.an(Error);
           expect(err.message).to.equal('ravelin/core: POST /z?key=retries attempt 3 returned status 500 and body {"derp": true}');
         }
       );

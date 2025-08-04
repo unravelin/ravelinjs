@@ -9,52 +9,12 @@
 <body>
   <div id="mocha"></div>
 
-  <pre id="log-out"></pre>
-
-  <script>
-    (function () {
-      // Override console.log and print to page
-      var log = console.log;
-      console.log = function () {
-        var out = document.getElementById('log-out');
-        if (out) {
-          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
-          out.appendChild(document.createElement('br'));
-        }
-        log.apply(console, arguments);
-      };
-
-      // Override console.error and print to page
-      var error = console.error;
-      console.error = function () {
-        var out = document.getElementById('log-out');
-        if (out) {
-          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
-          out.appendChild(document.createElement('br'));
-        }
-        error.apply(console, arguments);
-      };
-
-      // Override console.warn and print to page
-      var warn = console.warn;
-      console.warn = function () {
-        var out = document.getElementById('log-out');
-        if (out) {
-          out.appendChild(document.createTextNode(Array.prototype.join.call(arguments, ' ')));
-          out.appendChild(document.createElement('br'));
-        }
-        warn.apply(console, arguments);
-      };
-    })();
-  </script>
-
   <script src="https://unpkg.com/xhook@1.4.9/dist/xhook.js"></script>
   <script src="https://unpkg.com/jquery@1.12.4/dist/jquery.js"></script>
-  <script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
+  <script src="https://unpkg.com/expect.js@0.3.1/index.js"></script>
   <script src="https://unpkg.com/mocha@2.5.3/mocha.js"></script>
 
   <script class="mocha-init">
-    var expect = chai.expect;
     // Ignore ret_nodes when checking leaks, a Selenium global that is not used in the tests.
     mocha.setup({ ui: 'bdd', global: ['ret_nodes'] });
     mocha.checkLeaks();
