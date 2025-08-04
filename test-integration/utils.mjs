@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import chaiSubset from 'chai-subset';
 import { Builder, By, Capabilities } from 'selenium-webdriver';
 
-/** @typedef {async (driver) => void} NavTest */
+/** @typedef {async (driver) => boolean} NavTest */
 
 const { BrowserStackSdk } = bstackPkg;
 
@@ -93,12 +93,15 @@ export function buildUrl({ baseUrl, path, queryParams }) {
  * If the URL fails to load or a test fails then we call refresh() to try
  * again. This process is repeated up to two times by default.
  *
- * @param {WebDriver} driver
- * @param {number} [page.attempts=3]
- * @param {string} page.url
- * @param {NavTest[]} page.tests
+ * @param {import('selenium-webdriver').WebDriver} driver
+ * @param {object} options
+ * @param {number} [options.attempts=3] The number of attempts to load the page.
+ * @param {string} options.url The URL to navigate to.
+ * @param {NavTest[]} options.tests The tests to run after loading the page.
+ * @param {number} [options.testTimeout=4000] The timeout for each test.
+ * @param {number} [options.testPollTimeout=800] The poll interval for each test.
  */
-export async function navigate(driver, { attempts, url, tests }) {
+export async function navigate(driver, { attempts, url, tests, testTimeout, testPollTimeout }) {
   const sessionId = (await driver.getSession()).getId();
   let errs = [];
 
@@ -107,18 +110,23 @@ export async function navigate(driver, { attempts, url, tests }) {
 
     try {
       for (const test of tests) {
-        await driver.wait(async () => (await test(driver), 5000));
+        await driver.wait(
+          async () => await test(driver),
+          testTimeout || 4000,
+          '',
+          testPollTimeout || 800
+        );
       }
       return;
     } catch (e) {
-      console.warn(`Session ${sessionId} failed to load ${url}: ${e}`);
+      console.warn(`Session ${sessionId} failed navigate test: ${e}`);
       errs.push(e);
     }
 
     // If none of the pages we tried worked, perhaps we've got a network issue?
     // Try getting a fresh session to kick things off.
     console.warn(
-      `Session ${sessionId} failed to pass tests for ${url} on attempt ${i + 1}. Reloading.`
+      `Session ${sessionId} failed navigate tests for ${url} on attempt ${i + 1}. Reloading.`
     );
     await driver.navigate().refresh();
   }
@@ -134,10 +142,11 @@ export async function navigate(driver, { attempts, url, tests }) {
 export function hasTitle(substr) {
   return async function hasTitleTest(driver) {
     const title = await driver.getTitle();
-    expect(title).to.contain(
-      substr,
-      `Expected page title to contain ${substr} but found: ${title}`
-    );
+    if (title.indexOf(substr) === -1) {
+      console.warn(`Expected page title to contain "${substr}" but found: "${title}"`);
+      return false;
+    }
+    return true;
   };
 }
 
@@ -150,7 +159,11 @@ export function hasTitle(substr) {
 export function hasURL(substr) {
   return async function hasURLTest(driver) {
     const url = await driver.getCurrentUrl();
-    expect(url).to.contain(substr, `Expected page URL to contain ${substr} but found: ${url}`);
+    if (url.indexOf(substr) === -1) {
+      console.warn(`Expected page URL to contain "${substr}" but found: "${url}"`);
+      return false;
+    }
+    return true;
   };
 }
 
@@ -163,10 +176,11 @@ export function hasURL(substr) {
 export function hasElement(id) {
   return async function hasElementTest(driver) {
     const elements = await driver.findElements(By.id(id));
-    expect(elements.length).to.equal(
-      1,
-      `Expected to find one element with ID #${id}, but found ${elements.length}`
-    );
+    if (elements.length !== 1) {
+      console.warn(`Expected to find an element with ID #${id}, but found ${elements.length}`);
+      return false;
+    }
+    return true;
   };
 }
 

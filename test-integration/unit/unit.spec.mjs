@@ -17,6 +17,8 @@ describe('ravelinjs unit tests', () => {
     // Visit `/unit/`
     await navigate(driver, {
       url: buildUrl({ path: '/unit', queryParams: {} }),
+      testTimeout: 30000,
+      testPollTimeout: 1000,
       tests: [
         // Wait for the page to load.
         hasTitle('Mocha'),
