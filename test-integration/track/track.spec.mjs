@@ -108,7 +108,7 @@ describe('ravelinjs.track', () => {
     // Select all text and copy to clipboard.
     // Note: Safari fails to register shortcuts when using `sendKeys` directly
     // so we need to manually manage the key presses instead.
-    if (platform.browserName === 'Safari') {
+    if (platform.browserName.toLowerCase() === 'safari') {
       await clipStage.click();
       await driver.actions().keyDown(modifierKey).sendKeys('a').keyUp(modifierKey).perform();
       await driver.actions().keyDown(modifierKey).sendKeys('c').keyUp(modifierKey).perform();
@@ -122,7 +122,7 @@ describe('ravelinjs.track', () => {
 
     // Note: Safari fails to register shortcuts when using `sendKeys` directly
     // so we need to manually manage the key presses instead.
-    if (platform.browserName === 'Safari') {
+    if (platform.browserName.toLowerCase() === 'safari') {
       await inTracked.click();
       await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
     } else {
@@ -148,7 +148,8 @@ describe('ravelinjs.track', () => {
     });
 
     // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
-    const expectedValue = platform.browserName === 'IE' ? undefined : '0000 0000 0000 0000';
+    const expectedValue =
+      platform.browserName.toLowerCase() === 'ie' ? undefined : '0000 0000 0000 0000';
 
     expect(pasteEvent).to.exist;
     expect(pasteEvent.bodyJSON.events).to.have.length(1);

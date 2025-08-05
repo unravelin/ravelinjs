@@ -17,6 +17,7 @@ export function buildBrowserStackConfig() {
     debug: true,
     consoleLogs: 'verbose',
     networkLogs: true,
+    accessibility: false,
     parallelsPerPlatform: 1,
     browserstackLocal: true,
     browserStackLocalOptions: {
@@ -24,12 +25,28 @@ export function buildBrowserStackConfig() {
       localProxyPort: 3000,
     },
     platforms: [
+      // Chrome on Windows 11
       {
         os: 'Windows',
-        osVersion: 10,
+        osVersion: 11,
         browserName: 'Chrome',
         browserVersion: 'latest',
       },
+      // Edge on Windows 11
+      {
+        browserName: 'Edge',
+        os: 'Windows',
+        osVersion: 11,
+        browserVersion: 'latest',
+      },
+      // Firefox on Windows 11
+      {
+        browserName: 'Firefox',
+        os: 'Windows',
+        osVersion: 11,
+        browserVersion: 'latest',
+      },
+      // IE 11 on Windows 10
       {
         os: 'Windows',
         osVersion: 10,
@@ -38,11 +55,24 @@ export function buildBrowserStackConfig() {
         // https://browserstack.com/docs/automate/selenium/using-sendkeys-on-remote-IE11
         ie: { sendKeys: true },
       },
+      // Safari on macOS Sequoia (2024)
       {
         os: 'OS X',
         osVersion: 'Sequoia',
         browserName: 'Safari',
         browserVersion: '18.4',
+      },
+      // Safari on iOS 17 (2024)
+      {
+        browserName: 'safari',
+        osVersion: 17,
+        deviceName: 'iPhone 15',
+      },
+      // Chrome on Android 13 (2022)
+      {
+        browserName: 'chrome',
+        osVersion: '13.0',
+        deviceName: 'Samsung Galaxy S23',
       },
     ],
   };
