@@ -10,6 +10,9 @@ let server;
 /** @type {import('@ngrok/ngrok').Listener} */
 let tunnel;
 
+/**
+ * @param {() => void} [done]
+ */
 export function startServer(done) {
   // This Express server serves static files that will act as our test pages.
   // It also handles requests to the RavelinJS API, and logs them for test assertions.
@@ -105,6 +108,9 @@ export function startServer(done) {
   });
 }
 
+/**
+ * @param {() => void} [done]
+ */
 export async function stopServer(done) {
   if (tunnel) {
     try {
@@ -130,6 +136,10 @@ export async function stopServer(done) {
   }
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 function noContent(req, res) {
   try {
     // Parse the request body to check it's valid
@@ -143,6 +153,10 @@ function noContent(req, res) {
   }
 }
 
+/**
+ * @param {string} body
+ * @returns {object | undefined}
+ */
 function maybeJSON(body) {
   try {
     return JSON.parse(body);
@@ -151,6 +165,10 @@ function maybeJSON(body) {
   }
 }
 
+/**
+ * @param {import('express').Request} req
+ * @returns {string}
+ */
 function getBasePath(req) {
   return new URL(req.originalUrl, `http://${req.headers.host}`).pathname;
 }

@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
 import { buildBrowserStackConfig } from './build-bstack-config.mjs';
+import { updateCommitStatus } from './ci.mjs';
 import { startServer, stopServer } from './server.mjs';
+
+const logs = [];
 
 buildBrowserStackConfig();
 
@@ -16,11 +19,17 @@ startServer(async (tunnelUrl) => {
 
   console.log('Tests complete with exit code:', exitCode);
 
-  stopServer(() => {
+  stopServer(async () => {
+    await updateCommitStatus(logs);
+
     process.exit(exitCode);
   });
 });
 
+/**
+ * @param {string} tunnelUrl
+ * @returns {Promise<number>}
+ */
 function runTests(tunnelUrl) {
   return new Promise((resolve, reject) => {
     // Spawn a child process to run the BrowserStack SDK and test suite.
@@ -30,7 +39,9 @@ function runTests(tunnelUrl) {
     });
 
     p.stdout.on('data', (data) => {
-      process.stdout.write(data.toString());
+      const log = data.toString();
+      logs.push(log);
+      process.stdout.write(log);
     });
     p.stderr.on('data', (data) => {
       process.stderr.write(data.toString());
