@@ -30,7 +30,8 @@ export async function updateCommitStatus(logs) {
       return;
     }
 
-    // Extract the build ID from the end of the URL
+    // Extract the build ID from the end of the URL. Assumes the URL
+    // is in the format: https://automate.browserstack.com/dashboard/v2/builds/:id
     const buildId = url.pathname.split('/').pop();
 
     if (!buildId) {
