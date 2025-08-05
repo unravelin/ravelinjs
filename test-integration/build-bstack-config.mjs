@@ -17,7 +17,6 @@ export function buildBrowserStackConfig() {
     debug: true,
     consoleLogs: 'verbose',
     networkLogs: true,
-    accessibility: false,
     parallelsPerPlatform: 1,
     browserstackLocal: true,
     browserStackLocalOptions: {
@@ -39,11 +38,11 @@ export function buildBrowserStackConfig() {
         osVersion: 11,
         browserVersion: 'latest',
       },
-      // Firefox on Windows 11
+      // Firefox on Windows 10
       {
         browserName: 'Firefox',
         os: 'Windows',
-        osVersion: 11,
+        osVersion: 10,
         browserVersion: 'latest',
       },
       // IE 11 on Windows 10

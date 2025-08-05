@@ -120,12 +120,16 @@ describe('ravelinjs.track', () => {
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
 
+    const sessionId = (await driver.getSession()).getId();
+
     // Note: Safari fails to register shortcuts when using `sendKeys` directly
     // so we need to manually manage the key presses instead.
     if (platform.browserName.toLowerCase() === 'safari') {
+      console.log(`Debug: Pasting into input with ID ${sessionId} in Safari`, platform);
       await inTracked.click();
       await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
     } else {
+      console.log(`Debug: Pasting into input with ID ${sessionId}`, platform);
       await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
     }
 
@@ -184,7 +188,12 @@ describe('ravelinjs.track', () => {
 
     // Resize the window smaller
     const r1 = await window.getRect();
-    await window.setRect({ width: r1.width - 10, height: r1.height - 10 });
+
+    try {
+      await window.setRect({ width: r1.width - 10, height: r1.height - 10 });
+    } catch {
+      // Handle unsupported platforms after checking the size again
+    }
 
     const r2 = await window.getRect();
 

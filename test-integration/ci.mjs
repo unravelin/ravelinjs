@@ -1,3 +1,5 @@
+import { setTimeout } from 'node:timers/promises';
+
 /**
  * @param {string[]} logs
  * @returns {Promise<void>}
@@ -23,6 +25,10 @@ export async function updateCommitStatus(logs) {
     }
 
     console.log('Fetching BrowserStack build summary…');
+
+    // Wait 2 seconds to give BrowserStack some time to log the build
+    await setTimeout(2000);
+
     const url = getBuildUrl(logs);
 
     if (!url) {
