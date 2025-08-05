@@ -59,6 +59,8 @@ describe('ravelinjs.track', () => {
     expect(sessionIdCookie).to.be.an('object');
     expect(deviceIdCookie).to.be.an('object');
 
+    // Remove the device ID prefix from the session ID cookie value.
+    // E.g. `rjs-abc:xyz` becomes `xyz`
     sessionId = sessionIdCookie.value.replace(/^.+?:/, '');
     deviceId = deviceIdCookie.value;
 
@@ -120,21 +122,37 @@ describe('ravelinjs.track', () => {
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
 
-    const sessionId = (await driver.getSession()).getId();
-
     // Note: Safari fails to register shortcuts when using `sendKeys` directly
     // so we need to manually manage the key presses instead.
     if (platform.browserName.toLowerCase() === 'safari') {
-      console.log(`Debug: Pasting into input with ID ${sessionId} in Safari`, platform);
+      // Move mouse to the input and click it
+      await driver.actions().move({ origin: inTracked }).perform();
       await inTracked.click();
       await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
     } else {
-      console.log(`Debug: Pasting into input with ID ${sessionId}`, platform);
+      await inTracked.click();
       await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
     }
 
     // Check if the paste worked
-    const pastedValue = await inTracked.getAttribute('value');
+    let pastedValue = await inTracked.getAttribute('value');
+
+    // Try one more time
+    if (pastedValue === '') {
+      await inTracked.clear();
+
+      if (platform.browserName.toLowerCase() === 'safari') {
+        // Move mouse to the input and click it
+        await driver.actions().move({ origin: inTracked }).perform();
+        await inTracked.click();
+        await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
+      } else {
+        await inTracked.click();
+        await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
+      }
+    }
+
+    pastedValue = await inTracked.getAttribute('value');
     if (pastedValue === '') {
       throw new Error('Failed to paste value into input, got empty string.');
     }
