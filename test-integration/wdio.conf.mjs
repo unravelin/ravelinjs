@@ -6,6 +6,7 @@ import { startServer, stopServer } from './server.mjs';
 
 chai.use(chaiSubset);
 
+// Supress error `BrowserStackLocal: --import is not allowed in NODE_OPTIONS`
 process.env.NODE_OPTIONS = '';
 
 function buildConfig() {
@@ -21,7 +22,10 @@ function buildConfig() {
     maxInstancesPerCapability: 10,
     injectGlobals: false,
     framework: 'mocha',
-    specs: [path.join(import.meta.dirname, '/send/*.spec.mjs')],
+    specs: [
+      path.join(import.meta.dirname, '/send/*.spec.mjs'),
+      path.join(import.meta.dirname, '/encrypt/*.spec.mjs'),
+    ],
     services: [
       [RavelinJsServerLauncher, {}],
       [
@@ -30,6 +34,7 @@ function buildConfig() {
           projectName: 'ravelinjs',
           buildName: gitBranchName,
           buildIdentifier: buildId,
+          buildTag: gitBranchName,
           browserstackLocal: true,
           opts: {
             kill: true,
@@ -43,7 +48,7 @@ function buildConfig() {
             buildName: gitBranchName,
             buildIdentifier: buildId,
             projectName: 'ravelinjs',
-            buildTag: 'Any build tag goes here. For e.g. ["Tag1","Tag2"]',
+            buildTag: gitBranchName,
           },
         },
       ],
@@ -109,6 +114,10 @@ function buildConfig() {
     ],
     commonCapabilities: {
       'bstack:options': {
+        projectName: 'ravelinjs',
+        buildName: gitBranchName,
+        buildIdentifier: buildId,
+        buildTag: gitBranchName,
         debug: 'true',
         networkLogs: 'true',
         consoleLogs: 'verbose',
