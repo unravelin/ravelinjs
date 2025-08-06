@@ -2,6 +2,7 @@ import chai from 'chai';
 import chaiSubset from 'chai-subset';
 import { execSync } from 'child_process';
 import path from 'path';
+import { GitHubStatus } from './ci-wdio.mjs';
 import { startServer, stopServer } from './server.mjs';
 
 chai.use(chaiSubset);
@@ -9,7 +10,10 @@ chai.use(chaiSubset);
 // Supress error `BrowserStackLocal: --import is not allowed in NODE_OPTIONS`
 process.env.NODE_OPTIONS = '';
 
+console.log('Debug: running wdio.conf.mjs');
+
 function buildConfig() {
+  console.log('Debug: buildConfig called');
   const gitBranchName = generateBuildName();
   const buildId = generateBuildId();
 
@@ -20,6 +24,7 @@ function buildConfig() {
     hostname: 'hub.browserstack.com',
     maxInstances: 5,
     maxInstancesPerCapability: 10,
+    logLevel: 'info',
     injectGlobals: false,
     framework: 'mocha',
     specs: [
@@ -52,8 +57,10 @@ function buildConfig() {
           },
         },
       ],
+      [GitHubStatus, {}],
     ],
     capabilities: [
+      // Chrome on Windows 11
       {
         browserName: 'Chrome',
         'bstack:options': {
@@ -62,6 +69,7 @@ function buildConfig() {
           osVersion: '11',
         },
       },
+      // Edge on Windows 11
       {
         browserName: 'Edge',
         'bstack:options': {
@@ -69,7 +77,12 @@ function buildConfig() {
           os: 'Windows',
           osVersion: '11',
         },
+        'se:ieOptions': {
+          // Potential fix for IE11 not sending modifier keys correctly
+          nativeEvents: false,
+        },
       },
+      // Firefox on Windows 10
       {
         browserName: 'Firefox',
         'bstack:options': {
@@ -78,15 +91,18 @@ function buildConfig() {
           osVersion: '10',
         },
       },
+      // IE 11 on Windows 10
       {
         browserName: 'IE',
         'bstack:options': {
           browserVersion: '11.0',
           os: 'Windows',
           osVersion: '10',
+          // https://browserstack.com/docs/automate/selenium/using-sendkeys-on-remote-IE11
           sendKeys: true,
         },
       },
+      // Safari on macOS Sequoia (2024)
       {
         browserName: 'Safari',
         'bstack:options': {
@@ -95,6 +111,7 @@ function buildConfig() {
           osVersion: 'Sequoia',
         },
       },
+      // Safari on iOS 17 (2024)
       {
         browserName: 'safari',
         'bstack:options': {
@@ -103,6 +120,7 @@ function buildConfig() {
           osVersion: '17',
         },
       },
+      // Chrome on Android 13 (2022)
       {
         browserName: 'chrome',
         'bstack:options': {
@@ -125,13 +143,12 @@ function buildConfig() {
     },
   };
 
+  // Merge common capabilities into each capability
   config.capabilities.forEach((caps) => {
     for (let i in config.commonCapabilities) {
       caps[i] = { ...caps[i], ...config.commonCapabilities[i] };
     }
   });
-
-  console.log(JSON.stringify(config, null, 2));
 
   return config;
 }
