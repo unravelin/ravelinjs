@@ -1,26 +1,27 @@
 import { expect } from 'chai';
-import { By } from 'selenium-webdriver';
+// import { By } from 'selenium-webdriver';
+import { $, browser } from '@wdio/globals';
 import {
-  buildDriver,
+  // buildDriver,
   buildUrl,
   fetchRequestLog,
   hasElement,
   hasTitle,
   hasURL,
   navigate,
-} from '../utils.mjs';
+} from '../utils-wdio.mjs';
 
 describe('ravelinjs.core.send', () => {
   /** @type {import('selenium-webdriver').WebDriver} */
-  let driver;
+  // let driver;
 
-  before(() => {
-    driver = buildDriver();
-  });
+  // before(() => {
+  //   driver = buildDriver();
+  // });
 
-  after(async () => {
-    await driver.quit();
-  });
+  // after(async () => {
+  //   await driver.quit();
+  // });
 
   it('sends to paths', async () => {
     // http://bs-local.com:3000/send/ -> /z/
@@ -40,10 +41,11 @@ describe('ravelinjs.core.send', () => {
   });
 
   async function runTest(api, msg) {
-    const key = (await driver.getSession()).getId();
+    // const key = (await driver.getSession()).getId();
+    const key = browser.sessionId;
 
     // Visit `${base}/send/?api=${api}&key=${key}&msg=${msg}`.
-    await navigate(driver, {
+    await navigate({
       url: buildUrl({ path: '/send', queryParams: { api, key, msg } }),
       tests: [
         // Confirm the page has loaded.
@@ -56,14 +58,16 @@ describe('ravelinjs.core.send', () => {
     });
 
     // Check whether the browser reported any errors.
-    const error = await driver.findElement(By.id('error'));
+    // const error = await driver.findElement(By.id('error'));
+    // const errorText = await error.getText();
+    const error = await $('#error');
     const errorText = await error.getText();
     if (errorText) {
       throw new Error(`Error in test: ${errorText}`);
     }
 
     // Confirm that a request to /z was received with the expected value.
-    const req = await fetchRequestLog(driver, {
+    const req = await fetchRequestLog({
       path: '/z',
       query: { key },
       'bodyJSON.msg': { $eq: msg },
@@ -72,7 +76,9 @@ describe('ravelinjs.core.send', () => {
     expect(req).to.be.an('object');
 
     // Warn if it took several attempts to send.
-    const output = await driver.findElement(By.id('output'));
+    // const output = await driver.findElement(By.id('output'));
+    // const outputText = await output.getText();
+    const output = await $('#output');
     const outputText = await output.getText();
     if (outputText) {
       try {
