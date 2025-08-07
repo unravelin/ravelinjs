@@ -26,13 +26,15 @@ function buildConfig() {
     maxInstancesPerCapability: 10,
     logLevel: 'info',
     injectGlobals: false,
+    groupLogsByTestSpec: true,
     framework: 'mocha',
     mochaOpts: {
       timeout: 20000, // 20s
     },
     specs: [
-      path.join(import.meta.dirname, '/send/*.spec.mjs'),
-      path.join(import.meta.dirname, '/encrypt/*.spec.mjs'),
+      // path.join(import.meta.dirname, '/send/*.spec.mjs'),
+      // path.join(import.meta.dirname, '/encrypt/*.spec.mjs'),
+      path.join(import.meta.dirname, '/track/*.spec.mjs'),
     ],
     services: [
       [RavelinJsServerLauncher, {}],

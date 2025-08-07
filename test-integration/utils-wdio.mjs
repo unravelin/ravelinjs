@@ -43,17 +43,20 @@ export async function navigate({ attempts, url, tests }) {
 
     try {
       for (const test of tests) {
-        await browser.waitUntil(async () => {
-          const result = await test();
-          if (typeof result === 'boolean') {
-            return result;
+        await browser.waitUntil(
+          async () => {
+            const result = await test();
+            if (typeof result === 'boolean') {
+              return result;
+            }
+            return true; // Test passed
+          },
+          {
+            timeout: 3000, // Wait up to 3s for each test
+            interval: 1000, // Check every second
+            timeoutMsg: `Presence test failed for session ${sessionId}`,
           }
-          return true; // Test passed
-        }, {
-          timeout: 3000, // Wait up to 3s for each test
-          interval: 1000, // Check every second
-          timeoutMsg: `Presence test failed for session ${sessionId}`,
-        });
+        );
       }
       return;
     } catch (e) {

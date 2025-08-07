@@ -39,7 +39,8 @@ describe('ravelinjs.encrypt', () => {
     if (process.env.E2E_NAME_ON_CARD) {
       // const nameInput = await driver.findElement(By.id('name'));
       const nameInput = await $('#name');
-      await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
+      // await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
+      await nameInput.sendKeys([process.env.E2E_NAME_ON_CARD]);
     }
 
     while (true) {
