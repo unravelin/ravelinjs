@@ -32,8 +32,8 @@ function buildConfig() {
       timeout: 20000, // 20s
     },
     specs: [
-      // path.join(import.meta.dirname, '/send/*.spec.mjs'),
-      // path.join(import.meta.dirname, '/encrypt/*.spec.mjs'),
+      path.join(import.meta.dirname, '/send/*.spec.mjs'),
+      path.join(import.meta.dirname, '/encrypt/*.spec.mjs'),
       path.join(import.meta.dirname, '/track/*.spec.mjs'),
     ],
     services: [
