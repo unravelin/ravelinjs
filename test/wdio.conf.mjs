@@ -1,8 +1,8 @@
 import path from 'path';
-import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
-import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } from './ci.mjs';
+import { GitHubService, browserstackPrivateURL, browserstackPublicURL, build } from './ci.mjs';
+import { app, launchProxy } from './server.mjs';
 
 /**
  * The hooks available to a service added to the config.
@@ -272,19 +272,19 @@ function buildConfig() {
       //   'browserName': 'Android'
       // },
       {
+        browserName: 'chrome',
         'bstack:options': {
-          'osVersion': '7.0',
-          'deviceName': 'Samsung Galaxy S8',
-          'realMobile': 'true',
+          deviceOrientation: 'portrait',
+          deviceName: 'Samsung Galaxy S23',
+          osVersion: '13.0',
         },
-        'browserName': 'Android'
       },
 
       // iOS
       {
         'browserName': 'iPhone',
         'bstack:options': {
-          'osVersion': '11',
+          'osVersion': '17',
           'deviceName': 'iPhone 8',
           'realMobile': 'true',
         },
@@ -292,7 +292,7 @@ function buildConfig() {
       {
         'browserName': 'iPhone',
         'bstack:options': {
-          'osVersion': '14',
+          'osVersion': '17',
           'deviceName': 'iPhone 11',
           'realMobile': 'true',
         },
