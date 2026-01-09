@@ -53,7 +53,7 @@ steps:
       - GITHUB_TOKEN
     args:
       - run
-      - test:int3
+      - test:int2
 
   - id: gcb2gh
     waitFor: ["-"]

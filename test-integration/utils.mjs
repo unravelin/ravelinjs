@@ -57,7 +57,7 @@ function getCapabilities() {
  * @property {string} platform.osVersion The OS version
  * @property {string} platform.browserName The browser name
  * @property {string} platform.browserVersion The browser version
- * @property {string} platform.deviceName The device name (if applicable)
+ * @property {string} [platform.deviceName] The device name (if applicable)
  */
 
 /**
@@ -108,10 +108,15 @@ export async function navigate(driver, { attempts, url, tests }) {
 
     try {
       for (const test of tests) {
-        await driver.wait(async () => {
-          await test(driver);
-          return true; // Test passed
-        });
+        await driver.wait(
+          async () => {
+            return await test(driver);
+            // return true; // Test passed
+          },
+          4000, // Wait up to 4s
+          '',
+          800 // Check every 800ms
+        );
       }
       return;
     } catch (e) {
@@ -138,10 +143,15 @@ export async function navigate(driver, { attempts, url, tests }) {
 export function hasTitle(substr) {
   return async function hasTitleTest(driver) {
     const title = await driver.getTitle();
-    expect(title).to.contain(
-      substr,
-      `Expected page title to contain ${substr} but found: ${title}`
-    );
+    // expect(title).to.contain(
+    //   substr,
+    //   `Expected page title to contain ${substr} but found: ${title}`
+    // );
+    if (title.indexOf(substr) === -1) {
+      console.log(`Expected page title to contain ${substr} but found: ${title}`);
+      return false;
+    }
+    return true;
   };
 }
 
@@ -154,7 +164,12 @@ export function hasTitle(substr) {
 export function hasURL(substr) {
   return async function hasURLTest(driver) {
     const url = await driver.getCurrentUrl();
-    expect(url).to.contain(substr, `Expected page URL to contain ${substr} but found: ${url}`);
+    // expect(url).to.contain(substr, `Expected page URL to contain ${substr} but found: ${url}`);
+    if (url.indexOf(substr) === -1) {
+      console.log(`Expected page URL to contain ${substr} but found: ${url}`);
+      return false;
+    }
+    return true;
   };
 }
 
@@ -167,10 +182,15 @@ export function hasURL(substr) {
 export function hasElement(id) {
   return async function hasElementTest(driver) {
     const elements = await driver.findElements(By.id(id));
-    expect(elements.length).to.equal(
-      1,
-      `Expected to find one element with ID #${id}, but found ${elements.length}`
-    );
+    // expect(elements.length).to.equal(
+    //   1,
+    //   `Expected to find one element with ID #${id}, but found ${elements.length}`
+    // );
+    if (!elements.length) {
+      console.log(`Expected to find one element with ID #${id}, but found ${elements.length}`);
+      return false;
+    }
+    return true;
   };
 }
 

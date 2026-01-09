@@ -1,33 +1,33 @@
-// import { By } from 'selenium-webdriver';
-import { $ } from '@wdio/globals';
-import { buildUrl, hasElement, hasTitle, navigate } from '../utils-wdio.mjs';
+import { By } from 'selenium-webdriver';
+// import { $ } from '@wdio/globals';
+import { buildDriver, buildUrl, hasElement, hasTitle, navigate } from '../utils.mjs';
 
 describe('ravelinjs.encrypt', () => {
   /** @type {import('selenium-webdriver').WebDriver} */
-  // let driver;
+  let driver;
 
-  // before(() => {
-  //   driver = buildDriver();
-  // });
+  before(() => {
+    driver = buildDriver();
+  });
 
-  // after(async () => {
-  //   await driver.quit();
-  // });
+  after(async () => {
+    await driver.quit();
+  });
 
   it('encrypts', async () => {
     // Visit `${base}/encrypt/?rsaKey=${rsaKey}`.
     const rsaKey = encodeURIComponent(process.env.E2E_RSA_KEY || '');
-    await navigate({
+    await navigate(driver, {
       url: buildUrl({ path: '/encrypt', queryParams: { rsaKey } }),
       tests: [hasTitle('encrypt'), hasElement('output')],
     });
 
-    // const enc = await driver.findElement(By.id('encrypt'));
-    // const err = await driver.findElement(By.id('error'));
-    // const out = await driver.findElement(By.id('output'));
-    const enc = await $('#encrypt');
-    const err = await $('#error');
-    const out = await $('#output');
+    const enc = await driver.findElement(By.id('encrypt'));
+    const err = await driver.findElement(By.id('error'));
+    const out = await driver.findElement(By.id('output'));
+    // const enc = await $('#encrypt');
+    // const err = await $('#error');
+    // const out = await $('#output');
 
     // Check whether the browser reported any errors.
     const initialErrorText = await err.getText();
@@ -37,10 +37,10 @@ describe('ravelinjs.encrypt', () => {
 
     // Fill in the form with test data if provided.
     if (process.env.E2E_NAME_ON_CARD) {
-      // const nameInput = await driver.findElement(By.id('name'));
-      const nameInput = await $('#name');
-      // await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
-      await nameInput.sendKeys([process.env.E2E_NAME_ON_CARD]);
+      const nameInput = await driver.findElement(By.id('name'));
+      // const nameInput = await $('#name');
+      await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
+      // await nameInput.sendKeys([process.env.E2E_NAME_ON_CARD]);
     }
 
     while (true) {
@@ -56,12 +56,12 @@ describe('ravelinjs.encrypt', () => {
         // pseudo-random number generator. Move the mouse between a few elements
         // to seed the generator.
         for (let i = 0; i < 20; i++) {
-          // await driver.actions().move({ origin: enc }).perform();
-          // await driver.actions().move({ origin: err }).perform();
-          // await driver.actions().move({ origin: out }).perform();
-          await enc.moveTo();
-          await err.moveTo();
-          await out.moveTo();
+          await driver.actions().move({ origin: enc }).perform();
+          await driver.actions().move({ origin: err }).perform();
+          await driver.actions().move({ origin: out }).perform();
+          // await enc.moveTo();
+          // await err.moveTo();
+          // await out.moveTo();
         }
         continue;
       }
