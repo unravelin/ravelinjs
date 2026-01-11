@@ -332,67 +332,66 @@ describe('ravelinjs.track', () => {
     });
   });
 
-  // it('sends resize events', async function () {
-  //   const platform = getCurrentPlatform();
-  //   const window = driver.manage().window();
+  it('sends resize events', async () => {
+    const platform = getCurrentPlatform();
+    const window = driver.manage().window();
 
-  //   // Resize the window smaller
-  //   const r1 = await window.getRect();
+    // Resize the window smaller
+    const r1 = await window.getRect();
 
-  //   try {
-  //     await window.setRect({ width: r1.width - 10, height: r1.height - 10 });
-  //   } catch {
-  //     // Handle unsupported platforms after checking the size again
-  //   }
+    try {
+      await window.setRect({ width: r1.width - 10, height: r1.height - 10 });
+    } catch {
+      // Handle unsupported platforms after checking the size again
+    }
 
-  //   const r2 = await window.getRect();
+    const r2 = await window.getRect();
 
-  //   // If no resize occurred
-  //   if (r1.width === r2.width && r1.height === r2.height) {
-  //     // Resize events are not supported on mobile devices, skip test
-  //     if (platform.deviceName) {
-  //       console.warn('Resize events are not supported on mobile devices, skipping test.');
-  //       this.skip();
-  //       return;
-  //     } else {
-  //       throw new Error('Resize event did not change window size.');
-  //     }
-  //   }
+    // If no resize occurred
+    if (r1.width === r2.width && r1.height === r2.height) {
+      // Resize events are not supported on mobile devices, skip test
+      if (platform.deviceName) {
+        console.log(`Resize events are not supported on ${platform.deviceName}, skipping test.`);
+        return;
+      } else {
+        throw new Error('Resize event did not change window size.');
+      }
+    }
 
-  //   // Wait for the resize event to be processed
-  //   await driver.sleep(100);
+    // Wait for the resize event to be processed
+    await driver.sleep(100);
 
-  //   // Validate that we got an event in the expected format
-  //   const resizeEvent = await fetchRequestLog(driver, {
-  //     path: '/z',
-  //     query: { key },
-  //     'bodyJSON.events': {
-  //       $elemMatch: {
-  //         eventType: 'resize',
-  //       },
-  //     },
-  //   });
+    // Validate that we got an event in the expected format
+    const resizeEvent = await fetchRequestLog(driver, {
+      path: '/z',
+      query: { key },
+      'bodyJSON.events': {
+        $elemMatch: {
+          eventType: 'resize',
+        },
+      },
+    });
 
-  //   expect(resizeEvent).to.exist;
-  //   expect(resizeEvent.bodyJSON.events).to.have.length(1);
-  //   expect(resizeEvent.bodyJSON.events[0]).to.containSubset({
-  //     eventType: 'resize',
-  //     eventData: {
-  //       eventName: 'resize',
-  //       properties: {
-  //         resolutionOld: { w: r1.width, h: r1.height },
-  //         resolutionNew: { w: r2.width, h: r2.height },
-  //       },
-  //     },
-  //     eventMeta: {
-  //       trackingSource: 'browser',
-  //       pageTitle: 'track test',
-  //       ravelinDeviceId: deviceId,
-  //       ravelinSessionId: sessionId,
-  //       // url: {"$regex": "^https?://.+/track/.*"},
-  //       // clientEventTimeMilliseconds: {"$gt": 1601315328222},
-  //       // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
-  //     },
-  //   });
-  // });
+    expect(resizeEvent).to.exist;
+    expect(resizeEvent.bodyJSON.events).to.have.length(1);
+    expect(resizeEvent.bodyJSON.events[0]).to.containSubset({
+      eventType: 'resize',
+      eventData: {
+        eventName: 'resize',
+        properties: {
+          resolutionOld: { w: r1.width, h: r1.height },
+          resolutionNew: { w: r2.width, h: r2.height },
+        },
+      },
+      eventMeta: {
+        trackingSource: 'browser',
+        pageTitle: 'track test',
+        ravelinDeviceId: deviceId,
+        ravelinSessionId: sessionId,
+        // url: {"$regex": "^https?://.+/track/.*"},
+        // clientEventTimeMilliseconds: {"$gt": 1601315328222},
+        // ravelinWindowId: {"$regex": "^[0-9a-z-]{36}$"}
+      },
+    });
+  });
 });

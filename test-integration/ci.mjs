@@ -95,7 +95,8 @@ async function getBuildSessions(user, key, buildId) {
     const data = await response.json();
     return data || [];
   } catch (err) {
-    throw new Error('Error fetching build sessions:', err);
+    console.error(err);
+    throw new Error(`Error fetching build sessions: ${err}`);
   }
 }
 
