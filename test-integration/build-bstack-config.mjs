@@ -46,14 +46,14 @@ export function buildBrowserStackConfig() {
         browserVersion: 'latest',
       },
       // IE 11 on Windows 10
-      {
-        os: 'Windows',
-        osVersion: 10,
-        browserName: 'IE',
-        browserVersion: '11.0',
-        // https://browserstack.com/docs/automate/selenium/using-sendkeys-on-remote-IE11
-        ie: { sendKeys: true },
-      },
+      // {
+      //   os: 'Windows',
+      //   osVersion: 10,
+      //   browserName: 'IE',
+      //   browserVersion: '11.0',
+      //   // https://browserstack.com/docs/automate/selenium/using-sendkeys-on-remote-IE11
+      //   ie: { sendKeys: true },
+      // },
       // Safari on macOS Sequoia (2024)
       {
         os: 'OS X',

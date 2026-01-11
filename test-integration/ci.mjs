@@ -82,7 +82,7 @@ export async function updateCommitStatus(logs) {
  * @returns {Promise<Object[]>}
  */
 async function getBuildSessions(user, key, buildId) {
-  const url = `https://api.browserstack.com/automate/builds/${buildId}/sessions.json`;
+  const url = `https://api.browserstack.com/automate/builds/${buildId}/sessions.json?limit=100`;
   const headers = {
     Authorization: 'Basic ' + Buffer.from(user + ':' + key).toString('base64'),
   };
