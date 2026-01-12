@@ -1,7 +1,5 @@
 import { expect } from 'chai';
 import { By, Key } from 'selenium-webdriver';
-// import { $, browser } from '@wdio/globals';
-// import { Key } from 'webdriverio';
 import {
   buildDriver,
   buildUrl,
@@ -27,10 +25,6 @@ describe('ravelinjs.track', () => {
     key = (await driver.getSession()).getId();
   });
 
-  // before(() => {
-  //   key = browser.sessionId;
-  // });
-
   after(async () => {
     await driver.quit();
   });
@@ -50,7 +44,6 @@ describe('ravelinjs.track', () => {
 
     // Check whether the browser reported any errors.
     const error = await driver.findElement(By.id('error'));
-    // const error = await $('#error');
     const errorText = await error.getText();
     if (errorText) {
       throw new Error(`Error in test: ${errorText}`);
@@ -59,7 +52,6 @@ describe('ravelinjs.track', () => {
 
   it('sends page-load events', async () => {
     const cookies = await driver.manage().getCookies();
-    // const cookies = await browser.getCookies();
 
     const sessionIdCookie = cookies.find((c) => c.name === 'ravelinSessionId');
     const deviceIdCookie = cookies.find((c) => c.name === 'ravelinDeviceId');
@@ -109,27 +101,15 @@ describe('ravelinjs.track', () => {
     const fakePAN = '4111 1111 1111 1111';
 
     const platform = getCurrentPlatform();
-    // const platform = browser.capabilities;
-
-    // console.log(`Debug platform: ${platform.platformName} - ${platform.browserName}`);
 
     const modifierKey = platform.os === 'OS X' ? Key.COMMAND : Key.CONTROL;
-    // const os = platform.platformName?.toLowerCase() || '';
-    // const modifierKey = os.includes('macos') || os.includes('ios') ? Key.Command : Key.Control;
 
     // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
-    // const clipStage = await $('#clip-stage');
 
     // Move mouse to the input and click it
     await clipStage.click();
     await clipStage.sendKeys(fakePAN);
-    // await clipStage.moveTo();
-    // await clipStage.click();
-    // await browser.keys(fakePAN);
-
-    // await browser.keys([Key.Ctrl, 'a']);
-    // await browser.keys([Key.Ctrl, 'c']);
 
     // Select all text and copy to clipboard.
     // Note: Safari fails to register shortcuts when using `sendKeys` directly
@@ -140,45 +120,18 @@ describe('ravelinjs.track', () => {
       await clipStage.click();
       await driver.actions().keyDown(modifierKey).sendKeys('a').keyUp(modifierKey).perform();
       await driver.actions().keyDown(modifierKey).sendKeys('c').keyUp(modifierKey).perform();
-
-      //   await browser
-      //     .action('key')
-      //     .down(modifierKey)
-      //     .down('a')
-      //     .pause(10)
-      //     .up('a')
-      //     .up(modifierKey)
-      //     .perform();
-      //   await browser
-      //     .action('key')
-      //     .down(modifierKey)
-      //     .down('c')
-      //     .pause(10)
-      //     .up('c')
-      //     .up(modifierKey)
-      //     .perform();
     } else {
       await clipStage.sendKeys(Key.chord(modifierKey, 'a'));
       await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
-
-      // await clipStage.sendKeys([modifierKey, 'a']);
-      // await clipStage.sendKeys([modifierKey, 'c']);
     }
 
     // Paste into <input name="name" id="in-pan" />
     const inTracked = await driver.findElement(By.id('in-pan'));
-    // const inTracked = await $('#in-pan');
 
     // Move mouse to the input and click it
-    // await inTracked.moveTo();
-    // await inTracked.click();
-
-    // await browser.keys([Key.Ctrl, 'v']);
-
-    // Note: Safari fails to register shortcuts when using `sendKeys` directly
-    // so we need to manually manage the key presses instead.
     if (platform.deviceName?.toLowerCase().includes('iphone')) {
-      console.log('iPhone detected, using execScript to paste text.');
+      // On iPhone we have to simulate the paste event via execScript
+      // as keyboard shortcuts do not work in Safari mobile.
       await driver.executeScript(
         (el, text) => {
           // Create the DataTransfer object to hold the clipboard data
@@ -201,42 +154,27 @@ describe('ravelinjs.track', () => {
         fakePAN
       );
     } else if (platform.browserName.toLowerCase() === 'safari') {
-      // Move mouse to the input and click it
-      // await driver.actions().move({ origin: inTracked }).perform();
+      // Note: Safari fails to register shortcuts when using `sendKeys` directly
+      // so we need to manually manage the key presses instead.
       await inTracked.click();
       await inTracked.sendKeys('');
       await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
-
-      //   await browser
-      //     .action('key')
-      //     .down(modifierKey)
-      //     .down('v')
-      //     .pause(10)
-      //     .up('v')
-      //     .up(modifierKey)
-      //     .perform();
     } else {
+      // Regular Ctrl+V paste for other browsers
       await inTracked.click();
       await inTracked.sendKeys('');
       await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
-
-      // await inTracked.sendKeys([modifierKey, 'v']);
     }
 
     // Check if the paste worked
     let pastedValue = await inTracked.getAttribute('value');
-    // let pastedValue = await inTracked.getValue();
 
     // Try one more time
     if (pastedValue === '') {
       console.log('Paste failed, trying again.', platform);
       await inTracked.clear();
-      // await inTracked.click();
-
-      // await browser.keys([Key.Ctrl, 'v']);
 
       if (platform.deviceName?.toLowerCase().includes('iphone')) {
-        console.log('iPhone detected, using execScript to paste text 2.');
         await driver.executeScript(
           (el, text) => {
             // Create the DataTransfer object to hold the clipboard data
@@ -259,29 +197,20 @@ describe('ravelinjs.track', () => {
           fakePAN
         );
       } else if (platform.browserName.toLowerCase() === 'safari') {
-        // Move mouse to the input and click it
-        // await driver.actions().move({ origin: inTracked }).perform();
+        // Note: Safari fails to register shortcuts when using `sendKeys` directly
+        // so we need to manually manage the key presses instead.
         await inTracked.click();
         await inTracked.sendKeys('');
         await driver.actions().keyDown(modifierKey).sendKeys('v').keyUp(modifierKey).perform();
-        // await browser
-        //   .action('key')
-        //   .down(modifierKey)
-        //   .down('v')
-        //   .pause(10)
-        //   .up('v')
-        //   .up(modifierKey)
-        //   .perform();
       } else {
+        // Regular Ctrl+V paste for other browsers
         await inTracked.click();
+        await inTracked.sendKeys('');
         await inTracked.sendKeys(Key.chord(modifierKey, 'v'));
-
-        // await inTracked.sendKeys([modifierKey, 'v']);
       }
     }
 
     pastedValue = await inTracked.getAttribute('value');
-    // pastedValue = await inTracked.getValue();
 
     if (pastedValue === '') {
       throw new Error('Failed to paste value into input, got empty string.');

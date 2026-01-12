@@ -1,5 +1,4 @@
 import { By } from 'selenium-webdriver';
-// import { $ } from '@wdio/globals';
 import { buildDriver, buildUrl, hasElement, hasTitle, navigate } from '../utils.mjs';
 
 describe('ravelinjs.encrypt', () => {
@@ -25,9 +24,6 @@ describe('ravelinjs.encrypt', () => {
     const enc = await driver.findElement(By.id('encrypt'));
     const err = await driver.findElement(By.id('error'));
     const out = await driver.findElement(By.id('output'));
-    // const enc = await $('#encrypt');
-    // const err = await $('#error');
-    // const out = await $('#output');
 
     // Check whether the browser reported any errors.
     const initialErrorText = await err.getText();
@@ -38,9 +34,7 @@ describe('ravelinjs.encrypt', () => {
     // Fill in the form with test data if provided.
     if (process.env.E2E_NAME_ON_CARD) {
       const nameInput = await driver.findElement(By.id('name'));
-      // const nameInput = await $('#name');
       await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
-      // await nameInput.sendKeys([process.env.E2E_NAME_ON_CARD]);
     }
 
     while (true) {
@@ -59,9 +53,6 @@ describe('ravelinjs.encrypt', () => {
           await driver.actions().move({ origin: enc }).perform();
           await driver.actions().move({ origin: err }).perform();
           await driver.actions().move({ origin: out }).perform();
-          // await enc.moveTo();
-          // await err.moveTo();
-          // await out.moveTo();
         }
         continue;
       }

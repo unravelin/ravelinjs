@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
-// import { $, browser } from '@wdio/globals';
 import {
   buildDriver,
   buildUrl,
@@ -42,7 +41,6 @@ describe('ravelinjs.core.send', () => {
 
   async function runTest(api, msg) {
     const key = (await driver.getSession()).getId();
-    // const key = browser.sessionId;
 
     // Visit `${base}/send/?api=${api}&key=${key}&msg=${msg}`.
     await navigate(driver, {
@@ -60,8 +58,6 @@ describe('ravelinjs.core.send', () => {
     // Check whether the browser reported any errors.
     const error = await driver.findElement(By.id('error'));
     const errorText = await error.getText();
-    // const error = await $('#error');
-    // const errorText = await error.getText();
     if (errorText) {
       throw new Error(`Error in test: ${errorText}`);
     }
@@ -78,8 +74,6 @@ describe('ravelinjs.core.send', () => {
     // Warn if it took several attempts to send.
     const output = await driver.findElement(By.id('output'));
     const outputText = await output.getText();
-    // const output = await $('#output');
-    // const outputText = await output.getText();
     if (outputText) {
       try {
         const stats = JSON.parse(outputText);
