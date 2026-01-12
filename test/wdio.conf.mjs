@@ -1,8 +1,8 @@
 import path from 'path';
-import { launchProxy, app } from './server.mjs';
 import { fileURLToPath } from 'url';
 import { SevereServiceError } from 'webdriverio';
-import { GitHubService, build, browserstackPublicURL, browserstackPrivateURL } from './ci.mjs';
+import { GitHubService, browserstackPrivateURL, browserstackPublicURL, build } from './ci.mjs';
+import { app, launchProxy } from './server.mjs';
 
 /**
  * The hooks available to a service added to the config.
@@ -273,8 +273,16 @@ function buildConfig() {
       // },
       {
         'bstack:options': {
-          'osVersion': '7.0',
-          'deviceName': 'Samsung Galaxy S8',
+          'osVersion': '9.0',
+          'deviceName': 'Samsung Galaxy S10',
+          'realMobile': 'true',
+        },
+        'browserName': 'Android'
+      },
+      {
+        'bstack:options': {
+          'osVersion': '11.0',
+          'deviceName': 'Google Pixel 5',
           'realMobile': 'true',
         },
         'browserName': 'Android'
@@ -284,24 +292,24 @@ function buildConfig() {
       {
         'browserName': 'iPhone',
         'bstack:options': {
-          'osVersion': '11',
-          'deviceName': 'iPhone 8',
-          'realMobile': 'true',
-        },
-      },
-      {
-        'browserName': 'iPhone',
-        'bstack:options': {
-          'osVersion': '14',
-          'deviceName': 'iPhone 11',
-          'realMobile': 'true',
-        },
-      },
-      {
-        'browserName': 'iPhone',
-        'bstack:options': {
           'osVersion': '17',
-          'deviceName': 'iPhone 15',
+          'deviceName': 'iPhone 12',
+          'realMobile': 'true',
+        },
+      },
+      {
+        'browserName': 'iPhone',
+        'bstack:options': {
+          'osVersion': '16',
+          'deviceName': 'iPhone SE 2020',
+          'realMobile': 'true',
+        },
+      },
+      {
+        'browserName': 'iPhone',
+        'bstack:options': {
+          'osVersion': '18',
+          'deviceName': 'iPhone 16 Pro Max',
           'realMobile': 'true',
         },
       },
@@ -336,7 +344,7 @@ function buildConfig() {
       // Safari.
       {
         'browserName': 'Safari',
-        'browserVersion': '13.0',
+        'browserVersion': '13.1',
         'bstack:options': {
           'os': 'OS X',
           'osVersion': 'Catalina',
