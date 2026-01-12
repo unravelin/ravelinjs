@@ -309,7 +309,7 @@ function buildConfig() {
         'browserName': 'iPhone',
         'bstack:options': {
           'osVersion': '18',
-          'deviceName': 'iPhone 16 Pro Max',
+          'deviceName': 'iPhone 16',
           'realMobile': 'true',
         },
       },
