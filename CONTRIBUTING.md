@@ -4,19 +4,19 @@ If you're looking to change some code in RavelinJS, read this first.
 
 ## Table of Contents
 
-* [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
-* [2. Use the expected Node.js v22.](#2-use-the-expected-nodejs-v22)
-* [3. Log into ngrok.](#3-log-into-ngrok)
-* [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
-* [5. Learn how to build & test.](#5-learn-how-to-build--test)
-* [6. Write IE-compatible code in ./lib.](#6-write-ie-compatible-code-in-lib)
-* [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
-* [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
-  * [Process](#process)
-* [9. New pull requests should target branch v2.](#9-new-pull-requests-should-target-branch-v2)
-* [10. Understand the file structure.](#10-understand-the-file-structure)
-* [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
-* [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
+- [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
+- [2. Use the expected Node.js v22.](#2-use-the-expected-nodejs-v22)
+- [3. Log into ngrok.](#3-log-into-ngrok)
+- [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
+- [5. Learn how to build & test.](#5-learn-how-to-build--test)
+- [6. Write IE-compatible code in ./lib.](#6-write-ie-compatible-code-in-lib)
+- [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
+- [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
+  - [Process](#process)
+- [9. New pull requests should target branch v2.](#9-new-pull-requests-should-target-branch-v2)
+- [10. Understand the file structure.](#10-understand-the-file-structure)
+- [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
+- [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
 
 ## 1. Familiarise yourself with the library.
 
@@ -53,19 +53,19 @@ CI will run all tests when a commit is pushed to GitHub, essentially:
 
 Locally, you'll be doing the following:
 
-* Edit code in ./lib.
-* Building code into the ./build directory with `npm run build`.
-* After building,
-  * Run unit tests locally with `npm run test:unit`.
-  * Authenticate with BrowserStack using `export BROWSERSTACK_USERNAME=x BROWSERSTACK_ACCESS_KEY=y`.
-  * Run integration tests with `npm run test:integration`.
-  * Run single integration tests with `npm run test:integration -- --spec example/example.spec.js`.
-* Release code into a versioned release directory with `npm run release`.
+- Edit code in ./lib.
+- Building code into the ./build directory with `npm run build`.
+- After building,
+  - Run unit tests locally with `npm run test:unit`.
+  - Authenticate with BrowserStack using `export BROWSERSTACK_USERNAME=x BROWSERSTACK_ACCESS_KEY=y`.
+  - Run integration tests with `npm run test:integration`.
+  - Run single integration tests with `npm run test:integration -- --spec example/example.spec.js`.
+- Release code into a versioned release directory with `npm run release`.
 
 There are auto-running commands:
 
-* `npm run build:watch` to auto-build when lib is changed; and
-* `npm run test:unit:watch` to auto-test when build is changed.
+- `npm run build:watch` to auto-build when lib is changed; and
+- `npm run test:unit:watch` to auto-test when build is changed.
 
 **`npm run watch`** will run these two commands together.
 
@@ -98,18 +98,18 @@ unit tests from an integration test (piggy-backing on the browser-spawning)
 which you can run with `npm run test:integration -- --spec
 test/unit/unit.spec.mjs` (see below for running integration tests).
 
-Running `test/server.mjs` will give you an ngrok URL through which you can access
+Running `test-integration/server-cli.mjs` will give you an ngrok URL through which you can access
 the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
 Unit tests run in the browser and therefore must be written in browser-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
-* `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
-* the [Mocha test framework](https://mochajs.org/);
-* [jQuery v3](https://api.jquery.com/) for simple DOM manipulation;
-* [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
-* [expect.js](https://www.npmjs.com/package/expect.js) for assertions.
+- `Ravelin` from the local `build/ravelin-core+track+encrypt+promise.min.js` (symlinked via `test-integration/ravelin.js`);
+- the [Mocha test framework](https://mochajs.org/);
+- [jQuery v3](https://api.jquery.com/) for simple DOM manipulation;
+- [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
+- [Chai](https://www.chaijs.com/) for assertions.
 
 ## 8. Use integration tests where necessary.
 
@@ -127,61 +127,45 @@ Before running integration tests you will need authentication credentials to
 connect to [BrowserStack](https://automate.browserstack.com/) which runs the
 browsers we test in. Ask for help from a Ravelin engineer.
 
-To run integration tests in test/\*/\*.spec.mjs:
+To run integration tests in `test-integration/**/*.spec.mjs`:
 
     export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
     npm install
-    LOG_LEVEL=warn PARALLEL=5 npm run test:integration
-
-Or optionally, only run unit tests on all IE:
-
-    BROWSERS=ie LOG_LEVEL=warn PARALLEL=5 npm run test:integration -- --spec test/unit/unit.spec.jms
-
-These environment variables can be used to configure what gets run:
-
-* `PARALLEL` (int) The number of tests that can be run simultaneously
-* `LOG_LEVEL` (debug|info|warn|error) The level of logs shown
-* `BROWSERS` (string) A comma-separated list of strings to search for in the
-  browser spec definitions, for example: `BROWSERS=safari,7`.
-* `LIMIT` (int) A maximum number of browsers to run tests on.
+    npm run test:integration
 
 ### Process
 
-Integration tests in test/\*/\*.spec.mjs run under
-[WebdriverIO](https://webdriver.io/) in Node using its `browser` to instruct a
-real browser run by BrowserStack to perform actions like navigation to URLs,
-clicking buttons, and pressing keys. The configuration lives in
-[test/wdio.conf.mjs](./test/wdio.conf.mjs) and the process is as follows:
+Integration tests in `test-integration/**/*.spec.mjs` run under
+[Selenium](https://www.selenium.dev/documentation/webdriver/) in Node using
+its `driver` to instruct a real browser run by BrowserStack to perform actions like navigating to URLs, clicking buttons, and pressing keys. The configuration
+lives in [test-integration/build-bstack-config.mjs](./test-integration/build-bstack-config.mjs) and the process is as follows:
 
 1. `npm run test:integration` is called by the user.
-2. `wdio test/wdio.conf.mjs` is invoked by npm.
-3. `test/server.mjs` is run in the background by wdio. This serves the files in
-   test and offers a fake API implementation at /z and /z/err, and a /requests
+2. `node ./test-integration/run.mjs` is invoked by npm.
+3. `test-integration/server.mjs` is run in the background. This serves the files
+   in test and offers a fake API implementation at `/z` and `/z/err`, and a `/requests`
    endpoint for introspecting what API requests have been made.
-4. A BrowserStack tunnel is pointed at `test/server.mjs`'s HTTP server. We use
-   this tunnel for default testing because there are no usage limits.
-5. An ngrok tunnel is pointed at `test/server.mjs`. This alternative tunnel
-   allows us to create cross-origin scenarios. Ngrok has limits on the number of
+4. An ngrok tunnel is pointed at our server. This allows us to create
+   cross-origin scenarios. Ngrok has limits on the number of
    clients that can connect so you may need to authenticate with `ngrok
-   authtoken`.
+authtoken`.
+5. At the same time, we launch the BrowserStack SDK which manages running our Mocha tests on the BrowserStack platform.
 6. For each spec test:
    1. For each browser:
-      1. wdio tells BrowserStack to launch the browser
-      2. wdio executes the spec test with `browser` connected to the
-         BrowserStack browser
-      3. `browser.url('/spec')` is called by the spec test to load pages over
-         the BrowserStack tunnel
-      4. `browser.url(process.env.TEST_REMOTE + '/spec')` is called by the
-         spec test to load pages over the ngrok tunnel
-7. wdio collects and reports on the results, finishing with an exit code of 1 if
-   any tests failed.
+      1. The BrowserStack SDK tells BrowserStack to launch the browser.
+      2. The BrowserStack SDK executes each Mocha test.
+      3. `driver.get('/spec/index.html')` is called by the spec test to load
+         pages over the BrowserStack tunnel.
+      4. The unit tests interact with the page and run assertions.
+7. The BrowserStack SDK collects and reports on the results, finishing with an
+   exit code of 1 if any tests failed.
 
 The utilities available to your spec tests depends on what you include in the
 HTML file you write for you test, but most will use:
 
-* `Ravelin` from build/ravelinjs-core+track+encrypt+promise.min.js (via symlink
-  test/ravelin.js)
-* Utilities in test/common.js, such as query-string parsing and error-sniffing.
+- `Ravelin` from `build/ravelinjs-core+track+encrypt+promise.min.js` (via symlink
+  `test-integration/ravelin.js`)
+- Utilities in `test-integration/browser-utils.js`, such as query-string parsing and error-sniffing.
 
 ## 9. New pull requests should target branch v2.
 
@@ -253,23 +237,23 @@ tl;dr: ./lib for real code; ./test for test code.
     │   ├── util.js
     │   └── version.js
     │
-    ├── test
-    │   │   ravelinjs unit and integration tests.
+    │   Integration tests
+    │   =================
+    │
+    │   Integration tests in */*.spec.js are run using selenium-webdriver
+    │   pointed at BrowserStack.
+    │   We have 4 test suites that each test a different part of RavelinJS.
+    │   These can be completely run using `npm run test:integration` or
+    │   `npm run test:integration -- --spec example/example.spec.js` to run
+    │   one example spec test.
+    │
+    ├── test-integration
     │   │
     │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
     │   │       A symlink to the working build referenced by tests and loaded into
     │   │       the browser with <script src=../ravelin.js></script>.
-    │   ├── common.js
-    │   │       In-browser helpers for the unit and integration tests.
-    │   │
-    │   │   Integration tests
-    │   │   =================
-    │   │
-    │   │   Integration tests in */*.spec.js are run using webdriver IO pointed at
-    │   │   BrowserStack. We have 4 test suites that each get run in parallel.
-    │   │   These can be completely run using `npm run test:integration` or
-    │   │   `npm run test:integration -- --spec example/example.spec.js` to run one
-    │   │   example spec test.
+    │   ├── browser-utils.js
+    │   │       In-browser helpers for integration tests.
     │   │
     │   ├── encrypt
     │   │   ├── encrypt.spec.mjs
@@ -281,13 +265,14 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   ├── index.html
     │   │   └── track.spec.mjs
     │   ├── unit
-    │   │   │   Runs the ./test/*.test.js mocha tests in-browser, similar to Karma.
+    │   │   │   Runs the ./test-unit/*.spec.js mocha tests in-browser, similar to Karma.
     │   │   ├── index.html
     │   │   └── unit.spec.mjs
     │   │
-    │   │── wdio.conf.mjs
-    │   │       Points webdriverio at the browsers and spec tests to run, and
-    │   │       configures the local test/server.js and BrowserStack tunnel.
+    │   │── build-bstack-config.mjs
+    │   │       Generates a browserstack.yml config file that the BrowserStack
+    │   │       SDK uses to know which OS and browser combinations to run,
+    │   │       and which branch and commit to associate with when running in CI.
     │   │
     │   ├── server.mjs
     │   │       An executable JS file which creates an express server listening on a
@@ -297,29 +282,31 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │       to ensure that the browser under their control made a certain HTTP
     │   │       request.
     │   │
-    │   ├── common.spec.mjs
+    │   ├── utils.mjs
     │   │       Helpers for node *.spec.mjs tests.
     │   ├── ci.mjs
-    │   │       Utilities used when running wdio.conf.mjs in CI, such as
-    │   │       updating GitHub with progress messages.
-    │   ├── style.css
-    │   │       Shared style for integration test pages.
-    │   │
-    │   │   Unit tests
-    │   │   ==========
-    │   │
-    │   │   test/*.test.js files are unit tests written using the Mocha framework.
-    │   │   They can be executed in a local browser using Karma with
-    │   │   `npm run test:unit` or continually with `npm run test:unit:watch`; or
-    │   │   in the integration test browsers with
-    │   │   `npm run test:integration -- --spec test/unit/unit.spec.js`
+    │   │       Updates GitHub commit CI status from the BrowserStack API.
+    │   └── style.css
+    │           Shared style for integration test pages.
+    │
+    │   Unit tests
+    │   ==========
+    │
+    │   test-unit/*.test.js files are unit tests written using the Mocha framework.
+    │   They can be executed in a local browser using Karma with
+    │   `npm run test:unit` or continually with `npm run test:unit:watch`; or
+    │   in the integration tests.
+    │
+    ├── test-integration
     │   │
     │   ├── core.test.js
     │   ├── encrypt.test.js
     │   ├── track.test.js
+    │   ├── utils.js
+    │   │       Helpers for unit tests.
     │   │
     │   └── karma.conf.js
-    │           Karma JS configuration for loading the *.test.js unit test files
+    │           Karma JS configuration for loading the *.spec.js unit test files
     │           into a browser and executing them.
     │
     │   Artifacts
@@ -375,15 +362,15 @@ which confirms the updates are valid by running `npm test`.
 
 Which for this project means:
 
-* Major version bumps: should never happen - there's no good reason to be making
+- Major version bumps: should never happen - there's no good reason to be making
   breaking changes yet.
-* Minor version bumps: should happen often - any time you add new features.
-* Patch version bumps: should not happen often - only when we fix a bug.
+- Minor version bumps: should happen often - any time you add new features.
+- Patch version bumps: should not happen often - only when we fix a bug.
 
 We publish new versions project to two places:
 
-* [GitHub releases](https://github.com/unravelin/ravelinjs/releases/); and
-* [npm](https://www.npmjs.com/package/ravelinjs).
+- [GitHub releases](https://github.com/unravelin/ravelinjs/releases/); and
+- [npm](https://www.npmjs.com/package/ravelinjs).
 
 New versions should be published after merging new features or bug fixes into
 the [v2](https://github.com/unravelin/ravelinjs/tree/v2/) branch, using [np (a
@@ -420,10 +407,10 @@ for you, including run `npm test` which will require that you have the
 
 The last four `[Preview]` steps when run without `--preview` will:
 
-* Update the version in package.json, then clean and rebuild the library.
-* Publish the contents of the `dist` directory as the npm package.
-* Create and push a version git tag.
-* Open the GitHub release page with some contents pre-filled.
+- Update the version in package.json, then clean and rebuild the library.
+- Publish the contents of the `dist` directory as the npm package.
+- Create and push a version git tag.
+- Open the GitHub release page with some contents pre-filled.
 
 The GitHub release should have New Features and/or Bug Fixes headings in the
 style of previous releases. Finally, you should run `npm run release` and drag

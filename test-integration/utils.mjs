@@ -1,5 +1,5 @@
 import bstackPkg from 'browserstack-node-sdk';
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import chaiSubset from 'chai-subset';
 import { Builder, By, Capabilities } from 'selenium-webdriver';
 
@@ -8,7 +8,7 @@ import { Builder, By, Capabilities } from 'selenium-webdriver';
 const { BrowserStackSdk } = bstackPkg;
 
 // Add the Chai subset plugin for partial object matching.
-// Once we remove support for IE11, we can remove this and upgrade Chai.
+// This was integrated into Chai in v5.2.0 but we are using v4.x.
 // https://github.com/chaijs/chai/pull/1664
 chai.use(chaiSubset);
 
@@ -143,10 +143,6 @@ export async function navigate(driver, { attempts, url, tests }) {
 export function hasTitle(substr) {
   return async function hasTitleTest(driver) {
     const title = await driver.getTitle();
-    // expect(title).to.contain(
-    //   substr,
-    //   `Expected page title to contain ${substr} but found: ${title}`
-    // );
     if (title.indexOf(substr) === -1) {
       console.log(`Expected page title to contain ${substr} but found: ${title}`);
       return false;
@@ -164,7 +160,6 @@ export function hasTitle(substr) {
 export function hasURL(substr) {
   return async function hasURLTest(driver) {
     const url = await driver.getCurrentUrl();
-    // expect(url).to.contain(substr, `Expected page URL to contain ${substr} but found: ${url}`);
     if (url.indexOf(substr) === -1) {
       console.log(`Expected page URL to contain ${substr} but found: ${url}`);
       return false;
@@ -182,10 +177,6 @@ export function hasURL(substr) {
 export function hasElement(id) {
   return async function hasElementTest(driver) {
     const elements = await driver.findElements(By.id(id));
-    // expect(elements.length).to.equal(
-    //   1,
-    //   `Expected to find one element with ID #${id}, but found ${elements.length}`
-    // );
     if (!elements.length) {
       console.log(`Expected to find one element with ID #${id}, but found ${elements.length}`);
       return false;
