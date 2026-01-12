@@ -34,7 +34,7 @@ function runTests(tunnelUrl) {
   return new Promise((resolve, reject) => {
     // Spawn a child process to run the BrowserStack SDK and test suite.
     // This is handled asynchronously to allow the server to run at the same time.
-    const p = spawn('npm', ['run', 'test:bs-sdk'], {
+    const p = spawn('npm', ['run', 'test:bstack-sdk'], {
       env: { ...process.env, TUNNEL_URL: tunnelUrl },
     });
 
