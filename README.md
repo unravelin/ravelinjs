@@ -167,10 +167,7 @@ contents using:
 
 ## Browser Compatibility
 
-RavelinJS v2 is [tested on IE11 and all newer browsers](test/wdio.conf.js).
-
-A Promise/A+ polyfill is required for Internet Explorer support. If you do not
-have one, or are not sure, then use a +promise ravelinjs bundle.
+RavelinJS v2 is [tested on recent versions of Chrome, Safari, Firefox, and mobile](/test-integration/build-bstack-config.mjs).
 
 ## Examples
 
@@ -487,11 +484,11 @@ opaque string.
 ### Upgrading to RavelinJS v2 from RavelinJS v1
 
 There are no breaking API changes between v1 and v2. This major version release
-was made to signify the end of our support for browsers IE8 to IE10. IE11
-continues to be supported. If you are unable to upgrade to v2 because you want
-to continue supporting any these browsers, please let us know.
+was made to signify the end of our support for Internet Explorer 8-11. If you are
+unable to upgrade to v2 because you want to continue supporting
+any these browsers, please let us know.
 
-If you don't care about IE8-IE10, just go ahead and upgrade.
+If you do not need to support IE8-IE11, just go ahead and upgrade.
 
 ### Upgrading to RavelinJS v2 from RavelinJS v0
 

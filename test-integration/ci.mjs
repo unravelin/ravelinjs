@@ -26,8 +26,8 @@ export async function updateCommitStatus(logs) {
 
     console.log('Fetching BrowserStack build summary…');
 
-    // Wait 2 seconds to give BrowserStack some time to log the build
-    await setTimeout(2000);
+    // Wait 5 seconds to give BrowserStack some time to log the build
+    await setTimeout(5000);
 
     const url = getBuildUrl(logs);
 

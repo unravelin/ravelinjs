@@ -37,31 +37,13 @@ describe('ravelinjs.encrypt', () => {
       await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
     }
 
-    while (true) {
-      // Submit the form.
-      await enc.click();
-      const errText = await err.getText();
+    // Submit the form.
+    await enc.click();
 
-      // Retry with a seeded generator, if necessary.
-      if (errText.indexOf('generator not ready') !== -1) {
-        console.log('Generator not seeded so jiggling the mouse a bit.');
-
-        // The browser needs some user actions as a source of entropy for the
-        // pseudo-random number generator. Move the mouse between a few elements
-        // to seed the generator.
-        for (let i = 0; i < 20; i++) {
-          await driver.actions().move({ origin: enc }).perform();
-          await driver.actions().move({ origin: err }).perform();
-          await driver.actions().move({ origin: out }).perform();
-        }
-        continue;
-      }
-
-      // Check if there was an error.
-      if (errText) {
-        throw new Error(errText);
-      }
-      break;
+    // Check if there was an error.
+    const errText = await err.getText();
+    if (errText) {
+      throw new Error(errText);
     }
 
     // Check the results look valid.

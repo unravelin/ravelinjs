@@ -228,12 +228,6 @@ describe('ravelinjs.track', () => {
       },
     });
 
-    // clipboardData is unavailable in IE 11, so RavelinJS returns nothing
-    const expectedValue =
-      platform.browserName.toLowerCase() === 'internet explorer'
-        ? undefined
-        : '0000 0000 0000 0000';
-
     expect(pasteEvent).to.exist;
     expect(pasteEvent.bodyJSON.events).to.have.length(1);
     expect(pasteEvent.bodyJSON.events[0]).to.containSubset({
@@ -244,7 +238,7 @@ describe('ravelinjs.track', () => {
           formName: 'cardForm',
           formAction: '/form-action',
           panCleaned: true,
-          pastedValue: expectedValue,
+          pastedValue: '0000 0000 0000 0000',
           selectionStart: 0,
           selectionEnd: 0,
         },

@@ -30,7 +30,7 @@ function isolate(cfg) {
 function keysMatch(req, key) {
   var i = req.url.indexOf('?');
   if (i === -1) return false;
-  return parseQuery(req.url.substr(i)).key === key;
+  return parseQuery(req.url.substring(i)).key == key;
 }
 
 /**

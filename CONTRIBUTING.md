@@ -102,7 +102,7 @@ Running `test/server.mjs` will give you an ngrok URL through which you can acces
 the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
-Unit tests run in the browser and therefore must be written in IE11-compatible
+Unit tests run in the browser and therefore must be written in browser-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
 * `Ravelin` from the local build/ravelin-core+track+encrypt+promise.min.js (symlinked via test/ravelin.js);
@@ -187,7 +187,7 @@ HTML file you write for you test, but most will use:
 
 The main branches of the ravelinjs repo follow their major semver version:
 [v2](https://github.com/unravelin/ravelinjs/tree/v2) (latest, default - largely
-the same as v1 but without IE8-10 support),
+the same as v1 but without IE8-11 support),
 [v1](https://github.com/unravelin/ravelinjs/tree/v1), and
 [v0](https://github.com/unravelin/ravelinjs/tree/v0).
 
