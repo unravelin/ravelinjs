@@ -308,8 +308,8 @@ function buildConfig() {
       {
         'browserName': 'iPhone',
         'bstack:options': {
-          'osVersion': '18',
-          'deviceName': 'iPhone 16',
+          'osVersion': '14',
+          'deviceName': 'iPad Air 4',
           'realMobile': 'true',
         },
       },
