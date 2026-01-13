@@ -92,7 +92,7 @@ export function startServer(done) {
     console.log(`Running at http://localhost:${port}`);
 
     // Start ngrok unless explicitly disabled
-    if (process.env.NGROK_ENABLED !== '0') {
+    if (process.env.NGROK_ENABLED !== 'false') {
       try {
         tunnel = await startTunnel(port);
       } catch (err) {

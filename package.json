@@ -27,6 +27,7 @@
     "test:unit": "karma start ./test-unit/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs",
+    "test:integration:local": "node ./test-integration/run-local.mjs './test-integration/**/*.spec.mjs'",
     "test:bstack-sdk": "browserstack-node-sdk mocha './test-integration/**/*.spec.mjs'",
     "update": "ncu -u -x rollup,rollup-*,@rollup/*",
     "md": "remark . -o",
@@ -44,6 +45,7 @@
     "chai": "4.5.0",
     "chai-subset": "1.6.0",
     "cors": "2.8.5",
+    "dotenv": "17.2.3",
     "express": "4.18.2",
     "jquery": "3.7.1",
     "jshint": "2.13.6",
@@ -73,7 +75,7 @@
     "contents": "./dist"
   },
   "mocha": {
-    "timeout": 5000
+    "timeout": 10000
   },
   "prettier": {
     "printWidth": 100,

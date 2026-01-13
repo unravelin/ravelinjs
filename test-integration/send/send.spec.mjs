@@ -29,7 +29,7 @@ describe('ravelinjs.core.send', () => {
 
   it('sends to samesite URLs', async () => {
     // http://bs-local.com:3000/send/ -> http://bs-local.com/z/
-    await runTest('http://bs-local.com/', 'samesite');
+    await runTest(process.env.LOCAL_URL || 'http://bs-local.com/', 'samesite');
   });
 
   it('sends to remote URLs', async () => {

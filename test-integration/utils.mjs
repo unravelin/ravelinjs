@@ -1,7 +1,8 @@
 import bstackPkg from 'browserstack-node-sdk';
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
-import { Builder, By, Capabilities } from 'selenium-webdriver';
+import { Browser, Builder, By, Capabilities } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome.js';
 
 /** @typedef {async (driver) => boolean} NavTest */
 
@@ -18,6 +19,14 @@ chai.use(chaiSubset);
  * @returns {import('selenium-webdriver').WebDriver} A new WebDriver instance.
  */
 export function buildDriver() {
+  if (process.env.LOCAL_BROWSER === 'true') {
+    // Use local headless chrome browser
+    const options = new chrome.Options();
+    options.addArguments('--headless=new');
+
+    return new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
+  }
+
   // http://localhost:4444/wd/hub connects to the Selenium server running on BrowserStack,
   // which acts as a proxy between our code and the browser-specific drivers.
   return new Builder()
@@ -64,6 +73,11 @@ function getCapabilities() {
  * @returns {Platform} The current platform information
  */
 export function getCurrentPlatform() {
+  if (process.env.LOCAL_BROWSER === 'true') {
+    // Assume Chrome on macOS, adjust as needed
+    return { browserName: 'chrome', os: 'OS X', osVersion: 'local' };
+  }
+
   return BrowserStackSdk.getCurrentPlatform();
 }
 
@@ -73,7 +87,7 @@ export function getCurrentPlatform() {
 export function buildUrl({ baseUrl, path, queryParams }) {
   // Default to the BrowserStack local URL which will
   // tunnel requests to our local server.
-  const url = new URL(path, baseUrl || 'http://bs-local.com:3000');
+  const url = new URL(path, baseUrl || process.env.LOCAL_URL || 'http://bs-local.com:3000');
 
   Object.keys(queryParams).forEach((key) => {
     if (queryParams[key] !== undefined) {

@@ -127,18 +127,19 @@ Before running integration tests you will need authentication credentials to
 connect to [BrowserStack](https://automate.browserstack.com/) which runs the
 browsers we test in. Ask for help from a Ravelin engineer.
 
-To run integration tests in `test-integration/**/*.spec.mjs`:
+To run integration tests locally in `test-integration/**/*.spec.mjs`:
 
-    export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x
+    export BROWSERSTACK_USERNAME=u BROWSERSTACK_ACCESS_KEY=x NGROK_AUTHTOKEN=t
     npm install
-    npm run test:integration
+    npm run test:integration:local
 
 ### Process
 
 Integration tests in `test-integration/**/*.spec.mjs` run under
 [Selenium](https://www.selenium.dev/documentation/webdriver/) in Node using
-its `driver` to instruct a real browser run by BrowserStack to perform actions like navigating to URLs, clicking buttons, and pressing keys. The configuration
-lives in [test-integration/build-bstack-config.mjs](./test-integration/build-bstack-config.mjs) and the process is as follows:
+its `driver` to instruct a real browser to perform actions like navigating to URLs, clicking buttons, and pressing keys.
+In CI, we use BrowserStack to run on multiple browsers and operating systems.
+The configuration lives in [test-integration/build-bstack-config.mjs](./test-integration/build-bstack-config.mjs) and the process is as follows:
 
 1. `npm run test:integration` is called by the user.
 2. `node ./test-integration/run.mjs` is invoked by npm.
@@ -147,8 +148,7 @@ lives in [test-integration/build-bstack-config.mjs](./test-integration/build-bst
    endpoint for introspecting what API requests have been made.
 4. An ngrok tunnel is pointed at our server. This allows us to create
    cross-origin scenarios. Ngrok has limits on the number of
-   clients that can connect so you may need to authenticate with `ngrok
-authtoken`.
+   clients that can connect so you may need to authenticate with `ngrok authtoken`.
 5. At the same time, we launch the BrowserStack SDK which manages running our Mocha tests on the BrowserStack platform.
 6. For each spec test:
    1. For each browser:
@@ -282,6 +282,12 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │       to ensure that the browser under their control made a certain HTTP
     │   │       request.
     │   │
+    │   ├── server-cli.mjs
+    │   │       Runs the test server standalone, outside of the test runner.
+    │   ├── run.mjs
+    │   │       Runs the test suite on BrowserStack.
+    │   ├── run-local.mjs
+    │   │       Runs the test suite locally on a single browser.
     │   ├── utils.mjs
     │   │       Helpers for node *.spec.mjs tests.
     │   ├── ci.mjs
