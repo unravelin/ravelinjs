@@ -78,7 +78,10 @@
     "contents": "./dist"
   },
   "mocha": {
-    "timeout": 5000
+    "timeout": 5000,
+    "reporterOptions": {
+      "output": "./results.json"
+    }
   },
   "prettier": {
     "printWidth": 100,
