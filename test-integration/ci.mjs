@@ -3,6 +3,8 @@
  * @returns {Promise<void>}
  */
 export async function updateCommitStatus(logs) {
+  let error = '';
+
   try {
     const user = process.env.BROWSERSTACK_USERNAME;
     const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -18,29 +20,31 @@ export async function updateCommitStatus(logs) {
       if (!ghToken) missingVars.push('GITHUB_TOKEN');
 
       const vars = missingVars.join(', ');
-      console.error(`Skipping updateCommitStatus due to missing env vars: ${vars}`);
-      return;
+      error = `Skipping updateCommitStatus due to missing env vars: ${vars}`;
     }
 
     console.log('Fetching BrowserStack build summary…');
 
     const url = getBuildUrl(logs);
-
-    if (!url) {
-      console.error('No valid BrowserStack build URL found in logs.');
-      return;
-    }
-
     const counts = getTestResults(logs);
 
-    if (!counts) {
-      console.error('No test results found in logs.');
+    if (!error && !url) {
+      error = 'No valid BrowserStack build URL found in logs.';
+    }
+
+    if (!error && !counts) {
+      error = 'No test results found in logs.';
+    }
+
+    if (error) {
+      console.error(error);
+      await postTestError(sha, ghToken, error);
       return;
     }
 
     console.log('Updating GitHub commit status…', counts);
 
-    await postGitHubStatus(sha, ghToken, counts, url.href);
+    await postTestResults(sha, ghToken, counts, url.href);
 
     console.log('GitHub commit status updated successfully.');
   } catch (err) {
@@ -102,7 +106,7 @@ function getTestResults(logs) {
  * @param {string} url
  * @returns {Promise<void>}
  */
-async function postGitHubStatus(commitSHA, token, counts, url) {
+async function postTestResults(commitSHA, token, counts, url) {
   const status = {
     state: counts.failed > 0 ? 'failure' : 'success',
     target_url: url,
@@ -110,6 +114,32 @@ async function postGitHubStatus(commitSHA, token, counts, url) {
     context: 'browserstack',
   };
 
+  await postGitHubStatus(commitSHA, token, status);
+}
+
+/**
+ * @param {string} commitSHA
+ * @param {string} token
+ * @param {string} error
+ * @returns {Promise<void>}
+ */
+async function postTestError(commitSHA, token, error) {
+  const status = {
+    state: 'failure',
+    description: `Error: ${error}`,
+    context: 'browserstack',
+  };
+
+  await postGitHubStatus(commitSHA, token, status);
+}
+
+/**
+ * @param {string} commitSHA
+ * @param {string} token
+ * @param {{ state: string, target_url?: string, description: string, context: string }} status
+ * @returns {Promise<void>}
+ */
+async function postGitHubStatus(commitSHA, token, status) {
   const res = await fetch(
     `https://api.github.com/repos/unravelin/ravelinjs/statuses/${commitSHA}`,
     {
