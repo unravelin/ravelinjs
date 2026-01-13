@@ -1,5 +1,3 @@
-import { setTimeout } from 'node:timers/promises';
-
 /**
  * @param {string[]} logs
  * @returns {Promise<void>}
@@ -20,14 +18,11 @@ export async function updateCommitStatus(logs) {
       if (!ghToken) missingVars.push('GITHUB_TOKEN');
 
       const vars = missingVars.join(', ');
-      console.error(`Skipping postBuildSummary due to missing env vars: ${vars}`);
+      console.error(`Skipping updateCommitStatus due to missing env vars: ${vars}`);
       return;
     }
 
     console.log('Fetching BrowserStack build summary…');
-
-    // Wait 5 seconds to give BrowserStack some time to log the build
-    await setTimeout(5000);
 
     const url = getBuildUrl(logs);
 
@@ -36,34 +31,12 @@ export async function updateCommitStatus(logs) {
       return;
     }
 
-    // Extract the build ID from the end of the URL. Assumes the URL
-    // is in the format: https://automate.browserstack.com/dashboard/v2/builds/:id
-    const buildId = url.pathname.split('/').pop();
+    const counts = getTestResults(logs);
 
-    if (!buildId) {
-      console.error('No build ID found in the URL:', url.href);
+    if (!counts) {
+      console.error('No test results found in logs.');
       return;
     }
-
-    const sessions = await getBuildSessions(user, key, buildId);
-
-    if (!sessions || sessions.length === 0) {
-      console.error('No sessions found for the build.');
-      return;
-    }
-
-    // Count the number of pass/fail sessions
-    const counts = sessions.reduce(
-      (acc, session) => {
-        if (session.automation_session.status === 'passed') {
-          acc.passed++;
-        } else if (session.automation_session.status === 'failed') {
-          acc.failed++;
-        }
-        return acc;
-      },
-      { passed: 0, failed: 0 }
-    );
 
     console.log('Updating GitHub commit status…', counts);
 
@@ -72,31 +45,6 @@ export async function updateCommitStatus(logs) {
     console.log('GitHub commit status updated successfully.');
   } catch (err) {
     console.error(err);
-  }
-}
-
-/**
- * @param {string} user
- * @param {string} key
- * @param {string} buildId
- * @returns {Promise<Object[]>}
- */
-async function getBuildSessions(user, key, buildId) {
-  const url = `https://api.browserstack.com/automate/builds/${buildId}/sessions.json?limit=100`;
-  const headers = {
-    Authorization: 'Basic ' + Buffer.from(user + ':' + key).toString('base64'),
-  };
-
-  try {
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      throw new Error(`HTTP error, status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data || [];
-  } catch (err) {
-    console.error(err);
-    throw new Error(`Error fetching build sessions: ${err}`);
   }
 }
 
@@ -121,6 +69,28 @@ function getBuildUrl(logs) {
           console.error('Invalid URL found in logs:', matches[0]);
         }
       }
+    }
+  }
+}
+
+/**
+ * @param {string[]} logs
+ * @returns {{ passed: number, failed: number } | undefined}
+ */
+function getTestResults(logs) {
+  // Regex to match test report like: "Tests: 6 failed, 4 passed, 10 total"
+  const regex = /Tests:\s*(?:(\d+) failed, )?(?:(\d+) passed, )?(\d+) total/;
+
+  // Search in reverse order because results are logged at the end of the build process
+  for (let i = logs.length - 1; i >= 0; i--) {
+    const log = logs[i];
+    const matches = log.match(regex);
+
+    if (matches) {
+      const failed = matches[1] ? parseInt(matches[1], 10) : 0;
+      const passed = matches[2] ? parseInt(matches[2], 10) : 0;
+
+      return { passed, failed };
     }
   }
 }
