@@ -61,7 +61,6 @@ typings/
 # dotenv environment variables file
 .env
 
-ravelin.min.js
 *.min.js
 *.sri
 cipher.txt
@@ -72,6 +71,6 @@ dist/
 releases/
 build
 .vscode
-.env
+.eslintcache
 browserstack.err
 browserstack.yml
