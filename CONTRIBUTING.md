@@ -9,14 +9,13 @@ If you're looking to change some code in RavelinJS, read this first.
 - [3. Log into ngrok.](#3-log-into-ngrok)
 - [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
 - [5. Learn how to build & test.](#5-learn-how-to-build--test)
-- [6. Write IE-compatible code in ./lib.](#6-write-ie-compatible-code-in-lib)
-- [7. Prefer testing in unit tests.](#7-prefer-testing-in-unit-tests)
-- [8. Use integration tests where necessary.](#8-use-integration-tests-where-necessary)
+- [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
+- [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
   - [Process](#process)
-- [9. New pull requests should target branch v2.](#9-new-pull-requests-should-target-branch-v2)
-- [10. Understand the file structure.](#10-understand-the-file-structure)
-- [11. Keep Dependencies Up-to-Date](#11-keep-dependencies-up-to-date)
-- [12. Publish new versions according to semantic versioning.](#12-publish-new-versions-according-to-semantic-versioning)
+- [8. New pull requests should target branch v2.](#8-new-pull-requests-should-target-branch-v2)
+- [9. Understand the file structure.](#9-understand-the-file-structure)
+- [10. Keep Dependencies Up-to-Date](#10-keep-dependencies-up-to-date)
+- [11. Publish new versions according to semantic versioning.](#11-publish-new-versions-according-to-semantic-versioning)
 
 ## 1. Familiarise yourself with the library.
 
@@ -69,23 +68,7 @@ There are auto-running commands:
 
 **`npm run watch`** will run these two commands together.
 
-## 6. Write IE-compatible code in ./lib.
-
-There is no transpilation in the ravelinjs build except for the resolution of
-ES6-style imports handled by Rollup and minification handled by Terser, so this
-code is ES3 at most - and IE is missing some features (below). Code written in
-lib/\*\*.js is essentially executed as-is.
-
-When it comes to writing this "old" style of JavaScript, don't try to do any
-clever object instantiation or class definitions and you'll be fine. No versions
-of IE come with a native Promise, so use lib/core#Core.Promise -- limited to
-[Promise/A+](https://promisesaplus.com/) by using [yaku.aplus
-Promise](https://github.com/ysmood/yaku) in our polyfill bundle, so instead of
-handling rejections with `p.catch(function(err) { ... })`, use
-`p.then(undefined, function(err) { ... })`. Some IEs don't have
-Function.prototype.bind so use lib/util#bind.
-
-## 7. Prefer testing in unit tests.
+## 6. Prefer testing in unit tests.
 
 Unit tests in the test/\*.test.js files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
@@ -111,7 +94,7 @@ JavaScript, as with code in the lib. The tests have access to:
 - [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
 - [Chai](https://www.chaijs.com/) for assertions.
 
-## 8. Use integration tests where necessary.
+## 7. Use integration tests where necessary.
 
 Integration tests help us test scenarios that unit tests cannot cover: where we
 want to test that real HTTP requests are made in various same/cross-origin
@@ -167,7 +150,7 @@ HTML file you write for you test, but most will use:
   `test-integration/ravelin.js`)
 - Utilities in `test-integration/browser-utils.js`, such as query-string parsing and error-sniffing.
 
-## 9. New pull requests should target branch v2.
+## 8. New pull requests should target branch v2.
 
 The main branches of the ravelinjs repo follow their major semver version:
 [v2](https://github.com/unravelin/ravelinjs/tree/v2) (latest, default - largely
@@ -180,7 +163,7 @@ version branch and open a pull request re-targeting that branch. PRs are
 reviewed by many factors: test coverage, browser-compatibility,
 privacy-sensitivity, backwards-compatibility, filesize,
 
-## 10. Understand the file structure.
+## 9. Understand the file structure.
 
 tl;dr: ./lib for real code; ./test for test code.
 
@@ -356,7 +339,7 @@ tl;dr: ./lib for real code; ./test for test code.
             ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js
             └── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js.map
 
-## 11. Keep Dependencies Up-to-Date
+## 10. Keep Dependencies Up-to-Date
 
 Dependabot is configured on the repository to ping us when there are updates to
 run. Sometimes these can come thick and fast. If you want to bundle them all
@@ -364,7 +347,7 @@ together, you can run `npm run update` in a fresh branch of your own which will
 install all available updates. This uses [`ncu --doctor`](https://www.npmjs.com/package/npm-check-updates#doctor-mode)
 which confirms the updates are valid by running `npm test`.
 
-## 12. Publish new versions according to [semantic versioning](https://semver.org/).
+## 11. Publish new versions according to [semantic versioning](https://semver.org/).
 
 Which for this project means:
 

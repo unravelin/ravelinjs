@@ -45,11 +45,6 @@ function getCapabilities() {
     case 'chrome':
     case 'samsung':
       return Capabilities.chrome();
-    case 'ie':
-      const ie = Capabilities.ie();
-      // Potential fix for IE11 not sending modifier keys correctly
-      ie.set('nativeEvents', false);
-      return ie;
     case 'edge':
       return Capabilities.edge();
     case 'firefox':
