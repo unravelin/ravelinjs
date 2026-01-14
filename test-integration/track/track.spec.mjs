@@ -132,6 +132,7 @@ describe('ravelinjs.track', () => {
     if (platform.deviceName?.toLowerCase().includes('iphone')) {
       // On iPhone we have to simulate the paste event via execScript
       // as keyboard shortcuts do not work in Safari mobile.
+      /* eslint-disable no-undef */
       await driver.executeScript(
         (el, text) => {
           // Create the DataTransfer object to hold the clipboard data
@@ -153,6 +154,7 @@ describe('ravelinjs.track', () => {
         inTracked,
         fakePAN
       );
+      /* eslint-enable no-undef */
     } else if (platform.browserName.toLowerCase() === 'safari') {
       // Note: Safari fails to register shortcuts when using `sendKeys` directly
       // so we need to manually manage the key presses instead.
@@ -175,6 +177,7 @@ describe('ravelinjs.track', () => {
       await inTracked.clear();
 
       if (platform.deviceName?.toLowerCase().includes('iphone')) {
+        /* eslint-disable no-undef */
         await driver.executeScript(
           (el, text) => {
             // Create the DataTransfer object to hold the clipboard data
@@ -196,6 +199,7 @@ describe('ravelinjs.track', () => {
           inTracked,
           fakePAN
         );
+        /* eslint-enable no-undef */
       } else if (platform.browserName.toLowerCase() === 'safari') {
         // Note: Safari fails to register shortcuts when using `sendKeys` directly
         // so we need to manually manage the key presses instead.

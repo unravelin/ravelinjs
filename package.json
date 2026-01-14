@@ -14,7 +14,7 @@
   },
   "scripts": {
     "watch": "run-p *:watch *:*:watch",
-    "lint": "eslint --max-warnings 0 --cache",
+    "lint": "eslint --max-warnings 0",
     "clean": "rm -rf build dist releases; mkdir build",
     "build": "rollup --config",
     "build:watch": "rollup --config --watch --no-watch.clearScreen",

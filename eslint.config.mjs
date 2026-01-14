@@ -1,6 +1,6 @@
 import js from '@eslint/js';
-import globals from 'globals';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
 
 export default defineConfig([
   // Ignore built and vendored files
@@ -38,9 +38,9 @@ export default defineConfig([
     plugins: { js },
     extends: ['js/recommended'],
   },
-  // Unit test globals
+  // Test globals
   {
-    files: ['test-unit/**/*.js'],
+    files: ['test-integration/**/*.mjs', 'test-unit/**/*.js'],
     languageOptions: {
       globals: {
         $: 'readonly',
@@ -56,6 +56,12 @@ export default defineConfig([
         Ravelin: 'readonly',
         xhook: 'readonly',
       },
+    },
+  },
+  {
+    rules: {
+      // Disable no-unused-vars before migrating to TypeScript
+      'no-unused-vars': 'off',
     },
   },
 ]);

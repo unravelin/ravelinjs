@@ -71,6 +71,5 @@ dist/
 releases/
 build
 .vscode
-.eslintcache
 browserstack.err
 browserstack.yml
