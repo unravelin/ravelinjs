@@ -7,7 +7,7 @@ If you're looking to change some code in RavelinJS, read this first.
 - [1. Familiarise yourself with the library.](#1-familiarise-yourself-with-the-library)
 - [2. Use the expected Node.js v22.](#2-use-the-expected-nodejs-v22)
 - [3. Log into ngrok.](#3-log-into-ngrok)
-- [4. Install a JSHint extention in your editor.](#4-install-a-jshint-extention-in-your-editor)
+- [4. Install an ESLint extension in your editor.](#4-install-an-eslint-extension-in-your-editor)
 - [5. Learn how to build & test.](#5-learn-how-to-build--test)
 - [6. Prefer testing in unit tests.](#6-prefer-testing-in-unit-tests)
 - [7. Use integration tests where necessary.](#7-use-integration-tests-where-necessary)
@@ -35,14 +35,14 @@ should find the package.json is already configured to use Node v22.
 2. Acquire your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken.
 3. Authenticate by setting the `NGROK_AUTHTOKEN` envvar (`export NGROK_AUTHTOKEN=x`).
 
-## 4. Install a JSHint extention in your editor.
+## 4. Install an ESLint extension in your editor.
 
 There are many .js files kicking around: some for use in the browser, some for
 use by Node.js. Some are config files, others are executable, some assume test
 frameworks are installed in the global scope.
 
-[JSHint has been configured](./.jshintrc) to know which files run where so that
-your editor can give you accurate errors and validation of a source file.
+[ESLint has been configured](./eslint.config.mjs) to know which files run where so that
+your editor can give you accurate errors and validation of source files.
 
 ## 5. Learn how to build & test.
 
