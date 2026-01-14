@@ -3,8 +3,6 @@
  * @returns {Promise<void>}
  */
 export async function updateCommitStatus(logs) {
-  let error = '';
-
   try {
     const user = process.env.BROWSERSTACK_USERNAME;
     const key = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -20,7 +18,8 @@ export async function updateCommitStatus(logs) {
       if (!ghToken) missingVars.push('GITHUB_TOKEN');
 
       const vars = missingVars.join(', ');
-      error = `Skipping updateCommitStatus due to missing env vars: ${vars}`;
+      console.error(`Skipping updateCommitStatus due to missing env vars: ${vars}`);
+      return;
     }
 
     console.log('Fetching BrowserStack build summary…');
@@ -28,13 +27,11 @@ export async function updateCommitStatus(logs) {
     const url = getBuildUrl(logs);
     const counts = getTestResults(logs);
 
-    if (!error && !url) {
-      error = 'No valid BrowserStack build URL found in logs.';
-    }
-
-    if (!error && !counts) {
-      error = 'No test results found in logs.';
-    }
+    const error = !url
+      ? 'No valid BrowserStack build URL found in logs.'
+      : !counts
+      ? 'No test results found in logs.'
+      : null;
 
     if (error) {
       console.error(error);
