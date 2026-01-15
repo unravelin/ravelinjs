@@ -70,16 +70,15 @@ There are auto-running commands:
 
 ## 6. Prefer testing in unit tests.
 
-Unit tests in the test/\*.test.js files have the benefit of running in a single
+Unit tests in the `test-unit/\*.spec.js` files have the benefit of running in a single
 page without needing server communication, so they're easy to run locally and
 very quick to run in CI. As a result, **attempt to write all new tests at unit
 tests**.
 
 You can run unit tests locally using `npm run test:unit` which spawns Chrome
-(optionally from the `CHROME_BIN` envvar) using Karma, but we also run these
-unit tests from an integration test (piggy-backing on the browser-spawning)
-which you can run with `npm run test:integration -- --spec
-test/unit/unit.spec.mjs` (see below for running integration tests).
+using Karma, but we also run these unit tests from an integration test
+(piggy-backing on the browser-spawning) which you can run with `npm run test:integration -- --spec
+test-integration/unit/unit.spec.mjs` (see below for running integration tests).
 
 Running `test-integration/server-cli.mjs` will give you an ngrok URL through which you can access
 the Mocha unit test page in any browser. Use this if you want to step through
@@ -286,11 +285,15 @@ tl;dr: ./lib for real code; ./test for test code.
     │   `npm run test:unit` or continually with `npm run test:unit:watch`; or
     │   in the integration tests.
     │
-    ├── test-integration
+    ├── test-unit
     │   │
-    │   ├── core.test.js
-    │   ├── encrypt.test.js
-    │   ├── track.test.js
+    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
+    │   │       A symlink to the working build referenced by tests and loaded into
+    │   │       the browser with <script src=../ravelin.js></script>.
+    │   │
+    │   ├── core.spec.js
+    │   ├── encrypt.spec.js
+    │   ├── track.spec.js
     │   ├── utils.js
     │   │       Helpers for unit tests.
     │   │
