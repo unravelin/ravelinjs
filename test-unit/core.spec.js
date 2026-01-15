@@ -275,7 +275,7 @@ describe('ravelin.core', function() {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
         expect(r.core.cookies.get('expiredDeviceId')).to.equal(id);
 
-        return new r.core.Promise(function(resolve) {
+        return new Promise(function(resolve) {
           setTimeout(resolve, 2000);
         }).then(function() {
           expect(r.core.cookies.get('expiredDeviceId')).to.equal(undefined);
