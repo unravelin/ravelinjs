@@ -27,6 +27,7 @@ function isolate(cfg) {
   return cfg;
 }
 
+// eslint-disable-next-line no-redeclare
 function keysMatch(req, key) {
   var i = req.url.indexOf('?');
   if (i === -1) return false;

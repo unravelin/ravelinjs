@@ -14,7 +14,7 @@
   },
   "scripts": {
     "watch": "run-p *:watch *:*:watch",
-    "lint": "jshint lib",
+    "lint": "eslint --max-warnings 0",
     "clean": "rm -rf build dist releases; mkdir build",
     "build": "rollup --config",
     "build:watch": "rollup --config --watch --no-watch.clearScreen",
@@ -36,6 +36,7 @@
     "version": "run-s clean build dist release # (note: auto-executed by np)"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.2",
     "@ngrok/ngrok": "1.7.0",
     "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-node-resolve": "13.3.0",
@@ -46,9 +47,10 @@
     "chai-subset": "1.6.0",
     "cors": "2.8.5",
     "dotenv": "17.2.3",
+    "eslint": "9.39.2",
     "express": "4.18.2",
+    "globals": "17.0.0",
     "jquery": "3.7.1",
-    "jshint": "2.13.6",
     "karma": "6.4.4",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "3.2.0",

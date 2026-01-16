@@ -589,7 +589,9 @@ function fakePasteEvent(type, content) {
       // Chrome.
       clipboardData: d
     });
-  } catch(e) {}
+  } catch(err) {
+    console.error(err);
+  }
 
   var e = document.createEvent('CustomEvent');
   e.initEvent('paste', true, true);
