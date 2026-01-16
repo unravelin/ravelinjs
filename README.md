@@ -50,11 +50,11 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v1).
 
 Add `https://*.ravelin.click` to your site's [Content-Security-Policy
 `connect-src`][csp-connect] directive. Get a copy of
-[ravelin-core+track+encrypt+promise.min.js on Github releases][releases] and
+[ravelin-core+track+encrypt.min.js on Github releases][releases] and
 instantiate your Ravelin instance on the page:
 
 ```html
-<script src="ravelin-core+track+encrypt+promise.min.js"></script>
+<script src="ravelin-core+track+encrypt.min.js"></script>
 <script>var ravelin = new Ravelin({key: 'publishable_key_...'})</script>
 ```
 
@@ -63,8 +63,8 @@ instantiate your Ravelin instance on the page:
 > import Ravelin for instantiating:
 >
 > ```js
-> import Ravelin from 'ravelinjs/core+track+encrypt+promise';
-> /* or */ const Ravelin = require('ravelinjs/core+track+encrypt+promise');
+> import Ravelin from 'ravelinjs/core+track+encrypt';
+> /* or */ const Ravelin = require('ravelinjs/core+track+encrypt');
 > var ravelin = new Ravelin({key: 'publishable_key_...'});
 > ```
 
@@ -87,7 +87,7 @@ Read on for more details.
 
 ## Bundles
 
-The quickstart suggests using `ravelin-core+track+encrypt+promise.min.js` which
+The quickstart suggests using `ravelin-core+track+encrypt.min.js` which
 contains all functionality offered by RavelinJS and is therefore the easiest to
 get started with but also the largest file. If you are not using all of the
 functionality of RavelinJS you can choose a bundle with only the components you
@@ -100,14 +100,11 @@ The components are:
 * **encrypt:** Cardholder data encryption with `ravelin.encrypt.card()`.
 * **track:** Automatically send page-load, resize and paste events, or manually
   with `ravelin.track.load()`.
-* **promise:** Provide a fallback Promise polyfill required for Internet
-  Explorer support. Optional if you already have your own polyfill or do not
-  want to support any version of Internet Explorer.
 
 The [release files][releases] indicate which components they include using a
 `+component` naming convention. For example, `ravelin-core+track.min.js`
 contains only the core and track components and so cannot be used to encrypt
-cards and doesn't guarantee Internet Explorer compatibility.
+cards.
 
 ### npm
 
@@ -254,12 +251,6 @@ var rav = new Ravelin({
      * who process card payments in iframes or WebViews.
      */
     // cookieSameSite: 'None;Secure',
-    /**
-     * @prop {PromiseConstructor} [Promise] An injectable Promise implementation
-     * to use. If not provided, defaults to window.Promise or a polyfill if the
-     * +promise component is included. Ravelin.Promise contains the default.
-     */
-    // Promise: window.Promise,
     /**
      * @prop {string} [rsaKey] The public key used to encrypt cardholder data.
      */
@@ -483,12 +474,36 @@ opaque string.
 
 ### Upgrading to RavelinJS v2 from RavelinJS v1
 
-There are no breaking API changes between v1 and v2. This major version release
-was made to signify the end of our support for Internet Explorer 8-11. If you are
-unable to upgrade to v2 because you want to continue supporting
-any these browsers, please let us know.
+This major version release was made to signify the end of our support for
+Internet Explorer 8-11. If you are unable to upgrade to v2 because you want
+to continue supporting any these browsers, please let us know.
 
 If you do not need to support IE8-IE11, just go ahead and upgrade.
+
+As support for IE8-IE11 has been dropped, so has the need to allow injecting a
+custom Promise to RavelinJS. As such, the +promise component has been dropped.
+If you are using this component, update references to remove it. ie
+
+```html
+<script src="ravelin-core+track+encrypt+promise.min.js"></script>
+```
+to
+```html
+<script src="ravelin-core+track+encrypt.min.js"></script>
+```
+
+and
+
+```js
+import Ravelin from 'ravelinjs/core+track+encrypt+promise';
+/* or */ const Ravelin = require('ravelinjs/core+track+encrypt+promise');
+```
+to
+```js
+import Ravelin from 'ravelinjs/core+track+encrypt';
+/* or */ const Ravelin = require('ravelinjs/core+track+encrypt');
+```
+
 
 ### Upgrading to RavelinJS v2 from RavelinJS v0
 
