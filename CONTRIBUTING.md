@@ -87,7 +87,7 @@ using a remote browser.
 Unit tests run in the browser and therefore must be written in browser-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
-- `Ravelin` from the local `build/ravelin-core+track+encrypt+promise.min.js` (symlinked via `test-integration/ravelin.js`);
+- `Ravelin` from the local `build/ravelin-core+track+encrypt.min.js` (symlinked via `test-integration/ravelin.js`);
 - the [Mocha test framework](https://mochajs.org/);
 - [jQuery v3](https://api.jquery.com/) for simple DOM manipulation;
 - [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
@@ -145,7 +145,7 @@ The configuration lives in [test-integration/build-bstack-config.mjs](./test-int
 The utilities available to your spec tests depends on what you include in the
 HTML file you write for you test, but most will use:
 
-- `Ravelin` from `build/ravelinjs-core+track+encrypt+promise.min.js` (via symlink
+- `Ravelin` from `build/ravelinjs-core+track+encrypt.min.js` (via symlink
   `test-integration/ravelin.js`)
 - Utilities in `test-integration/browser-utils.js`, such as query-string parsing and error-sniffing.
 
@@ -201,20 +201,15 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   │   Imports each component in the name from the parent directory.
     │   │   │
     │   │   ├── core+encrypt.js
-    │   │   ├── core+encrypt+promise.js
     │   │   ├── core.js
-    │   │   ├── core+promise.js
     │   │   ├── core+track+encrypt.js
-    │   │   ├── core+track+encrypt+promise.js
-    │   │   ├── core+track.js
-    │   │   └── core+track+promise.js
+    │   │   └── core+track.js
     │   │
     │   │   The implementation, imported into the bundles.
     │   ├── cookies.js
     │   ├── core.js
     │   ├── encryption-vendored.js
     │   ├── encrypt.js
-    │   ├── promise.js
     │   ├── track.js
     │   ├── util.js
     │   └── version.js
@@ -231,7 +226,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │
     ├── test-integration
     │   │
-    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
+    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt.min.js
     │   │       A symlink to the working build referenced by tests and loaded into
     │   │       the browser with <script src=../ravelin.js></script>.
     │   ├── browser-utils.js
@@ -287,7 +282,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │
     ├── test-unit
     │   │
-    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
+    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt.min.js
     │   │       A symlink to the working build referenced by tests and loaded into
     │   │       the browser with <script src=../ravelin.js></script>.
     │   │
@@ -311,12 +306,12 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   `npm run build:watch` from the files in ./lib/bundle. These files
     │   │   are copied into ./releases/ravelinjs-$vers before being published.
     │   │   The below example files are generated from
-    │   │   ./lib/bundle/core+track+encrypt+promise.js.
+    │   │   ./lib/bundle/core+track+encrypt.js.
     │   │
-    │   ├── ravelin-core+track+encrypt+promise.js
-    │   ├── ravelin-core+track+encrypt+promise.js.map
-    │   ├── ravelin-core+track+encrypt+promise.min.js
-    │   └── ravelin-core+track+encrypt+promise.min.js.map
+    │   ├── ravelin-core+track+encrypt.js
+    │   ├── ravelin-core+track+encrypt.js.map
+    │   ├── ravelin-core+track+encrypt.min.js
+    │   └── ravelin-core+track+encrypt.min.js.map
     │
     ├── dist
     │   │   ./dist contains the working release of the local code as a CommonJS
@@ -328,7 +323,6 @@ tl;dr: ./lib for real code; ./test for test code.
     │   ├── core.js
     │   ├── core+track.js
     │   ├── core+track+encrypt.js
-    │   ├── core+track+encrypt+promise.ks
     │   └── ...
     │
     └── releases
