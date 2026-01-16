@@ -1,6 +1,6 @@
-# ravelinjs
+# RavelinJS
 
-ravelinjs is a JavaScript library for the browser to augment your integration
+RavelinJS is a JavaScript library for the browser to augment your integration
 with:
 
 * an identifier for the customer's browser to be attached to an order (core);
@@ -13,13 +13,13 @@ a successful Ravelin integration.
 
 Please feel welcome to create issues or submit pull requests on [the
 project](https://github.com/unravelin/ravelinjs). The [Contribution
-Guidelines](https://github.com/unravelin/ravelinjs/blob/v1/CONTRIBUTING.md)
-detail how to write and test code for ravelinjs.
+Guidelines](https://github.com/unravelin/ravelinjs/blob/v2/CONTRIBUTING.md)
+detail how to write and test code for RavelinJS.
 
-Note that this documentation is for version 1 of ravelinjs. For version 0,
-please see its [usage guide](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v0/usage-guide/),
-[reference](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v0/reference/)
-and [source](https://github.com/unravelin/ravelinjs/tree/v0).
+Note that this documentation is for version 2 of RavelinJS. For version 1,
+please see its [usage guide](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1/usage-guide/),
+[reference](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1/reference/)
+and [source](https://github.com/unravelin/ravelinjs/tree/v1).
 
 ## Table of Contents
 
@@ -42,8 +42,9 @@ and [source](https://github.com/unravelin/ravelinjs/tree/v0).
   * [`ravelin.track.paste(event: ClipboardEvent)`](#ravelintrackpasteevent-clipboardevent)
 * [Vendored Code](#vendored-code)
 * [Upgrading](#upgrading)
-  * [Upgrading to ravelinjs v1 from ravelinjs v0](#upgrading-to-ravelinjs-v1-from-ravelinjs-v0)
-  * [Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v1-from-cdnravelinnet-script-snippet)
+  * [Upgrading to RavelinJS v2 from RavelinJS v1](#upgrading-to-ravelinjs-v2-from-ravelinjs-v1)
+  * [Upgrading to RavelinJS v2 from RavelinJS v0](#upgrading-to-ravelinjs-v2-from-ravelinjs-v0)
+  * [Upgrading to RavelinJS v2 from cdn.ravelin.net script snippet](#upgrading-to-ravelinjs-v2-from-cdnravelinnet-script-snippet)
 
 ## Quickstart
 
@@ -87,9 +88,9 @@ Read on for more details.
 ## Bundles
 
 The quickstart suggests using `ravelin-core+track+encrypt+promise.min.js` which
-contains all functionality offered by ravelinjs and is therefore the easiest to
+contains all functionality offered by RavelinJS and is therefore the easiest to
 get started with but also the largest file. If you are not using all of the
-functionality of ravelinjs you can choose a bundle with only the components you
+functionality of RavelinJS you can choose a bundle with only the components you
 need.
 
 The components are:
@@ -110,7 +111,7 @@ cards and doesn't guarantee Internet Explorer compatibility.
 
 ### npm
 
-If you have a JavaScript build system and would prefer to include ravelinjs
+If you have a JavaScript build system and would prefer to include RavelinJS
 using it, you can install [ravelinjs from
 npm](https://www.npmjs.com/package/ravelinjs) with:
 
@@ -118,7 +119,7 @@ npm](https://www.npmjs.com/package/ravelinjs) with:
 npm install ravelinjs@1
 ```
 
-You can then import the desired bundle within the ravelinjs library. For
+You can then import the desired bundle within the RavelinJS library. For
 example, to load the core+track bundle using `require` is:
 
 ```js
@@ -166,18 +167,7 @@ contents using:
 
 ## Browser Compatibility
 
-RavelinJS v1.0.0 is [tested on IE8-11 and all newer
-browsers](test/wdio.conf.mjs). We plan to drop support for IE8-IE10 soon, so
-please contact us if you still support these browsers.
-
-A Promise/A+ polyfill is required for Internet Explorer support. If you do not
-have one, or are not sure, then use a +promise ravelinjs bundle.
-
-Card encryption uses window.crypto where available, and otherwise falls back to
-a pseudo-random number generator which collects user movements and keypresses as
-a source of entropy. If insufficient events have been collected before
-encryption is attempted, an Error is thrown to prevent insecure transmission of
-cardholder data.
+RavelinJS v2 is [tested on recent versions of Chrome, Safari, Firefox, and mobile](/test-integration/build-bstack-config.mjs).
 
 ## Examples
 
@@ -439,12 +429,6 @@ var action = fetch('https://api.ravelin.com/v2/checkout?score=true', {
 });
 ```
 
-Note that [browsers which do not support
-`window.crypto`](https://caniuse.com/cryptography) (including IE8-IE10) rely on
-a pseudo-random number generator based on collecting user events from the page
-and that if this generator has not collected enough events it may throw an
-exception when trying to encrypt.
-
 ### `ravelin.track.load()`
 
 Send a page-load event. This is automatically triggered when Ravelin is
@@ -464,8 +448,7 @@ sent.
 ### `ravelin.track.paste(event: ClipboardEvent)`
 
 Send a paste event to Ravelin. This is done automatically if the paste happens
-in the same frame Ravelin is instantiated - except on IE8 which does not support
-paste-event listening at the document level.
+in the same frame Ravelin is instantiated.
 
 To correctly identify the paste contents you should annotate your forms with
 attributes:
@@ -494,11 +477,20 @@ it relies:
 ## Upgrading
 
 Note that the format of the deviceId was changed in v1 to include a "rjs-"
-prefix. If you do any validation or parsing that checks for a particular
-format of the deviceId, please [remove this logic](#deviceid-prefix) and
-instead treat the deviceId as an opaque string.
+prefix. If you do any validation or parsing that checks for a particular format
+of the deviceId, please remove this logic and instead treat the deviceId as an
+opaque string.
 
-### Upgrading to ravelinjs v1 from ravelinjs v0
+### Upgrading to RavelinJS v2 from RavelinJS v1
+
+There are no breaking API changes between v1 and v2. This major version release
+was made to signify the end of our support for Internet Explorer 8-11. If you are
+unable to upgrade to v2 because you want to continue supporting
+any these browsers, please let us know.
+
+If you do not need to support IE8-IE11, just go ahead and upgrade.
+
+### Upgrading to RavelinJS v2 from RavelinJS v0
 
 If you are using RavelinJS v0 from a script or loaded via npm then equivalent
 functionality is now covered by bundles  with the core+track+encrypt components.
@@ -525,7 +517,7 @@ the upgrade:
   [`ravelin.core.id()`][ravelin.core.id] to send the device via your server.
 * `ravelinjs.setOrderId(orderId)` → Removed.
 
-### Upgrading to ravelinjs v1 from cdn.ravelin.net script snippet
+### Upgrading to RavelinJS v2 from cdn.ravelin.net script snippet
 
 If you previously used a snippet such as
 

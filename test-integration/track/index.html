@@ -8,7 +8,7 @@
 <body>
   <h1>track test</h1>
 
-  <input id="clip-stage" onclick="this.select()" />
+  <input id="clip-stage" type="text" />
 
   <form name="cardForm" action="/form-action" method="POST">
     <fieldset>PAN:<br><input id="in-pan" name="name" type="text" data-rvn-pan /></fieldset>
@@ -19,7 +19,7 @@
   <h2>Output Error</h2>
   <pre id="error"></pre>
 
-  <script src="../common.js"></script>
+  <script src="../browser-utils.js"></script>
   <script src="../ravelin.js"></script>
   <script>
     run(function() {

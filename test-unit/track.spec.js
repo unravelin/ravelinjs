@@ -7,7 +7,9 @@ describe('ravelin.track', function() {
   // afterEach(cleanup) seems to invoke cleanup() after tests return, which is
   // before async tests actually complete.
   beforeEach(cleanup);
+
   after(cleanup);
+
   function cleanup() {
     xhook.destroy();
     if (r) {
@@ -27,9 +29,9 @@ describe('ravelin.track', function() {
           expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent.libVer).to.match(expectedVersion);
           expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED'});
-          expect(loadEvent.eventMeta.trackingSource).to.be('browser');
-          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.trackingSource).to.equal('browser');
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
@@ -48,9 +50,9 @@ describe('ravelin.track', function() {
           expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent.libVer).to.match(expectedVersion);
           expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED', properties: {section: 'test'}});
-          expect(loadEvent.eventMeta.trackingSource).to.be('browser');
-          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.trackingSource).to.equal('browser');
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
@@ -107,9 +109,9 @@ describe('ravelin.track', function() {
             expect(loadEvent).to.have.property('eventType', 'track');
             expect(loadEvent.libVer).to.match(expectedVersion);
             expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED', properties: {section: 'test'}});
-            expect(loadEvent.eventMeta.trackingSource).to.be('browser');
-            expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
-            expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+            expect(loadEvent.eventMeta.trackingSource).to.equal('browser');
+            expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
+            expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           }).then(done, done);
@@ -144,9 +146,9 @@ describe('ravelin.track', function() {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'resize');
           expect(event.libVer).to.match(expectedVersion);
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.trackingSource).to.equal('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
@@ -181,9 +183,9 @@ describe('ravelin.track', function() {
           expect(loadEvent).to.have.property('eventType', 'track');
           expect(loadEvent.libVer).to.match(expectedVersion);
           expect(loadEvent.eventData).to.eql({eventName: 'PAGE_LOADED', properties: {section: 'manually-invoked'}});
-          expect(loadEvent.eventMeta.trackingSource).to.be('browser');
-          expect(loadEvent.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(loadEvent.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(loadEvent.eventMeta.trackingSource).to.equal('browser');
+          expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
@@ -205,9 +207,9 @@ describe('ravelin.track', function() {
           expect(e).to.have.property('eventType', 'track');
           expect(e.libVer).to.match(expectedVersion);
           expect(e.eventData).to.eql({eventName: 'custom-event'});
-          expect(e.eventMeta.trackingSource).to.be('browser');
-          expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(e.eventMeta.trackingSource).to.equal('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(e.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(e.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
         return {status: 204};
@@ -226,9 +228,9 @@ describe('ravelin.track', function() {
           expect(e).to.have.property('eventType', 'track');
           expect(e.libVer).to.match(expectedVersion);
           expect(e.eventData).to.eql({eventName: 'custom-event', properties: {extra: true}});
-          expect(e.eventMeta.trackingSource).to.be('browser');
-          expect(e.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(e.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(e.eventMeta.trackingSource).to.equal('browser');
+          expect(e.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(e.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(e.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(e.eventMeta.timezoneOffset).to.be.a('number');
         }).then(done, done);
@@ -409,9 +411,9 @@ describe('ravelin.track', function() {
             event = event.events[0];
             expect(event).to.have.property('eventType', 'paste');
             expect(event.libVer).to.match(expectedVersion);
-            expect(event.eventMeta.trackingSource).to.be('browser');
-            expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
-            expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+            expect(event.eventMeta.trackingSource).to.equal('browser');
+            expect(event.eventMeta.ravelinDeviceId).to.equal(ids.device);
+            expect(event.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
             expect(event.eventMeta.timezoneOffset).to.be.a('number');
             expect(event.eventData).to.eql({
@@ -447,9 +449,9 @@ describe('ravelin.track', function() {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event.libVer).to.match(expectedVersion);
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.trackingSource).to.equal('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
@@ -489,9 +491,9 @@ describe('ravelin.track', function() {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event.libVer).to.match(expectedVersion);
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.trackingSource).to.equal('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
@@ -531,9 +533,9 @@ describe('ravelin.track', function() {
           event = event.events[0];
           expect(event).to.have.property('eventType', 'paste');
           expect(event.libVer).to.match(expectedVersion);
-          expect(event.eventMeta.trackingSource).to.be('browser');
-          expect(event.eventMeta.ravelinDeviceId).to.be(ids.device);
-          expect(event.eventMeta.ravelinSessionId).to.be(ids.session);
+          expect(event.eventMeta.trackingSource).to.equal('browser');
+          expect(event.eventMeta.ravelinDeviceId).to.equal(ids.device);
+          expect(event.eventMeta.ravelinSessionId).to.equal(ids.session);
           expect(event.eventMeta.incognitoDetected).to.be.a('boolean');
           expect(event.eventMeta.timezoneOffset).to.be.a('number');
           expect(event.eventData).to.eql({
@@ -626,7 +628,7 @@ function triggerResize(dw, dh) {
   var e;
   try {
     e = new Event('resize', {bubbles: true});
-  } catch(_) {
+  } catch {
     e = window.document.createEvent('UIEvents');
     e.initUIEvent('resize', true, false, window, 0);
   }

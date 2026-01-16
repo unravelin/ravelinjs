@@ -20,7 +20,7 @@ logsBucket: gs://ravelin-cloudbuild-logs
 options:
   logging: GCS_ONLY
   pool:
-    name: projects/ravelin-builds/locations/europe-west1/workerPools/highcpu-8-pool
+    name: projects/ravelin-builds/locations/europe-west1/workerPools/c3-highcpu-8
 
 steps:
   - id: install
@@ -38,8 +38,7 @@ steps:
 
   - id: browserstack
     name: $_NODE
-    waitFor:
-      - build
+    waitFor: ["build"]
     entrypoint: npm
     env:
       - PARALLEL=5

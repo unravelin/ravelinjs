@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mocha Tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <link rel="stylesheet" href="https://unpkg.com/mocha@2.5.3/mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <script src="https://unpkg.com/xhook@1.4.9/dist/xhook.js"></script>
+  <script src="https://unpkg.com/jquery@3.7.1/dist/jquery.js"></script>
+  <script src="https://unpkg.com/chai@3.5.0/chai.js"></script>
+  <script src="https://unpkg.com/mocha@2.5.3/mocha.js"></script>
+
+  <script class="mocha-init">
+    var expect = chai.expect;
+    // Ignore ret_nodes when checking leaks, a Selenium global that is not used in the tests.
+    mocha.setup({ ui: 'bdd', global: ['ret_nodes'] });
+    mocha.checkLeaks();
+  </script>
+
+  <script src="/ravelin.js"></script>
+  <script src="/test-unit/utils.js"></script>
+
+  <script src="/test-unit/core.spec.js"></script>
+  <script src="/test-unit/encrypt.spec.js"></script>
+  <script src="/test-unit/track.spec.js"></script>
+
+  <script>
+    // This after hook is added at the end as a sentinel so that the spec can tell
+    // the browser has finished executing the unit tests. Otherwise there's no
+    // indication of whether tests are still running.
+    after(function () {
+      // Summarise test failures for the integration test to report on.
+      var failures = testSummary('.test.fail');
+      if (failures) {
+        var out = document.getElementById('error');
+        out.appendChild(document.createTextNode(failures));
+      }
+
+      // Mark unit tests as completed.
+      document.body.id = 'completed';
+    });
+
+    /**
+     * testSummary returns a plain-text description of the tests matching the
+     * given selector, along with any of their errors.
+     * @param {string} selector
+     * @returns {string}
+     */
+    function testSummary(selector) {
+      return $(selector).map(function () {
+        var suite = $(this).parents('li.suite').map(function () {
+          return $(this).children("h1").text();
+        }).toArray().reverse().join(": ");
+        var state = this.className.match(/\bpass\b/) ? 'PASS: ' : 'FAIL: ';
+        var cond = (this.firstChild.innerText || this.firstChild.textContent).replace(/[\n ‣]+$/, '');
+        var error = $(this).find('pre.error').text().replace(/^\s+|\s+$/g, '').replace(/^/m, '    ');
+        return state + suite + (suite ? ': ' : '') + cond + (error ? "\n" + error : '');
+      }).toArray().join("\n")
+    }
+  </script>
+  <script class="mocha-exec">
+    mocha.run();
+  </script>
+
+  <pre id="error"></pre>
+</body>
+</html>
