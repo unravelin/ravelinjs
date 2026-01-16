@@ -476,13 +476,15 @@ opaque string.
 
 This major version release was made to signify the end of our support for
 Internet Explorer 8-11. If you are unable to upgrade to v2 because you want
-to continue supporting any these browsers, please let us know.
+to continue supporting any of these browsers, please let us know.
 
 If you do not need to support IE8-IE11, just go ahead and upgrade.
 
 As support for IE8-IE11 has been dropped, so has the need to allow injecting a
 custom Promise to RavelinJS. As such, the +promise component has been dropped.
-If you are using this component, update references to remove it. ie
+If you are using this component, update references to remove it.
+
+eg.
 
 ```html
 <script src="ravelin-core+track+encrypt+promise.min.js"></script>
