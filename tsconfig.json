@@ -1,0 +1,25 @@
+{
+  "include": ["lib-ts/**/*"],
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+    "target": "esnext",
+    "lib": ["es2024", "dom"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true
+  },
+  "exclude": [
+    "build",
+    "dist",
+    "releases",
+    "test-unit",
+    "test-integration",
+    "node_modules"
+  ]
+}
