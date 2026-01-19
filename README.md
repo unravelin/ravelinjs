@@ -154,7 +154,7 @@ if the integrity file reads:
 then your HTML becomes:
 
 ```html
-<script src="ravelin-1.0.0-rc1-core+promise.js" integrity="sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c">
+<script src="ravelin-1.0.0-rc1-core.js" integrity="sha384-8de9e022e2f67e2072bb114e670d2fb37cab8eaf81616bcc3951087aa473e62a8b9fcc4c780a8d8d09df55c8b63bfd7c">
 ```
 
 If the integrity file is next to the script in question, you can validate the

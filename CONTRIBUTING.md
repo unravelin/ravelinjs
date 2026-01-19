@@ -331,10 +331,10 @@ tl;dr: ./lib for real code; ./test for test code.
             │   files in ./build. `npm run build && npm run release` to make.
             │
             ├── integrity
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js.map
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js
-            └── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js.map
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.js
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.js.map
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.min.js
+            └── ravelin-1.0.0-rc1-core+track+encrypt.min.js.map
 
 ## 10. Keep Dependencies Up-to-Date
 
