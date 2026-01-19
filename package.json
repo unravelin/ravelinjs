@@ -68,7 +68,6 @@
     "rollup-plugin-terser": "7.0.2",
     "selenium-webdriver": "4.39.0",
     "xhook": "1.6.0",
-    "yaku": "1.0.1",
     "yaml": "2.8.0"
   },
   "np": {
@@ -100,8 +99,5 @@
   },
   "volta": {
     "node": "22.16.0"
-  },
-  "dependencies": {
-    "detectincognitojs": "1.6.2"
   }
 }
