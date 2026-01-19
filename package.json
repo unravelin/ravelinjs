@@ -99,5 +99,8 @@
   },
   "volta": {
     "node": "22.16.0"
+  },
+  "dependencies": {
+    "detectincognitojs": "1.6.2"
   }
 }
