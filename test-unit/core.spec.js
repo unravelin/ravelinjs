@@ -213,6 +213,45 @@ describe('ravelin.core', function() {
       });
     });
 
+    it('can be configured with a Promise', function() {
+              var cfg = isolate({
+        id: Promise.resolve('my-device-id'),
+      });
+      var r = new Ravelin(cfg);
+      return r.core.id().then(function(id) {
+        expect(id).to.equal('my-device-id');
+
+        // This is a different behaviour to 1.2, which would not set the cookie
+        // at all if an explicit `id` was given. So long as `id` continues to be
+        // set we will still use it. But if it's omitted anywhere, we can
+        // restore the cookie from here.
+        expect(r.core.cookies.get(cfg.cookie)).to.equal('my-device-id');
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs if empty', function() {
+      var r = new Ravelin(isolate({
+        cookie: 'id-empty-promise',
+        id: Promise.resolve(''),
+      }));
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+        expect(r.core.cookies.get('id-empty-promise')).to.equal(id);
+      });
+    });
+
+    it('can be configured with a Promise that falls back to built-in IDs upon errors', function() {
+      var r = new Ravelin(isolate({
+        cookie: 'id-error-promise',
+        id: Promise.reject('Something went wrong.'),
+      }));
+      return r.core.id().then(function(id) {
+        expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
+        expect(r.core.cookies.get('id-error-promise')).to.equal(id);
+      });
+    });
+
+
     it('returns IDs that expire after cookieExpiryDays', function() {
       this.timeout(4000);
       function msToDays(ms) { return ms / (86400 * 1000); }
