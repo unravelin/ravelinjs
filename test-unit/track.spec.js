@@ -1,20 +1,34 @@
 /* globals isolate */
+/* globals sinon */
+/* globals Track */
 var expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
 
 describe('ravelin.track', function() {
   var r;
+  var isInit;
 
   // afterEach(cleanup) seems to invoke cleanup() after tests return, which is
   // before async tests actually complete.
-  beforeEach(cleanup);
+  beforeEach(() => {
+    cleanup();
+    setup();
+  });
 
   after(cleanup);
+
+  function setup() {
+    window.detectIncognito = sinon.stub().returns(Promise.resolve({ isPrivate: false }));
+    isInit = true;
+  }
 
   function cleanup() {
     xhook.destroy();
     if (r) {
       r.track._detach();
       r = null;
+    }
+    if (isInit) {
+      window.detectIncognito.restore && window.detectIncognito.restore();
     }
   }
 
