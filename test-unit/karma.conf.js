@@ -1,5 +1,12 @@
 const fs = require('fs');
 
+if (!fs.existsSync('./certs/localhost.pem') || !fs.existsSync('./certs/localhost-key.pem')) {
+  console.error(
+    'SSL certificates not found. Please generate localhost.pem and localhost-key.pem in the certs directory.'
+  );
+  process.exit(1);
+}
+
 module.exports = function (config) {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)

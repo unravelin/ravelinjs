@@ -2,9 +2,11 @@ import 'dotenv/config';
 import { spawn } from 'child_process';
 import { buildBrowserStackConfig } from './build-bstack-config.mjs';
 import { updateCommitStatus } from './ci.mjs';
-import { startServer, stopServer } from './server.mjs';
+import { checkCertsExist, startServer, stopServer } from './server.mjs';
 
 const logs = [];
+
+checkCertsExist();
 
 buildBrowserStackConfig();
 

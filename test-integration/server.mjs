@@ -185,6 +185,15 @@ function getBasePath(req) {
   return new URL(req.originalUrl, `https://${req.headers.host}`).pathname;
 }
 
+export function checkCertsExist() {
+  if (!fs.existsSync('./certs/localhost.pem') || !fs.existsSync('./certs/localhost-key.pem')) {
+    console.error(
+      'SSL certificates not found. Please generate localhost.pem and localhost-key.pem in the certs directory.'
+    );
+    process.exit(1);
+  }
+}
+
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, stopping server');
   stopServer();
