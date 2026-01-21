@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { spawn } from 'child_process';
 import { buildBrowserStackConfig } from './build-bstack-config.mjs';
 import { updateCommitStatus } from './ci.mjs';

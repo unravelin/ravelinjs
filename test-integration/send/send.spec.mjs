@@ -23,19 +23,19 @@ describe('ravelinjs.core.send', () => {
   });
 
   it('sends to paths', async () => {
-    // http://bs-local.com:3000/send/ -> /z/
+    // https://bs-local.com:3000/send/ -> /z/
     await runTest('/', 'path');
   });
 
   it('sends to samesite URLs', async () => {
-    // http://bs-local.com:3000/send/ -> http://bs-local.com/z/
-    await runTest(process.env.LOCAL_URL || 'http://bs-local.com/', 'samesite');
+    // https://bs-local.com:3000/send/ -> https://bs-local.com/z/
+    await runTest(process.env.LOCAL_URL || 'https://bs-local.com:3000', 'samesite');
   });
 
   it('sends to remote URLs', async () => {
     console.log('Running remote test:', process.env.TUNNEL_URL);
 
-    // http://bs-local.com:3000/send/ -> https://....ngrok-free.app/
+    // https://bs-local.com:3000/send/ -> https://....ngrok-free.app/
     await runTest(process.env.TUNNEL_URL, 'remote');
   });
 

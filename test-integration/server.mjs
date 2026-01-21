@@ -1,5 +1,7 @@
 import cors from 'cors';
 import express from 'express';
+import fs from 'fs';
+import https from 'https';
 import mingo from 'mingo';
 import onFinished from 'on-finished';
 import path from 'path';
@@ -87,14 +89,24 @@ export function startServer(done) {
     }
   });
 
+  // Load HTTPS certificate
+  const options = {
+    key: fs.readFileSync('./certs/localhost-key.pem', 'utf8'),
+    cert: fs.readFileSync('./certs/localhost.pem', 'utf8'),
+  };
+
+  // Create HTTPS server
+  server = https.createServer(options, app);
+
   // Start the server and listen for incoming requests
-  server = app.listen(port, async () => {
-    console.log(`Running at http://localhost:${port}`);
+  server.listen(port, async () => {
+    const address = `https://localhost:${port}`;
+    console.log(`Running at ${address}`);
 
     // Start ngrok unless explicitly disabled
     if (process.env.NGROK_ENABLED !== 'false') {
       try {
-        tunnel = await startTunnel(port);
+        tunnel = await startTunnel(address);
       } catch (err) {
         // Exit and throw the error if ngrok fails to start
         await stopServer();
@@ -170,7 +182,7 @@ function maybeJSON(body) {
  * @returns {string}
  */
 function getBasePath(req) {
-  return new URL(req.originalUrl, `http://${req.headers.host}`).pathname;
+  return new URL(req.originalUrl, `https://${req.headers.host}`).pathname;
 }
 
 process.on('SIGTERM', () => {

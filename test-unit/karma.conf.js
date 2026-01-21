@@ -1,6 +1,7 @@
+const fs = require('fs');
+
 module.exports = function (config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '.',
 
@@ -28,6 +29,13 @@ module.exports = function (config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://www.npmjs.com/search?q=keywords:karma-reporter
     reporters: ['progress'],
+
+    // use HTTPS server
+    protocol: 'https:',
+    httpsServerOptions: {
+      key: fs.readFileSync('./certs/localhost-key.pem', 'utf8'),
+      cert: fs.readFileSync('./certs/localhost.pem', 'utf8'),
+    },
 
     // web server port
     port: 9876,
