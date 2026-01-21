@@ -192,6 +192,13 @@ export function checkCertsExist() {
     );
     process.exit(1);
   }
+  const rootCAPath = process.env.NODE_EXTRA_CA_CERTS;
+  if (rootCAPath && !fs.existsSync(rootCAPath)) {
+    console.error(
+      `NODE_EXTRA_CA_CERTS is set to '${rootCAPath}', but the file does not exist.`
+    );
+    process.exit(1);
+  }
 }
 
 process.on('SIGTERM', () => {

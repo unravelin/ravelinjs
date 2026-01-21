@@ -28,14 +28,16 @@ steps:
     name: $_NODE
     entrypoint: sh
     env:
-      - CAROOT=./certs
+      - CAROOT=/workspace/certs
     args:
       - '-c'
       - |
-        apk add --no-cache mkcert
+        mkdir ./certs
+        apk add mkcert --no-cache --repository=http://dl-cdn.alpinelinux.org/edge/testing/
         mkcert -install
         cd ./certs
         mkcert localhost
+        ls -al
 
   - id: install
     waitFor: ["-"]
@@ -62,7 +64,7 @@ steps:
       - COMMIT_SHA=$COMMIT_SHA
       - BUILD_ID=$BUILD_ID
       - HEAD_REPO_URL=$_HEAD_REPO_URL
-      - NODE_EXTRA_CA_CERTS=./certs/rootCA.pem
+      - NODE_EXTRA_CA_CERTS=/workspace/certs/rootCA.pem
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
