@@ -188,7 +188,7 @@ function getBasePath(req) {
 export function checkCertsExist() {
   if (!fs.existsSync('./certs/localhost.pem') || !fs.existsSync('./certs/localhost-key.pem')) {
     console.error(
-      'SSL certificates not found. Please generate localhost.pem and localhost-key.pem in the certs directory.'
+      'Certificates not found. Please generate localhost.pem and localhost-key.pem in the certs directory.'
     );
     process.exit(1);
   }

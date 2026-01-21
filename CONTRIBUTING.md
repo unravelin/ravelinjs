@@ -52,21 +52,26 @@ CI will run all tests when a commit is pushed to GitHub, essentially:
 
 Locally, you'll be doing the following:
 
-- Edit code in ./lib.
-- Building code into the ./build directory with `npm run build`.
+- Edit code in `./lib`.
+- Building code into the `./build` directory with `npm run build`.
 - After building,
   - Run unit tests locally with `npm run test:unit`.
-  - Authenticate with BrowserStack using `export BROWSERSTACK_USERNAME=x BROWSERSTACK_ACCESS_KEY=y`.
   - Run integration tests with `npm run test:integration`.
-  - Run single integration tests with `npm run test:integration -- --spec example/example.spec.js`.
 - Release code into a versioned release directory with `npm run release`.
 
 There are auto-running commands:
 
 - `npm run build:watch` to auto-build when lib is changed; and
 - `npm run test:unit:watch` to auto-test when build is changed.
+- `npm run watch` will run these two commands together.
 
-**`npm run watch`** will run these two commands together.
+In order to run both unit and integration tests, you'll need to create a local certificate to authenticate HTTPS requests on the test server.
+
+1. Install [mkcert](https://github.com/FiloSottile/mkcert).
+2. Create a `certs` directory at the root of the project and `cd` inside.
+3. Run `mkcert localhost` which will generate two `.pem` files used as the certificate for our test server and browser communication.
+4. Run `mkcert -CAROOT` and note down this path.
+4. While mkcert adds its local Certificate Authority (CA) to your system/browser trust store, Node.js uses its own hardcoded list of trusted CAs and ignores the system store. To solve this, set the `NODE_EXTRA_CA_CERTS` environment variable, either in a `.env` file or in your terminal, to `[CAROOT path]/rootCA.pem`. This allows Node fetch requests to trust our certificate. You must use an absolute path, not a relative path. The result might look like this example: `NODE_EXTRA_CA_CERTS=/Users/username/Library/Application Support/mkcert/rootCA.pem`.
 
 ## 6. Prefer testing in unit tests.
 

@@ -37,7 +37,6 @@ steps:
         mkcert -install
         cd ./certs
         mkcert localhost
-        ls -al
 
   - id: install
     waitFor: ["-"]
