@@ -214,7 +214,7 @@ describe('ravelin.core', function() {
     });
 
     it('can be configured with a Promise', function() {
-              var cfg = isolate({
+        var cfg = isolate({
         id: Promise.resolve('my-device-id'),
       });
       var r = new Ravelin(cfg);
