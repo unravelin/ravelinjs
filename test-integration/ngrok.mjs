@@ -21,7 +21,12 @@ export async function startTunnel(addr, maxRetries = 3) {
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const tunnel = await ngrok.forward({ addr, authtoken_from_env: true });
+      const tunnel = await ngrok.forward({
+        addr,
+        authtoken_from_env: true,
+        // Allow secure connections with our self-signed cert
+        verify_upstream_tls: false,
+      });
 
       console.log(`ngrok tunnel established at ${tunnel.url()}`);
 
