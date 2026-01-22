@@ -101,6 +101,7 @@
     "node": "22.16.0"
   },
   "dependencies": {
-    "detectincognitojs": "1.6.2"
+    "detectincognitojs": "1.6.2",
+    "@fingerprintjs/botd": "2.0.0"
   }
 }

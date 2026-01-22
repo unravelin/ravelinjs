@@ -61,7 +61,7 @@ glob.sync('lib/bundle/*.js')
   },
   {
     input: bundle,
-    external: ['detectincognitojs'],
+    external: ['detectincognitojs', '@fingerprintjs/botd'],
     output: {
       file: 'dist/' + basename(bundle),
       format: 'umd',
@@ -70,6 +70,7 @@ glob.sync('lib/bundle/*.js')
       exports: 'default',
       globals: {
         detectincognitojs: 'detectIncognito',
+        '@fingerprintjs/botd': 'load',
       },
 
       // Prevent Object.freeze being used for namespace references.
