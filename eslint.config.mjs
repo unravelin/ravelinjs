@@ -30,7 +30,7 @@ export default defineConfig([
   },
   // NodeJS modules
   {
-    files: ['test-integration/**/*.mjs', 'test-unit/**/*.mjs'],
+    files: ['test-integration/**/*.mjs', 'test-unit/**/*.mjs', 'test-unit/karma.conf.js'],
     languageOptions: {
       globals: globals.node,
       sourceType: 'module',

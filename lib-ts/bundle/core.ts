@@ -1,7 +1,9 @@
-import { Core } from '../core';
+import { Core, CoreConfig } from '../core';
 
-function Ravelin(cfg: object) {
-  this.core = new Core(cfg);
+export default class Ravelin {
+  public core: Core;
+
+  constructor(cfg: CoreConfig = {}) {
+    this.core = new Core(cfg);
+  }
 }
-
-export default Ravelin;

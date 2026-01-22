@@ -34,7 +34,7 @@ export class CookieJar {
    * Returns the value of the cookie of the given name, or undefined.
    * @param name The name of the cookie to retrieve.
    */
-  get(name: string): string | undefined {
+  public get(name: string): string | undefined {
     const cookies = document.cookie.split('; ');
     for (let i = cookies.length - 1; i >= 0; i--) {
       const x = cookies[i].split('=');
@@ -49,7 +49,7 @@ export class CookieJar {
    * Set a cookie on the given domain.
    * @param c The cookie options to set.
    */
-  set(c: CookieOptions) {
+  public set(c: CookieOptions) {
     const cook =
       c.name +
       '=' +
