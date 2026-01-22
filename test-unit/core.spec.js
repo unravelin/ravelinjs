@@ -214,7 +214,7 @@ describe('ravelin.core', function() {
     });
 
     it('can be configured with a Promise', function() {
-        var cfg = isolate({
+      var cfg = isolate({
         id: Promise.resolve('my-device-id'),
       });
       var r = new Ravelin(cfg);
@@ -250,7 +250,6 @@ describe('ravelin.core', function() {
         expect(r.core.cookies.get('id-error-promise')).to.equal(id);
       });
     });
-
 
     it('returns IDs that expire after cookieExpiryDays', function() {
       this.timeout(4000);

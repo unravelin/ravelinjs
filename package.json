@@ -70,6 +70,9 @@
     "xhook": "1.6.0",
     "yaml": "2.8.0"
   },
+  "dependencies": {
+    "detectincognitojs": "1.6.2"
+  },
   "np": {
     "yarn": false,
     "branch": "v2",
@@ -99,8 +102,5 @@
   },
   "volta": {
     "node": "22.16.0"
-  },
-  "dependencies": {
-    "detectincognitojs": "1.6.2"
   }
 }
