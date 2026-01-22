@@ -61,7 +61,7 @@ glob.sync('lib/bundle/*.js')
   },
   {
     input: bundle,
-    external: ['detectincognitojs'],
+    external: ['@fingerprintjs/botd', 'detectincognitojs'],
     output: {
       file: 'dist/' + basename(bundle),
       format: 'umd',
@@ -69,6 +69,7 @@ glob.sync('lib/bundle/*.js')
       esModule: false,
       exports: 'default',
       globals: {
+        '@fingerprintjs/botd': 'load',
         detectincognitojs: 'detectIncognito',
       },
 
