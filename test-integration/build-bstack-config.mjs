@@ -18,6 +18,8 @@ export function buildBrowserStackConfig() {
     consoleLogs: 'verbose',
     networkLogs: true,
     parallelsPerPlatform: 1,
+    // Allow HTTPS connections with our self-signed cert
+    acceptInsecureCerts: true,
     browserstackLocal: true,
     browserStackLocalOptions: {
       localProxyHost: 'localhost',

@@ -1,4 +1,5 @@
 import 'dotenv/config';
-import { startServer } from './server.mjs';
+import { checkCertsExist, startServer } from './server.mjs';
 
+checkCertsExist();
 startServer();

@@ -215,9 +215,7 @@ describe('ravelin.core', function() {
 
     it('can be configured with a Promise', function() {
       var cfg = isolate({
-        id: new Ravelin.Promise(function(resolve) {
-          resolve('my-device-id');
-        })
+        id: Promise.resolve('my-device-id'),
       });
       var r = new Ravelin(cfg);
       return r.core.id().then(function(id) {
@@ -234,9 +232,7 @@ describe('ravelin.core', function() {
     it('can be configured with a Promise that falls back to built-in IDs if empty', function() {
       var r = new Ravelin(isolate({
         cookie: 'id-empty-promise',
-        id: new Ravelin.Promise(function(resolve) {
-          resolve('');
-        })
+        id: Promise.resolve(''),
       }));
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
@@ -247,9 +243,7 @@ describe('ravelin.core', function() {
     it('can be configured with a Promise that falls back to built-in IDs upon errors', function() {
       var r = new Ravelin(isolate({
         cookie: 'id-error-promise',
-        id: new Ravelin.Promise(function(_, reject) {
-          reject('Something went wrong.');
-        })
+        id: Promise.reject('Something went wrong.'),
       }));
       return r.core.id().then(function(id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
@@ -275,7 +269,7 @@ describe('ravelin.core', function() {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
         expect(r.core.cookies.get('expiredDeviceId')).to.equal(id);
 
-        return new r.core.Promise(function(resolve) {
+        return new Promise(function(resolve) {
           setTimeout(resolve, 2000);
         }).then(function() {
           expect(r.core.cookies.get('expiredDeviceId')).to.equal(undefined);
@@ -364,7 +358,7 @@ describe('ravelin.core', function() {
         expect(document.cookie).to.not.match(/\bremoved-cookie=\b/);
 
         // Wait for the sync to reoccur..
-        return new Ravelin.Promise(function(resolve) {
+        return new Promise(function(resolve) {
           setTimeout(resolve, 300);
         }).then(function() {
           var r2 = new Ravelin(cfg);

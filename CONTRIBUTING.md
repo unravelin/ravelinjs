@@ -52,21 +52,26 @@ CI will run all tests when a commit is pushed to GitHub, essentially:
 
 Locally, you'll be doing the following:
 
-- Edit code in ./lib.
-- Building code into the ./build directory with `npm run build`.
+- Edit code in `./lib`.
+- Building code into the `./build` directory with `npm run build`.
 - After building,
   - Run unit tests locally with `npm run test:unit`.
-  - Authenticate with BrowserStack using `export BROWSERSTACK_USERNAME=x BROWSERSTACK_ACCESS_KEY=y`.
   - Run integration tests with `npm run test:integration`.
-  - Run single integration tests with `npm run test:integration -- --spec example/example.spec.js`.
 - Release code into a versioned release directory with `npm run release`.
 
 There are auto-running commands:
 
 - `npm run build:watch` to auto-build when lib is changed; and
 - `npm run test:unit:watch` to auto-test when build is changed.
+- `npm run watch` will run these two commands together.
 
-**`npm run watch`** will run these two commands together.
+In order to run both unit and integration tests, you'll need to create a local certificate to authenticate HTTPS requests on the test server.
+
+1. Install [mkcert](https://github.com/FiloSottile/mkcert).
+2. Create a `certs` directory at the root of the project and `cd` inside.
+3. Run `mkcert localhost` which will generate two `.pem` files used as the certificate for our test server and browser communication.
+4. Run `mkcert -CAROOT` and note down this path.
+4. While mkcert adds its local Certificate Authority (CA) to your system/browser trust store, Node.js uses its own hardcoded list of trusted CAs and ignores the system store. To solve this, set the `NODE_EXTRA_CA_CERTS` environment variable, either in a `.env` file or in your terminal, to `[CAROOT path]/rootCA.pem`. This allows Node fetch requests to trust our certificate. You must use an absolute path, not a relative path. The result might look like this example: `NODE_EXTRA_CA_CERTS=/Users/username/Library/Application Support/mkcert/rootCA.pem`.
 
 ## 6. Prefer testing in unit tests.
 
@@ -87,7 +92,7 @@ using a remote browser.
 Unit tests run in the browser and therefore must be written in browser-compatible
 JavaScript, as with code in the lib. The tests have access to:
 
-- `Ravelin` from the local `build/ravelin-core+track+encrypt+promise.min.js` (symlinked via `test-integration/ravelin.js`);
+- `Ravelin` from the local `build/ravelin-core+track+encrypt.min.js` (symlinked via `test-integration/ravelin.js`);
 - the [Mocha test framework](https://mochajs.org/);
 - [jQuery v3](https://api.jquery.com/) for simple DOM manipulation;
 - [xhook](https://github.com/jpillora/xhook) for mocking HTTP requests; and
@@ -145,7 +150,7 @@ The configuration lives in [test-integration/build-bstack-config.mjs](./test-int
 The utilities available to your spec tests depends on what you include in the
 HTML file you write for you test, but most will use:
 
-- `Ravelin` from `build/ravelinjs-core+track+encrypt+promise.min.js` (via symlink
+- `Ravelin` from `build/ravelinjs-core+track+encrypt.min.js` (via symlink
   `test-integration/ravelin.js`)
 - Utilities in `test-integration/browser-utils.js`, such as query-string parsing and error-sniffing.
 
@@ -201,20 +206,15 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   │   Imports each component in the name from the parent directory.
     │   │   │
     │   │   ├── core+encrypt.js
-    │   │   ├── core+encrypt+promise.js
     │   │   ├── core.js
-    │   │   ├── core+promise.js
     │   │   ├── core+track+encrypt.js
-    │   │   ├── core+track+encrypt+promise.js
-    │   │   ├── core+track.js
-    │   │   └── core+track+promise.js
+    │   │   └── core+track.js
     │   │
     │   │   The implementation, imported into the bundles.
     │   ├── cookies.js
     │   ├── core.js
     │   ├── encryption-vendored.js
     │   ├── encrypt.js
-    │   ├── promise.js
     │   ├── track.js
     │   ├── util.js
     │   └── version.js
@@ -231,7 +231,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │
     ├── test-integration
     │   │
-    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
+    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt.min.js
     │   │       A symlink to the working build referenced by tests and loaded into
     │   │       the browser with <script src=../ravelin.js></script>.
     │   ├── browser-utils.js
@@ -287,7 +287,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │
     ├── test-unit
     │   │
-    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt+promise.min.js
+    │   ├── ravelin.js -> ../build/ravelin-core+track+encrypt.min.js
     │   │       A symlink to the working build referenced by tests and loaded into
     │   │       the browser with <script src=../ravelin.js></script>.
     │   │
@@ -311,12 +311,12 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   `npm run build:watch` from the files in ./lib/bundle. These files
     │   │   are copied into ./releases/ravelinjs-$vers before being published.
     │   │   The below example files are generated from
-    │   │   ./lib/bundle/core+track+encrypt+promise.js.
+    │   │   ./lib/bundle/core+track+encrypt.js.
     │   │
-    │   ├── ravelin-core+track+encrypt+promise.js
-    │   ├── ravelin-core+track+encrypt+promise.js.map
-    │   ├── ravelin-core+track+encrypt+promise.min.js
-    │   └── ravelin-core+track+encrypt+promise.min.js.map
+    │   ├── ravelin-core+track+encrypt.js
+    │   ├── ravelin-core+track+encrypt.js.map
+    │   ├── ravelin-core+track+encrypt.min.js
+    │   └── ravelin-core+track+encrypt.min.js.map
     │
     ├── dist
     │   │   ./dist contains the working release of the local code as a CommonJS
@@ -328,7 +328,6 @@ tl;dr: ./lib for real code; ./test for test code.
     │   ├── core.js
     │   ├── core+track.js
     │   ├── core+track+encrypt.js
-    │   ├── core+track+encrypt+promise.ks
     │   └── ...
     │
     └── releases
@@ -337,10 +336,10 @@ tl;dr: ./lib for real code; ./test for test code.
             │   files in ./build. `npm run build && npm run release` to make.
             │
             ├── integrity
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.js.map
-            ├── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js
-            └── ravelin-1.0.0-rc1-core+track+encrypt+promise.min.js.map
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.js
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.js.map
+            ├── ravelin-1.0.0-rc1-core+track+encrypt.min.js
+            └── ravelin-1.0.0-rc1-core+track+encrypt.min.js.map
 
 ## 10. Keep Dependencies Up-to-Date
 

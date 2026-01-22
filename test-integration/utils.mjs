@@ -82,7 +82,7 @@ export function getCurrentPlatform() {
 export function buildUrl({ baseUrl, path, queryParams }) {
   // Default to the BrowserStack local URL which will
   // tunnel requests to our local server.
-  const url = new URL(path, baseUrl || process.env.LOCAL_URL || 'http://bs-local.com:3000');
+  const url = new URL(path, baseUrl || process.env.LOCAL_URL || 'https://bs-local.com:3000');
 
   Object.keys(queryParams).forEach((key) => {
     if (queryParams[key] !== undefined) {
@@ -231,7 +231,7 @@ async function getRequestLog(pattern) {
   const url = buildUrl({
     // Use localhost instead of bs-local.com as we are calling
     // from the same machine running the server.
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'https://localhost:3000',
     path: '/requests',
     queryParams: { q },
   });
