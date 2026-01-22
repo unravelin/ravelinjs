@@ -9,9 +9,9 @@ import license from 'rollup-plugin-license';
 import { terser } from 'rollup-plugin-terser';
 import packageJson from './package.json';
 
-var builds = module.exports = [];
+const builds = module.exports = [];
 
-var output = {
+const output = {
   format: 'iife',
   name: 'Ravelin',
   esModule: false,
@@ -23,8 +23,9 @@ var output = {
   // https://www.rollupjs.org/guide/en/#outputexternallivebindings.
   externalLiveBindings: false,
 };
-var plugins = [
-  typescript({ compilerOptions: { noCheck: true } }),
+
+const plugins = [
+  // typescript({ compilerOptions: { noCheck: true } }),
   // esbuild(),
   resolve(),
   commonjs({ extensions: ['.js', '.ts'] }),
@@ -49,14 +50,16 @@ glob.sync('lib-ts/bundle/*.ts')
         file: 'build/ravelin-' + fileName + '.min.js',
         ...output,
       },
-      plugins: plugins.concat([
+      plugins: [
+        typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
+        ...plugins,
         terser({
           compress: {
             typeofs: false,
           },
           safari10: true,
         }),
-      ]),
+      ],
     },
     {
       input: bundle,
@@ -64,7 +67,10 @@ glob.sync('lib-ts/bundle/*.ts')
         file: 'build/ravelin-' + fileName + '.js',
         ...output,
       },
-      plugins: plugins,
+      plugins: [
+        typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
+        ...plugins,
+      ],
     },
     {
       input: bundle,
@@ -87,7 +93,16 @@ glob.sync('lib-ts/bundle/*.ts')
         // https://www.rollupjs.org/guide/en/#outputexternallivebindings.
         externalLiveBindings: false,
       },
-      plugins: plugins,
+      plugins: [
+        typescript({
+          compilerOptions: {
+            noCheck: true,
+            outDir: 'dist',
+            declaration: true,
+          },
+        }),
+        ...plugins,
+      ],
     }
   );
 });
