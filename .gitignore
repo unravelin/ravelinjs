@@ -63,6 +63,8 @@ typings/
 
 *.min.js
 *.sri
+*.pem
+certs/
 cipher.txt
 deviceid.txt
 sessionid.txt

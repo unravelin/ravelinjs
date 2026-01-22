@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import { spawn } from 'child_process';
-import { startServer, stopServer } from './server.mjs';
+import { checkCertsExist, startServer, stopServer } from './server.mjs';
 
 // Indicate to Selenium to use a local browser
 process.env.LOCAL_BROWSER = 'true';
 // Override BrowserStack config to use the local server
-process.env.LOCAL_URL = 'http://localhost:3000';
+process.env.LOCAL_URL = 'https://localhost:3000';
 
 const testPath = process.argv[2];
 
@@ -13,6 +13,8 @@ if (!testPath) {
   console.error('Please provide a test glob pattern as the first argument.');
   process.exit(1);
 }
+
+checkCertsExist();
 
 startServer(async (tunnelUrl) => {
   console.log('Tunnel URL:', tunnelUrl);
