@@ -4,7 +4,7 @@
  */
 
 import { CookieJar } from './cookies';
-import { bind, promiseRetry, uuid } from './utils';
+import { promiseRetry, uuid } from './utils';
 
 // Constant set at build time.
 declare const RAVELINJS_VERSION: string;
@@ -146,7 +146,7 @@ export class Core {
         };
       });
 
-    return this._ids as Promise<IDs>;
+    return this._ids;
   }
 
   /**
@@ -173,7 +173,9 @@ export class Core {
    * @param syncMs How often we attempt to re-synchronise.
    */
   public attach(syncMs: number) {
-    setInterval(bind(this.sync, this), syncMs);
+    setInterval(() => {
+      this.sync();
+    }, syncMs);
   }
 
   /**
@@ -207,7 +209,7 @@ export class Core {
    */
   public sniffError<T>(fn: (() => T) | T): T {
     try {
-      const p = typeof fn === 'function' ? (fn as Function)() : fn;
+      const p = typeof fn === 'function' ? (fn as () => any)() : fn;
       if (p && typeof p.then === 'function') {
         (p as Promise<T>).catch((e: any) => {
           this.reportError(e);
@@ -221,16 +223,18 @@ export class Core {
   }
 
   /**
-   * Returns a function that invokes fn.apply(thisArg, ...args) and reports
+   * Returns a function that invokes fn.bind(thisArg, ...args) and reports
    * any errors using sniffError.
    */
-  public bind(fn: Function, ...outerArgs: any[]): Function {
-    const c = this;
-    // Use the imported bind to handle the initial binding
-    const boundFn = bind(fn, c, ...outerArgs);
+  public bind<T extends (...args: any[]) => any>(
+    fn: T,
+    thisArg: any,
+    ...outerArgs: any[]
+  ): (...args: Parameters<T>) => ReturnType<T> {
+    const boundFn = fn.bind(thisArg, ...outerArgs);
 
-    return function (...innerArgs: any[]) {
-      return c.sniffError(() => {
+    return (...innerArgs: Parameters<T>): ReturnType<T> => {
+      return this.sniffError(() => {
         return boundFn(...innerArgs);
       });
     };

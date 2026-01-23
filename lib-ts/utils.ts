@@ -1,19 +1,4 @@
 /**
- * bind wraps a function.
- * @param fn The function to be called.
- * @param thisArg The 'this' of the invoked fn.
- * @param args Arguments to add to the start of the function call.
- */
-export function bind(fn: Function, thisArg: any, ...args: any[]): Function {
-  if (!Function.prototype.bind) {
-    return function (this: unknown, ...innerArgs: any[]) {
-      return fn.apply(thisArg, args.concat(innerArgs));
-    };
-  }
-  return Function.prototype.bind.apply(fn, [thisArg].concat(args));
-}
-
-/**
  * A lookup table used for uuid generation. Populated on first usage.
  */
 let _lut: string[];
@@ -53,7 +38,7 @@ export function uuid(): string {
   // range.
   if (!_lut) {
     _lut = [];
-    for (var i = 0; i < 256; i++) {
+    for (let i = 0; i < 256; i++) {
       _lut[i] = (i < 16 ? '0' : '') + i.toString(16);
     }
   }
@@ -108,33 +93,37 @@ export function promiseRetry<T>(
 ): Promise<T> {
   let n = 0;
 
-  return new Promise<T>(function (resolve, reject) {
+  return new Promise<T>((resolve, reject) => {
     function attempt(delay: number) {
-      return new Promise<void>(function (innerResolve) {
-        if (delay) {
-          setTimeout(innerResolve, delay);
-        } else {
-          innerResolve();
-        }
-      })
-        .then(function () {
-          return factory(function retry(err: any) {
-            // We throw a specific object to catch it in the next .then block
-            // to distinguish between a retry request and a fatal error.
-            throw { message: 'promise-retry', err } as RetryError;
-          }, ++n);
-        })
-        .then(resolve, function (e: any) {
-          if (e && e.message === 'promise-retry') {
-            if (n - 1 < retries) {
-              // Recurse with backoff
-              return attempt(delay + retryBackoffMs);
-            }
-            reject(e.err);
-            return;
+      return (
+        new Promise<void>(innerResolve => {
+          if (delay) {
+            setTimeout(innerResolve, delay);
+          } else {
+            innerResolve();
           }
-          reject(e);
-        });
+        })
+          .then(() => {
+            return factory((err: any) => {
+              // We throw a specific object to catch in the next .catch block
+              // to distinguish between a retry request and a fatal error.
+              throw { message: 'promise-retry', err } as RetryError;
+            }, ++n);
+          })
+          // Return the resolved value from calling factory
+          .then(resolve)
+          .catch((e: any) => {
+            if (e && e.message === 'promise-retry') {
+              if (n - 1 < retries) {
+                // Recurse with backoff
+                return attempt(delay + retryBackoffMs);
+              }
+              reject(e.err);
+              return;
+            }
+            reject(e);
+          })
+      );
     }
 
     return attempt(0);

@@ -10,6 +10,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictBindCallApply": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitThis": true
