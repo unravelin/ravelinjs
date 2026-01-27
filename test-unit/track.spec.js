@@ -63,7 +63,7 @@ describe('ravelin.track', function() {
       r = new Ravelin(isolate({key: key, api: '/', page: {section: 'test'}}));
     });
 
-    it('doesnt send a page-loaded event when initialised with page:false', function(done) {
+    it(`doesn't send a page-loaded event when initialised with page:false`, function(done) {
       var key = this.test.fullTitle();
       var errored = false;
       xhook.before(function(req) {
@@ -76,7 +76,7 @@ describe('ravelin.track', function() {
       setTimeout(function() { if (!errored) done(); }, 200);
     });
 
-    it('doesnt send resize or page-loaded events when initialised with track:false', function(done) {
+    it(`doesn't send resize or page-loaded events when initialised with track:false`, function(done) {
       var key = this.test.fullTitle();
       var errored = false;
       xhook.before(function(req) {
