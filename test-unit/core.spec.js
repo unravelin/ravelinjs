@@ -322,9 +322,19 @@ describe('ravelin.core', function() {
       });
     });
 
-    it('doesnt set a device ID cookie if cookieExpiryDays <= 0', function() {
+    it(`doesn't set a device ID cookie if cookieExpiryDays < 0`, function() {
       var cfg = isolate({
         cookieExpiryDays: -1
+      });
+      var r = new Ravelin(cfg);
+      return r.core.id().then(function() {
+        expect(r.core.cookies.get(cfg.cookie)).to.equal(undefined);
+      });
+    });
+
+    it(`doesn't set a device ID cookie if cookieExpiryDays = 0`, function() {
+      var cfg = isolate({
+        cookieExpiryDays: 0
       });
       var r = new Ravelin(cfg);
       return r.core.id().then(function() {
