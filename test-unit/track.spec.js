@@ -624,7 +624,7 @@ function triggerResize(dw, dh) {
   if (!window.outerWidth) {
     // IE8 doesn't support window.outerWidth, but we don't know how to
     // programmatically trigger a resize event for it anyway.
-    throw new Error('triggerResize: outerWidth doesnt exist');
+    throw new Error(`triggerResize: outerWidth doesn't exist`);
   }
 
   var ow = window.outerWidth;
