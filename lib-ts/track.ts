@@ -1,6 +1,6 @@
 import { detectIncognito } from 'detectincognitojs';
 import type { Core, CoreConfig } from './core';
-import { uuid } from './utils';
+import { uuid, type Dictionary } from './utils';
 
 /**
  * Configuration interface for the Track module.

@@ -1,3 +1,7 @@
+export interface Dictionary<T> {
+  [key: string]: T;
+}
+
 /**
  * A lookup table used for uuid generation. Populated on first usage.
  */
