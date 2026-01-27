@@ -1,13 +1,14 @@
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
-import typescript from '@rollup/plugin-typescript';
-// import esbuild from 'rollup-plugin-esbuild';
-import glob from 'glob';
-import * as path from 'path';
-import license from 'rollup-plugin-license';
-import { terser } from 'rollup-plugin-terser';
-import packageJson from './package.json';
+const commonjs = require('@rollup/plugin-commonjs');
+const resolve = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
+const typescript = require('@rollup/plugin-typescript');
+// const esbuild = require('rollup-plugin-esbuild');
+const terser = require('@rollup/plugin-terser');
+const glob = require('glob');
+const path = require('path');
+const license = require('rollup-plugin-license');
+const packageJson = require('./package.json');
+// const { dts } = require('rollup-plugin-dts');
 
 const builds = module.exports = [];
 
@@ -44,34 +45,34 @@ glob.sync('lib-ts/bundle/*.ts')
   const fileName = path.parse(bundle).name;
 
   return builds.push(
-    {
-      input: bundle,
-      output: {
-        file: 'build/ravelin-' + fileName + '.min.js',
-        ...output,
-      },
-      plugins: [
-        typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
-        ...plugins,
-        terser({
-          compress: {
-            typeofs: false,
-          },
-          safari10: true,
-        }),
-      ],
-    },
-    {
-      input: bundle,
-      output: {
-        file: 'build/ravelin-' + fileName + '.js',
-        ...output,
-      },
-      plugins: [
-        typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
-        ...plugins,
-      ],
-    },
+    // {
+    //   input: bundle,
+    //   output: {
+    //     file: 'build/ravelin-' + fileName + '.min.js',
+    //     ...output,
+    //   },
+    //   plugins: [
+    //     typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
+    //     ...plugins,
+    //     terser({
+    //       compress: {
+    //         typeofs: false,
+    //       },
+    //       safari10: true,
+    //     }),
+    //   ],
+    // },
+    // {
+    //   input: bundle,
+    //   output: {
+    //     file: 'build/ravelin-' + fileName + '.js',
+    //     ...output,
+    //   },
+    //   plugins: [
+    //     typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
+    //     ...plugins,
+    //   ],
+    // },
     {
       input: bundle,
       external: ['@fingerprintjs/botd', 'detectincognitojs'],
@@ -103,6 +104,11 @@ glob.sync('lib-ts/bundle/*.ts')
         }),
         ...plugins,
       ],
-    }
+    },
+    // {
+    //   input: 'dist/bundle/' + fileName + '.d.ts',
+    //   output: { file: 'dist/' + fileName + '.d.ts', format: 'es' },
+    //   plugins: [dts()],
+    // }
   );
 });

@@ -1,0 +1,21 @@
+{
+  "compileOnSave": false,
+  "rootDir": ".",
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "esnext",
+    "lib": ["es2023", "dom"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true
+  },
+  "exclude": [
+    "lib",
+    "lib-ts",
+    "node_modules"
+  ]
+}
