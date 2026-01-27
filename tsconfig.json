@@ -6,7 +6,7 @@
     "allowJs": true,
     "checkJs": true,
     "target": "esnext",
-    "lib": ["es2024", "dom"],
+    "lib": ["es2023", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
     "strictNullChecks": true,

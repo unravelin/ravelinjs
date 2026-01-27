@@ -59,18 +59,19 @@ interface AesResult {
  * The Encrypt class provides card-encryption methods.
  */
 export class Encrypt {
-  private core: Core;
   private key?: Key;
 
   /**
    * @param core The Core library instance.
    * @param cfg The encryption configuration.
    */
-  constructor(core: Core, cfg: EncryptConfig) {
-    this.core = core;
+  constructor(
+    private core: Core,
+    cfg: EncryptConfig
+  ) {
     // We bind 'card' to ensure 'this' context is preserved if passed as a callback,
     // though strict class usage usually avoids this need.
-    this.card = this.core.bind(this.card, this) as any;
+    this.card = this.core.bind(this.card, this);
 
     if (cfg.rsaKey) {
       this.key = parseKey(cfg.rsaKey);

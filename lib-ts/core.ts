@@ -172,7 +172,7 @@ export class Core {
    * attach to the browser to maintain our ids somewhere.
    * @param syncMs How often we attempt to re-synchronise.
    */
-  public attach(syncMs: number) {
+  public attach(syncMs: number): void {
     setInterval(() => {
       this.sync();
     }, syncMs);

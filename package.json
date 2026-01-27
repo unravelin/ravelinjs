@@ -22,7 +22,7 @@
     "release:integrity": "cd releases/ravelinjs-$npm_package_version; shasum -a 384 *.js | sed s/^/sha384-/ > integrity",
     "release:integrity:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
     "release:tarball": "cd releases; tar -czf ravelinjs-$npm_package_version.tar.gz ravelinjs-$npm_package_version",
-    "lint": "eslint -f codeframe --max-warnings 0",
+    "lint:ts": "eslint -f codeframe --max-warnings 0",
     "lint:prettier": "npm run prettier -- --log-level warn '**/*.{ts}'",
     "prettier": "prettier --write --experimental-cli",
     "test:unit": "karma start ./test-unit/karma.conf.js --single-run",
