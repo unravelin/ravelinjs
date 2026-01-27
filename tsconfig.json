@@ -3,8 +3,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "noEmit": true,
-    "allowJs": true,
-    "checkJs": true,
     "target": "esnext",
     "lib": ["es2023", "dom"],
     "module": "esnext",

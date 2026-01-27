@@ -1,6 +1,6 @@
 import { Core } from '../core';
 import { Encrypt, type EncryptConfig } from '../encrypt';
-import { Track, TrackConfig } from '../track';
+import { Track, type TrackConfig } from '../track';
 
 export default class Ravelin {
   public core: Core;

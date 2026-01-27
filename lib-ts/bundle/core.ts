@@ -1,4 +1,4 @@
-import { Core, CoreConfig } from '../core';
+import { Core, type CoreConfig } from '../core';
 
 export default class Ravelin {
   public core: Core;

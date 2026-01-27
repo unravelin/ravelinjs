@@ -1,5 +1,5 @@
 import { Core } from '../core';
-import { Encrypt, EncryptConfig } from '../encrypt';
+import { Encrypt, type EncryptConfig } from '../encrypt';
 
 export default class Ravelin {
   public core: Core;
