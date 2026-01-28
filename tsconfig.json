@@ -1,5 +1,5 @@
 {
-  "include": ["lib-ts/**/*"],
+  "include": ["src/**/*"],
   "compileOnSave": false,
   "compilerOptions": {
     "noEmit": true,

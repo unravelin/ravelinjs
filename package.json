@@ -14,7 +14,7 @@
   },
   "scripts": {
     "clean": "rm -rf build dist releases; mkdir build",
-    "build": "npm run ts:check && rollup --config",
+    "build": "npm run ts:check && rollup --config && rm -rf ./dist/types",
     "build:watch": "npm run ts:check -- --watch & rollup --config --watch --no-watch.clearScreen",
     "dist": "cp README.md LICENSE package.json .npmignore dist",
     "release": "run-s release:copy release:integrity release:integrity:verify release:tarball",
@@ -66,7 +66,6 @@
     "prettier": "3.8.0",
     "rollup": "4.57.0",
     "rollup-plugin-dts": "6.3.0",
-    "rollup-plugin-esbuild": "6.2.1",
     "rollup-plugin-license": "3.6.0",
     "selenium-webdriver": "4.39.0",
     "typescript": "5.9.3",
