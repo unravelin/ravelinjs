@@ -7,7 +7,7 @@ export default class Ravelin {
   public track: Track;
   public encrypt: Encrypt;
 
-  constructor(cfg: TrackConfig & EncryptConfig = {}) {
+  public constructor(cfg: TrackConfig & EncryptConfig = {}) {
     this.core = new Core(cfg);
     this.track = new Track(this.core, cfg);
     this.encrypt = new Encrypt(this.core, cfg);

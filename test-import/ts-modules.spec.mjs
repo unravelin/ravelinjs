@@ -3,12 +3,10 @@ import { expect } from 'chai';
 import * as ts from 'typescript';
 
 describe('TypeScript type-checking', () => {
-  const { options } = getTsConfig();
-  /** @type {ts.CompilerOptions} */
-  const testOptions = { ...options, noEmit: true };
+  const testOptions = getTsConfig();
 
   it('should pass type-checking for a valid use of RavelinJS', () => {
-    const fileName = import.meta.dirname + '/test-import.ts';
+    const fileName = import.meta.dirname + '/test-import-valid.ts';
 
     // Create the program with default compiler options
     const program = ts.createProgram([fileName], testOptions);
@@ -24,7 +22,7 @@ describe('TypeScript type-checking', () => {
   });
 
   it('should fail type-checking with an invalid RavelinJS config option', () => {
-    const fileName = import.meta.dirname + '/test-import-err.ts';
+    const fileName = import.meta.dirname + '/test-import-error.ts';
 
     // Create the program with default compiler options
     const program = ts.createProgram([fileName], testOptions);
@@ -58,5 +56,5 @@ function getTsConfig() {
     path.dirname(configPath)
   );
 
-  return parsedConfig;
+  return parsedConfig.options;
 }

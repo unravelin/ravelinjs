@@ -41,10 +41,7 @@ export default defineConfig([
       // '@typescript-eslint/recommended-type-checked',
     ],
     rules: {
-      '@typescript-eslint/explicit-member-accessibility': [
-        'error',
-        { overrides: { constructors: 'no-public' } },
-      ],
+      '@typescript-eslint/explicit-member-accessibility': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off', // Handled by 'noUnusedLocals' in TS config
       // '@typescript-eslint/no-unsafe-function-type': 'off',

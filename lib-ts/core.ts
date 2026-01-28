@@ -77,7 +77,7 @@ export class Core {
   private _id: Promise<string | undefined>;
   private _ids?: Promise<IDs>;
 
-  constructor(cfg: CoreConfig) {
+  public constructor(cfg: CoreConfig) {
     this.version = cfg.version || RAVELINJS_VERSION;
     this.key = cfg.key;
     this.api = cfg.api || apiFromKey(this.key);
@@ -337,12 +337,12 @@ function daysFromNow(days: number): Date {
   return new Date(new Date().getTime() + days * 86400 * 1000);
 }
 
-const defaultAPI = 'https://live.ravelin.click';
-
 /**
  * apiFromKey returns the likely API URL based on the key.
  */
-function apiFromKey(key?: string): string {
+function apiFromKey(key: string | undefined): string {
+  const defaultAPI = 'https://live.ravelin.click';
+
   if (!key || key.substring(0, 16) !== 'publishable_key_') {
     return defaultAPI;
   }

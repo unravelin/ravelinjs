@@ -28,7 +28,7 @@ interface CookieOptions {
 export class CookieJar {
   private samesite?: string;
 
-  constructor(private cfg: CookieJarConfig) {}
+  public constructor(private cfg: CookieJarConfig) {}
 
   /**
    * Returns the value of the cookie of the given name, or undefined.

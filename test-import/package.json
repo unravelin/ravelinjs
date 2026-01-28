@@ -2,12 +2,11 @@
   "name": "test-import",
   "version": "1.0.0",
   "description": "Test importing ravelinjs package",
-  "scripts": {
-    "setup": "rm -rf node_modules && npm install ../dist/ --install-links",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Ravelin (https://github.com/unravelin) <support@ravelin.com>",
   "license": "Apache-2.0",
+  "scripts": {
+    "setup": "rm -rf node_modules && npm install ../dist/ --install-links"
+  },
   "dependencies": {
     "ravelinjs": "file:../dist"
   }

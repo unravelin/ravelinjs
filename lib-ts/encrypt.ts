@@ -65,7 +65,7 @@ export class Encrypt {
    * @param core The Core library instance.
    * @param cfg The encryption configuration.
    */
-  constructor(
+  public constructor(
     private core: Core,
     cfg: EncryptConfig
   ) {

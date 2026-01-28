@@ -1,6 +1,6 @@
 declare namespace encryption {
   interface RSAKey {
-    setPublic(N: string, E: string): void;
+    setPublic(modulus: string, exponent: string): void;
     encrypt(text: string): string | null;
   }
 

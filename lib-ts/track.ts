@@ -45,7 +45,7 @@ export class Track {
    * @param core The Core library instance.
    * @param cfg The track configuration.
    */
-  constructor(
+  public constructor(
     private core: Core,
     cfg: TrackConfig
   ) {
