@@ -1,11 +1,13 @@
 import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import { globSync } from 'glob';
 import { dts } from 'rollup-plugin-dts';
+import generatePackageJson from 'rollup-plugin-generate-package-json';
 import license from 'rollup-plugin-license';
 import packageJson from './package.json' with { type: 'json' };
 
@@ -39,8 +41,9 @@ function withTsPlugin(tsConfig) {
   return draft;
 }
 
-const builds = globSync('lib-ts/bundle/*.ts')
-  .sort((a, b) => b.length - a.length)
+const bundles = globSync('lib-ts/bundle/*.ts').sort((a, b) => b.length - a.length);
+
+const builds = bundles
   .map(bundle => {
     const fileName = path.parse(bundle).name;
 
@@ -52,12 +55,12 @@ const builds = globSync('lib-ts/bundle/*.ts')
         plugins: withTsPlugin({ compilerOptions: { noCheck: true, outDir: 'build' } }),
         output: [
           {
-            file: 'build/ravelin-' + fileName + '.js',
+            file: `build/ravelin-${fileName}.js`,
             format: 'iife',
             ...output,
           },
           {
-            file: 'build/ravelin-' + fileName + '.min.js',
+            file: `build/ravelin-${fileName}.min.js`,
             format: 'iife',
             ...output,
             plugins: [terser()],
@@ -69,7 +72,7 @@ const builds = globSync('lib-ts/bundle/*.ts')
         input: bundle,
         external: ['@fingerprintjs/botd', 'detectincognitojs'],
         output: {
-          file: 'dist/' + fileName + '.js',
+          file: `dist/${fileName}.js`,
           format: 'umd',
           exports: 'default',
           globals: {
@@ -89,12 +92,56 @@ const builds = globSync('lib-ts/bundle/*.ts')
       },
       {
         // TypeScript declaration files for UMD build.
-        input: 'dist/types/bundle/' + fileName + '.d.ts',
-        output: { file: 'dist/' + fileName + '.d.ts', format: 'es' },
+        input: `dist/types/bundle/${fileName}.d.ts`,
+        output: { file: `dist/${fileName}.d.ts`, format: 'es' },
         plugins: [dts()],
       },
     ];
   })
   .flat();
+
+/* Generate clean package.json with "exports" field for
+ * each RavelinJS module. For example:
+ *   exports: {
+ *     './core': {
+ *       types: './core.d.ts',
+ *       default: './core.js',
+ *     },
+ *     './core+track': {
+ *       types: './core+track.d.ts',
+ *       default: './core+track.js',
+ *     },
+ *   }
+ */
+const exportsConfig = bundles.reduce((acc, bundle) => {
+  const fileName = path.parse(bundle).name;
+  acc[`./${fileName}`] = {
+    types: `./${fileName}.d.ts`,
+    default: `./${fileName}.js`,
+  };
+  return acc;
+}, {});
+
+builds.push({
+  input: 'package.json',
+  output: { dir: 'dist' },
+  plugins: [
+    json(),
+    generatePackageJson({
+      baseContents: pkg => ({
+        name: pkg.name,
+        version: pkg.version,
+        license: pkg.license,
+        description: pkg.description,
+        homepage: pkg.homepage,
+        bugs: pkg.bugs,
+        repository: pkg.repository,
+        dependencies: pkg.dependencies,
+        exports: exportsConfig,
+        engines: pkg.engines,
+      }),
+    }),
+  ],
+});
 
 export default builds;
