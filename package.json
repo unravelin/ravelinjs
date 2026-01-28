@@ -78,6 +78,24 @@
     "@fingerprintjs/botd": "2.0.0",
     "detectincognitojs": "1.6.2"
   },
+  "exports": {
+    "./core": {
+      "types": "./core.d.ts",
+      "default": "./core.js"
+    },
+    "./core+track": {
+      "types": "./core+track.d.ts",
+      "default": "./core+track.js"
+    },
+    "./core+encrypt": {
+      "types": "./core+encrypt.d.ts",
+      "default": "./core+encrypt.js"
+    },
+    "./core+track+encrypt": {
+      "types": "./core+track+encrypt.d.ts",
+      "default": "./core+track+encrypt.js"
+    }
+  },
   "np": {
     "yarn": false,
     "branch": "v2",
@@ -104,7 +122,13 @@
     ]
   },
   "engines": {
-    "node": ">=22.x <23"
+    "node": ">=22.x"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "22.16.0"
+    }
   },
   "volta": {
     "node": "22.16.0"

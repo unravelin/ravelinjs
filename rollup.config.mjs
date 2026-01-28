@@ -32,35 +32,40 @@ const plugins = [
   }),
 ];
 
-const builds = globSync('src/*.ts')
+function withTsPlugin(tsConfig) {
+  const draft = plugins.slice();
+  // Insert typescript plugin after resolve and commonjs
+  draft.splice(1, 0, typescript(tsConfig));
+  return draft;
+}
+
+const builds = globSync('lib-ts/bundle/*.ts')
   .sort((a, b) => b.length - a.length)
   .map(bundle => {
     const fileName = path.parse(bundle).name;
 
     return [
       {
+        // IIFE build for browser usage via <script> tag, no external dependencies.
+        // Outputs both normal and minified versions.
         input: bundle,
-        output: {
-          file: 'build/ravelin-' + fileName + '.min.js',
-          format: 'iife',
-          ...output,
-        },
-        plugins: [
-          typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }),
-          ...plugins,
-          terser(),
+        plugins: withTsPlugin({ compilerOptions: { noCheck: true, outDir: 'build' } }),
+        output: [
+          {
+            file: 'build/ravelin-' + fileName + '.js',
+            format: 'iife',
+            ...output,
+          },
+          {
+            file: 'build/ravelin-' + fileName + '.min.js',
+            format: 'iife',
+            ...output,
+            plugins: [terser()],
+          },
         ],
       },
       {
-        input: bundle,
-        output: {
-          file: 'build/ravelin-' + fileName + '.js',
-          format: 'iife',
-          ...output,
-        },
-        plugins: [typescript({ compilerOptions: { noCheck: true, outDir: 'build' } }), ...plugins],
-      },
-      {
+        // UMD build for Node and bundlers, with external dependencies.
         input: bundle,
         external: ['@fingerprintjs/botd', 'detectincognitojs'],
         output: {
@@ -73,20 +78,18 @@ const builds = globSync('src/*.ts')
           },
           ...output,
         },
-        plugins: [
-          typescript({
-            compilerOptions: {
-              noCheck: true,
-              outDir: 'dist',
-              declaration: true,
-              declarationDir: 'dist/types',
-            },
-          }),
-          ...plugins,
-        ],
+        plugins: withTsPlugin({
+          compilerOptions: {
+            noCheck: true,
+            outDir: 'dist',
+            declaration: true,
+            declarationDir: 'dist/types',
+          },
+        }),
       },
       {
-        input: 'dist/types/' + fileName + '.d.ts',
+        // TypeScript declaration files for UMD build.
+        input: 'dist/types/bundle/' + fileName + '.d.ts',
         output: { file: 'dist/' + fileName + '.d.ts', format: 'es' },
         plugins: [dts()],
       },

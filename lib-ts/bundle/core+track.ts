@@ -1,5 +1,5 @@
-import { Core } from './lib/core';
-import { Track, type TrackConfig } from './lib/track';
+import { Core } from '../core';
+import { Track, type TrackConfig } from '../track';
 
 export default class Ravelin {
   public core: Core;
