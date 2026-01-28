@@ -91,7 +91,10 @@ const builds = bundles
         }),
       },
       {
-        // TypeScript declaration files for UMD build.
+        /* TypeScript declaration files for the UMD build.
+         * These are built into the `dist/types` folder by the UMD build step
+         * and the dts plugin merges them into a single file per RavelinJS module.
+         * The `dist/types` folder is then deleted by the build script. */
         input: `dist/types/bundle/${fileName}.d.ts`,
         output: { file: `dist/${fileName}.d.ts`, format: 'es' },
         plugins: [dts()],
@@ -100,7 +103,7 @@ const builds = bundles
   })
   .flat();
 
-/* Generate clean package.json with "exports" field for
+/* Generate clean package.json with `exports` field for
  * each RavelinJS module. For example:
  *   exports: {
  *     './core': {
