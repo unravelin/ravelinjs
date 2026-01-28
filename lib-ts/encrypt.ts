@@ -69,7 +69,7 @@ export class Encrypt {
     private core: Core,
     cfg: EncryptConfig
   ) {
-    // We bind 'card' to ensure 'this' context is preserved if passed as a callback,
+    // Bind 'card' to ensure 'this' context is preserved if passed as a callback,
     // though strict class usage usually avoids this need.
     this.card = this.core.bind(this.card, this);
 
@@ -83,20 +83,19 @@ export class Encrypt {
   }
 
   /**
-   * Encrypt a card into an encrypted payment method that can be sent via your
-   * server to Ravelin.
+   * Encrypt a card into an encrypted payment method that
+   * can be sent via your server to Ravelin.
    *
    * @param card The card details to encrypt.
    * @return The encrypted payment method cipher.
    */
-  card(card: Card): PaymentMethodCipher {
+  public card(card: Card): PaymentMethodCipher {
     // Check that we've got an argument
     if (!card) {
       throw new Error('ravelin/encrypt: card is required');
     }
 
     // Check there are no unexpected properties on card.
-    // We cast to any to iterate keys, though strict typing usually prevents this.
     for (const prop in card) {
       if (!Object.prototype.hasOwnProperty.call(card, prop)) {
         continue;
@@ -156,7 +155,10 @@ export class Encrypt {
       throw new Error('ravelin/encrypt: card.year should be in the 21st century');
     }
 
-    // AES encrypt the card details
+    // AES encrypt the card details, using a uniquely generated session key and
+    // IV. The GCM auth tag is appended to the ciphertext. This key and IV are
+    // returned from this call as well as the card detail ciphertext,
+    // all as base64.
     let aesResult: AesResult;
     try {
       aesResult = aesEncrypt(
@@ -168,16 +170,18 @@ export class Encrypt {
         })
       );
     } catch (e: any) {
-      if (e.toString().indexOf('generator') !== -1) {
+      if (e && e.toString().indexOf('generator') !== -1) {
         throw new Error('ravelin/encrypt: generator not ready');
       }
       throw e;
     }
 
-    // RSA encrypt the key and IV
+    // RSA encrypt the key and IV from the previous step,
+    // as a single, pipe-delimited string.
     const rsaResultB64 = rsaEncrypt(key.key, aesResult.aesKeyB64, aesResult.ivB64);
 
-    // Return the payload structure
+    // This payload identically matches the structure we expect
+    // to be sent to the Ravelin API.
     return {
       methodType: 'paymentMethodCipher',
       cardCiphertext: aesResult.ciphertextB64,
@@ -192,7 +196,23 @@ export class Encrypt {
 
 /**
  * parseKey extracts the components of a key string ready for use.
- * @param rsaKeyString The RSA key string.
+ *
+ * A client's public RSA key has a structure of either 'exponent|modulus' or
+ * 'keyIndex|exponent|modulus'. The index of a key is roughly equivalent to the
+ * version, with each new RSA key pair we generate for a client having an index
+ * of n+1. A single client can have multiple active RSA key pairs, and we can
+ * decomission a key pair as required while allowing all other active versions
+ * to operate.
+ *
+ * The first key we issue a client is of index 0. For keys of index 0, we omit
+ * this value from the key. e.g '10001|AA1C1C1EC...`
+ *
+ * For all keys beyond the first, the index is prefixed to key definition. e.g
+ * '1|10001|BB2D2D2FD...'
+ *
+ * For all keys (including those of index 0), the index must be returned from
+ * 'encrypt' calls; the value is needed server-side to determine which private
+ * key should be used for decryption.
  */
 function parseKey(rsaKeyString: string): Key {
   const split = rsaKeyString.split('|');
@@ -215,6 +235,7 @@ function parseKey(rsaKeyString: string): Key {
   }
 
   const key = new RSAKey();
+  // Params specified in reverse order to how we defined the key
   key.setPublic(modulus, exponent);
 
   return {
