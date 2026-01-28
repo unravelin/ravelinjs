@@ -29,6 +29,8 @@
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs",
     "test:integration:local": "node ./test-integration/run-local.mjs './test-integration/**/*.spec.mjs'",
+    "test:import:setup": "cd test-import && npm run setup",
+    "test:import": "npm run test:import:setup && mocha './test-import/*.spec.mjs'",
     "test:bstack-sdk": "browserstack-node-sdk mocha './test-integration/**/*.spec.mjs'",
     "ts:check": "tsc --noEmit --skipLibCheck",
     "np": "npm run dist && np",
