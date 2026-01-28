@@ -52,6 +52,7 @@
     "eslint": "9.39.2",
     "eslint-formatter-codeframe": "7.32.2",
     "express": "4.22.1",
+    "glob": "13.0.0",
     "globals": "17.0.0",
     "jquery": "3.7.1",
     "karma": "6.4.4",
