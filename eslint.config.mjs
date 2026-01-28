@@ -5,7 +5,7 @@ import ts from 'typescript-eslint';
 
 export default defineConfig([
   // Ignore built and vendored files
-  globalIgnores(['**/ravelin.js', '**/*-vendored.{js,ts}']),
+  globalIgnores(['node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
   // Browser modules (JS)
   // TODO: remove once lib is fully migrated to TS
   {
@@ -62,7 +62,7 @@ export default defineConfig([
   },
   // NodeJS modules
   {
-    files: ['test-integration/**/*.mjs', 'test-unit/**/*.mjs', 'test-unit/karma.conf.js'],
+    files: ['test-*/**/*.mjs', 'test-unit/karma.conf.js'],
     languageOptions: {
       globals: globals.node,
       sourceType: 'module',
@@ -72,7 +72,7 @@ export default defineConfig([
   },
   // Test globals
   {
-    files: ['test-integration/**/*.mjs', 'test-unit/**/*.js'],
+    files: ['test-*/**/*.{js,mjs}'],
     languageOptions: {
       globals: {
         $: 'readonly',
