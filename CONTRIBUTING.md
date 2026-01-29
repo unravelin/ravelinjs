@@ -205,19 +205,40 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   │   file defines a Ravelin object exported in a bundle of the same name.
     │   │   │   Imports each component in the name from the parent directory.
     │   │   │
-    │   │   ├── core+encrypt.js
-    │   │   ├── core.js
-    │   │   ├── core+track+encrypt.js
-    │   │   └── core+track.js
+    │   │   ├── core.ts
+    │   │   ├── core+encrypt.ts
+    │   │   ├── core+track.ts
+    │   │   └── core+track+encrypt.ts
     │   │
     │   │   The implementation, imported into the bundles.
-    │   ├── cookies.js
-    │   ├── core.js
-    │   ├── encryption-vendored.js
-    │   ├── encrypt.js
-    │   ├── track.js
-    │   ├── util.js
-    │   └── version.js
+    │   ├── cookies.ts
+    │   ├── core.ts
+    │   ├── encryption-vendored.ts
+    │   ├── encrypt.ts
+    │   ├── track.ts
+    │   └── utils.ts
+    │
+    │   Import tests
+    │   =================
+    │
+    │   Import tests are `*.spec.mjs` unit tests using the Mocha framework.
+    │   They test that the `dist` package imports correctly as an ES Module
+    │   or by the TypeScript compiler. These can be run with
+    │   the `npm run test:import` command.
+    │
+    ├── test-import
+    │   ├── package.json
+    │   │       A local package config where ravelinjs is a dependency.
+    │   ├── es-modules.spec.mjs
+    │   │       Tests for ES Module imports.
+    │   ├── ts-modules.spec.mjs
+    │   │       Tests for TypeScript import and type-checking.
+    │   ├── ts-import-valid.ts
+    │   │       A test file for valid TypeScript code.
+    │   ├── ts-import-error.ts
+    │   │       A test file for invalid TypeScript code.
+    │   └── tsconfig.json
+    │           A local TS config file for testing.
     │
     │   Integration tests
     │   =================

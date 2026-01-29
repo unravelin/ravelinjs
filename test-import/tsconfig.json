@@ -3,8 +3,8 @@
   "rootDir": ".",
   "compilerOptions": {
     "noEmit": true,
-    "target": "esnext",
-    "lib": ["es2023", "dom"],
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,

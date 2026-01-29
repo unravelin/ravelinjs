@@ -6,7 +6,7 @@ describe('TypeScript type-checking', () => {
   const testOptions = getTsConfig();
 
   it('should pass type-checking for a valid use of RavelinJS', () => {
-    const fileName = import.meta.dirname + '/test-import-valid.ts';
+    const fileName = import.meta.dirname + '/ts-import-valid.ts';
 
     // Create the program with default compiler options
     const program = ts.createProgram([fileName], testOptions);
@@ -22,7 +22,7 @@ describe('TypeScript type-checking', () => {
   });
 
   it('should fail type-checking with an invalid RavelinJS config option', () => {
-    const fileName = import.meta.dirname + '/test-import-error.ts';
+    const fileName = import.meta.dirname + '/ts-import-error.ts';
 
     // Create the program with default compiler options
     const program = ts.createProgram([fileName], testOptions);
