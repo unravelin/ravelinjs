@@ -42,6 +42,8 @@ steps:
     waitFor: ["-"]
     name: $_NODE
     entrypoint: npm
+    env:
+      - HUSKY=0
     args:
       - install
 

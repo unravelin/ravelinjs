@@ -23,8 +23,7 @@
     "release:integrity:verify": "cd releases/ravelinjs-$npm_package_version; sed s/^sha384-// integrity | shasum -c",
     "release:tarball": "cd releases; tar -czf ravelinjs-$npm_package_version.tar.gz ravelinjs-$npm_package_version",
     "lint:ts": "eslint -f codeframe --max-warnings 0",
-    "lint:prettier": "npm run prettier -- --log-level warn '**/*.{ts}'",
-    "prettier": "prettier --write --experimental-cli",
+    "lint:prettier": "prettier --write --experimental-cli --log-level warn '**/*.{ts}'",
     "test:unit": "karma start ./test-unit/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs",
@@ -34,7 +33,11 @@
     "test:bstack-sdk": "browserstack-node-sdk mocha './test-integration/**/*.spec.mjs'",
     "ts:check": "tsc --noEmit --skipLibCheck",
     "np": "npm run dist && np",
-    "version": "run-s clean build dist release # (note: auto-executed by np)"
+    "version": "run-s clean build dist release # (note: auto-executed by np)",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,mjs}": "prettier --write --experimental-cli"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
@@ -57,11 +60,13 @@
     "express": "4.22.1",
     "glob": "13.0.0",
     "globals": "17.0.0",
+    "husky": "9.1.7",
     "jquery": "3.7.1",
     "karma": "6.4.4",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "3.2.0",
     "karma-mocha": "2.0.1",
+    "lint-staged": "16.2.7",
     "mingo": "6.3.4",
     "mocha": "11.7.1",
     "np": "7.7.0",

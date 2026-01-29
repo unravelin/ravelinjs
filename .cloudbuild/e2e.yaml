@@ -23,6 +23,8 @@ steps:
   - id: npm_install
     name: $_NODE
     entrypoint: npm
+    env:
+      - HUSKY=0
     args:
       - install
 
