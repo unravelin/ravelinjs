@@ -1,3 +1,5 @@
+/* globals isolate keysMatch */
+
 describe('ravelin.track', function () {
   const expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
   let r;

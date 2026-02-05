@@ -70,7 +70,6 @@ export default defineConfig([
         describe: 'readonly',
         expect: 'readonly',
         it: 'readonly',
-        keysMatch: 'readonly',
         module: 'readonly',
         Ravelin: 'readonly',
         xhook: 'readonly',
