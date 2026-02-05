@@ -42,6 +42,8 @@ steps:
     waitFor: ["-"]
     name: $_NODE
     entrypoint: npm
+    env:
+      - HUSKY=0
     args:
       - install
 
@@ -53,12 +55,19 @@ steps:
       - run
       - build
 
-  - id: browserstack
+  - id: import_tests
     waitFor: ["mkcert", "build"]
     name: $_NODE
     entrypoint: npm
+    args:
+      - run
+      - test:import
+
+  - id: browserstack
+    waitFor: ["import_tests"]
+    name: $_NODE
+    entrypoint: npm
     env:
-      - PARALLEL=5
       - HEAD_BRANCH=$_HEAD_BRANCH
       - COMMIT_SHA=$COMMIT_SHA
       - BUILD_ID=$BUILD_ID

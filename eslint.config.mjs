@@ -1,11 +1,13 @@
 import js from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
+import ts from 'typescript-eslint';
 
 export default defineConfig([
   // Ignore built and vendored files
-  globalIgnores(['**/ravelin.js', '**/*-vendored.js']),
-  // Browser modules
+  globalIgnores(['node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
+  // Browser modules (JS)
+  // TODO: remove once lib is fully migrated to TS
   {
     files: ['lib/**/*.js'],
     languageOptions: {
@@ -17,6 +19,37 @@ export default defineConfig([
     },
     plugins: { js },
     extends: ['js/recommended'],
+  },
+  // Browser modules (TS)
+  {
+    files: ['lib-ts/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+      globals: {
+        ...globals.browser,
+        RAVELINJS_VERSION: 'readonly',
+      },
+      sourceType: 'module',
+    },
+    plugins: { js, '@typescript-eslint': ts.plugin },
+    extends: [
+      'js/recommended',
+      '@typescript-eslint/recommended',
+      // TODO: enable later?
+      // '@typescript-eslint/recommended-type-checked',
+    ],
+    rules: {
+      '@typescript-eslint/explicit-member-accessibility': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off', // Handled by 'noUnusedLocals' in TS config
+      // '@typescript-eslint/no-unsafe-function-type': 'off',
+      // '@typescript-eslint/no-unsafe-assignment': 'off',
+      // '@typescript-eslint/no-unsafe-call': 'off',
+      // '@typescript-eslint/no-unsafe-member-access': 'off',
+      // '@typescript-eslint/no-unsafe-return': 'off',
+    },
   },
   // Browser scripts
   {
@@ -30,7 +63,7 @@ export default defineConfig([
   },
   // NodeJS modules
   {
-    files: ['test-integration/**/*.mjs', 'test-unit/**/*.mjs'],
+    files: ['test-*/**/*.mjs', 'test-unit/karma.conf.js'],
     languageOptions: {
       globals: globals.node,
       sourceType: 'module',
@@ -40,7 +73,7 @@ export default defineConfig([
   },
   // Test globals
   {
-    files: ['test-integration/**/*.mjs', 'test-unit/**/*.js'],
+    files: ['test-*/**/*.{js,mjs}'],
     languageOptions: {
       globals: {
         $: 'readonly',

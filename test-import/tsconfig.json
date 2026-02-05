@@ -1,0 +1,22 @@
+{
+  "compileOnSave": false,
+  "rootDir": ".",
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true
+  },
+  "exclude": [
+    "lib",
+    "lib-ts",
+    "node_modules"
+  ]
+}
