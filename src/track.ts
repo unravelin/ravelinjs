@@ -164,7 +164,7 @@ export class Track {
                 ravelinWindowId: this.windowId,
                 pageTitle: document.title,
                 referrer: document.referrer || undefined,
-                clientEventTimeMilliseconds: Date.now ? Date.now() : +new Date(),
+                clientEventTimeMilliseconds: Date.now(),
                 incognitoDetected: incognitoDetected,
                 suspectedBot: {
                   bot: botDetected.bot,
