@@ -47,7 +47,7 @@ function run(fn) {
     }
 
     var m = v.toString();
-    if (m === {}.toString()) {
+    if (m === Object.prototype.toString()) {
       try {
         m = JSON.stringify(v);
       } catch (e) {
