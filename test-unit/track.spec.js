@@ -1,8 +1,6 @@
-/* globals isolate */
-var expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
-
 describe('ravelin.track', function () {
-  var r;
+  const expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
+  let r;
 
   // afterEach(cleanup) seems to invoke cleanup() after tests return, which is
   // before async tests actually complete.
@@ -20,14 +18,14 @@ describe('ravelin.track', function () {
 
   describe('#load', function () {
     it('sends upon instantiation', function (done) {
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
         r.core
           .ids()
           .then(function (ids) {
-            var loadEvent = JSON.parse(req.body).events[0];
+            const loadEvent = JSON.parse(req.body).events[0];
             expect(loadEvent).to.have.property('eventType', 'track');
             expect(loadEvent.libVer).to.match(expectedVersion);
             expect(loadEvent.eventData).to.eql({ eventName: 'PAGE_LOADED' });
@@ -45,14 +43,14 @@ describe('ravelin.track', function () {
     });
 
     it('sends page props upon instantiation', function (done) {
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
         r.core
           .ids()
           .then(function (ids) {
-            var loadEvent = JSON.parse(req.body).events[0];
+            const loadEvent = JSON.parse(req.body).events[0];
             expect(loadEvent).to.have.property('eventType', 'track');
             expect(loadEvent.libVer).to.match(expectedVersion);
             expect(loadEvent.eventData).to.eql({
@@ -73,8 +71,8 @@ describe('ravelin.track', function () {
     });
 
     it(`doesn't send a page-loaded event when initialised with page:false`, function (done) {
-      var key = this.test.fullTitle();
-      var errored = false;
+      const key = this.test.fullTitle();
+      let errored = false;
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
         errored = true;
@@ -88,8 +86,8 @@ describe('ravelin.track', function () {
     });
 
     it(`doesn't send resize or page-loaded events when initialised with track:false`, function (done) {
-      var key = this.test.fullTitle();
-      var errored = false;
+      const key = this.test.fullTitle();
+      let errored = false;
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
         errored = true;
@@ -109,9 +107,9 @@ describe('ravelin.track', function () {
     });
 
     it('can be manually initialised', function (done) {
-      var key = this.test.fullTitle();
-      var errored = false;
-      var waited = false;
+      const key = this.test.fullTitle();
+      let errored = false;
+      let waited = false;
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
@@ -149,8 +147,8 @@ describe('ravelin.track', function () {
     });
 
     it('sends resize events', function (done) {
-      var key = this.test.fullTitle();
-      var props = {
+      const key = this.test.fullTitle();
+      const props = {
         resolutionOld: { w: window.outerWidth, h: window.outerHeight },
         resolutionNew: { w: window.outerWidth + 20, h: window.outerHeight },
       };
@@ -158,7 +156,7 @@ describe('ravelin.track', function () {
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
-        var event = JSON.parse(req.body);
+        let event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'resize') {
           return { status: 204 };
         }
@@ -200,7 +198,7 @@ describe('ravelin.track', function () {
     });
 
     it('sends custom fields', function (done) {
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
@@ -231,7 +229,7 @@ describe('ravelin.track', function () {
 
   describe('#event', function () {
     it('sends custom events', function (done) {
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
@@ -255,7 +253,7 @@ describe('ravelin.track', function () {
     });
 
     it('sends custom events with properties', function (done) {
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
@@ -283,9 +281,9 @@ describe('ravelin.track', function () {
 
   describe('#paste', function () {
     // IE8 doesn't support createEvent or paste handling at all.
-    var capable = !!document.createEvent;
+    const capable = !!document.createEvent;
     // Safari is difficult to craft a paste event for?
-    var capableContent = !!fakePasteEvent('text/plain', 'test').clipboardData;
+    const capableContent = !!fakePasteEvent('text/plain', 'test').clipboardData;
 
     $([
       {
@@ -513,11 +511,11 @@ describe('ravelin.track', function () {
       it('sends redacted paste events of ' + JSON.stringify(test), function (done) {
         if (!capable) this.skip();
 
-        var key = this.test.fullTitle();
+        const key = this.test.fullTitle();
         xhook.before(function (req) {
           if (!keysMatch(req, key)) return { status: 204 };
 
-          var event = JSON.parse(req.body);
+          let event = JSON.parse(req.body);
           if (
             !event ||
             !event.events ||
@@ -558,7 +556,7 @@ describe('ravelin.track', function () {
 
         r = new Ravelin(isolate($.extend({}, test.cfg, { key: key, api: '/' })));
 
-        var input = $(test.into).appendTo(document.body);
+        let input = $(test.into).appendTo(document.body);
         input = input.find('input')[0] || input[0];
         input.dispatchEvent(fakePasteEvent('text/plain', test.paste));
       });
@@ -567,11 +565,11 @@ describe('ravelin.track', function () {
     it('sends empty paste events from sensitive fields', function (done) {
       if (!capable) this.skip();
 
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
-        var event = JSON.parse(req.body);
+        let event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return { status: 204 };
         }
@@ -604,7 +602,7 @@ describe('ravelin.track', function () {
 
       r = new Ravelin(isolate({ key: key, api: '/' }));
 
-      var input = $(
+      const input = $(
         '<form action=/ name="form-name"><input name=hello data-rvn-sensitive=true></form>'
       )
         .appendTo(document.body)
@@ -615,11 +613,11 @@ describe('ravelin.track', function () {
     it('sends empty paste events from password fields', function (done) {
       if (!capable) this.skip();
 
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
-        var event = JSON.parse(req.body);
+        let event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return { status: 204 };
         }
@@ -652,7 +650,7 @@ describe('ravelin.track', function () {
 
       r = new Ravelin(isolate({ key: key, api: '/' }));
 
-      var input = $('<form action=/ name="form-name"><input type=password name=action></form>')
+      const input = $('<form action=/ name="form-name"><input type=password name=action></form>')
         .appendTo(document.body)
         .find('input')[0];
       input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
@@ -661,11 +659,11 @@ describe('ravelin.track', function () {
     it('sends empty paste events from custom sensitive fields', function (done) {
       if (!capable) this.skip();
 
-      var key = this.test.fullTitle();
+      const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
-        var event = JSON.parse(req.body);
+        let event = JSON.parse(req.body);
         if (!event || !event.events || !event.events[0] || event.events[0].eventType !== 'paste') {
           return { status: 204 };
         }
@@ -708,7 +706,7 @@ describe('ravelin.track', function () {
         })
       );
 
-      var input = $(
+      const input = $(
         '<form action=/ name="form-name"><input type=text name=action sensitive-data></form>'
       )
         .appendTo(document.body)
@@ -728,7 +726,7 @@ describe('ravelin.track', function () {
  */
 function fakePasteEvent(type, content) {
   try {
-    var d = new DataTransfer();
+    const d = new DataTransfer();
     d.setData(type, content);
     return new ClipboardEvent('paste', {
       bubbles: true,
@@ -743,7 +741,7 @@ function fakePasteEvent(type, content) {
     console.error(err);
   }
 
-  var e = document.createEvent('CustomEvent');
+  const e = document.createEvent('CustomEvent');
   e.initEvent('paste', true, true);
   e.dataType = type;
   e.clipboardData = {
@@ -767,7 +765,7 @@ function triggerResize(dw, dh) {
     throw new Error(`triggerResize: outerWidth doesn't exist`);
   }
 
-  var ow = window.outerWidth;
+  const ow = window.outerWidth;
   window.outerWidth += dw || 0;
   if (window.outerWidth === ow) {
     // IE9-10 don't let us artificially change outerWidth. It will always return
@@ -777,7 +775,7 @@ function triggerResize(dw, dh) {
 
   window.outerHeight += dh || 0;
 
-  var e;
+  let e;
   try {
     e = new Event('resize', { bubbles: true });
   } catch {

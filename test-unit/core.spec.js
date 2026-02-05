@@ -6,11 +6,11 @@ describe('ravelin.core', function () {
 
     // Delete all cookies. The tests should be fully isolated anyway, but this
     // makes the error output cleaner.
-    var cookies = document.cookie.split(';');
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf('=');
-      var name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
       document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
   });
@@ -44,7 +44,7 @@ describe('ravelin.core', function () {
     /**
      * @type {IDsTest[]}
      */
-    var tc = [
+    const tc = [
       {
         cookies: {},
         cfg: {},
@@ -156,12 +156,12 @@ describe('ravelin.core', function () {
     ];
     tc.forEach(function (t) {
       it('passes ' + JSON.stringify(t), function () {
-        var cfg = isolate(t.cfg || {});
+        const cfg = isolate(t.cfg || {});
         if (t.cookies) {
           if (t.cookies.device) document.cookie = cfg.cookie + '=' + t.cookies.device;
           if (t.cookies.session) document.cookie = cfg.sessionCookie + '=' + t.cookies.session;
         }
-        var r = new Ravelin(cfg);
+        const r = new Ravelin(cfg);
         return r.core.ids().then(function (ids) {
           expect(ids.device).to.match(t.exp.device);
           expect(ids.session).to.match(t.exp.session);
@@ -174,10 +174,10 @@ describe('ravelin.core', function () {
 
   describe('#id', function () {
     it('can be configured with a string', function () {
-      var cfg = isolate({
+      const cfg = isolate({
         id: 'my-device-id',
       });
-      var r = new Ravelin(cfg);
+      const r = new Ravelin(cfg);
       return r.core.id().then(function (id) {
         expect(id).to.equal('my-device-id');
 
@@ -190,10 +190,10 @@ describe('ravelin.core', function () {
     });
 
     it('can be configured with a Promise', function () {
-      var cfg = isolate({
+      const cfg = isolate({
         id: Promise.resolve('my-device-id'),
       });
-      var r = new Ravelin(cfg);
+      const r = new Ravelin(cfg);
       return r.core.id().then(function (id) {
         expect(id).to.equal('my-device-id');
 
@@ -206,7 +206,7 @@ describe('ravelin.core', function () {
     });
 
     it('can be configured with a Promise that falls back to built-in IDs if empty', function () {
-      var r = new Ravelin(
+      const r = new Ravelin(
         isolate({
           cookie: 'id-empty-promise',
           id: Promise.resolve(''),
@@ -219,7 +219,7 @@ describe('ravelin.core', function () {
     });
 
     it('can be configured with a Promise that falls back to built-in IDs upon errors', function () {
-      var r = new Ravelin(
+      const r = new Ravelin(
         isolate({
           cookie: 'id-error-promise',
           id: Promise.reject('Something went wrong.'),
@@ -239,7 +239,7 @@ describe('ravelin.core', function () {
 
       // This test must happen before other Ravelin instances start persisting a
       // cookie.
-      var r = new Ravelin(
+      const r = new Ravelin(
         isolate({
           cookie: 'expiredDeviceId',
           syncMs: 10000,
@@ -262,14 +262,14 @@ describe('ravelin.core', function () {
     });
 
     it('returns IDs', function () {
-      var r = new Ravelin(isolate({}));
+      const r = new Ravelin(isolate({}));
       return r.core.id().then(function (id) {
         expect(id).to.match(/rjs-[a-z0-9-]{30,}/);
       });
     });
 
     it('returns IDs with a custom prefix', function () {
-      var r = new Ravelin(
+      const r = new Ravelin(
         isolate({
           prefix: '',
         })
@@ -280,7 +280,7 @@ describe('ravelin.core', function () {
     });
 
     it('keeps returning the same ID', function () {
-      var r = new Ravelin(isolate({}));
+      const r = new Ravelin(isolate({}));
       return r.core.id().then(function (id1) {
         return r.core.id().then(function (id2) {
           expect(id1).to.deep.equal(id2);
@@ -289,7 +289,7 @@ describe('ravelin.core', function () {
     });
 
     it('returns the same device ID in id() and ids()', function () {
-      var r = new Ravelin(isolate({}));
+      const r = new Ravelin(isolate({}));
       return r.core.id().then(function (device) {
         return r.core.ids().then(function (ids) {
           expect(device).to.deep.equal(ids.device);
@@ -298,7 +298,7 @@ describe('ravelin.core', function () {
     });
 
     it('sets the ravelinDeviceId and ravelinSessionId cookies by default', function () {
-      var r = new Ravelin({});
+      const r = new Ravelin({});
       return r.core.ids().then(function (ids) {
         expect(document.cookie).to.match(new RegExp('\\bravelinDeviceId=' + ids.device + '\\b'));
         expect(r.core.cookies.get('ravelinDeviceId')).to.equal(ids.device);
@@ -311,27 +311,27 @@ describe('ravelin.core', function () {
     });
 
     it(`doesn't set a device ID cookie if cookieExpiryDays < 0`, function () {
-      var cfg = isolate({
+      const cfg = isolate({
         cookieExpiryDays: -1,
       });
-      var r = new Ravelin(cfg);
+      const r = new Ravelin(cfg);
       return r.core.id().then(function () {
         expect(r.core.cookies.get(cfg.cookie)).to.equal(undefined);
       });
     });
 
     it(`doesn't set a device ID cookie if cookieExpiryDays = 0`, function () {
-      var cfg = isolate({
+      const cfg = isolate({
         cookieExpiryDays: 0,
       });
-      var r = new Ravelin(cfg);
+      const r = new Ravelin(cfg);
       return r.core.id().then(function () {
         expect(r.core.cookies.get(cfg.cookie)).to.equal(undefined);
       });
     });
 
     it('sets a customisable cookie', function () {
-      var r = new Ravelin(
+      const r = new Ravelin(
         isolate({
           cookie: 'custom-guid',
         })
@@ -342,11 +342,11 @@ describe('ravelin.core', function () {
     });
 
     it('reinstates an ID removed from cookies', function () {
-      var cfg = isolate({
+      const cfg = isolate({
         cookie: 'removed-cookie',
         syncMs: 10,
       });
-      var r1 = new Ravelin(cfg);
+      const r1 = new Ravelin(cfg);
       return r1.core.id().then(function (id1) {
         // Remove the cookie.
         r1.core.cookies.set({
@@ -361,7 +361,7 @@ describe('ravelin.core', function () {
         return new Promise(function (resolve) {
           setTimeout(resolve, 300);
         }).then(function () {
-          var r2 = new Ravelin(cfg);
+          const r2 = new Ravelin(cfg);
           return r2.core.id().then(function (id2) {
             expect(id1).to.deep.equal(id2);
           });
@@ -381,7 +381,7 @@ describe('ravelin.core', function () {
         xhook.before(function (r) {
           return { status: 204 };
         });
-        var r = new Ravelin(
+        const r = new Ravelin(
           isolate({
             init: false,
             key: test.key,
@@ -396,8 +396,8 @@ describe('ravelin.core', function () {
       // JavaScript cannot directly read the SameSite attribute of a stored
       // cookie, so this config option can't be tested easily. At least we can
       // check that the config is passed through to the cookie jar.
-      var cfg = isolate({ cookieSameSite: 'Strict;Secure' });
-      var r = new Ravelin(cfg);
+      const cfg = isolate({ cookieSameSite: 'Strict;Secure' });
+      const r = new Ravelin(cfg);
       expect(r.core.cookies.cfg.sameSite).to.equal('Strict;Secure');
     });
 
@@ -410,7 +410,7 @@ describe('ravelin.core', function () {
       { key: 'publishable_key_test_env_123', expApi: 'https://env.ravelin.click' },
     ]).each(function (n, test) {
       it('infers url from key in test = ' + JSON.stringify(test), function () {
-        var r = new Ravelin(
+        const r = new Ravelin(
           isolate({
             key: test.key,
             api: test.api,
@@ -424,11 +424,11 @@ describe('ravelin.core', function () {
   describe('#send', function () {
     it('returns a rejected promise for bad bodies', function () {
       // Create b with a cyclical reference to itself, which will fail to stringify.
-      var b = {};
+      const b = {};
       b.b = b;
 
       // Try to serialise b in a request.
-      var r = new Ravelin(isolate({ key: 'k', api: '/' }));
+      const r = new Ravelin(isolate({ key: 'k', api: '/' }));
       try {
         return r.core.send('POST', 'z', b).then(
           function (r) {
@@ -447,7 +447,7 @@ describe('ravelin.core', function () {
       xhook.before(function (r) {
         throw new Error('not retried');
       });
-      var r = new Ravelin(isolate({ key: 'k', api: '/' }));
+      const r = new Ravelin(isolate({ key: 'k', api: '/' }));
       return r.core.send('POST', 'z', {}).then(
         function pass(r) {
           throw new Error('Exception expected but got result ' + JSON.stringify(r));
@@ -460,7 +460,7 @@ describe('ravelin.core', function () {
     });
 
     it('retries 500s', function () {
-      var failures = 0;
+      let failures = 0;
       xhook.before(function (req) {
         if (failures < 1) {
           failures++;
@@ -468,7 +468,7 @@ describe('ravelin.core', function () {
         }
         return { status: 204 };
       });
-      var rav = new Ravelin(
+      const rav = new Ravelin(
         isolate({
           api: '/',
           key: 'retries',
@@ -491,7 +491,7 @@ describe('ravelin.core', function () {
       xhook.before(function (req) {
         return { status: 0 };
       });
-      var rav = new Ravelin(
+      const rav = new Ravelin(
         isolate({
           api: '/',
           key: 'retries',
@@ -518,7 +518,7 @@ describe('ravelin.core', function () {
       xhook.before(function (req) {
         return { status: 500, text: '{"derp": true}' };
       });
-      var rav = new Ravelin(
+      const rav = new Ravelin(
         isolate({
           api: '/',
           key: 'retries',
