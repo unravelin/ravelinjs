@@ -5,22 +5,8 @@ import ts from 'typescript-eslint';
 
 export default defineConfig([
   // Ignore built and vendored files
-  globalIgnores(['node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
-  // Browser modules (JS)
-  // TODO: remove once lib is fully migrated to TS
-  {
-    files: ['lib/**/*.js'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        RAVELINJS_VERSION: 'readonly',
-      },
-      sourceType: 'module',
-    },
-    plugins: { js },
-    extends: ['js/recommended'],
-  },
-  // Browser modules (TS)
+  globalIgnores(['build', 'dist', 'node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
+  // Browser modules (TypeScript)
   {
     files: ['lib-ts/**/*.ts'],
     languageOptions: {
