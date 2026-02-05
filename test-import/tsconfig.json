@@ -15,8 +15,7 @@
     "noImplicitThis": true
   },
   "exclude": [
-    "lib",
-    "lib-ts",
+    "src",
     "node_modules"
   ]
 }

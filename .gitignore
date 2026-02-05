@@ -71,7 +71,7 @@ sessionid.txt
 .DS_Store
 dist/
 releases/
-build
+build/
 .vscode
 browserstack.err
 browserstack.yml

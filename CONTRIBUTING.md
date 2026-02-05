@@ -52,7 +52,7 @@ CI will run all tests when a commit is pushed to GitHub, essentially:
 
 Locally, you'll be doing the following:
 
-- Edit code in `./lib`.
+- Edit code in `./src`.
 - Building code into the `./build` directory with `npm run build`.
 - After building,
   - Run unit tests locally with `npm run test:unit`.
@@ -61,7 +61,7 @@ Locally, you'll be doing the following:
 
 There are auto-running commands:
 
-- `npm run build:watch` to auto-build when lib is changed; and
+- `npm run build:watch` to auto-build when src is changed; and
 - `npm run test:unit:watch` to auto-test when build is changed.
 - `npm run watch` will run these two commands together.
 
@@ -169,7 +169,7 @@ privacy-sensitivity, backwards-compatibility, filesize,
 
 ## 9. Understand the file structure.
 
-tl;dr: ./lib for real code; ./test for test code.
+tl;dr: ./src for real code; ./test for test code.
 
     ravelinjs
     │
@@ -190,18 +190,18 @@ tl;dr: ./lib for real code; ./test for test code.
     ├── package-lock.json
     │       An exact list of the versions of each dependency installed.
     ├── rollup.config.js
-    │       Defines how ./lib/bundle entrypoints map to ./build files for testing.
+    │       Defines how ./src/bundle entrypoints map to ./build files for testing.
     ├── LICENSE
     │       Apache 2.0 License.
     │
     │   Source
     │   ======
     │
-    ├── lib
+    ├── src
     │   │   The ravelinjs source code.
     │   │
     │   ├── bundle
-    │   │   │   ./lib/bundle are the entrypoints to the ravelinjs source code. Each
+    │   │   │   ./src/bundle are the entrypoints to the ravelinjs source code. Each
     │   │   │   file defines a Ravelin object exported in a bundle of the same name.
     │   │   │   Imports each component in the name from the parent directory.
     │   │   │
@@ -329,10 +329,10 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   ./build contains the working release of the local code as IIFE:
     │   │   var Ravelin = (function() { /* code */; return Ravelin; })();
     │   │   Built once using Rollup with `npm run build` or continuously with
-    │   │   `npm run build:watch` from the files in ./lib/bundle. These files
+    │   │   `npm run build:watch` from the files in ./src/bundle. These files
     │   │   are copied into ./releases/ravelinjs-$vers before being published.
     │   │   The below example files are generated from
-    │   │   ./lib/bundle/core+track+encrypt.js.
+    │   │   ./src/bundle/core+track+encrypt.js.
     │   │
     │   ├── ravelin-core+track+encrypt.js
     │   ├── ravelin-core+track+encrypt.js.map
@@ -343,7 +343,7 @@ tl;dr: ./lib for real code; ./test for test code.
     │   │   ./dist contains the working release of the local code as a CommonJS
     │   │   UMD module. Built once using Rollup with `npm run build` or
     │   │   continuously with `npm run build:watch` from the files in
-    │   │   ./lib/bundle, and converted into a publishable npm package with
+    │   │   ./src/bundle, and converted into a publishable npm package with
     |   |   `npm run dist`:
     │   │
     │   ├── core.js

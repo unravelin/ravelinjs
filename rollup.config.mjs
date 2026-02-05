@@ -41,7 +41,7 @@ function withTsPlugin(tsConfig) {
   return draft;
 }
 
-const bundles = globSync('lib-ts/bundle/*.ts').sort((a, b) => b.length - a.length);
+const bundles = globSync('src/bundle/*.ts').sort((a, b) => b.length - a.length);
 
 const builds = bundles
   .map(bundle => {

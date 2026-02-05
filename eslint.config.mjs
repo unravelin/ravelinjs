@@ -8,7 +8,7 @@ export default defineConfig([
   globalIgnores(['build', 'dist', 'node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
   // Browser modules (TypeScript)
   {
-    files: ['lib-ts/**/*.ts'],
+    files: ['src/**/*.ts'],
     languageOptions: {
       parserOptions: {
         projectService: true,
