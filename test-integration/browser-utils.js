@@ -41,13 +41,13 @@ function run(fn) {
   function stringify(v) {
     if (v instanceof Error) {
       var em = v.message;
-      if (v.name) em = v.name + ": " + em;
-      if (v.stack) em = em + "\nStack: " + v.stack;
+      if (v.name) em = v.name + ': ' + em;
+      if (v.stack) em = em + '\nStack: ' + v.stack;
       return em;
     }
 
     var m = v.toString();
-    if (m === ({}).toString()) {
+    if (m === {}.toString()) {
       try {
         m = JSON.stringify(v);
       } catch (e) {

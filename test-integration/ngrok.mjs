@@ -1,5 +1,5 @@
-import ngrok from '@ngrok/ngrok';
 import { setTimeout } from 'timers/promises';
+import ngrok from '@ngrok/ngrok';
 
 const retryDelay = 2000;
 

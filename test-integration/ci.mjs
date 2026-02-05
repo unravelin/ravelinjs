@@ -30,8 +30,8 @@ export async function updateCommitStatus(logs) {
     const error = !url
       ? 'No valid BrowserStack build URL found in logs.'
       : !counts
-      ? 'No test results found in logs.'
-      : null;
+        ? 'No test results found in logs.'
+        : null;
 
     if (error) {
       console.error(error);

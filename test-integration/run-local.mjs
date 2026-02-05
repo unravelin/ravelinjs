@@ -16,7 +16,7 @@ if (!testPath) {
 
 checkCertsExist();
 
-startServer(async (tunnelUrl) => {
+startServer(async tunnelUrl => {
   console.log('Tunnel URL:', tunnelUrl);
   let exitCode = 0;
 
@@ -46,16 +46,16 @@ function runTests(tunnelUrl) {
       env: { ...process.env, TUNNEL_URL: tunnelUrl },
     });
 
-    p.stdout.on('data', (data) => {
+    p.stdout.on('data', data => {
       process.stdout.write(data.toString());
     });
-    p.stderr.on('data', (data) => {
+    p.stderr.on('data', data => {
       process.stderr.write(data.toString());
     });
-    p.on('error', (err) => {
+    p.on('error', err => {
       reject(err);
     });
-    p.on('exit', (code) => {
+    p.on('exit', code => {
       resolve(code);
     });
   });

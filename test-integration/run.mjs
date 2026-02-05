@@ -10,7 +10,7 @@ checkCertsExist();
 
 buildBrowserStackConfig();
 
-startServer(async (tunnelUrl) => {
+startServer(async tunnelUrl => {
   let exitCode = 0;
 
   try {
@@ -41,18 +41,18 @@ function runTests(tunnelUrl) {
       env: { ...process.env, TUNNEL_URL: tunnelUrl },
     });
 
-    p.stdout.on('data', (data) => {
+    p.stdout.on('data', data => {
       const log = data.toString();
       logs.push(log);
       process.stdout.write(log);
     });
-    p.stderr.on('data', (data) => {
+    p.stderr.on('data', data => {
       process.stderr.write(data.toString());
     });
-    p.on('error', (err) => {
+    p.on('error', err => {
       reject(err);
     });
-    p.on('exit', (code) => {
+    p.on('exit', code => {
       resolve(code);
     });
   });

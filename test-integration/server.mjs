@@ -1,10 +1,10 @@
-import cors from 'cors';
-import express from 'express';
 import fs from 'fs';
 import https from 'https';
+import path from 'path';
+import cors from 'cors';
+import express from 'express';
 import mingo from 'mingo';
 import onFinished from 'on-finished';
-import path from 'path';
 import { startTunnel } from './ngrok.mjs';
 
 /** @type {import('node:http').Server} */
@@ -194,9 +194,7 @@ export function checkCertsExist() {
   }
   const rootCAPath = process.env.NODE_EXTRA_CA_CERTS;
   if (rootCAPath && !fs.existsSync(rootCAPath)) {
-    console.error(
-      `NODE_EXTRA_CA_CERTS is set to '${rootCAPath}', but the file does not exist.`
-    );
+    console.error(`NODE_EXTRA_CA_CERTS is set to '${rootCAPath}', but the file does not exist.`);
     process.exit(1);
   }
 }
