@@ -24,8 +24,6 @@ interface Dimensions {
 
 interface Listener {
   target: EventTarget;
-  addFn: string;
-  delFn: string;
   event: string;
   handler: (e: Event) => unknown;
 }
@@ -87,47 +85,34 @@ export class Track {
 
     this._attach({
       target: document,
-      addFn: 'addEventListener',
-      delFn: 'removeEventListener',
       event: 'paste',
       handler: this.core.bind(this.paste, this),
     });
 
     this._attach({
       target: window,
-      addFn: 'addEventListener',
-      delFn: 'removeEventListener',
       event: 'resize',
       handler: debounce(250, this.core.bind(this.resize, this)),
     });
   }
 
   /**
-   * Mirrors target.addEventListener(event, handler) where addFn would be
-   * 'addEventListener' and delFn 'removeEventListener'.
+   * Mirrors target.addEventListener(event, handler) and
+   * stores the listener so we can remove it later.
    */
-  private _attach(e: Listener): unknown {
+  private _attach(e: Listener): void {
     this._listeners.push(e);
-    const fn = e.target[e.addFn];
-    if (fn.call) {
-      return fn.call(e.target, e.event, e.handler);
-    }
-    return fn(e.event, e.handler);
+    e.target.addEventListener(e.event, e.handler);
   }
 
   /**
-   * Removes event listeners that we added.
+   * Removes event listeners that were added.
    */
   public _detach(): void {
     while (this._listeners && this._listeners.length > 0) {
       const e = this._listeners.pop();
       if (e) {
-        const fn = e.target[e.delFn];
-        if (fn.call) {
-          fn.call(e.target, e.event, e.handler);
-        } else {
-          fn(e.event, e.handler);
-        }
+        e.target.removeEventListener(e.event, e.handler);
       }
     }
   }
