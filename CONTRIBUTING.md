@@ -90,7 +90,7 @@ the Mocha unit test page in any browser. Use this if you want to step through
 using a remote browser.
 
 Unit tests run in the browser and therefore must be written in browser-compatible
-JavaScript, as with code in the lib. The tests have access to:
+JavaScript, as with code in `src`. The tests have access to:
 
 - `Ravelin` from the local `build/ravelin-core+track+encrypt.min.js` (symlinked via `test-integration/ravelin.js`);
 - the [Mocha test framework](https://mochajs.org/);
