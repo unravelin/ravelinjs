@@ -84,7 +84,7 @@ export function buildUrl({ baseUrl, path, queryParams }) {
   // tunnel requests to our local server.
   const url = new URL(path, baseUrl || process.env.LOCAL_URL || 'https://bs-local.com:3000');
 
-  Object.keys(queryParams).forEach((key) => {
+  Object.keys(queryParams).forEach(key => {
     if (queryParams[key] !== undefined) {
       url.searchParams.append(key, queryParams[key]);
     }

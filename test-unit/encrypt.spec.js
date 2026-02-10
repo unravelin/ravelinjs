@@ -1,127 +1,155 @@
-var dummyRSAKey = '10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601';
-var expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
+const dummyRSAKey =
+  '10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601';
+const expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
 
-describe('ravelin.encrypt', function() {
-  describe('#card', function() {
-    it('validates it has an rsaKey', function() {
-      var ravelin = new Ravelin({
+describe('ravelin.encrypt', function () {
+  describe('#card', function () {
+    it('validates it has an rsaKey', function () {
+      const ravelin = new Ravelin({
         api: '/',
-        key: 'encrypt'
+        key: 'encrypt',
         // rsaKey: ...
       });
-      expect(function() { ravelin.encrypt.card({}); }).to.throw('ravelin/encrypt: no rsaKey provided');
+      expect(function () {
+        ravelin.encrypt.card({});
+      }).to.throw('ravelin/encrypt: no rsaKey provided');
     });
 
-    it('validates card details exist', function() {
-      var ravelin = new Ravelin({
+    it('validates card details exist', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
-      var err = 'ravelin/encrypt: card is required';
-      expect(function() { ravelin.encrypt.card(null); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card(undefined); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card(false); }).to.throw(err);
+      const err = 'ravelin/encrypt: card is required';
+      expect(function () {
+        ravelin.encrypt.card(null);
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card(undefined);
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card(false);
+      }).to.throw(err);
     });
 
-    it('validates pan has at least 12 digits', function() {
-      var ravelin = new Ravelin({
+    it('validates pan has at least 12 digits', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
-      var err = 'ravelin/encrypt: card.pan should have at least 12 digits';
-      expect(function() { ravelin.encrypt.card({}); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111'}); }).to.throw(err);
+      const err = 'ravelin/encrypt: card.pan should have at least 12 digits';
+      expect(function () {
+        ravelin.encrypt.card({});
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111' });
+      }).to.throw(err);
     });
 
-    it('validates month is in the range 1-12', function() {
-      var ravelin = new Ravelin({
+    it('validates month is in the range 1-12', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
-      var err = 'ravelin/encrypt: card.month should be in the range 1-12';
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111'}); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 0}); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 13}); }).to.throw(err);
+      const err = 'ravelin/encrypt: card.month should be in the range 1-12';
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111' });
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 0 });
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 13 });
+      }).to.throw(err);
     });
 
-    it('validates year is in the 21st century', function() {
-      var ravelin = new Ravelin({
+    it('validates year is in the 21st century', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
-      var err = 'ravelin/encrypt: card.year should be in the 21st century';
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1}); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1, year: -1}); }).to.throw(err);
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1, year: 'yesteryear'}); }).to.throw(err);
+      const err = 'ravelin/encrypt: card.year should be in the 21st century';
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 1 });
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 1, year: -1 });
+      }).to.throw(err);
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 1, year: 'yesteryear' });
+      }).to.throw(err);
     });
 
-    it('validates no unknown attributes are present', function() {
-      var ravelin = new Ravelin({
+    it('validates no unknown attributes are present', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
 
-      var err = 'ravelin/encrypt: unrecognised property cvv';
-      expect(function() { ravelin.encrypt.card({pan: '4111 1111 1111 1111', month: 1, year: '18', 'cvv': '123'}); }).to.throw(err);
+      const err = 'ravelin/encrypt: unrecognised property cvv';
+      expect(function () {
+        ravelin.encrypt.card({ pan: '4111 1111 1111 1111', month: 1, year: '18', cvv: '123' });
+      }).to.throw(err);
     });
 
-    it('generates ciphers', function() {
-      var ravelin = new Ravelin({
+    it('generates ciphers', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
 
-      var testCases = [
+      const testCases = [
         { pan: 4111111111111111, month: 10, year: 2020 },
         { pan: '4111-1111-1111-1111', month: 10, year: 2020 },
         { pan: '4111111111111111', month: 10, year: 2020 },
         { pan: '4111 1111 1111 1111', month: 10, year: 2020 },
         { pan: '4111 1111 1111 1111', month: 10, year: '20' },
-        { pan: '4111 1111 1111 1111', month: '12', year: '20' }
+        { pan: '4111 1111 1111 1111', month: '12', year: '20' },
       ];
 
-      for (var i = 0; i < testCases.length; i++) {
-        var result = ravelin.encrypt.card(testCases[i]);
+      for (let i = 0; i < testCases.length; i++) {
+        const result = ravelin.encrypt.card(testCases[i]);
         expectCipher(result);
       }
     });
 
-    it('includes key index in cipher', function() {
-      var dummyRDAKeyWithIndex = '2|10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601';
-      var ravelin = new Ravelin({
+    it('includes key index in cipher', function () {
+      const dummyRDAKeyWithIndex =
+        '2|10001|BB2D2D2FD3812FEBECF8955843228A0E1952342583DFC02B8393475C414E16FDCBE8753BD63C164104785D8A67E344D495B5C0C622CE8D643F3191BC6BE0D3050F391F77E1D7E1B8F69DA34B308477E31F775CCC44158E33FD7DDD51AC87DD33AD80B9B1BF850CEC79A189F011C0689C36C0C91BF6DB9CD65BB7399710E32D9876C00DD44103E54A64A44BF427E1BA4F48DA7AF3D623DBCCF282ED8D4CCAE31B921A9BE92F9E8D7B5C50FBD89D828539CAE3E3493D4F6D7ADA19A876D9DF3801B5C3CFFA6A3C72A246150F307D789BAD6E2408DA5EF05EE805E11C133FFEDFA57CD1C35E49106ADDAC43C51995B9C318066C9ACB4042D8A534370D79F1BAD601';
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRDAKeyWithIndex
+        rsaKey: dummyRDAKeyWithIndex,
       });
-      var result = ravelin.encrypt.card({
+      const result = ravelin.encrypt.card({
         pan: '4111 1111 1111 1111',
         month: 10,
-        year: 2020
+        year: 2020,
       });
       expect(result.keyIndex).to.equal(2);
       expectCipher(result);
     });
 
-    it('is different each call', function() {
-      var ravelin = new Ravelin({
+    it('is different each call', function () {
+      const ravelin = new Ravelin({
         api: '/',
         key: 'encrypt',
-        rsaKey: dummyRSAKey
+        rsaKey: dummyRSAKey,
       });
-      var input = {
+      const input = {
         pan: '4111 1111 1111 1111',
         month: 10,
-        year: 2020
+        year: 2020,
       };
 
-      var outputA = ravelin.encrypt.card(input);
-      var outputB = ravelin.encrypt.card(input);
+      const outputA = ravelin.encrypt.card(input);
+      const outputB = ravelin.encrypt.card(input);
 
       expectCipher(outputA);
       expectCipher(outputB);

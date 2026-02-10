@@ -5,24 +5,10 @@ import ts from 'typescript-eslint';
 
 export default defineConfig([
   // Ignore built and vendored files
-  globalIgnores(['node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
-  // Browser modules (JS)
-  // TODO: remove once lib is fully migrated to TS
+  globalIgnores(['build', 'dist', 'node_modules', '**/ravelin.js', '**/*-vendored.{js,ts}']),
+  // Browser modules (TypeScript)
   {
-    files: ['lib/**/*.js'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        RAVELINJS_VERSION: 'readonly',
-      },
-      sourceType: 'module',
-    },
-    plugins: { js },
-    extends: ['js/recommended'],
-  },
-  // Browser modules (TS)
-  {
-    files: ['lib-ts/**/*.ts'],
+    files: ['src/**/*.ts'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -84,7 +70,6 @@ export default defineConfig([
         describe: 'readonly',
         expect: 'readonly',
         it: 'readonly',
-        keysMatch: 'readonly',
         module: 'readonly',
         Ravelin: 'readonly',
         xhook: 'readonly',
