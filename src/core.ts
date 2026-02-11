@@ -261,7 +261,7 @@ export class Core {
     return promiseRetry(
       (retry, attempt) => {
         // Make the request
-        return this._sendXHR(method, url, stringify(body)).then(r => {
+        return this._sendXHR(method, url, JSON.stringify(body)).then(r => {
           r.attempt = attempt;
 
           // Resolve/reject based on status
@@ -358,22 +358,4 @@ function apiFromKey(key: string | undefined): string {
   }
 
   return 'https://' + encodeURIComponent(env) + '.ravelin.click';
-}
-
-/**
- * stringify is JSON.stringify with prototype safety.
- */
-function stringify(obj: any): string {
-  const proto = Array.prototype as any;
-
-  if (proto.toJSON) {
-    // https://stackoverflow.com/questions/710586/json-stringify-array-bizarreness-with-prototype-js
-    const _array_tojson = proto.toJSON;
-    delete proto.toJSON;
-    const str = JSON.stringify(obj);
-    // Restore native extension
-    proto.toJSON = _array_tojson;
-    return str;
-  }
-  return JSON.stringify(obj);
 }
