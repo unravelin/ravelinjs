@@ -59,7 +59,7 @@ instantiate your Ravelin instance on the page:
 ```
 
 > If you have a build system, you can instead install [ravelinjs with
-> npm](https://npmjs.com/ravelinjs) using `npm i ravelinjs@1` and require or
+> npm](https://npmjs.com/ravelinjs) using `npm i ravelinjs@2` and require or
 > import Ravelin for instantiating:
 >
 > ```js
@@ -113,7 +113,7 @@ using it, you can install [ravelinjs from
 npm](https://www.npmjs.com/package/ravelinjs) with:
 
 ```bash
-npm install ravelinjs@1
+npm install ravelinjs@2
 ```
 
 You can then import the desired bundle within the RavelinJS library. For
@@ -362,7 +362,7 @@ var cipher = ravelin.encrypt.card({
     /** @prop {string|number} month The expiry month on the card. 1 => Jan. */
     month: '1',
     /** @prop {string} [nameOnCard] Optional cardholder name. */
-    nameOnCard: 'Tom Johnson'
+    nameOnCard: 'Tom Johnson',
     /** @prop {string} [rsaKey] Optional RSA public key to use. Can be set during instantiation. */
     // rsaKey: '0|...',
 });
@@ -474,17 +474,17 @@ opaque string.
 
 ### Upgrading to RavelinJS v2 from RavelinJS v1
 
-This major version release was made to signify the end of our support for
-Internet Explorer 8-11. If you are unable to upgrade to v2 because you want
-to continue supporting any of these browsers, please let us know.
+This major version release marks the end of support for Internet Explorer. If
+you are unable to upgrade to v2 because you want to continue supporting Internet
+Explorer, please let us know.
 
-If you do not need to support IE8-IE11, just go ahead and upgrade.
+If you do not need to support Internet Explorer, just go ahead and upgrade.
 
-As support for IE8-IE11 has been dropped, so has the need to allow injecting a
-custom Promise to RavelinJS. As such, the +promise component has been dropped.
-If you are using this component, update references to remove it.
+With the removal of IE support, a custom Promise implementation is no longer
+necessary. As such, the +promise component has been removed. If you are using
+this component, please update references to remove it.
 
-eg.
+For example, change
 
 ```html
 <script src="ravelin-core+track+encrypt+promise.min.js"></script>
@@ -494,7 +494,7 @@ to
 <script src="ravelin-core+track+encrypt.min.js"></script>
 ```
 
-and
+or change
 
 ```js
 import Ravelin from 'ravelinjs/core+track+encrypt+promise';
@@ -509,7 +509,7 @@ import Ravelin from 'ravelinjs/core+track+encrypt';
 ### Upgrading to RavelinJS v2 from RavelinJS v0
 
 If you are using RavelinJS v0 from a script or loaded via npm then equivalent
-functionality is now covered by bundles  with the core+track+encrypt components.
+functionality is now covered by bundles with the core+track+encrypt components.
 Please review which components you need in the [bundles](#bundles) and complete
 the [quickstart] setup instructions. You can now remove cdn.ravelin.net from
 your Content-Security-Policy and make the following substitutions to complete
