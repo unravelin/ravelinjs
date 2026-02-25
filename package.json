@@ -25,6 +25,7 @@
     "release:tarball": "cd releases; tar -czf ravelinjs-$npm_package_version.tar.gz ravelinjs-$npm_package_version",
     "lint:ts": "eslint -f codeframe --max-warnings 0",
     "lint:prettier": "prettier --write --experimental-cli --log-level warn '**/*.{ts,js,mjs}'",
+    "test": "npm run test:integration:local && npm run test:import",
     "test:unit": "karma start ./test-unit/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs",
