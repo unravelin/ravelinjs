@@ -111,23 +111,27 @@ function generatePlatforms() {
 
   return [
     singlePlatform,
+    // Firefox on Windows 10
     {
       browserName: 'Firefox',
       os: 'Windows',
       osVersion: 10,
       browserVersion: 'latest',
     },
+    // Safari on macOS Sequoia (2024)
     {
       os: 'OS X',
       osVersion: 'Sequoia',
       browserName: 'Safari',
       browserVersion: '18.4',
     },
+    // Safari on iOS 17 (2024)
     {
       browserName: 'safari',
       osVersion: 17,
       deviceName: 'iPhone 15',
     },
+    // Chrome on Android 13 (2022)
     {
       browserName: 'chrome',
       osVersion: '13.0',
