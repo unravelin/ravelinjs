@@ -94,7 +94,7 @@ function gitBranch() {
 
 /**
  * Returns a list of platforms to run against.
- * @returns {String[]}
+ * @returns {Object[]}
  */
 function generatePlatforms() {
   // Chrome on Windows 11
