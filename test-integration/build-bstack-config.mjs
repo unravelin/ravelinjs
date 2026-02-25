@@ -25,7 +25,41 @@ export function buildBrowserStackConfig() {
       localProxyHost: 'localhost',
       localProxyPort: 3000,
     },
-    platforms: generatePlatforms(),
+    platforms: [
+      // Chrome on Windows 11
+      {
+        os: 'Windows',
+        osVersion: 11,
+        browserName: 'Chrome',
+        browserVersion: 'latest',
+      },
+      // Firefox on Windows 10
+      {
+        browserName: 'Firefox',
+        os: 'Windows',
+        osVersion: 10,
+        browserVersion: 'latest',
+      },
+      // Safari on macOS Sequoia (2024)
+      {
+        os: 'OS X',
+        osVersion: 'Sequoia',
+        browserName: 'Safari',
+        browserVersion: '18.4',
+      },
+      // Safari on iOS 17 (2024)
+      {
+        browserName: 'safari',
+        osVersion: 17,
+        deviceName: 'iPhone 15',
+      },
+      // Chrome on Android 13 (2022)
+      {
+        browserName: 'chrome',
+        osVersion: '13.0',
+        deviceName: 'Samsung Galaxy S23',
+      },
+    ],
   };
 
   // Generate the YAML configuration for BrowserStack
@@ -90,52 +124,4 @@ function gitBranch() {
   } catch (err) {
     throw new Error('git rev-parse: ' + err.message);
   }
-}
-
-/**
- * Returns a list of platforms to run against.
- * @returns {Object[]}
- */
-function generatePlatforms() {
-  // Chrome on Windows 11
-  const singlePlatform = {
-    os: 'Windows',
-    osVersion: 11,
-    browserName: 'Chrome',
-    browserVersion: 'latest',
-  };
-
-  if (process.argv.includes('--single-platform')) {
-    return [singlePlatform];
-  }
-
-  return [
-    singlePlatform,
-    // Firefox on Windows 10
-    {
-      browserName: 'Firefox',
-      os: 'Windows',
-      osVersion: 10,
-      browserVersion: 'latest',
-    },
-    // Safari on macOS Sequoia (2024)
-    {
-      os: 'OS X',
-      osVersion: 'Sequoia',
-      browserName: 'Safari',
-      browserVersion: '18.4',
-    },
-    // Safari on iOS 17 (2024)
-    {
-      browserName: 'safari',
-      osVersion: 17,
-      deviceName: 'iPhone 15',
-    },
-    // Chrome on Android 13 (2022)
-    {
-      browserName: 'chrome',
-      osVersion: '13.0',
-      deviceName: 'Samsung Galaxy S23',
-    },
-  ];
 }
