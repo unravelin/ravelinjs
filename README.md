@@ -17,8 +17,8 @@ Guidelines](https://github.com/unravelin/ravelinjs/blob/v2/CONTRIBUTING.md)
 detail how to write and test code for RavelinJS.
 
 Note that this documentation is for version 2 of RavelinJS. For version 1,
-please see its [usage guide](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1/),
-[reference](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1/#reference/)
+please see its [usage guide](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1),
+[reference](https://developer.ravelin.com/merchant/libraries-and-sdks/ravelinjs/v1/#reference)
 and [source](https://github.com/unravelin/ravelinjs/tree/v1).
 
 ## Table of Contents
