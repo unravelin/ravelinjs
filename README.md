@@ -164,7 +164,7 @@ contents using:
 
 ## Browser Compatibility
 
-RavelinJS v2 is [tested on recent versions of Chrome, Safari, Firefox, and mobile](https://github.com/unravelin/ravelinjs/blob/v2//test-integration/build-bstack-config.mjs).
+RavelinJS v2 is [tested on recent versions of Chrome, Safari, Firefox, and mobile](https://github.com/unravelin/ravelinjs/blob/v2/test-integration/build-bstack-config.mjs).
 
 ## Examples
 
