@@ -100,5 +100,5 @@ steps:
       "--env", "PROJECT_ID=$PROJECT_ID",
       "--env", "COMMIT_SHA=$COMMIT_SHA",
       "--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,bind-propagation=rprivate",
-      "europe-docker.pkg.dev/$PROJECT_ID/container/gcb2gh:0.0.4",
+      "europe-docker.pkg.dev/$PROJECT_ID/container/gcb2gh:0.0.6",
     ]
