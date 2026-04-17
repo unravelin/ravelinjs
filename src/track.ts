@@ -77,6 +77,13 @@ export class Track {
   }
 
   /**
+   * Disable tracking by removing all event listeners.
+   */
+  public disable(): void {
+    this._detach();
+  }
+
+  /**
    * Attach event listeners at the root of the document
    * to return some key events back to Ravelin.
    */
