@@ -229,6 +229,60 @@ describe('ravelin.track', function () {
     });
   });
 
+  describe('#disable', function () {
+    it('removes all event listeners', function (done) {
+      const key = this.test.fullTitle();
+      let errored = false;
+      let waited = false;
+      xhook.before(function (req) {
+        if (!keysMatch(req, key)) return { status: 204 };
+
+        // Expect to get the initial page-loaded event.
+        if (!waited) {
+          r.core.ids().then(function (ids) {
+            const loadEvent = JSON.parse(req.body).events[0];
+            expect(loadEvent).to.have.property('eventType', 'track');
+            expect(loadEvent.libVer).to.match(expectedVersion);
+            expect(loadEvent.eventData).to.eql({
+              eventName: 'PAGE_LOADED',
+              properties: { section: 'test' },
+            });
+            expect(loadEvent.eventMeta.trackingSource).to.equal('browser');
+            expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
+            expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
+            expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
+            expect(loadEvent.eventMeta.suspectedBot.bot).to.be.a('boolean');
+            expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
+          });
+        } else {
+          // We should get no other events.
+          errored = true;
+          done('received an API request but should have gotten none: ' + JSON.stringify(req));
+        }
+
+        return { status: 204 };
+      });
+      r = new Ravelin(isolate({ key: key, api: '/', page: { section: 'test' } }));
+
+      // Disable tracking.
+      r.track.disable();
+
+      setTimeout(function () {
+        waited = true;
+
+        // Trigger a paste event.
+        const input = $('<form action=/ name="form-name"><input name=hello></form>')
+          .appendTo(document.body)
+          .find('input')[0];
+        input.dispatchEvent(fakePasteEvent('text/plain', 'hello'));
+      }, 200);
+
+      setTimeout(function () {
+        if (!errored) done();
+      }, 300);
+    });
+  });
+
   describe('#event', function () {
     it('sends custom events', function (done) {
       const key = this.test.fullTitle();
