@@ -102,7 +102,6 @@ describe('ravelinjs.track', () => {
 
     const modifierKey = platform.os === 'OS X' ? Key.COMMAND : Key.CONTROL;
 
-    // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
 
     // We need to send multple paste events so wrapping this in a function for reuse.

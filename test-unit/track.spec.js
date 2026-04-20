@@ -237,7 +237,7 @@ describe('ravelin.track', function () {
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
 
-        // Expect to get the initial page-loaded event.
+        // Expect to get the initial page-loaded event
         if (!waited) {
           r.core.ids().then(function (ids) {
             const loadEvent = JSON.parse(req.body).events[0];
@@ -255,7 +255,7 @@ describe('ravelin.track', function () {
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           });
         } else {
-          // We should get no other events.
+          // We should get no further events
           errored = true;
           done('received an API request but should have gotten none: ' + JSON.stringify(req));
         }
@@ -264,13 +264,13 @@ describe('ravelin.track', function () {
       });
       r = new Ravelin(isolate({ key: key, api: '/', page: { section: 'test' } }));
 
-      // Disable tracking.
+      // Disable tracking
       r.track.disable();
 
       setTimeout(function () {
         waited = true;
 
-        // Trigger a paste event.
+        // Trigger a paste event
         const input = $('<form action=/ name="form-name"><input name=hello></form>')
           .appendTo(document.body)
           .find('input')[0];
