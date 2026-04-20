@@ -99,7 +99,7 @@ describe('ravelinjs.track', () => {
 
   it('disables and re-enables tracking', async () => {
     // Disable tracking
-    await driver.executeScript('window.ravelin.track.disable();');
+    await driver.executeScript('window.Ravelin.track.disable();');
 
     // Send a paste event
     const testFirstName = 'Peter';
@@ -234,7 +234,7 @@ describe('ravelinjs.track', () => {
     await copyAndPasteText(testFirstName, 'in-fname');
 
     // Re-enable tracking
-    await driver.executeScript('window.ravelin.track.init();');
+    await driver.executeScript('window.Ravelin.track.init();');
 
     await copyAndPasteText(testLastName, 'in-lname');
 
