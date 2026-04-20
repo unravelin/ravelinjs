@@ -98,13 +98,6 @@ describe('ravelinjs.track', () => {
   });
 
   it('disables and re-enables tracking', async () => {
-    // Disable tracking
-    await driver.executeScript('window.Ravelin.track.disable();');
-
-    // Send a paste event
-    const testFirstName = 'Peter';
-    const testLastName = 'Applehead';
-
     const platform = getCurrentPlatform();
 
     const modifierKey = platform.os === 'OS X' ? Key.COMMAND : Key.CONTROL;
@@ -112,6 +105,7 @@ describe('ravelinjs.track', () => {
     // Write into <input id="clip-stage" /> then copy out
     const clipStage = await driver.findElement(By.id('clip-stage'));
 
+    // We need to send multple paste events so wrapping this in a function for reuse.
     async function copyAndPasteText(textToPaste, elementToPasteTo) {
       await clipStage.clear();
 
@@ -231,14 +225,22 @@ describe('ravelinjs.track', () => {
       return inTracked;
     }
 
+    const testFirstName = 'Peter';
+    const testLastName = 'Applehead';
+
+    // Disable tracking
+    await driver.executeScript('window.Ravelin.track.disable();');
+
+    // Do the first paste event
     await copyAndPasteText(testFirstName, 'in-fname');
 
     // Re-enable tracking
     await driver.executeScript('window.Ravelin.track.init();');
 
+    // Do another paste event
     await copyAndPasteText(testLastName, 'in-lname');
 
-    // Fetch the paste event we shared
+    // Fetch the paste event.
     // We are matching based on the formName. If the first name paste event has come
     // through, it will be the first event matched, so the following checks will fail.
     const pasteEvent = await fetchRequestLog(driver, {
