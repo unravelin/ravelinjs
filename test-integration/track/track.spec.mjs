@@ -133,7 +133,7 @@ describe('ravelinjs.track', () => {
         await clipStage.sendKeys(Key.chord(modifierKey, 'c'));
       }
 
-      // Paste into <input name="fname" id="in-fname" />
+      // Paste into the input element
       const inTracked = await driver.findElement(By.id(elementToPasteTo));
 
       // Move mouse to the input and click it
@@ -239,6 +239,8 @@ describe('ravelinjs.track', () => {
     await copyAndPasteText(testLastName, 'in-lname');
 
     // Fetch the paste event we shared
+    // We are matching based on the formName. If the first name paste event has come
+    // through, it will be the first event matched, so the following checks will fail.
     const pasteEvent = await fetchRequestLog(driver, {
       path: '/z',
       query: { key },
@@ -250,6 +252,7 @@ describe('ravelinjs.track', () => {
       },
     });
 
+    // Ensure that the matched event is for last name field.
     expect(pasteEvent).to.exist;
     expect(pasteEvent.bodyJSON.events).to.have.length(1);
     expect(pasteEvent.bodyJSON.events[0]).to.containSubset({
