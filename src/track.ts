@@ -77,7 +77,8 @@ export class Track {
   }
 
   /**
-   * Disable tracking by removing all event listeners.
+   * Disable tracking by removing all automatically attached event listeners,
+   * (paste and resize). Manually attached track events will still be sent.
    */
   public disable(): void {
     this._detach();
