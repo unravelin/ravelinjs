@@ -36,7 +36,6 @@ describe('ravelinjs.track', () => {
     const modifierKey = platform.os === 'OS X' ? Key.COMMAND : Key.CONTROL;
 
     const clipStage = await driver.findElement(By.id('clip-stage'));
-
     await clipStage.clear();
 
     // Move mouse to the input and click it
