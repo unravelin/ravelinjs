@@ -1,17 +1,25 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>track test</title>
   <link rel="stylesheet" href="../style.css" />
 </head>
+
 <body>
   <h1>track test</h1>
 
   <input id="clip-stage" type="text" />
+  <input id="name-clip-stage" type="text" />
+
+  <form name="nameForm" action="/form-action" method="POST">
+    <fieldset>First name:<br><input id="in-fname" name="fname" type="text" /></fieldset>
+    <fieldset>Last name:<br><input id="in-lname" name="lname" type="text" /></fieldset>
+  </form>
 
   <form name="cardForm" action="/form-action" method="POST">
-    <fieldset>PAN:<br><input id="in-pan" name="name" type="text" data-rvn-pan /></fieldset>
+    <fieldset>PAN:<br><input id="in-pan" name="card" type="text" data-rvn-pan /></fieldset>
   </form>
 
   <h2>Output</h2>
@@ -22,15 +30,17 @@
   <script src="../browser-utils.js"></script>
   <script src="../ravelin.js"></script>
   <script>
-    run(function() {
+    run(function () {
       var q = parseQuery(window.location.search);
       var r = new Ravelin({
         api: '/',
         key: q.key || 'hello',
         sendRetryMs: 1
       });
+      window.Ravelin = r;
       done();
     });
   </script>
 </body>
+
 </html>
