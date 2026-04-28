@@ -71,7 +71,7 @@
     "lint-staged": "16.2.7",
     "mingo": "6.3.4",
     "mocha": "11.7.1",
-    "np": "7.7.0",
+    "np": "11.2.0",
     "npm-run-all": "4.1.5",
     "on-finished": "2.4.1",
     "prettier": "3.8.0",
@@ -91,7 +91,7 @@
     "detectincognitojs": "1.6.2"
   },
   "np": {
-    "yarn": false,
+    "packageManager": "npm",
     "branch": "v2",
     "contents": "./dist"
   },
