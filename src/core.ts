@@ -10,7 +10,7 @@ import { promiseRetry, uuid } from './utils';
 declare const RAVELINJS_VERSION: string;
 
 /**
- * Configuration for the Core module.
+ * Configuration for the Core module. Test update.
  */
 export interface CoreConfig {
   /** The API key ("publishable_key_..." or "pk_...") used to authenticate with the Ravelin API. */
@@ -250,7 +250,7 @@ export class Core {
    */
   public send(method: string, path: string, body: any): Promise<CoreResponse> {
     if (!this.key) {
-      return Promise.reject(new Error('ravelin/core: no key set for API requests'));
+      return Promise.reject(new Error('ravelin/core: no key set for API requests. Test update.'));
     }
 
     // Build the URL to run
