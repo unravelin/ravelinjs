@@ -70,13 +70,12 @@ const builds = bundles
       {
         // UMD build for Node and bundlers, with external dependencies.
         input: bundle,
-        external: ['@fingerprintjs/botd', 'detectincognitojs'],
+        external: ['detectincognitojs'],
         output: {
           file: `dist/${fileName}.js`,
           format: 'umd',
           exports: 'default',
           globals: {
-            '@fingerprintjs/botd': 'load',
             detectincognitojs: 'detectIncognito',
           },
           ...output,

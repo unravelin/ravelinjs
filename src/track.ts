@@ -156,7 +156,6 @@ export class Track {
                 referrer: document.referrer || undefined,
                 clientEventTimeMilliseconds: Date.now(),
                 incognitoDetected: incognitoDetected,
-                suspectedBot: { bot: false },
                 timezoneOffset: new Date().getTimezoneOffset(),
               },
             },
