@@ -1,4 +1,3 @@
-import { load as loadBotd, type BotDetectionResult } from '@fingerprintjs/botd';
 import { detectIncognito } from 'detectincognitojs';
 import type { Core, CoreConfig } from './core';
 import { uuid, type Dictionary } from './utils';
@@ -39,7 +38,6 @@ export class Track {
 
   private _listeners: Listener[] = [];
   private _incognitoDetected?: Promise<boolean>;
-  private _botDetected?: Promise<BotDetectionResult>;
 
   /**
    * @param core The Core library instance.
@@ -132,12 +130,11 @@ export class Track {
    * @param props Additional properties.
    */
   private _send(type: string, name: string, props?: Dictionary<any>): Promise<void> {
-    const promises = [this.core.ids(), this.incognitoDetected(), this.botDetected()] as const;
+    const promises = [this.core.ids(), this.incognitoDetected()] as const;
 
     return Promise.all(promises).then(result => {
       const ids = result[0];
       const incognitoDetected = result[1];
-      const botDetected = result[2];
 
       return this.core
         .send('POST', 'z', {
@@ -159,10 +156,6 @@ export class Track {
                 referrer: document.referrer || undefined,
                 clientEventTimeMilliseconds: Date.now(),
                 incognitoDetected: incognitoDetected,
-                suspectedBot: {
-                  bot: botDetected.bot,
-                  botType: botDetected.bot ? botDetected.botKind : undefined,
-                },
                 timezoneOffset: new Date().getTimezoneOffset(),
               },
             },
@@ -188,22 +181,6 @@ export class Track {
       .catch(() => false);
 
     return this._incognitoDetected;
-  }
-
-  /**
-   * Returns a promise-wrapped object indicating if a track event
-   * was triggered by a suspected bot.
-   */
-  public botDetected(): Promise<BotDetectionResult> {
-    if (this._botDetected) {
-      return this._botDetected;
-    }
-
-    this._botDetected = loadBotd({ monitoring: false })
-      .then(botd => botd.detect())
-      .catch(() => ({ bot: false }));
-
-    return this._botDetected;
   }
 
   /**

@@ -87,7 +87,6 @@
     "yaml": "2.8.0"
   },
   "dependencies": {
-    "@fingerprintjs/botd": "2.0.0",
     "detectincognitojs": "1.6.2"
   },
   "np": {
