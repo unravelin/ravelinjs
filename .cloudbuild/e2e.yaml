@@ -36,7 +36,7 @@ steps:
       npm run build
 
   - id: create_certificates
-    name: $_GO_IMAGE:
+    name: $_GO_IMAGE
     script: |
       #! /usr/bin/env sh
       set -e
