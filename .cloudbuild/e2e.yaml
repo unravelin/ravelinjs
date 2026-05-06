@@ -22,19 +22,7 @@ options:
     name: projects/ravelin-builds/locations/europe-west1/workerPools/c3-highcpu-8
 
 steps:
-  - id: npm_install
-    name: $_NODE
-    script: |
-      #! /usr/bin/env sh
-      HUSKY=0 npm install
-
-  - id: npm_run_build
-    name: $_NODE
-    script: |
-      #! /usr/bin/env sh
-      npm run build
-
-  - id: create_certificates
+  - id: mkcert
     name: $_NODE
     env:
       - CAROOT=/workspace/certs
@@ -47,7 +35,19 @@ steps:
       cd ./certs
       mkcert localhost
 
-  - id: npm_run_test_integration
+  - id: install
+    name: $_NODE
+    script: |
+      #! /usr/bin/env sh
+      HUSKY=0 npm install
+
+  - id: build
+    name: $_NODE
+    script: |
+      #! /usr/bin/env sh
+      npm run build
+
+  - id: browserstack
     name: $_NODE
     env:
       - HEAD_BRANCH=$BRANCH_NAME
