@@ -12,6 +12,8 @@ availableSecrets:
       env: BROWSERSTACK_ACCESS_KEY
     - versionName: projects/ravelin-builds/secrets/ci-browserstack-username/versions/latest
       env: BROWSERSTACK_USERNAME
+    - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
+      env: NGROK_AUTHTOKEN
 
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
@@ -44,6 +46,7 @@ steps:
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
+      - NGROK_AUTHTOKEN
     script: |
       #! /usr/bin/env sh
       npm run test:integration
