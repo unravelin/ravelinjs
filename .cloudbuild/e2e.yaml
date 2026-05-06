@@ -3,6 +3,7 @@ tags:
   - ravelinjs
 
 substitutions:
+  _GO_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/library/golang:1.26.2-alpine3.23
   _NODE: node:22.16.0-alpine
   _RCLONE_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/rclone/rclone:1.61.1
 
@@ -34,7 +35,16 @@ steps:
       #! /usr/bin/env sh
       npm run build
 
-  - id: npm_run_test_e2e
+  - id: create_certificates
+    name: $_GO_IMAGE:
+    script: |
+      #! /usr/bin/env sh
+      set -e
+      mkdir -p /workspace/certs
+      cd /workspace/certs
+      go run filippo.io/mkcert@latest localhost
+
+  - id: npm_run_test_integration
     name: $_NODE
     env:
       - HEAD_BRANCH=$BRANCH_NAME
