@@ -14,8 +14,12 @@ describe('ravelinjs.encrypt', () => {
   });
 
   it('encrypts', async () => {
-    // Visit `${base}/encrypt/?rsaKey=${rsaKey}`.
-    const rsaKey = encodeURIComponent(process.env.E2E_RSA_KEY || '');
+    // We visit `${base}/encrypt/?rsaKey=${rsaKey}`.
+    //
+    // We don't URI-encode rsaKey here as this is done by buildUrl below. (The
+    // toString method on a value of type URL will URI-encode it. If we
+    // doubly-encode it, we'd have to doubly-decode it, as well.)
+    const rsaKey = process.env.E2E_RSA_KEY || '';
     await navigate(driver, {
       url: buildUrl({ path: '/encrypt', queryParams: { rsaKey } }),
       tests: [hasTitle('encrypt'), hasElement('output')],
@@ -34,6 +38,7 @@ describe('ravelinjs.encrypt', () => {
     // Fill in the form with test data if provided.
     if (process.env.E2E_NAME_ON_CARD) {
       const nameInput = await driver.findElement(By.id('name'));
+      await nameInput.clear(); // Remove "Mr Test" from the field.
       await nameInput.sendKeys(process.env.E2E_NAME_ON_CARD);
     }
 
