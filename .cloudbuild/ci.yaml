@@ -26,17 +26,16 @@ steps:
   - id: mkcert
     waitFor: ["-"]
     name: $_NODE
-    entrypoint: sh
     env:
       - CAROOT=/workspace/certs
-    args:
-      - '-c'
-      - |
-        mkdir ./certs
-        apk add mkcert --no-cache --repository=http://dl-cdn.alpinelinux.org/edge/testing/
-        mkcert -install
-        cd ./certs
-        mkcert localhost
+    script: |
+      #! /usr/bin/env sh
+      set -e
+      mkdir ./certs
+      apk add mkcert --no-cache --repository=http://dl-cdn.alpinelinux.org/edge/testing/
+      mkcert -install
+      cd ./certs
+      mkcert localhost
 
   - id: install
     waitFor: ["-"]

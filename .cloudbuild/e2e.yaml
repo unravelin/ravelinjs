@@ -3,7 +3,6 @@ tags:
   - ravelinjs
 
 substitutions:
-  _GO_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/library/golang:1.26.2-alpine3.23
   _NODE: node:22.16.0-alpine
   _RCLONE_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/rclone/rclone:1.61.1
 
@@ -36,13 +35,17 @@ steps:
       npm run build
 
   - id: create_certificates
-    name: $_GO_IMAGE
+    name: $_NODE
+    env:
+      - CAROOT=/workspace/certs
     script: |
       #! /usr/bin/env sh
       set -e
-      mkdir -p /workspace/certs
-      cd /workspace/certs
-      go run filippo.io/mkcert@latest localhost
+      mkdir ./certs
+      apk add mkcert --no-cache --repository=http://dl-cdn.alpinelinux.org/edge/testing/
+      mkcert -install
+      cd ./certs
+      mkcert localhost
 
   - id: npm_run_test_integration
     name: $_NODE
@@ -53,6 +56,7 @@ steps:
       - E2E_NAME_ON_CARD=$_NAME_ON_CARD
       - E2E_RSA_KEY=$_RSA_KEY
       - E2E_CIPHERTEXT_FILE=/workspace/cipher.txt
+      - NODE_EXTRA_CA_CERTS=/workspace/certs/rootCA.pem
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
