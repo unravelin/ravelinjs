@@ -22,22 +22,18 @@ options:
 steps:
   - id: npm_install
     name: $_NODE
-    entrypoint: npm
-    env:
-      - HUSKY=0
-    args:
-      - install
+    script: |
+      #! /usr/bin/env sh
+      HUSKY=0 npm install
 
   - id: npm_run_build
     name: $_NODE
-    entrypoint: npm
-    args:
-      - run
-      - build
+    script: |
+      #! /usr/bin/env sh
+      npm run build
 
   - id: npm_run_test_e2e
     name: $_NODE
-    entrypoint: npm
     env:
       - HEAD_BRANCH=$BRANCH_NAME
       - COMMIT_SHA=$COMMIT_SHA
@@ -48,13 +44,19 @@ steps:
     secretEnv:
       - BROWSERSTACK_ACCESS_KEY
       - BROWSERSTACK_USERNAME
-    args:
-      - run
-      - test:e2e
+    script: |
+      #! /usr/bin/env sh
+      npm run test:integration
 
   - id: upload_cipher
     name: "$_RCLONE_IMAGE"
     env:
       - BUILD_ID=$BUILD_ID
     script: |
-      rclone --config="" --gcs-bucket-policy-only copyto /workspace/cipher.txt :gcs:ravelinjs-integration-tests/$BUILD_ID/cipher.txt
+      #! /usr/bin/env sh
+      rclone \
+        --config="" \
+        --gcs-bucket-policy-only \
+        copyto \
+        /workspace/cipher.txt \
+        :gcs:ravelinjs-integration-tests/$BUILD_ID/cipher.txt
