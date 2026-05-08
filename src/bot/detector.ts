@@ -1,8 +1,5 @@
 import createAutomationDetectors from './detectors/automation';
 
-/** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
-export type DetectorEnv = Window & typeof globalThis;
-
 export interface BotDetectionResult {
   /** Per-indicator outcomes in registration order. */
   results: detection.DetectionResult[];
@@ -16,7 +13,7 @@ export interface BotDetectorOptions {
    * Do not rely on the real browser in CI: ChromeHeadless and other hosts may set
    * automation-related properties unpredictably.
    */
-  env?: DetectorEnv;
+  env?: detection.Environment;
 }
 
 /**
@@ -24,14 +21,14 @@ export interface BotDetectorOptions {
  * (`navigator.webdriver` is true under legitimate WebDriver, etc.); use for
  * scoring or hints, not as a sole gate.
  */
-export class AutomationDetector {
+export class BotDetector {
   private readonly detectors: detection.Detector[] = [];
-  // private readonly env: DetectorEnv;
+  private readonly _env: detection.Environment;
 
   public constructor(options?: BotDetectorOptions) {
-    // this.env = options?.env ?? (globalThis as DetectorEnv);
+    this._env = options?.env ?? (globalThis as detection.Environment);
     // TODO: For now register all indicators. This should be configurable in the future.
-    this.register(createAutomationDetectors());
+    this.register(createAutomationDetectors(this._env));
   }
 
   /** Append an detector (runs after built-ins and any constructor `indicators`). */
