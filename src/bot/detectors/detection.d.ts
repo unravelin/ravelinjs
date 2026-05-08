@@ -1,4 +1,7 @@
 declare namespace detection {
+  /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
+  type Environment = Window & typeof globalThis;
+
   interface DetectionIndicator {
     id: string;
     name: string;
