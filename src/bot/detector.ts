@@ -50,13 +50,13 @@ export class BotDetector {
       return this._detectionResult;
     }
 
-    const results: detection.DetectionResult[] = [];
+    const results: detection.EnrichedDetectionResult[] = [];
 
     await Promise.all(
       this.detectors.map(async detector => {
         const result = await detector.detect();
 
-        results.push(result);
+        results.push(this._enrichDetectionResult(result, detector));
       })
     );
 
@@ -66,5 +66,20 @@ export class BotDetector {
     });
 
     return this._detectionResult;
+  }
+
+  private _enrichDetectionResult(
+    result: detection.DetectionResult,
+    detector: detection.Detector
+  ): detection.EnrichedDetectionResult {
+    const { id, name, category, description } = detector;
+
+    return {
+      id,
+      name,
+      category,
+      description,
+      ...result,
+    };
   }
 }
