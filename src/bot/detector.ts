@@ -1,6 +1,8 @@
 import createAutomationDetectors from './detectors/automation';
 
 export interface BotDetectionResult {
+  /** True if any indicator triggered. */
+  bot: boolean;
   /** Per-indicator outcomes in registration order. */
   results: detection.DetectionResult[];
 }
@@ -25,6 +27,8 @@ export class BotDetector {
   private readonly detectors: detection.Detector[] = [];
   private readonly _env: detection.Environment;
 
+  private _detectionResult?: Promise<BotDetectionResult>;
+
   public constructor(options?: BotDetectorOptions) {
     this._env = options?.env ?? (globalThis as detection.Environment);
     // TODO: For now register all indicators. This should be configurable in the future.
@@ -42,6 +46,10 @@ export class BotDetector {
 
   /** Evaluate every registered detector (parallel). */
   public async detect(): Promise<BotDetectionResult> {
+    if (this._detectionResult) {
+      return this._detectionResult;
+    }
+
     const results: detection.DetectionResult[] = [];
 
     await Promise.all(
@@ -52,6 +60,11 @@ export class BotDetector {
       })
     );
 
-    return { results };
+    this._detectionResult = Promise.resolve({
+      results,
+      bot: results.some(result => result.triggered),
+    });
+
+    return this._detectionResult;
   }
 }
