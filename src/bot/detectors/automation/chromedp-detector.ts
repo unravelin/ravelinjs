@@ -63,9 +63,9 @@ export default function createChromedpDetector(env: detection.Environment): dete
       }
     }
 
-    const ua = env.navigator?.userAgent || '';
-    if (/chromedp/i.test(ua)) {
-      indicators.push('user-agent-chromedp-marker');
+    const userAgent = env.navigator?.userAgent || '';
+    if (/chromedp/i.test(userAgent)) {
+      indicators.push('chromedp-user-agent');
     }
 
     return Promise.resolve({
