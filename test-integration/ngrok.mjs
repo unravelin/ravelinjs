@@ -26,6 +26,7 @@ export async function startTunnel(addr, maxRetries = 3) {
         authtoken_from_env: true,
         // Allow HTTPS connections with our self-signed cert
         verify_upstream_tls: false,
+        request_header_add: 'ngrok-skip-browser-warning: true',
       });
 
       console.log(`ngrok tunnel established at ${tunnel.url()}`);
