@@ -37,6 +37,7 @@ export default function createPhantomJSDetector(env: detection.Environment): det
     const triggered = indicators.length > 0;
 
     return Promise.resolve({
+      id,
       indicators,
       triggered,
     });
