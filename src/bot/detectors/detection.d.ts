@@ -2,6 +2,9 @@ declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
 
+  type ChromiumAutomationType = 'playwright' | 'puppeteer' | 'selenium';
+  type BotType = ChromiumAutomationType | 'phantomJS' | 'chromeMDP';
+
   interface DetectorDetails {
     /** Unique identifier for this detector. */
     id: string;
@@ -21,8 +24,12 @@ declare namespace detection {
   }
 
   interface DetectionResult {
+    /** The detected bot type. */
+    type?: BotType;
+    /** */
+    subType?: string;
     /** Indicators that triggered. */
-    indicators: string[];
+    indicators?: string[];
     /** True if any indicator triggered. */
     triggered: boolean;
   }
