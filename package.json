@@ -30,7 +30,7 @@
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs './test-integration/**/*.spec.mjs'",
     "test:integration:local": "node ./test-integration/run-local.mjs './test-integration/**/*.spec.mjs'",
-    "test:e2e": "NGROK_ENABLED=false node ./test-integration/run.mjs './test-integration/encrypt/encrypt.spec.mjs'",
+    "test:e2e": "NGROK_ENABLED=false CHROME_ONLY=true node ./test-integration/run.mjs './test-integration/encrypt/encrypt.spec.mjs'",
     "test:import:setup": "cd test-import && npm run setup",
     "test:import": "npm run test:import:setup && mocha './test-import/*.spec.mjs'",
     "test:bstack-sdk": "browserstack-node-sdk mocha",
