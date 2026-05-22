@@ -6,6 +6,8 @@ import { stringify } from 'yaml';
 export function buildBrowserStackConfig() {
   console.log('Building BrowserStack config…');
 
+  const chromeOnly = process.env.CHROME_ONLY === 'true';
+
   const gitBranch = generateBuildName();
   const buildId = generateBuildId();
 
@@ -25,7 +27,20 @@ export function buildBrowserStackConfig() {
       localProxyHost: 'localhost',
       localProxyPort: 3000,
     },
-    platforms: [
+  };
+
+  if (chromeOnly) {
+    config.platforms = [
+      // Chrome on Windows 11
+      {
+        os: 'Windows',
+        osVersion: 11,
+        browserName: 'Chrome',
+        browserVersion: 'latest',
+      },
+    ];
+  } else {
+    config.platforms = [
       // Chrome on Windows 11
       {
         os: 'Windows',
@@ -59,8 +74,8 @@ export function buildBrowserStackConfig() {
         osVersion: '13.0',
         deviceName: 'Samsung Galaxy S23',
       },
-    ],
-  };
+    ];
+  }
 
   // Generate the YAML configuration for BrowserStack
   const str = stringify(config);

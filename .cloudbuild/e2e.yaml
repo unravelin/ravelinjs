@@ -63,7 +63,7 @@ steps:
       - NGROK_AUTHTOKEN
     script: |
       #! /usr/bin/env sh
-      npm run test:integration
+      npm run test:e2e
 
   - id: upload_cipher
     name: "$_RCLONE_IMAGE"

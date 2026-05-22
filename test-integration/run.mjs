@@ -5,6 +5,12 @@ import { updateCommitStatus } from './ci.mjs';
 import { checkCertsExist, startServer, stopServer } from './server.mjs';
 
 const logs = [];
+const testPath = process.argv[2];
+
+if (!testPath) {
+  console.error('Please provide a test glob pattern as the first argument.');
+  process.exit(1);
+}
 
 checkCertsExist();
 
@@ -37,7 +43,7 @@ function runTests(tunnelUrl) {
   return new Promise((resolve, reject) => {
     // Spawn a child process to run the BrowserStack SDK and test suite.
     // This is handled asynchronously to allow the server to run at the same time.
-    const p = spawn('npm', ['run', 'test:bstack-sdk'], {
+    const p = spawn('npm', ['run', 'test:bstack-sdk', '--', testPath], {
       env: { ...process.env, TUNNEL_URL: tunnelUrl },
     });
 
