@@ -3,17 +3,8 @@ tags:
   - ravelinjs
 
 substitutions:
-  _NODE: node:22.16.0-alpine
+  _NODE: node:22.16.0-bookworm-slim
   _RCLONE_IMAGE: europe-docker.pkg.dev/ravelin-builds/container/dockerhub/rclone/rclone:1.61.1
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/ravelin-builds/secrets/ci-browserstack-token/versions/latest
-      env: BROWSERSTACK_ACCESS_KEY
-    - versionName: projects/ravelin-builds/secrets/ci-browserstack-username/versions/latest
-      env: BROWSERSTACK_USERNAME
-    - versionName: projects/ravelin-builds/secrets/ci-ngrok-token/versions/latest
-      env: NGROK_AUTHTOKEN
 
 logsBucket: gs://ravelin-cloudbuild-logs
 options:
@@ -29,8 +20,12 @@ steps:
     script: |
       #! /usr/bin/env sh
       set -e
+      apt-get update
+      apt-get install -y --no-install-recommends ca-certificates curl libnss3-tools
+      curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+      chmod +x mkcert-v*-linux-amd64
+      mv mkcert-v*-linux-amd64 /usr/local/bin/mkcert
       mkdir ./certs
-      apk add mkcert --no-cache --repository=http://dl-cdn.alpinelinux.org/edge/testing/
       mkcert -install
       cd ./certs
       mkcert localhost
@@ -47,22 +42,19 @@ steps:
       #! /usr/bin/env sh
       npm run build
 
-  - id: browserstack
+  - id: e2e
     name: $_NODE
     env:
-      - HEAD_BRANCH=$BRANCH_NAME
-      - COMMIT_SHA=$COMMIT_SHA
-      - BUILD_ID=$BUILD_ID
       - E2E_NAME_ON_CARD=$_NAME_ON_CARD
       - E2E_RSA_KEY=$_RSA_KEY
       - E2E_CIPHERTEXT_FILE=/workspace/cipher.txt
       - NODE_EXTRA_CA_CERTS=/workspace/certs/rootCA.pem
-    secretEnv:
-      - BROWSERSTACK_ACCESS_KEY
-      - BROWSERSTACK_USERNAME
-      - NGROK_AUTHTOKEN
+      - CHROME_BIN=/usr/bin/chromium
     script: |
       #! /usr/bin/env sh
+      set -e
+      apt-get update
+      apt-get install -y --no-install-recommends chromium
       npm run test:e2e
 
   - id: upload_cipher
