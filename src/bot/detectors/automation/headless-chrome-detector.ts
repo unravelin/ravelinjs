@@ -49,56 +49,62 @@ async function notificationsPermissionDenied(env: detection.Environment): Promis
  * Detects browser-level signals common to CDP- and WebDriver-controlled Chromium.
  * Legitimate automation (including your own E2E) may trigger these; treat as hints.
  */
-export default function createChromiumAutomationDetector(
-  env: detection.Environment
-): detection.Detector {
-  const id = 'chromium-automation';
-  const name = 'Chromium automation';
-  const category = 'chromium-automation';
-  const description =
-    'Detects Chromium automation artifacts shared by Puppeteer, Playwright, and Selenium';
+export default class HeadlessChromeDetector implements detection.Detector {
+  // Bot detector metadata
+  public readonly type = 'headless-chrome';
+  public readonly category = 'automation';
+  public readonly precedence = 100;
 
-  async function detect(): Promise<detection.DetectionResult> {
-    const indicators: string[] = [];
-    const nav = env.navigator;
+  // Detection results
+  public triggered = false;
+  public indicators: string[] = [];
+
+  private readonly env: detection.Environment;
+
+  public constructor(env: detection.Environment) {
+    this.env = env;
+  }
+
+  public async detect(): Promise<detection.DetailedDetectionResult> {
+    const nav = this.env.navigator;
     const userAgent = nav?.userAgent || '';
 
     if (nav?.webdriver) {
-      indicators.push('navigator-webdriver');
+      this.indicators.push('navigator-webdriver');
     }
 
-    const doc = env.document;
+    const doc = this.env.document;
     if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      indicators.push('document-element-webdriver-attr');
+      this.indicators.push('document-element-webdriver-attr');
     }
 
-    if (hasLegacyCdcArtifacts(env)) {
-      indicators.push('cdp-artifacts');
+    if (hasLegacyCdcArtifacts(this.env)) {
+      this.indicators.push('cdp-artifacts');
     }
 
-    if (hasChromedriverInjectedGlobal(env)) {
-      indicators.push('chromedriver-injected-global');
+    if (hasChromedriverInjectedGlobal(this.env)) {
+      this.indicators.push('chromedriver-injected-global');
     }
 
     if (userAgent.includes('HeadlessChrome')) {
-      indicators.push('headless-chrome-user-agent');
+      this.indicators.push('headless-chrome-user-agent');
     }
 
-    const chrome = env.chrome;
+    const chrome = this.env.chrome;
     if (chrome && isChromiumChromeUserAgent(userAgent) && !chrome.runtime) {
-      indicators.push('chrome-runtime-missing');
+      this.indicators.push('chrome-runtime-missing');
     }
 
     if (isChromiumChromeUserAgent(userAgent) && nav?.plugins?.length === 0) {
-      indicators.push('empty-plugins-chrome');
+      this.indicators.push('empty-plugins-chrome');
     }
 
     if (nav?.languages?.length === 0) {
-      indicators.push('empty-navigator-languages');
+      this.indicators.push('empty-navigator-languages');
     }
 
-    if (env.outerWidth === 0 && env.outerHeight === 0) {
-      indicators.push('zero-outer-dimensions');
+    if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
+      this.indicators.push('zero-outer-dimensions');
     }
 
     const brands = nav?.userAgentData?.brands;
@@ -106,26 +112,22 @@ export default function createChromiumAutomationDetector(
       const hasChromium = brands.some(b => b.brand === 'Chromium');
       const hasGoogleChrome = brands.some(b => b.brand === 'Google Chrome');
       if (hasChromium && !hasGoogleChrome) {
-        indicators.push('user-agent-data-missing-google-chrome-brand');
+        this.indicators.push('user-agent-data-missing-google-chrome-brand');
       }
     }
 
-    if (await notificationsPermissionDenied(env)) {
-      indicators.push('permissions-notifications-denied');
+    if (await notificationsPermissionDenied(this.env)) {
+      this.indicators.push('permissions-notifications-denied');
     }
 
-    return Promise.resolve({
-      subType: id,
-      indicators,
-      triggered: indicators.length > 0,
-    });
-  }
+    this.triggered = this.indicators.length > 0;
 
-  return {
-    id,
-    name,
-    category,
-    description,
-    detect,
-  };
+    return {
+      type: this.type,
+      category: this.category,
+      precedence: this.precedence,
+      triggered: this.triggered,
+      indicators: this.indicators,
+    };
+  }
 }
