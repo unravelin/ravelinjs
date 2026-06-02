@@ -6,6 +6,7 @@ import HeadlessChromeDetector from '../../../../src/bot/detectors/automation/hea
  * @returns {detection.Environment}
  */
 function makeEnv(overrides = {}) {
+  const { document: documentOverrides, ...rest } = overrides;
   return {
     navigator: {
       userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
@@ -14,7 +15,11 @@ function makeEnv(overrides = {}) {
     },
     outerWidth: 1920,
     outerHeight: 1080,
-    ...overrides,
+    document: {
+      createElement: () => ({ getContext: () => null }),
+      ...documentOverrides,
+    },
+    ...rest,
   };
 }
 
@@ -170,5 +175,25 @@ describe('HeadlessChromeDetector', function () {
     const result = await new HeadlessChromeDetector(env).detect();
 
     expect(result.indicators).to.include('permissions-notifications-denied');
+  });
+
+  it('detects Mesa offscreen WebGL renderer', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            VENDOR: 0x1f00,
+            RENDERER: 0x1f01,
+            getParameter: param => {
+              if (param === 0x1f00) return 'Brian Paul';
+              if (param === 0x1f01) return 'Mesa OffScreen';
+            },
+          }),
+        }),
+      },
+    });
+    const result = await new HeadlessChromeDetector(env).detect();
+
+    expect(result.indicators).to.include('webgl-context-mesa-offscreen');
   });
 });

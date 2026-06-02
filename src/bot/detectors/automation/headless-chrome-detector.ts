@@ -42,9 +42,13 @@ async function notificationsPermissionDenied(env: detection.Environment): Promis
 }
 
 function checkWebGLContext(env: detection.Environment): boolean {
-  const canvasElement = env.document?.createElement('canvas');
+  const createElement = env.document?.createElement;
+  if (typeof createElement !== 'function') {
+    return false;
+  }
 
-  if (typeof canvasElement.getContext !== 'function') {
+  const canvasElement = createElement('canvas');
+  if (!canvasElement || typeof canvasElement.getContext !== 'function') {
     return false;
   }
 
