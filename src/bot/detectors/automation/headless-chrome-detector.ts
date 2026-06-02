@@ -3,10 +3,6 @@
  * Selenium + ChromeDriver, chromedp). Tool-specific detectors should not repeat these.
  */
 
-function isChromiumChromeUserAgent(userAgent: string): boolean {
-  return /Chrome|Chromium/i.test(userAgent) && !/Edg|OPR|SamsungBrowser|Brave/i.test(userAgent);
-}
-
 function hasLegacyCdcArtifacts(env: detection.Environment): boolean {
   return Boolean(
     env.cdc_adoQpoasnfa76pfcZLmcfl_Array ||
@@ -86,7 +82,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const nav = this.env.navigator;
-    const userAgent = nav?.userAgent || '';
 
     if (nav?.webdriver) {
       this.indicators.push('navigator-webdriver');
@@ -105,17 +100,30 @@ export default class HeadlessChromeDetector implements detection.Detector {
       this.indicators.push('chromedriver-injected-global');
     }
 
-    if (userAgent.includes('HeadlessChrome')) {
+    const userAgent = nav?.userAgent || '';
+    if (/Headless/i.test(userAgent)) {
       this.indicators.push('headless-chrome-user-agent');
     }
 
+    // User agent checks
     const chrome = this.env.chrome;
-    if (chrome && isChromiumChromeUserAgent(userAgent) && !chrome.runtime) {
+    const isChromiumChromeUserAgent =
+      /Chrome|Chromium/i.test(userAgent) && !/Edg|OPR|SamsungBrowser|Brave/i.test(userAgent);
+    if (chrome && isChromiumChromeUserAgent && !chrome.runtime) {
       this.indicators.push('chrome-runtime-missing');
     }
 
-    if (isChromiumChromeUserAgent(userAgent) && nav?.plugins?.length === 0) {
+    if (isChromiumChromeUserAgent && nav?.plugins?.length === 0) {
       this.indicators.push('empty-plugins-chrome');
+    }
+
+    const brands = nav?.userAgentData?.brands;
+    if (brands?.length && isChromiumChromeUserAgent) {
+      const hasChromium = brands.some(b => b.brand === 'Chromium');
+      const hasGoogleChrome = brands.some(b => b.brand === 'Google Chrome');
+      if (hasChromium && !hasGoogleChrome) {
+        this.indicators.push('user-agent-data-missing-google-chrome-brand');
+      }
     }
 
     if (nav?.languages?.length === 0) {
@@ -129,15 +137,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
     const appVersion = this.env.navigator?.appVersion || '';
     if (/headless/i.test(appVersion)) {
       this.indicators.push('headless-chrome-app-version');
-    }
-
-    const brands = nav?.userAgentData?.brands;
-    if (brands?.length && isChromiumChromeUserAgent(userAgent)) {
-      const hasChromium = brands.some(b => b.brand === 'Chromium');
-      const hasGoogleChrome = brands.some(b => b.brand === 'Google Chrome');
-      if (hasChromium && !hasGoogleChrome) {
-        this.indicators.push('user-agent-data-missing-google-chrome-brand');
-      }
     }
 
     if (await notificationsPermissionDenied(this.env)) {
