@@ -45,6 +45,25 @@ async function notificationsPermissionDenied(env: detection.Environment): Promis
   }
 }
 
+function checkWebGLContext(env: detection.Environment): boolean {
+  const canvasElement = env.document?.createElement('canvas');
+
+  if (typeof canvasElement.getContext !== 'function') {
+    return false;
+  }
+
+  const webGLContext = canvasElement.getContext('webgl');
+
+  if (webGLContext === null || typeof webGLContext.getParameter !== 'function') {
+    return false;
+  }
+
+  const vendor = webGLContext.getParameter(webGLContext.VENDOR);
+  const renderer = webGLContext.getParameter(webGLContext.RENDERER);
+
+  return vendor == 'Brian Paul' && renderer == 'Mesa OffScreen';
+}
+
 /**
  * Detects browser-level signals common to CDP- and WebDriver-controlled Chromium.
  * Legitimate automation (including your own E2E) may trigger these; treat as hints.
@@ -107,6 +126,11 @@ export default class HeadlessChromeDetector implements detection.Detector {
       this.indicators.push('zero-outer-dimensions');
     }
 
+    const appVersion = this.env.navigator?.appVersion || '';
+    if (/headless/i.test(appVersion)) {
+      this.indicators.push('headless-chrome-app-version');
+    }
+
     const brands = nav?.userAgentData?.brands;
     if (brands?.length && isChromiumChromeUserAgent(userAgent)) {
       const hasChromium = brands.some(b => b.brand === 'Chromium');
@@ -118,6 +142,10 @@ export default class HeadlessChromeDetector implements detection.Detector {
 
     if (await notificationsPermissionDenied(this.env)) {
       this.indicators.push('permissions-notifications-denied');
+    }
+
+    if (checkWebGLContext(this.env)) {
+      this.indicators.push('webgl-context-mesa-offscreen');
     }
 
     this.triggered = this.indicators.length > 0;
