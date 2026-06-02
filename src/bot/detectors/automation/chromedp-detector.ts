@@ -58,19 +58,6 @@ export default class ChromedpDetector implements detection.Detector {
       // Ignore
     }
 
-    try {
-      throw new Error('stack trace test');
-    } catch (e) {
-      const stack = e instanceof Error ? e.stack || '' : '';
-      if (
-        stack.includes('chromedp') ||
-        stack.includes('github.com/chromedp/chromedp') ||
-        /[/\\]chromedp[/\\]/.test(stack)
-      ) {
-        this.indicators.push('stack-trace-chromedp');
-      }
-    }
-
     const userAgent = this.env.navigator?.userAgent || '';
     if (/chromedp/i.test(userAgent)) {
       this.indicators.push('chromedp-user-agent');
