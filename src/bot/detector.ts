@@ -3,8 +3,12 @@ import createAutomationDetectors from './detectors/automation';
 export interface BotDetectionResult {
   /** True if any indicator triggered. */
   bot: boolean;
-  /** Per-indicator outcomes in registration order. */
-  results: detection.DetectionResult[];
+  /** The detected bot type. */
+  type?: detection.BotType;
+  /** The category of the detected bot. */
+  category?: string;
+  /** Indicators that triggered. */
+  indicators?: string[];
 }
 
 export interface BotDetectorOptions {
@@ -27,15 +31,18 @@ export class BotDetector {
   private readonly detectors: detection.Detector[] = [];
   private readonly _env: detection.Environment;
 
-  private _detectionResult?: Promise<BotDetectionResult>;
+  private _detectionResult?: BotDetectionResult;
 
   public constructor(options?: BotDetectorOptions) {
     this._env = options?.env ?? (globalThis as detection.Environment);
     // TODO: For now register all indicators. This should be configurable in the future.
     this.register(createAutomationDetectors(this._env));
+    if (options?.detectors) {
+      this.register(options.detectors);
+    }
   }
 
-  /** Append an detector (runs after built-ins and any constructor `indicators`). */
+  /** Append a detector (runs after built-ins and any constructor `detectors`). */
   public register(detector: detection.Detector | detection.Detector[]): void {
     if (Array.isArray(detector)) {
       this.detectors.push(...detector);
@@ -44,42 +51,38 @@ export class BotDetector {
     }
   }
 
+  private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
+    const triggered = results.filter(result => result.triggered);
+    const primary =
+      triggered.length > 0
+        ? triggered.reduce((best, result) => (result.precedence < best.precedence ? result : best))
+        : undefined;
+
+    return {
+      bot: triggered.length > 0,
+      type: primary?.type,
+      category: primary?.category,
+      indicators: triggered.flatMap(result => result.indicators),
+    };
+  }
+
   /** Evaluate every registered detector (parallel). */
   public async detect(): Promise<BotDetectionResult> {
     if (this._detectionResult) {
       return this._detectionResult;
     }
 
-    const results: detection.EnrichedDetectionResult[] = [];
+    const results: detection.DetailedDetectionResult[] = [];
 
     await Promise.all(
       this.detectors.map(async detector => {
         const result = await detector.detect();
-
-        results.push(this._enrichDetectionResult(result, detector));
+        results.push(result);
       })
     );
 
-    this._detectionResult = Promise.resolve({
-      results,
-      bot: results.some(result => result.triggered),
-    });
+    this._detectionResult = this._buildResult(results);
 
     return this._detectionResult;
-  }
-
-  private _enrichDetectionResult(
-    result: detection.DetectionResult,
-    detector: detection.Detector
-  ): detection.EnrichedDetectionResult {
-    const { id, name, category, description } = detector;
-
-    return {
-      id,
-      name,
-      category,
-      description,
-      ...result,
-    };
   }
 }
