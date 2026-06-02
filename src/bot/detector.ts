@@ -8,7 +8,7 @@ export interface BotDetectionResult {
   /** The category of the detected bot. */
   category?: string;
   /** Indicators that triggered. */
-  indicators?: string[];
+  indicators?: Partial<Record<detection.BotType, boolean>>;
 }
 
 export interface BotDetectorOptions {
@@ -62,7 +62,10 @@ export class BotDetector {
       bot: triggered.length > 0,
       type: primary?.type,
       category: primary?.category,
-      indicators: triggered.flatMap(result => result.indicators),
+      indicators: triggered.reduce(
+        (acc, result) => ({ ...acc, [result.type]: result.indicators }),
+        {}
+      ),
     };
   }
 
