@@ -7,7 +7,9 @@ declare namespace detection {
     | 'phantomJS'
     | 'playwright'
     | 'puppeteer'
-    | 'selenium';
+    | 'selenium'
+    | 'slimerJS'
+    | 'electron';
 
   interface DetectorMetadata {
     /** The detected bot type. */

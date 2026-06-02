@@ -14,6 +14,15 @@ declare global {
     _phantom?: unknown;
     /** PhantomJS module / runtime handle. */
     phantom?: unknown;
+    /** SlimerJS API object (Gecko automation; PhantomJS-compatible). */
+    slimer?: unknown;
+    /** Exposed by some Electron preload / bridge setups. */
+    electron?: unknown;
+    /** Node process object when nodeIntegration exposes it in the renderer. */
+    process?: {
+      type?: string;
+      versions?: { electron?: string };
+    };
   }
 
   interface Navigator {
