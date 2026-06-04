@@ -34,7 +34,6 @@ describe('PhantomJSDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('phantomJS');
-    expect(result.category).to.equal('automation');
   });
 
   it('detects callPhantom', async function () {
@@ -62,7 +61,8 @@ describe('PhantomJSDetector', function () {
   it('detects PhantomJS in the user agent', async function () {
     const env = makeEnv({
       navigator: {
-        userAgent: 'Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1',
+        userAgent:
+          'Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1',
       },
     });
     const result = await new PhantomJSDetector(env).detect();

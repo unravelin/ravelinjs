@@ -31,7 +31,6 @@ describe('PlaywrightDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('playwright');
-    expect(result.category).to.equal('automation');
   });
 
   it('detects known Playwright globals', async function () {

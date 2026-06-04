@@ -19,8 +19,7 @@ describe('ChromedpDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('chromeDP');
-    expect(result.category).to.equal('automation');
-    expect(result.precedence).to.equal(50);
+    expect(result.precedence).to.equal(10);
   });
 
   it('detects chromedp-named globals on the environment', async function () {

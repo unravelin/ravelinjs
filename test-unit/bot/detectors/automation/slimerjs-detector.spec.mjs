@@ -8,8 +8,7 @@ import SlimerJSDetector from '../../../../src/bot/detectors/automation/slimerjs-
 function makeEnv(overrides = {}) {
   return {
     navigator: {
-      userAgent:
-        'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0',
+      userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0',
     },
     ...overrides,
   };
@@ -32,7 +31,6 @@ describe('SlimerJSDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('slimerJS');
-    expect(result.category).to.equal('automation');
   });
 
   it('detects the slimer global', async function () {

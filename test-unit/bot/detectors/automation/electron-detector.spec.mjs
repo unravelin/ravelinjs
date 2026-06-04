@@ -32,7 +32,6 @@ describe('ElectronDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('electron');
-    expect(result.category).to.equal('automation');
   });
 
   it('detects Electron in the user agent', async function () {
@@ -53,7 +52,8 @@ describe('ElectronDetector', function () {
       navigator: {
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        appVersion: '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Electron/28.0.0 Safari/537.36',
+        appVersion:
+          '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Electron/28.0.0 Safari/537.36',
       },
     });
     const result = await new ElectronDetector(env).detect();

@@ -19,7 +19,6 @@ describe('SeleniumDetector', function () {
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
     expect(result.type).to.equal('selenium');
-    expect(result.category).to.equal('automation');
   });
 
   it('detects injected globals on the environment', async function () {

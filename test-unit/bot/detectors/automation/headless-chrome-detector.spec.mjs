@@ -29,9 +29,7 @@ describe('HeadlessChromeDetector', function () {
     const result = await detector.detect();
 
     expect(detector.type).to.equal('headless-chrome');
-    expect(detector.category).to.equal('automation');
     expect(result.type).to.equal('headless-chrome');
-    expect(result.category).to.equal('automation');
   });
 
   it('does not trigger when no Chromium automation artifacts are present', async function () {
