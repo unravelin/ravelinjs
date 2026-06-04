@@ -48,19 +48,6 @@ export default class PlaywrightDetector implements detection.Detector {
       // Ignore
     }
 
-    try {
-      throw new Error('stack trace test');
-    } catch (e) {
-      const stack = e instanceof Error ? e.stack || '' : '';
-      if (
-        stack.includes('@playwright') ||
-        /[/\\]playwright[/\\]/.test(stack) ||
-        stack.includes('playwright/lib')
-      ) {
-        this.indicators.push('stack-trace-playwright');
-      }
-    }
-
     this.triggered = this.indicators.length > 0;
 
     return {
