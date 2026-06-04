@@ -1,5 +1,5 @@
 import { detectIncognito } from 'detectincognitojs';
-import { BotDetectionResult, BotDetector } from './bot/detector';
+import { BotDetectionResult, BotDetector } from './bot/bot-detector';
 import type { Core, CoreConfig } from './core';
 import { uuid, type Dictionary } from './utils';
 
@@ -139,8 +139,6 @@ export class Track {
       const incognitoDetected = result[1];
       const botDetectionResult = result[2];
 
-      console.log(botDetectionResult);
-
       return this.core
         .send('POST', 'z', {
           events: [
@@ -161,10 +159,7 @@ export class Track {
                 referrer: document.referrer || undefined,
                 clientEventTimeMilliseconds: Date.now(),
                 incognitoDetected: incognitoDetected,
-                suspectedBot: {
-                  bot: botDetectionResult.bot,
-                  results: botDetectionResult.results,
-                },
+                suspectedBot: botDetectionResult,
                 timezoneOffset: new Date().getTimezoneOffset(),
               },
             },
