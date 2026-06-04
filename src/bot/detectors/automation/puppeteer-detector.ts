@@ -26,7 +26,6 @@ function collectPuppeteerPrefixedKeys(target: object): string[] {
 export default class PuppeteerDetector implements detection.Detector {
   // Bot detector metadata
   public readonly type = 'puppeteer';
-  public readonly category = 'automation';
   public readonly precedence = 10;
 
   // Detection results
@@ -69,7 +68,6 @@ export default class PuppeteerDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

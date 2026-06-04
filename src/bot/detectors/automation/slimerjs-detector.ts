@@ -23,7 +23,6 @@ function collectSlimerPrefixedKeys(target: object): string[] {
  */
 export default class SlimerJSDetector implements detection.Detector {
   public readonly type = 'slimerJS';
-  public readonly category = 'automation';
   public readonly precedence = 10;
 
   public triggered = false;
@@ -67,7 +66,6 @@ export default class SlimerJSDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

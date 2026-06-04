@@ -27,7 +27,6 @@ function hasElectronUserAgent(userAgent: string): boolean {
  */
 export default class ElectronDetector implements detection.Detector {
   public readonly type = 'electron';
-  public readonly category = 'automation';
   public readonly precedence = 10;
 
   public triggered = false;
@@ -80,7 +79,6 @@ export default class ElectronDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

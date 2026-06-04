@@ -24,7 +24,6 @@ function collectChromedpNamedKeys(target: object): string[] {
 export default class ChromedpDetector implements detection.Detector {
   // Bot detector metadata
   public readonly type = 'chromeMDP';
-  public readonly category = 'automation';
   public readonly precedence = 50;
 
   // Detection results
@@ -67,7 +66,6 @@ export default class ChromedpDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

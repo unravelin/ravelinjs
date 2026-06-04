@@ -5,8 +5,6 @@ export interface BotDetectionResult {
   bot: boolean;
   /** The detected bot type. */
   type?: detection.BotType;
-  /** The category of the detected bot. */
-  category?: string;
   /** Indicators that triggered. */
   indicators?: Partial<Record<detection.BotType, boolean>>;
 }
@@ -61,7 +59,6 @@ export class BotDetector {
     return {
       bot: triggered.length > 0,
       type: primary?.type,
-      category: primary?.category,
       indicators: triggered.reduce(
         (acc, result) => ({ ...acc, [result.type]: result.indicators }),
         {}

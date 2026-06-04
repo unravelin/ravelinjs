@@ -71,7 +71,6 @@ function checkWebGLContext(env: detection.Environment): boolean {
 export default class HeadlessChromeDetector implements detection.Detector {
   // Bot detector metadata
   public readonly type = 'headless-chrome';
-  public readonly category = 'automation';
   public readonly precedence = 100;
 
   // Detection results
@@ -155,7 +154,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

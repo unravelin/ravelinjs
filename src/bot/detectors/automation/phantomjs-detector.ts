@@ -9,7 +9,6 @@
 export default class PhantomJSDetector implements detection.Detector {
   // Bot detector metadata
   public readonly type = 'phantomJS';
-  public readonly category = 'automation';
   public readonly precedence = 10;
 
   // Detection results
@@ -44,7 +43,6 @@ export default class PhantomJSDetector implements detection.Detector {
 
     return {
       type: this.type,
-      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
