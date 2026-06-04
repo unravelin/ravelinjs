@@ -1,5 +1,5 @@
 import { detectIncognito } from 'detectincognitojs';
-import { BotDetectionResult, BotDetector } from './bot/detector';
+import { BotDetectionResult, BotDetector } from './bot/bot-detector';
 import type { Core, CoreConfig } from './core';
 import { uuid, type Dictionary } from './utils';
 
@@ -138,8 +138,6 @@ export class Track {
       const ids = result[0];
       const incognitoDetected = result[1];
       const botDetectionResult = result[2];
-
-      console.log(botDetectionResult);
 
       return this.core
         .send('POST', 'z', {

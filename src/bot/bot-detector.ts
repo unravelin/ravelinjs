@@ -9,7 +9,7 @@ export interface BotDetectionResult {
   indicators?: Partial<Record<detection.BotType, boolean>>;
 }
 
-export interface BotDetectorOptions {
+interface BotDetectorOptions {
   /**
    * Allow injecting an environment option for unit tests.
    */
