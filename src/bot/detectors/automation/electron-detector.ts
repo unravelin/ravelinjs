@@ -16,10 +16,6 @@ function collectElectronPrefixedKeys(target: object): string[] {
   return found;
 }
 
-function hasElectronUserAgent(userAgent: string): boolean {
-  return /\sElectron\//i.test(userAgent) || /Electron/i.test(userAgent);
-}
-
 /**
  * Detects Electron-hosted pages. Chromium-wide automation signals are handled by
  * `headless-chrome-detector.ts`. With context isolation, `process` is often hidden;
@@ -40,7 +36,7 @@ export default class ElectronDetector implements detection.Detector {
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const userAgent = this.env.navigator?.userAgent || '';
-    if (hasElectronUserAgent(userAgent)) {
+    if (/\sElectron\//i.test(userAgent) || /Electron/i.test(userAgent)) {
       this.indicators.push('electron-user-agent');
     }
 

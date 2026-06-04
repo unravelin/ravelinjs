@@ -2,7 +2,7 @@ declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
   type BotType =
-    | 'chromeMDP'
+    | 'chromeDP'
     | 'headless-chrome'
     | 'phantomJS'
     | 'playwright'
@@ -32,6 +32,4 @@ declare namespace detection {
   interface Detector extends DetailedDetectionResult {
     detect(): Promise<DetailedDetectionResult>;
   }
-
-  type DetectFunction = () => Promise<DetailedDetectionResult>;
 }

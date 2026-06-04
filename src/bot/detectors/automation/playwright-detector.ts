@@ -4,7 +4,7 @@
 
 /**
  * Detects bindings and init-script globals Playwright injects into the page, plus
- * loose eval/stack markers when automation code runs in-page. Heuristic only.
+ * loose eval/stack markers when automation code runs in-page.
  */
 export default class PlaywrightDetector implements detection.Detector {
   // Bot detector metadata

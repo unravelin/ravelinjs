@@ -19,11 +19,11 @@ function collectChromedpNamedKeys(target: object): string[] {
 /**
  * chromedp talks to Chrome over CDP only — no ChromeDriver-style `$cdc_*` window
  * patches. Page-visible signals are mostly string artifacts from evaluated scripts,
- * stacks, or custom globals; treat as hints.
+ * stacks, or custom globals.
  */
 export default class ChromedpDetector implements detection.Detector {
   // Bot detector metadata
-  public readonly type = 'chromeMDP';
+  public readonly type = 'chromeDP';
   public readonly precedence = 10;
 
   // Detection results
