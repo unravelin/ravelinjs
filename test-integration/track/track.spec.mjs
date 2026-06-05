@@ -213,6 +213,20 @@ describe('ravelinjs.track', () => {
         pageTitle: 'track test',
         ravelinDeviceId: deviceId,
         ravelinSessionId: sessionId,
+        suspectedBot: {
+          type: 'headless-chrome',
+          bot: true,
+          indicators: {
+            'headless-chrome': [
+              'navigator-webdriver',
+              'cdp-artifacts',
+              'chromedriver-injected-global',
+              'headless-chrome-user-agent',
+              'chrome-runtime-missing',
+              'headless-chrome-app-version',
+            ],
+          },
+        },
         // "url": {"$regex": "^https?://.+/track/.*"},
         // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
         // "ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
