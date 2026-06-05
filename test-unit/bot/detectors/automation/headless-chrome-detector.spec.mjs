@@ -159,22 +159,6 @@ describe('HeadlessChromeDetector', function () {
     expect(result.indicators).to.include('user-agent-data-missing-google-chrome-brand');
   });
 
-  it('detects denied notifications permission', async function () {
-    const env = makeEnv({
-      navigator: {
-        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
-        plugins: { length: 1 },
-        languages: ['en'],
-        permissions: {
-          query: async () => ({ state: 'denied' }),
-        },
-      },
-    });
-    const result = await new HeadlessChromeDetector(env).detect();
-
-    expect(result.indicators).to.include('permissions-notifications-denied');
-  });
-
   it('detects Mesa offscreen WebGL renderer', async function () {
     const env = makeEnv({
       document: {

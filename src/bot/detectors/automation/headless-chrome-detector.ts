@@ -28,40 +28,30 @@ function hasChromedriverInjectedGlobal(env: detection.Environment): boolean {
   return false;
 }
 
-async function notificationsPermissionDenied(env: detection.Environment): Promise<boolean> {
-  const query = env.navigator?.permissions?.query;
-  if (!query) {
+function checkWebGLContext(env: detection.Environment): boolean {
+  const doc = env.document;
+  if (!doc || typeof doc.createElement !== 'function') {
     return false;
   }
+
   try {
-    const result = await query.call(env.navigator?.permissions, { name: 'notifications' });
-    return result.state === 'denied';
+    const canvasElement = doc.createElement('canvas');
+    if (!canvasElement || typeof canvasElement.getContext !== 'function') {
+      return false;
+    }
+
+    const webGLContext = canvasElement.getContext('webgl');
+    if (webGLContext === null || typeof webGLContext.getParameter !== 'function') {
+      return false;
+    }
+
+    const vendor = webGLContext.getParameter(webGLContext.VENDOR);
+    const renderer = webGLContext.getParameter(webGLContext.RENDERER);
+
+    return vendor == 'Brian Paul' && renderer == 'Mesa OffScreen';
   } catch {
     return false;
   }
-}
-
-function checkWebGLContext(env: detection.Environment): boolean {
-  const createElement = env.document?.createElement;
-  if (typeof createElement !== 'function') {
-    return false;
-  }
-
-  const canvasElement = createElement('canvas');
-  if (!canvasElement || typeof canvasElement.getContext !== 'function') {
-    return false;
-  }
-
-  const webGLContext = canvasElement.getContext('webgl');
-
-  if (webGLContext === null || typeof webGLContext.getParameter !== 'function') {
-    return false;
-  }
-
-  const vendor = webGLContext.getParameter(webGLContext.VENDOR);
-  const renderer = webGLContext.getParameter(webGLContext.RENDERER);
-
-  return vendor == 'Brian Paul' && renderer == 'Mesa OffScreen';
 }
 
 /**
@@ -140,10 +130,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
     const appVersion = this.env.navigator?.appVersion || '';
     if (/headless/i.test(appVersion)) {
       this.indicators.push('headless-chrome-app-version');
-    }
-
-    if (await notificationsPermissionDenied(this.env)) {
-      this.indicators.push('permissions-notifications-denied');
     }
 
     if (checkWebGLContext(this.env)) {
