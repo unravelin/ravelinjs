@@ -56,7 +56,7 @@ function checkWebGLContext(env: detection.Environment): boolean {
 
 /**
  * Detects browser-level signals common to CDP- and WebDriver-controlled Chromium.
- * Legitimate automation (including your own E2E) may trigger these; treat as hints.
+ * Note that integration and unit tests will trigger these.
  */
 export default class HeadlessChromeDetector implements detection.Detector {
   // Bot detector metadata
