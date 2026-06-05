@@ -13,6 +13,9 @@ function hasLegacyCdcArtifacts(env: detection.Environment): boolean {
 
 function hasChromedriverInjectedGlobal(env: detection.Environment): boolean {
   try {
+    // TODO: This logic will be used for detection of other automation tools.
+    // May need to move this check elsewhere to avoid looping through all
+    // of the properties multiple times.
     for (const key of Object.getOwnPropertyNames(env)) {
       if (
         key.startsWith('$cdc_') ||
