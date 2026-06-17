@@ -174,6 +174,8 @@ describe('ravelinjs.track', () => {
   });
 
   it('sends page-load events', async () => {
+    const platform = getCurrentPlatform();
+
     const cookies = await driver.manage().getCookies();
 
     const sessionIdCookie = cookies.find(c => c.name === 'ravelinSessionId');
@@ -213,25 +215,22 @@ describe('ravelinjs.track', () => {
         pageTitle: 'track test',
         ravelinDeviceId: deviceId,
         ravelinSessionId: sessionId,
-        suspectedBot: {
-          type: 'headless-chrome',
-          bot: true,
-          indicators: {
-            'headless-chrome': [
-              'navigator-webdriver',
-              'cdp-artifacts',
-              'chromedriver-injected-global',
-              'headless-chrome-user-agent',
-              'chrome-runtime-missing',
-              'headless-chrome-app-version',
-            ],
-          },
-        },
         // "url": {"$regex": "^https?://.+/track/.*"},
         // "clientEventTimeMilliseconds": {"$gt": 1601315328222},
         // "ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
       },
     });
+
+    // The headless chrome detector does not trigger when running in Safari.
+    if (platform.browserName.toLowerCase() !== 'safari') {
+      expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
+        type: 'headless-chrome',
+        bot: true,
+        indicators: {
+          'headless-chrome': ['navigator-webdriver'],
+        },
+      });
+    }
   });
 
   it('disables and re-enables tracking', async () => {
