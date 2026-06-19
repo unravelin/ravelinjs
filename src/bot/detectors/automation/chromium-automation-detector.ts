@@ -1,6 +1,6 @@
 /**
- * @fileoverview Heuristics shared by Chromium-based automation (Puppeteer, Playwright,
- * Selenium + ChromeDriver, chromedp). Tool-specific detectors should not repeat these.
+ * @fileoverview Heuristics specific to Chromium-based automation (Puppeteer, Playwright,
+ * Selenium + ChromeDriver, chromedp, headless Chrome).
  */
 
 function hasLegacyCdcArtifacts(env: detection.Environment): boolean {
@@ -28,52 +28,40 @@ function hasChromedriverInjectedGlobal(env: detection.Environment): boolean {
   return false;
 }
 
-async function notificationsPermissionDenied(env: detection.Environment): Promise<boolean> {
-  const query = env.navigator?.permissions?.query;
-  if (!query) {
+function checkWebGLContext(env: detection.Environment): boolean {
+  const doc = env.document;
+  if (!doc || typeof doc.createElement !== 'function') {
     return false;
   }
+
   try {
-    const result = await query.call(env.navigator?.permissions, { name: 'notifications' });
-    return result.state === 'denied';
+    const canvasElement = doc.createElement('canvas');
+    if (!canvasElement || typeof canvasElement.getContext !== 'function') {
+      return false;
+    }
+
+    const webGLContext = canvasElement.getContext('webgl');
+    if (webGLContext === null || typeof webGLContext.getParameter !== 'function') {
+      return false;
+    }
+
+    const vendor = webGLContext.getParameter(webGLContext.VENDOR);
+    const renderer = webGLContext.getParameter(webGLContext.RENDERER);
+
+    return vendor == 'Brian Paul' && renderer == 'Mesa OffScreen';
   } catch {
     return false;
   }
 }
 
-function checkWebGLContext(env: detection.Environment): boolean {
-  const createElement = env.document?.createElement;
-  if (typeof createElement !== 'function') {
-    return false;
-  }
-
-  const canvasElement = createElement('canvas');
-  if (!canvasElement || typeof canvasElement.getContext !== 'function') {
-    return false;
-  }
-
-  const webGLContext = canvasElement.getContext('webgl');
-
-  if (webGLContext === null || typeof webGLContext.getParameter !== 'function') {
-    return false;
-  }
-
-  const vendor = webGLContext.getParameter(webGLContext.VENDOR);
-  const renderer = webGLContext.getParameter(webGLContext.RENDERER);
-
-  return vendor == 'Brian Paul' && renderer == 'Mesa OffScreen';
-}
-
 /**
- * Detects browser-level signals common to CDP- and WebDriver-controlled Chromium.
- * Legitimate automation (including your own E2E) may trigger these; treat as hints.
+ * Detects Chromium- and headless-Chrome-specific automation artifacts.
+ * Note that integration and unit tests will trigger some of these.
  */
-export default class HeadlessChromeDetector implements detection.Detector {
-  // Bot detector metadata
-  public readonly type = 'headless-chrome';
-  public readonly precedence = 100;
+export default class ChromiumAutomationDetector implements detection.Detector {
+  public readonly type = 'chromium-automation';
+  public readonly precedence = 90;
 
-  // Detection results
   public triggered = false;
   public indicators: string[] = [];
 
@@ -85,15 +73,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const nav = this.env.navigator;
-
-    if (nav?.webdriver) {
-      this.indicators.push('navigator-webdriver');
-    }
-
-    const doc = this.env.document;
-    if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      this.indicators.push('document-element-webdriver-attr');
-    }
 
     if (hasLegacyCdcArtifacts(this.env)) {
       this.indicators.push('cdp-artifacts');
@@ -108,7 +87,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
       this.indicators.push('headless-chrome-user-agent');
     }
 
-    // User agent checks
     const chrome = this.env.chrome;
     const isChromiumChromeUserAgent =
       /Chrome|Chromium/i.test(userAgent) && !/Edg|OPR|SamsungBrowser|Brave/i.test(userAgent);
@@ -127,23 +105,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
       if (hasChromium && !hasGoogleChrome) {
         this.indicators.push('user-agent-data-missing-google-chrome-brand');
       }
-    }
-
-    if (nav?.languages?.length === 0) {
-      this.indicators.push('empty-navigator-languages');
-    }
-
-    if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
-      this.indicators.push('zero-outer-dimensions');
-    }
-
-    const appVersion = this.env.navigator?.appVersion || '';
-    if (/headless/i.test(appVersion)) {
-      this.indicators.push('headless-chrome-app-version');
-    }
-
-    if (await notificationsPermissionDenied(this.env)) {
-      this.indicators.push('permissions-notifications-denied');
     }
 
     if (checkWebGLContext(this.env)) {

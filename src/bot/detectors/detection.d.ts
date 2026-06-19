@@ -3,7 +3,7 @@ declare namespace detection {
   type Environment = Window & typeof globalThis;
   type BotType =
     | 'chromeDP'
-    | 'headless-chrome'
+    | 'chromium-automation'
     | 'phantomJS'
     | 'playwright'
     | 'puppeteer'
