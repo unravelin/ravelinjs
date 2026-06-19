@@ -39,7 +39,7 @@ describe('HeadlessChromeDetector', function () {
     expect(result.indicators).to.deep.equal([]);
   });
 
-  it('detects navigator.webdriver', async function () {
+  it('does not detect navigator.webdriver', async function () {
     const env = makeEnv({
       navigator: {
         userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
@@ -50,20 +50,7 @@ describe('HeadlessChromeDetector', function () {
     });
     const result = await new HeadlessChromeDetector(env).detect();
 
-    expect(result.indicators).to.include('navigator-webdriver');
-  });
-
-  it('detects document webdriver attribute', async function () {
-    const env = makeEnv({
-      document: {
-        documentElement: {
-          hasAttribute: name => name === 'webdriver',
-        },
-      },
-    });
-    const result = await new HeadlessChromeDetector(env).detect();
-
-    expect(result.indicators).to.include('document-element-webdriver-attr');
+    expect(result.indicators).to.not.include('navigator-webdriver');
   });
 
   it('detects legacy CDP artifacts on the environment', async function () {
@@ -118,26 +105,6 @@ describe('HeadlessChromeDetector', function () {
     const result = await new HeadlessChromeDetector(env).detect();
 
     expect(result.indicators).to.include('empty-plugins-chrome');
-  });
-
-  it('detects empty navigator.languages', async function () {
-    const env = makeEnv({
-      navigator: {
-        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
-        plugins: { length: 1 },
-        languages: [],
-      },
-    });
-    const result = await new HeadlessChromeDetector(env).detect();
-
-    expect(result.indicators).to.include('empty-navigator-languages');
-  });
-
-  it('detects zero outer window dimensions', async function () {
-    const env = makeEnv({ outerWidth: 0, outerHeight: 0 });
-    const result = await new HeadlessChromeDetector(env).detect();
-
-    expect(result.indicators).to.include('zero-outer-dimensions');
   });
 
   it('detects headless user-agent data brands', async function () {

@@ -221,16 +221,13 @@ describe('ravelinjs.track', () => {
       },
     });
 
-    // The headless chrome detector does not trigger when running in Safari.
-    if (platform.browserName.toLowerCase() !== 'safari') {
-      expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
-        type: 'headless-chrome',
-        bot: true,
-        indicators: {
-          'headless-chrome': ['navigator-webdriver'],
-        },
-      });
-    }
+    expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
+      type: 'browser-automation',
+      bot: true,
+      indicators: {
+        'browser-automation': ['navigator-webdriver'],
+      },
+    });
   });
 
   it('disables and re-enables tracking', async () => {

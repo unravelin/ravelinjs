@@ -6,7 +6,7 @@ export interface BotDetectionResult {
   /** The detected bot type. */
   type?: detection.BotType;
   /** Indicators that triggered. */
-  indicators?: Partial<Record<detection.BotType, boolean>>;
+  indicators?: Partial<Record<detection.BotType, string[]>>;
 }
 
 export interface BotDetectorOptions {

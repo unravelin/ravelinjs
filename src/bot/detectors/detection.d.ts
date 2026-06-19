@@ -1,7 +1,7 @@
 declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
-  type BotType = 'headless-chrome';
+  type BotType = 'browser-automation' | 'headless-chrome';
 
   interface DetectorMetadata {
     /** The detected bot type. */
