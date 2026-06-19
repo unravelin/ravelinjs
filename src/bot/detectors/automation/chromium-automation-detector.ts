@@ -1,6 +1,6 @@
 /**
- * @fileoverview Heuristics shared by Chromium-based automation (Puppeteer, Playwright,
- * Selenium + ChromeDriver, chromedp). Tool-specific detectors should not repeat these.
+ * @fileoverview Heuristics specific to Chromium-based automation (Puppeteer, Playwright,
+ * Selenium + ChromeDriver, chromedp, headless Chrome).
  */
 
 function hasLegacyCdcArtifacts(env: detection.Environment): boolean {
@@ -13,9 +13,6 @@ function hasLegacyCdcArtifacts(env: detection.Environment): boolean {
 
 function hasChromedriverInjectedGlobal(env: detection.Environment): boolean {
   try {
-    // TODO: This logic will be used for detection of other automation tools.
-    // May need to move this check elsewhere to avoid looping through all
-    // of the properties multiple times.
     for (const key of Object.getOwnPropertyNames(env)) {
       if (
         key.startsWith('$cdc_') ||
@@ -58,15 +55,13 @@ function checkWebGLContext(env: detection.Environment): boolean {
 }
 
 /**
- * Detects browser-level signals common to CDP- and WebDriver-controlled Chromium.
- * Note that integration and unit tests will trigger these.
+ * Detects Chromium- and headless-Chrome-specific automation artifacts.
+ * Note that integration and unit tests will trigger some of these.
  */
-export default class HeadlessChromeDetector implements detection.Detector {
-  // Bot detector metadata
-  public readonly type = 'headless-chrome';
-  public readonly precedence = 100;
+export default class ChromiumAutomationDetector implements detection.Detector {
+  public readonly type = 'chromium-automation';
+  public readonly precedence = 90;
 
-  // Detection results
   public triggered = false;
   public indicators: string[] = [];
 
@@ -78,15 +73,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const nav = this.env.navigator;
-
-    if (nav?.webdriver) {
-      this.indicators.push('navigator-webdriver');
-    }
-
-    const doc = this.env.document;
-    if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      this.indicators.push('document-element-webdriver-attr');
-    }
 
     if (hasLegacyCdcArtifacts(this.env)) {
       this.indicators.push('cdp-artifacts');
@@ -101,7 +87,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
       this.indicators.push('headless-chrome-user-agent');
     }
 
-    // User agent checks
     const chrome = this.env.chrome;
     const isChromiumChromeUserAgent =
       /Chrome|Chromium/i.test(userAgent) && !/Edg|OPR|SamsungBrowser|Brave/i.test(userAgent);
@@ -120,19 +105,6 @@ export default class HeadlessChromeDetector implements detection.Detector {
       if (hasChromium && !hasGoogleChrome) {
         this.indicators.push('user-agent-data-missing-google-chrome-brand');
       }
-    }
-
-    if (nav?.languages?.length === 0) {
-      this.indicators.push('empty-navigator-languages');
-    }
-
-    if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
-      this.indicators.push('zero-outer-dimensions');
-    }
-
-    const appVersion = this.env.navigator?.appVersion || '';
-    if (/headless/i.test(appVersion)) {
-      this.indicators.push('headless-chrome-app-version');
     }
 
     if (checkWebGLContext(this.env)) {

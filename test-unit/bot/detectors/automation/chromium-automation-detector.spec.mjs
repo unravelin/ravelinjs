@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import HeadlessChromeDetector from '../../../../src/bot/detectors/automation/headless-chrome-detector.ts';
+import ChromiumAutomationDetector from '../../../../src/bot/detectors/automation/chromium-automation-detector.ts';
 
 /**
  * @param {Record<string, unknown>} [overrides]
@@ -23,17 +23,17 @@ function makeEnv(overrides = {}) {
   };
 }
 
-describe('HeadlessChromeDetector', function () {
+describe('ChromiumAutomationDetector', function () {
   it('exposes detector metadata', async function () {
-    const detector = new HeadlessChromeDetector(makeEnv());
+    const detector = new ChromiumAutomationDetector(makeEnv());
     const result = await detector.detect();
 
-    expect(detector.type).to.equal('headless-chrome');
-    expect(result.type).to.equal('headless-chrome');
+    expect(detector.type).to.equal('chromium-automation');
+    expect(result.type).to.equal('chromium-automation');
   });
 
   it('does not trigger when no Chromium automation artifacts are present', async function () {
-    const result = await new HeadlessChromeDetector(makeEnv()).detect();
+    const result = await new ChromiumAutomationDetector(makeEnv()).detect();
 
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
@@ -48,21 +48,21 @@ describe('HeadlessChromeDetector', function () {
         languages: ['en'],
       },
     });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.not.include('navigator-webdriver');
   });
 
   it('detects legacy CDP artifacts on the environment', async function () {
     const env = makeEnv({ cdc_adoQpoasnfa76pfcZLmcfl_Promise: {} });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('cdp-artifacts');
   });
 
   it('detects chromedriver-injected globals', async function () {
     const env = makeEnv({ $cdc_foo: true });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('chromedriver-injected-global');
   });
@@ -75,21 +75,21 @@ describe('HeadlessChromeDetector', function () {
         languages: ['en'],
       },
     });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('headless-chrome-user-agent');
   });
 
   it('detects missing chrome.runtime on Chromium', async function () {
     const env = makeEnv({ chrome: {} });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('chrome-runtime-missing');
   });
 
   it('does not flag chrome.runtime when it is present', async function () {
     const env = makeEnv({ chrome: { runtime: {} } });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.not.include('chrome-runtime-missing');
   });
@@ -102,7 +102,7 @@ describe('HeadlessChromeDetector', function () {
         languages: ['en'],
       },
     });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('empty-plugins-chrome');
   });
@@ -121,7 +121,7 @@ describe('HeadlessChromeDetector', function () {
         },
       },
     });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('user-agent-data-missing-google-chrome-brand');
   });
@@ -141,7 +141,7 @@ describe('HeadlessChromeDetector', function () {
         }),
       },
     });
-    const result = await new HeadlessChromeDetector(env).detect();
+    const result = await new ChromiumAutomationDetector(env).detect();
 
     expect(result.indicators).to.include('webgl-context-mesa-offscreen');
   });
