@@ -6,8 +6,8 @@
 /**
  * Detects generic browser automation fingerprints not tied to a specific engine.
  */
-export default class BrowserAutomationDetector implements detection.Detector {
-  public readonly type = 'browser-automation';
+export default class HeadlessDetector implements detection.Detector {
+  public readonly signal = 'headless';
   public readonly precedence = 100;
 
   public triggered = false;
@@ -22,19 +22,6 @@ export default class BrowserAutomationDetector implements detection.Detector {
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const nav = this.env.navigator;
 
-    if (nav?.webdriver) {
-      this.indicators.push('navigator-webdriver');
-    }
-
-    const doc = this.env.document;
-    if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      this.indicators.push('document-element-webdriver-attr');
-    }
-
-    if (nav?.languages?.length === 0) {
-      this.indicators.push('empty-navigator-languages');
-    }
-
     if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
       this.indicators.push('zero-outer-dimensions');
     }
@@ -44,10 +31,15 @@ export default class BrowserAutomationDetector implements detection.Detector {
       this.indicators.push('headless-app-version');
     }
 
+    const userAgent = nav?.userAgent || '';
+    if (/HeadlessChrome/i.test(userAgent)) {
+      this.indicators.push('headless-chrome-user-agent');
+    }
+
     this.triggered = this.indicators.length > 0;
 
     return {
-      type: this.type,
+      signal: this.signal,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
