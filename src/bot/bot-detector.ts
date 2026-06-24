@@ -1,12 +1,12 @@
-import createAutomationDetectors from './detectors/automation';
+import createEnvironmentDetectors from './detectors/environment';
 
 export interface BotDetectionResult {
-  /** True if any indicator triggered. */
-  bot: boolean;
-  /** The detected bot type. */
-  type?: detection.BotType;
+  /** The verdict of the detection result. */
+  verdict: detection.Verdict;
+  /** The detected signal. */
+  signal?: detection.Signal;
   /** Indicators that triggered. */
-  indicators?: Partial<Record<detection.BotType, string[]>>;
+  indicators?: Partial<Record<detection.Signal, string[]>>;
 }
 
 export interface BotDetectorOptions {
@@ -31,7 +31,7 @@ export class BotDetector {
 
     // TODO: In the future, we can add different categories of detectors. We could
     // also allow these to be configurable by passing in options to this constructor.
-    this.register(createAutomationDetectors(this._env));
+    this.register(createEnvironmentDetectors(this._env));
   }
 
   public register(detector: detection.Detector | detection.Detector[]): void {
@@ -50,10 +50,11 @@ export class BotDetector {
         : undefined;
 
     return {
-      bot: triggered.length > 0,
-      type: primary?.type,
+      // For now, we'll assume that if any signal is triggered, the user is a bot.
+      verdict: triggered.length > 0 ? 'bot' : 'human',
+      signal: primary?.signal,
       indicators: triggered.reduce(
-        (acc, result) => ({ ...acc, [result.type]: result.indicators }),
+        (acc, result) => ({ ...acc, [result.signal]: result.indicators }),
         {}
       ),
     };
