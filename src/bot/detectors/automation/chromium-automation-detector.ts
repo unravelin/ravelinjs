@@ -83,7 +83,7 @@ export default class ChromiumAutomationDetector implements detection.Detector {
     }
 
     const userAgent = nav?.userAgent || '';
-    if (/Headless/i.test(userAgent)) {
+    if (/HeadlessChrome/i.test(userAgent)) {
       this.indicators.push('headless-chrome-user-agent');
     }
 
