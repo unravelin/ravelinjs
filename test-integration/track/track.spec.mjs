@@ -221,17 +221,12 @@ describe('ravelinjs.track', () => {
       },
     });
 
-    // Need to check the different platforms
-    const browserName = platform.browserName.toLowerCase();
-    if (browserName === 'chrome') {
+    // Safari based bots currently pass detection.
+    // Further signals should be added to detect this.
+    if (platform.browserName.toLowerCase() !== 'safari') {
       expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
-        type: 'chromium-automation',
-        bot: true,
-      });
-    } else if (browserName !== 'safari') {
-      expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
-        type: 'browser-automation',
-        bot: true,
+        verdict: 'bot',
+        signal: 'webdriver',
       });
     }
   });
