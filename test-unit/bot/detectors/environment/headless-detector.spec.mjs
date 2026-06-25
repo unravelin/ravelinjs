@@ -50,4 +50,16 @@ describe('HeadlessDetector', function () {
 
     expect(result.indicators).to.include('headless-chrome-user-agent');
   });
+
+  it('detects empty navigator.languages', async function () {
+    const env = makeEnv({
+      navigator: {
+        userAgent: 'Mozilla/5.0 Safari/605.1.15',
+        languages: [],
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.indicators).to.include('empty-languages');
+  });
 });

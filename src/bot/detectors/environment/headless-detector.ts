@@ -36,6 +36,14 @@ export default class HeadlessDetector implements detection.Detector {
       this.indicators.push('headless-chrome-user-agent');
     }
 
+    if (nav?.languages?.length === 0) {
+      this.indicators.push('no-languages');
+    }
+
+    if (nav.plugins && nav.plugins.length === 0) {
+      this.indicators.push('no-plugins');
+    }
+
     this.triggered = this.indicators.length > 0;
 
     return {
