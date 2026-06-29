@@ -1,10 +1,11 @@
 /**
- * @fileoverview Browser-agnostic automation signals (WebDriver, headless-like
- * environments). These apply across Chromium, Firefox, Safari WebDriver, etc.
+ * @fileoverview Heuristics for headless and headless-like browser environments,
+ * such as zero window dimensions, HeadlessChrome user agents, and empty plugins
+ * or languages.
  */
 
 /**
- * Detects generic browser automation fingerprints not tied to a specific engine.
+ * Detects environment fingerprints commonly seen in headless automation.
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';

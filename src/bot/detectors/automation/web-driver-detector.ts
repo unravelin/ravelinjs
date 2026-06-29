@@ -1,12 +1,12 @@
 /**
- * @fileoverview Browser-agnostic automation signals (WebDriver, headless-like
- * environments). These apply across Chromium, Firefox, Safari WebDriver, etc.
+ * @fileoverview WebDriver protocol and driver-leak signals, such as
+ * `navigator.webdriver` and legacy WebDriver attributes on the document.
  */
 
 /**
- * Detects generic browser automation fingerprints not tied to a specific engine.
+ * Detects browser automation via the WebDriver standard and related driver artifacts.
  */
-export default class WebdriverDetector implements detection.Detector {
+export default class WebDriverDetector implements detection.Detector {
   public readonly signal = 'webdriver';
   public readonly precedence = 100;
 

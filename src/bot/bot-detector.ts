@@ -1,3 +1,4 @@
+import createAutomationDetectors from './detectors/automation';
 import createEnvironmentDetectors from './detectors/environment';
 
 export interface BotDetectionResult {
@@ -31,7 +32,10 @@ export class BotDetector {
 
     // TODO: In the future, we can add different categories of detectors. We could
     // also allow these to be configurable by passing in options to this constructor.
-    this.register(createEnvironmentDetectors(this._env));
+    this.register([
+      ...createAutomationDetectors(this._env),
+      ...createEnvironmentDetectors(this._env),
+    ]);
   }
 
   public register(detector: detection.Detector | detection.Detector[]): void {
