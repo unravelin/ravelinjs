@@ -31,10 +31,6 @@ export default class WebDriverDetector implements detection.Detector {
       this.indicators.push('document-element-webdriver-attr');
     }
 
-    if (nav?.languages?.length === 0) {
-      this.indicators.push('empty-navigator-languages');
-    }
-
     this.triggered = this.indicators.length > 0;
 
     return {

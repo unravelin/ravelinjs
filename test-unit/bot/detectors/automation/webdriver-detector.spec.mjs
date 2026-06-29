@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import WebdriverDetector from '../../../../src/bot/detectors/environment/webdriver-detector.ts';
-import { makeEnv } from './detector-test.utils.mjs';
+import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('WebdriverDetector', function () {
   it('exposes detector metadata', async function () {
@@ -42,17 +42,5 @@ describe('WebdriverDetector', function () {
     const result = await new WebdriverDetector(env).detect();
 
     expect(result.indicators).to.include('document-element-webdriver-attr');
-  });
-
-  it('detects empty navigator.languages', async function () {
-    const env = makeEnv({
-      navigator: {
-        userAgent: 'Mozilla/5.0 Safari/605.1.15',
-        languages: [],
-      },
-    });
-    const result = await new WebdriverDetector(env).detect();
-
-    expect(result.indicators).to.include('empty-navigator-languages');
   });
 });

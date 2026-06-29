@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import HeadlessDetector from '../../../../src/bot/detectors/environment/headless-detector.ts';
-import { makeEnv } from './detector-test.utils.mjs';
+import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('HeadlessDetector', function () {
   it('does not trigger when no headless artifacts are present', async function () {
@@ -43,17 +43,18 @@ describe('HeadlessDetector', function () {
     expect(result.indicators).to.include('headless-chrome-user-agent');
   });
 
-  it('detects empty navigator.languages', async function () {
+  it('detects no-languages', async function () {
     const env = makeEnv({
       navigator: {
         userAgent: 'Mozilla/5.0 Safari/605.1.15',
+        plugins: { length: 1 },
         languages: [],
       },
     });
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('no-languages');
+    expect(result.indicators).to.deep.equal(['no-languages']);
   });
 
   it('detects empty navigator.plugins', async function () {
