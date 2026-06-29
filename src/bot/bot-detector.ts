@@ -66,7 +66,7 @@ export class BotDetector {
 
   /** Evaluate every registered detector in parallel. */
   public async detect(): Promise<BotDetectionResult> {
-    // If we've already run the detetion, return the cached result.
+    // If we've already run the detection, return the cached result.
     if (this._detectionResult) {
       return this._detectionResult;
     }
