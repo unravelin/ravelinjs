@@ -224,7 +224,7 @@ describe('ravelinjs.track', () => {
     // Safari based bots currently pass detection.
     // Further signals should be added to detect this.
     if (platform.browserName.toLowerCase() !== 'safari') {
-      expect(loadEvent.bodyJSON.events[0].eventMeta.suspectedBot).to.containSubset({
+      expect(loadEvent.bodyJSON.events[0].eventMeta.bot).to.containSubset({
         verdict: 'bot',
         signal: 'webdriver',
       });
