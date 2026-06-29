@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import WebdriverDetector from '../../../../src/bot/detectors/environment/webdriver-detector.ts';
+import WebDriverDetector from '../../../../src/bot/detectors/automation/web-driver-detector.ts';
 import { makeEnv } from '../detector-test.utils.mjs';
 
-describe('WebdriverDetector', function () {
+describe('WebDriverDetector', function () {
   it('exposes detector metadata', async function () {
-    const detector = new WebdriverDetector(makeEnv());
+    const detector = new WebDriverDetector(makeEnv());
     const result = await detector.detect();
 
     expect(detector.signal).to.equal('webdriver');
@@ -12,7 +12,7 @@ describe('WebdriverDetector', function () {
   });
 
   it('does not trigger when no webdriver artifacts are present', async function () {
-    const result = await new WebdriverDetector(makeEnv()).detect();
+    const result = await new WebDriverDetector(makeEnv()).detect();
 
     expect(result.triggered).to.equal(false);
     expect(result.indicators).to.deep.equal([]);
@@ -26,7 +26,7 @@ describe('WebdriverDetector', function () {
         languages: ['en'],
       },
     });
-    const result = await new WebdriverDetector(env).detect();
+    const result = await new WebDriverDetector(env).detect();
 
     expect(result.indicators).to.include('navigator-webdriver');
   });
@@ -39,7 +39,7 @@ describe('WebdriverDetector', function () {
         },
       },
     });
-    const result = await new WebdriverDetector(env).detect();
+    const result = await new WebDriverDetector(env).detect();
 
     expect(result.indicators).to.include('document-element-webdriver-attr');
   });
