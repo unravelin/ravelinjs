@@ -20,9 +20,9 @@ export default class WebDriverDetector implements detection.Detector {
   }
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
-    const nav = this.env.navigator;
+    const nav = this.env.navigator || ({} as Navigator);
 
-    if (nav?.webdriver) {
+    if (nav.webdriver) {
       this.indicators.push('navigator-webdriver');
     }
 
