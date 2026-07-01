@@ -46,24 +46,6 @@ export class BotDetector {
     }
   }
 
-  private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
-    const triggered = results.filter(result => result.triggered);
-    const primary =
-      triggered.length > 0
-        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
-        : undefined;
-
-    return {
-      // For now, we'll assume that if any signal is triggered, the user is a bot.
-      verdict: triggered.length > 0 ? 'bot' : 'human',
-      signal: primary?.signal,
-      indicators: triggered.reduce(
-        (acc, result) => ({ ...acc, [result.signal]: result.indicators }),
-        {}
-      ),
-    };
-  }
-
   /** Evaluate every registered detector in parallel. */
   public async detect(): Promise<BotDetectionResult> {
     // If we've already run the detection, return the cached result.
@@ -83,5 +65,23 @@ export class BotDetector {
     this._detectionResult = this._buildResult(results);
 
     return this._detectionResult;
+  }
+
+  private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
+    const triggered = results.filter(result => result.triggered);
+    const primary =
+      triggered.length > 0
+        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
+        : undefined;
+
+    return {
+      // For now, we'll assume that if any signal is triggered, the user is a bot.
+      verdict: triggered.length > 0 ? 'bot' : 'human',
+      signal: primary?.signal,
+      indicators: triggered.reduce(
+        (acc, result) => ({ ...acc, [result.signal]: result.indicators }),
+        {}
+      ),
+    };
   }
 }
