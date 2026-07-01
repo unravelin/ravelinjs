@@ -50,7 +50,7 @@ export class BotDetector {
     const triggered = results.filter(result => result.triggered);
     const primary =
       triggered.length > 0
-        ? triggered.reduce((best, result) => (result.precedence < best.precedence ? result : best))
+        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
         : undefined;
 
     return {

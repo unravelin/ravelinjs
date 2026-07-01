@@ -12,7 +12,7 @@ declare namespace detection {
     signal: Signal;
     /** The precedence of the detection result. When building the bot detection result,
      * the highest precedence result will be used. If multiple results have the same precedence,
-     * the first one will be used. (Lower numbers are higher precedence.) */
+     * the first one will be used. (Higher numbers are higher precedence.) */
     precedence: number;
   }
 

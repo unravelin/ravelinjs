@@ -9,7 +9,7 @@
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';
-  public readonly precedence = 100;
+  public readonly precedence = 10;
 
   public triggered = false;
   public indicators: string[] = [];
