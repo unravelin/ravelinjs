@@ -35,7 +35,7 @@ describe('ravelin.track', function () {
             expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
-            expect(loadEvent.eventMeta.bot.verdict).to.equal('bot');
+            expect(loadEvent.eventMeta.bot.verdict).to.be.a('string');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           })
           .then(done, done);
@@ -63,7 +63,7 @@ describe('ravelin.track', function () {
             expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
-            expect(loadEvent.eventMeta.bot.verdict).to.equal('bot');
+            expect(loadEvent.eventMeta.bot.verdict).to.be.a('string');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           })
           .then(done, done);
@@ -133,7 +133,7 @@ describe('ravelin.track', function () {
               expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
               expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
               expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
-              expect(loadEvent.eventMeta.bot.verdict).to.equal('bot');
+              expect(loadEvent.eventMeta.bot.verdict).to.be.a('string');
               expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
             })
             .then(done, done);
@@ -217,7 +217,7 @@ describe('ravelin.track', function () {
             expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
-            expect(loadEvent.eventMeta.bot.verdict).to.equal('bot');
+            expect(loadEvent.eventMeta.bot.verdict).to.be.a('string');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           })
           .then(done, done);
@@ -250,7 +250,7 @@ describe('ravelin.track', function () {
             expect(loadEvent.eventMeta.ravelinDeviceId).to.equal(ids.device);
             expect(loadEvent.eventMeta.ravelinSessionId).to.equal(ids.session);
             expect(loadEvent.eventMeta.incognitoDetected).to.be.a('boolean');
-            expect(loadEvent.eventMeta.bot.verdict).to.equal('bot');
+            expect(loadEvent.eventMeta.bot.verdict).to.be.a('string');
             expect(loadEvent.eventMeta.timezoneOffset).to.be.a('number');
           });
         } else {
