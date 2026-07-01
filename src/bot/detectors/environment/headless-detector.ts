@@ -21,23 +21,23 @@ export default class HeadlessDetector implements detection.Detector {
   }
 
   public async detect(): Promise<detection.DetailedDetectionResult> {
-    const nav = this.env.navigator;
+    const nav = this.env.navigator || ({} as Navigator);
 
     if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
       this.indicators.push('zero-outer-dimensions');
     }
 
-    const appVersion = nav?.appVersion || '';
+    const appVersion = nav.appVersion || '';
     if (/headless/i.test(appVersion)) {
       this.indicators.push('headless-app-version');
     }
 
-    const userAgent = nav?.userAgent || '';
+    const userAgent = nav.userAgent || '';
     if (/HeadlessChrome/i.test(userAgent)) {
       this.indicators.push('headless-chrome-user-agent');
     }
 
-    if (nav?.languages?.length === 0) {
+    if (!nav.language || (nav.languages && nav.languages.length === 0)) {
       this.indicators.push('no-languages');
     }
 
