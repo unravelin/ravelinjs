@@ -37,7 +37,7 @@ export default class HeadlessDetector implements detection.Detector {
       this.indicators.push('headless-chrome-user-agent');
     }
 
-    if (!nav.language || (nav.languages && nav.languages.length === 0)) {
+    if (nav.languages && nav.languages.length === 0) {
       this.indicators.push('no-languages');
     }
 
