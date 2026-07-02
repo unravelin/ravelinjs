@@ -71,7 +71,7 @@ steps:
       - test:bot
 
   - id: browserstack
-    waitFor: ["import_tests"]
+    waitFor: ["import_tests", "bot_tests"]
     name: $_NODE
     entrypoint: npm
     env:
