@@ -120,9 +120,7 @@ export class Core {
     }
 
     this._ids = this.sniffError(this._id)
-      .catch(() => {
-        // Swallow error
-      })
+      .catch(() => undefined) // Swallow error
       .then((cfgId: string | undefined) => {
         let d = cfgId || this.cookies.get(this.cookie);
         let s = this.cookies.get(this.sessionCookie);
@@ -195,9 +193,7 @@ export class Core {
 
     if (this._ids) {
       return this._ids
-        .catch(() => {
-          // Swallow error
-        })
+        .catch(() => undefined) // Swallow error
         .then(report);
     }
     return report();

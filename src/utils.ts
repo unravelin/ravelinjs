@@ -98,7 +98,7 @@ export function promiseRetry<T>(
   let n = 0;
 
   return new Promise<T>((resolve, reject) => {
-    function attempt(delay: number) {
+    function attempt(delay: number): Promise<void> {
       return (
         new Promise<void>(innerResolve => {
           if (delay) {

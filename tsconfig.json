@@ -3,6 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "noEmit": true,
+    "rootDir": "src",
     "target": "es2022",
     "lib": ["es2022", "dom"],
     "module": "preserve",
