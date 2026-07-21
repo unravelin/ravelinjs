@@ -18,20 +18,16 @@ const PLAYWRIGHT_GLOBALS = [
   '__PW_inspect',
   '__pwClock',
   'playwright',
-] as const;
+];
 
 /**
  * Globals Playwright installs to emulate a device environment. Present when a
  * test overrides geolocation, permissions, or timezone.
  */
-const ENVIRONMENT_SPOOF_GLOBALS = [
-  '__pw_geolocation__',
-  '__pw_permissions__',
-  '__pw_timezone__',
-] as const;
+const ENVIRONMENT_SPOOF_GLOBALS = ['__pw_geolocation__', '__pw_permissions__', '__pw_timezone__'];
 
 /** Chrome DevTools Protocol artifacts left behind by Playwright's transport. */
-const PROTOCOL_GLOBALS = ['__cdpSession__'] as const;
+const PROTOCOL_GLOBALS = ['__cdpSession__'];
 
 /**
  * Detects browser automation driven by Playwright.
