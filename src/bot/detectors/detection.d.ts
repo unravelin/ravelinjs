@@ -1,7 +1,7 @@
 declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
-  type Signal = 'headless' | 'playwright' | 'selenium' | 'webdriver';
+  type Signal = 'headless' | 'playwright' | 'puppeteer' | 'selenium' | 'webdriver';
 
   // Using an enum allows us to possibly extend to add more in the future. For
   // example, we could add 'agent' if we add support for agent detection.
