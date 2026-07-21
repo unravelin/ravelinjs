@@ -79,4 +79,17 @@ describe('PlaywrightDetector', function () {
     expect(result.indicators).to.not.include('eval-playwright-marker');
     expect(result.triggered).to.equal(false);
   });
+
+  it('detects a Playwright user-agent from the injected environment', async function () {
+    const env = makeEnv({
+      navigator: {
+        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0 Playwright/1.40',
+        languages: ['en'],
+      },
+    });
+    const result = await new PlaywrightDetector(env).detect();
+
+    expect(result.indicators).to.include('playwright-user-agent');
+    expect(result.triggered).to.equal(true);
+  });
 });
