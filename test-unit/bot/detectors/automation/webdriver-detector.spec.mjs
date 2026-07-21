@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import WebDriverDetector from '../../../../src/bot/detectors/automation/web-driver-detector.ts';
+import WebDriverDetector from '../../../../src/bot/detectors/automation/webdriver-detector.ts';
 import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('WebDriverDetector', function () {

@@ -1,7 +1,7 @@
-import WebdriverDetector from './webdriver-detector';
+import WebDriverDetector from './webdriver-detector';
 
 export default function createAutomationDetectors(
   env: detection.Environment
 ): detection.Detector[] {
-  return [new WebdriverDetector(env)];
+  return [new WebDriverDetector(env)];
 }
