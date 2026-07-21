@@ -60,7 +60,7 @@ const CHROMEDRIVER_KEY_PATTERN = /^\$?(?:cdc|wdc)_/;
  */
 export default class SeleniumDetector implements detection.Detector {
   public readonly signal = 'selenium';
-  public readonly precedence = 10;
+  public readonly precedence = 50;
 
   public triggered = false;
   public indicators: string[] = [];

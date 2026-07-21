@@ -34,7 +34,7 @@ const PROTOCOL_GLOBALS = ['__cdpSession__'];
  */
 export default class PlaywrightDetector implements detection.Detector {
   public readonly signal = 'playwright';
-  public readonly precedence = 10;
+  public readonly precedence = 100;
 
   public triggered = false;
   public indicators: string[] = [];
