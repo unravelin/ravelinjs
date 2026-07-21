@@ -4,6 +4,8 @@
  * overrides it installs, and user-agent/eval markers left by some configurations.
  */
 
+// NOTE: The following globals are separate in we add a confidence score in the future.s
+
 /**
  * Globals that Playwright exposes on the page's `window`/`globalThis`. These are
  * strong, direct evidence of a Playwright-driven runtime.
@@ -23,13 +25,13 @@ const PLAYWRIGHT_GLOBALS = [
  * test overrides geolocation, permissions, or timezone.
  */
 const ENVIRONMENT_SPOOF_GLOBALS = [
-  { global: '__pw_geolocation__', indicator: 'geolocation-mock' },
-  { global: '__pw_permissions__', indicator: 'permissions-override' },
-  { global: '__pw_timezone__', indicator: 'timezone-mock' },
+  '__pw_geolocation__',
+  '__pw_permissions__',
+  '__pw_timezone__',
 ] as const;
 
 /** Chrome DevTools Protocol artifacts left behind by Playwright's transport. */
-const PROTOCOL_GLOBALS = [{ global: '__cdpSession__', indicator: 'cdp-session' }] as const;
+const PROTOCOL_GLOBALS = ['__cdpSession__'] as const;
 
 /**
  * Detects browser automation driven by Playwright.
@@ -67,7 +69,7 @@ export default class PlaywrightDetector implements detection.Detector {
   /** Direct Playwright runtime globals injected into the page. */
   private _detectGlobals(): void {
     for (const global of PLAYWRIGHT_GLOBALS) {
-      if (this.hasGlobal(global)) {
+      if (global in this.env) {
         this.indicators.push(`global-${global}`);
       }
     }
@@ -75,18 +77,18 @@ export default class PlaywrightDetector implements detection.Detector {
 
   /** Chrome DevTools Protocol transport artifacts. */
   private _detectProtocolArtifacts(): void {
-    for (const { global, indicator } of PROTOCOL_GLOBALS) {
-      if (this.hasGlobal(global)) {
-        this.indicators.push(indicator);
+    for (const global of PROTOCOL_GLOBALS) {
+      if (global in this.env) {
+        this.indicators.push(`global-${global}`);
       }
     }
   }
 
   /** Device-emulation overrides (geolocation, permissions, timezone). */
   private _detectEnvironmentSpoofing(): void {
-    for (const { global, indicator } of ENVIRONMENT_SPOOF_GLOBALS) {
-      if (this.hasGlobal(global)) {
-        this.indicators.push(indicator);
+    for (const global of ENVIRONMENT_SPOOF_GLOBALS) {
+      if (global in this.env) {
+        this.indicators.push(`global-${global}`);
       }
     }
   }
@@ -108,15 +110,6 @@ export default class PlaywrightDetector implements detection.Detector {
       }
     } catch {
       // A throwing `toString` is not itself evidence of Playwright; ignore it.
-    }
-  }
-
-  /** Safe presence check for a global that tolerates a missing environment. */
-  private hasGlobal(name: string): boolean {
-    try {
-      return name in this.env;
-    } catch {
-      return false;
     }
   }
 }
