@@ -6,7 +6,7 @@
 /**
  * Detects browser automation via the WebDriver standard and related driver artifacts.
  */
-export default class WebDriverDetector implements detection.Detector {
+export default class WebdriverDetector implements detection.Detector {
   public readonly signal = 'webdriver';
   public readonly precedence = 10;
 
