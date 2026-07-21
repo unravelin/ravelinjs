@@ -28,7 +28,7 @@ describe('PlaywrightDetector', function () {
     const result = await new PlaywrightDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('geolocation-mock');
+    expect(result.indicators).to.include('global-__pw_geolocation__');
   });
 
   it('detects Playwright permissions override', async function () {
@@ -36,7 +36,7 @@ describe('PlaywrightDetector', function () {
     const result = await new PlaywrightDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('permissions-override');
+    expect(result.indicators).to.include('global-__pw_permissions__');
   });
 
   it('detects Playwright timezone mock', async function () {
@@ -44,7 +44,7 @@ describe('PlaywrightDetector', function () {
     const result = await new PlaywrightDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('timezone-mock');
+    expect(result.indicators).to.include('global-__pw_timezone__');
   });
 
   it('detects Playwright CDP session artifact', async function () {
@@ -52,7 +52,7 @@ describe('PlaywrightDetector', function () {
     const result = await new PlaywrightDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('cdp-session');
+    expect(result.indicators).to.include('global-__cdpSession__');
   });
 
   it('detects playwright in eval.toString()', async function () {
