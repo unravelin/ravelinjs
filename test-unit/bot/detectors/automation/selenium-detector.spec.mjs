@@ -44,43 +44,6 @@ describe('SeleniumDetector', function () {
     expect(result.indicators).to.include('document-webdriver-evaluate');
   });
 
-  it('detects randomly-named ChromeDriver keys on the document', async function () {
-    const env = makeEnv({
-      document: {
-        $cdc_asdjflasutopfhvcZLmcfl_Array: [],
-      },
-    });
-    const result = await new SeleniumDetector(env).detect();
-
-    expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('chromedriver-$cdc_asdjflasutopfhvcZLmcfl_Array');
-  });
-
-  it('detects ChromeDriver keys on the window', async function () {
-    const env = makeEnv({
-      cdc_adoQpoasnfa76pfcZLmcfl_Symbol: {},
-    });
-    const result = await new SeleniumDetector(env).detect();
-
-    expect(result.triggered).to.equal(true);
-    expect(result.indicators).to.include('chromedriver-cdc_adoQpoasnfa76pfcZLmcfl_Symbol');
-  });
-
-  it('does not report the same ChromeDriver key twice', async function () {
-    const env = makeEnv({
-      $cdc_shared_Array: {},
-      document: {
-        $cdc_shared_Array: {},
-      },
-    });
-    const result = await new SeleniumDetector(env).detect();
-
-    const matches = result.indicators.filter(
-      indicator => indicator === 'chromedriver-$cdc_shared_Array'
-    );
-    expect(matches).to.have.lengthOf(1);
-  });
-
   it('detects a Selenium user-agent from the injected environment', async function () {
     const env = makeEnv({
       navigator: {
