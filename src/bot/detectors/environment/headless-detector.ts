@@ -6,8 +6,6 @@
  * Puppeteer) even when nothing else leaks.
  */
 
-import { PRECEDENCE } from '../precedence';
-
 /** Renderer strings reported by GPU-less/software WebGL backends. */
 const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
 
@@ -16,7 +14,7 @@ const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';
-  public readonly precedence = PRECEDENCE.GENERIC;
+  public readonly precedence = 10;
 
   public triggered = false;
   public indicators: string[] = [];

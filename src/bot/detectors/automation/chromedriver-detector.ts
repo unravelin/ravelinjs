@@ -6,8 +6,6 @@
  * runtime.
  */
 
-import { PRECEDENCE } from '../precedence';
-
 // NOTE: The following lists are kept separate in case we add a confidence score
 // in the future.
 
@@ -26,7 +24,7 @@ const CHROMEDRIVER_KEY_PATTERN = /^\$?(?:cdc|wdc)_/;
  */
 export default class ChromeDriverDetector implements detection.Detector {
   public readonly signal = 'chromedriver';
-  public readonly precedence = PRECEDENCE.DRIVER;
+  public readonly precedence = 25;
 
   public triggered = false;
   public indicators: string[] = [];

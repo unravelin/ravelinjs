@@ -11,14 +11,12 @@
  * so a getter installed on `.stack` fires only when such a client is listening.
  */
 
-import { PRECEDENCE } from '../precedence';
-
 /**
  * Detects browser automation that speaks the Chrome DevTools Protocol.
  */
 export default class CDPDetector implements detection.Detector {
   public readonly signal = 'cdp';
-  public readonly precedence = PRECEDENCE.DRIVER;
+  public readonly precedence = 25;
 
   public triggered = false;
   public indicators: string[] = [];
