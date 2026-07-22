@@ -71,6 +71,74 @@ describe('HeadlessDetector', function () {
     expect(result.indicators).to.include('no-plugins');
   });
 
+  it('detects the Notification permission inconsistency', async function () {
+    const env = makeEnv({
+      Notification: { permission: 'denied' },
+      navigator: {
+        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
+        plugins: { length: 1 },
+        languages: ['en'],
+        permissions: {
+          query: async () => ({ state: 'prompt' }),
+        },
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.triggered).to.equal(true);
+    expect(result.indicators).to.include('permission-mismatch');
+  });
+
+  it('does not flag consistent notification permissions', async function () {
+    const env = makeEnv({
+      Notification: { permission: 'default' },
+      navigator: {
+        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
+        plugins: { length: 1 },
+        languages: ['en'],
+        permissions: {
+          query: async () => ({ state: 'prompt' }),
+        },
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.indicators).to.not.include('permission-mismatch');
+  });
+
+  it('detects a software WebGL renderer', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            getExtension: () => ({ UNMASKED_RENDERER_WEBGL: 37446 }),
+            getParameter: () => 'Google SwiftShader',
+          }),
+        }),
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.triggered).to.equal(true);
+    expect(result.indicators).to.include('software-webgl-renderer');
+  });
+
+  it('does not flag a hardware WebGL renderer', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            getExtension: () => ({ UNMASKED_RENDERER_WEBGL: 37446 }),
+            getParameter: () => 'NVIDIA GeForce RTX 3080',
+          }),
+        }),
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.indicators).to.not.include('software-webgl-renderer');
+  });
+
   it('does not trigger when only one outer dimension is zero', async function () {
     const env = makeEnv({ outerWidth: 0, outerHeight: 1080 });
     const result = await new HeadlessDetector(env).detect();
