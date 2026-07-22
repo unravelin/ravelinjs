@@ -6,7 +6,7 @@
  * runtime.
  */
 
-import { PRECEDENCE } from '../precedence.ts';
+import { PRECEDENCE } from '../precedence';
 
 // NOTE: The following lists are kept separate in case we add a confidence score
 // in the future.

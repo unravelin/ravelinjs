@@ -4,6 +4,8 @@
  * and user-agent markers left by some configurations.
  */
 
+import { PRECEDENCE } from '../precedence';
+
 // NOTE: The following globals are separate in case we add a confidence score in
 // the future.
 
@@ -24,7 +26,7 @@ const PUPPETEER_SOURCE_MARKER = /puppeteer_evaluation_script/i;
  */
 export default class PuppeteerDetector implements detection.Detector {
   public readonly signal = 'puppeteer';
-  public readonly precedence = 100;
+  public readonly precedence = PRECEDENCE.HARD_ARTIFACT;
 
   public triggered = false;
   public indicators: string[] = [];

@@ -6,7 +6,7 @@
  * Puppeteer) even when nothing else leaks.
  */
 
-import { PRECEDENCE } from '../precedence.ts';
+import { PRECEDENCE } from '../precedence';
 
 /** Renderer strings reported by GPU-less/software WebGL backends. */
 const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
