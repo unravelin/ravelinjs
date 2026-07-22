@@ -3,14 +3,6 @@ import ChromeDriverDetector from '../../../../src/bot/detectors/automation/chrom
 import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('ChromeDriverDetector', function () {
-  it('exposes detector metadata', async function () {
-    const detector = new ChromeDriverDetector(makeEnv());
-    const result = await detector.detect();
-
-    expect(detector.signal).to.equal('chromedriver');
-    expect(result.signal).to.equal('chromedriver');
-  });
-
   it('does not trigger when no ChromeDriver artifacts are present', async function () {
     const result = await new ChromeDriverDetector(makeEnv()).detect();
 

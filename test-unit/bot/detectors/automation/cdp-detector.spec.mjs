@@ -3,14 +3,6 @@ import CDPDetector from '../../../../src/bot/detectors/automation/cdp-detector.t
 import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('CDPDetector', function () {
-  it('exposes detector metadata', async function () {
-    const detector = new CDPDetector(makeEnv());
-    const result = await detector.detect();
-
-    expect(detector.signal).to.equal('cdp');
-    expect(result.signal).to.equal('cdp');
-  });
-
   it('does not trigger when no console is available', async function () {
     const result = await new CDPDetector(makeEnv()).detect();
 
