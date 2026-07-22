@@ -11,7 +11,7 @@
  * so a getter installed on `.stack` fires only when such a client is listening.
  */
 
-import { PRECEDENCE } from '../precedence.ts';
+import { PRECEDENCE } from '../precedence';
 
 /**
  * Detects browser automation that speaks the Chrome DevTools Protocol.

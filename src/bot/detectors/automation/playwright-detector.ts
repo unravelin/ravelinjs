@@ -4,6 +4,8 @@
  * overrides it installs, and user-agent/eval markers left by some configurations.
  */
 
+import { PRECEDENCE } from '../precedence';
+
 // NOTE: The following globals are separate in we add a confidence score in the future.s
 
 /**
@@ -34,7 +36,7 @@ const PROTOCOL_GLOBALS = ['__cdpSession__'];
  */
 export default class PlaywrightDetector implements detection.Detector {
   public readonly signal = 'playwright';
-  public readonly precedence = 100;
+  public readonly precedence = PRECEDENCE.HARD_ARTIFACT;
 
   public triggered = false;
   public indicators: string[] = [];

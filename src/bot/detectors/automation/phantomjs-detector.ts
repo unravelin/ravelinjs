@@ -5,7 +5,7 @@
  * user agent.
  */
 
-import { PRECEDENCE } from '../precedence.ts';
+import { PRECEDENCE } from '../precedence';
 
 /**
  * Globals PhantomJS exposes on the page's `window`/`globalThis` for its

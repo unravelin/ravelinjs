@@ -3,7 +3,7 @@
  * `navigator.webdriver` and legacy WebDriver attributes on the document.
  */
 
-import { PRECEDENCE } from '../precedence.ts';
+import { PRECEDENCE } from '../precedence';
 
 /**
  * Detects browser automation via the WebDriver standard and related driver artifacts.
