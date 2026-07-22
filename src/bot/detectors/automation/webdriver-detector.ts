@@ -3,12 +3,14 @@
  * `navigator.webdriver` and legacy WebDriver attributes on the document.
  */
 
+import { PRECEDENCE } from '../precedence.ts';
+
 /**
  * Detects browser automation via the WebDriver standard and related driver artifacts.
  */
 export default class WebDriverDetector implements detection.Detector {
   public readonly signal = 'webdriver';
-  public readonly precedence = 10;
+  public readonly precedence = PRECEDENCE.GENERIC;
 
   public triggered = false;
   public indicators: string[] = [];
