@@ -1,9 +1,11 @@
 /**
  * @fileoverview Detects Selenium/WebDriver artifacts, such as the globals its
  * language bindings inject into the page, the properties it leaks onto the
- * document, the randomly-named ChromeDriver keys it adds, and user-agent markers
- * left by some configurations.
+ * document, and user-agent markers left by some configurations. ChromeDriver's
+ * own fingerprints (the `$cdc_…` keys) are handled by the ChromeDriver detector.
  */
+
+import { PRECEDENCE } from '../precedence.ts';
 
 // NOTE: The following lists are kept separate in case we add a confidence score
 // in the future.
@@ -49,18 +51,11 @@ const SELENIUM_DOCUMENT_ARTIFACTS = [
 ];
 
 /**
- * ChromeDriver injects randomly-named properties (e.g.
- * `$cdc_asdjflasutopfhvcZLmcfl_Array`) onto `window` and `document` that share a
- * recognisable prefix.
- */
-const CHROMEDRIVER_KEY_PATTERN = /^\$?(?:cdc|wdc)_/;
-
-/**
  * Detects browser automation driven by Selenium/WebDriver.
  */
 export default class SeleniumDetector implements detection.Detector {
   public readonly signal = 'selenium';
-  public readonly precedence = 50;
+  public readonly precedence = PRECEDENCE.FRAMEWORK;
 
   public triggered = false;
   public indicators: string[] = [];
@@ -74,7 +69,6 @@ export default class SeleniumDetector implements detection.Detector {
   public async detect(): Promise<detection.DetailedDetectionResult> {
     this._detectGlobals();
     this._detectDocumentArtifacts();
-    this._detectChromeDriverArtifacts();
     this._detectUserAgent();
 
     this.triggered = this.indicators.length > 0;
@@ -106,29 +100,6 @@ export default class SeleniumDetector implements detection.Detector {
     for (const artifact of SELENIUM_DOCUMENT_ARTIFACTS) {
       if (artifact in doc) {
         this.indicators.push(`document-${artifact}`);
-      }
-    }
-  }
-
-  /** Randomly-named ChromeDriver keys left on `window` and `document`. */
-  private _detectChromeDriverArtifacts(): void {
-    for (const target of [this.env, this.env.document]) {
-      if (!target) {
-        continue;
-      }
-
-      let keys: string[];
-      try {
-        keys = Object.getOwnPropertyNames(target);
-      } catch {
-        continue;
-      }
-
-      for (const key of keys) {
-        const indicator = `chromedriver-${key}`;
-        if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this.indicators.includes(indicator)) {
-          this.indicators.push(`chromedriver-${key}`);
-        }
       }
     }
   }
