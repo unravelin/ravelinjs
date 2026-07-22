@@ -6,9 +6,6 @@
  * runtime.
  */
 
-// NOTE: The following lists are kept separate in case we add a confidence score
-// in the future.
-
 /** Fixed-name globals ChromeDriver injects onto `window`/`document`. */
 const CHROMEDRIVER_GLOBALS = ['$chrome_asyncScriptInfo'];
 
