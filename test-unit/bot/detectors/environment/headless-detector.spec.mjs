@@ -71,6 +71,41 @@ describe('HeadlessDetector', function () {
     expect(result.indicators).to.include('no-plugins');
   });
 
+  it('detects the Notification permission inconsistency', async function () {
+    const env = makeEnv({
+      Notification: { permission: 'denied' },
+      navigator: {
+        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
+        plugins: { length: 1 },
+        languages: ['en'],
+        permissions: {
+          query: async () => ({ state: 'prompt' }),
+        },
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.triggered).to.equal(true);
+    expect(result.indicators).to.include('permission-mismatch');
+  });
+
+  it('does not flag consistent notification permissions', async function () {
+    const env = makeEnv({
+      Notification: { permission: 'default' },
+      navigator: {
+        userAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
+        plugins: { length: 1 },
+        languages: ['en'],
+        permissions: {
+          query: async () => ({ state: 'prompt' }),
+        },
+      },
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.indicators).to.not.include('permission-mismatch');
+  });
+
   it('detects a software WebGL renderer', async function () {
     const env = makeEnv({
       document: {

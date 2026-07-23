@@ -1,8 +1,9 @@
 /**
  * @fileoverview Heuristics for headless and headless-like browser environments,
  * such as zero window dimensions, HeadlessChrome user agents, empty plugins or
- * languages, and software WebGL renderers. The latter two catch headless
- * Chromium (e.g. default Playwright and Puppeteer) even when nothing else leaks.
+ * languages, the Notification permission inconsistency, and software WebGL
+ * renderers. The latter two catch headless Chromium (e.g. default Playwright and
+ * Puppeteer) even when nothing else leaks.
  */
 
 /** Renderer strings reported by GPU-less/software WebGL backends. */
@@ -27,6 +28,7 @@ export default class HeadlessDetector implements detection.Detector {
   public async detect(): Promise<detection.DetailedDetectionResult> {
     this._detectUserAgentAndPlugins();
     this._detectSoftwareWebGL();
+    await this._detectNotificationMismatch();
 
     this.triggered = this.indicators.length > 0;
 
@@ -99,6 +101,31 @@ export default class HeadlessDetector implements detection.Detector {
       }
     } catch {
       // Reading GPU info can throw in locked-down contexts; ignore.
+    }
+  }
+
+  /**
+   * Headless Chrome reports `Notification.permission === 'denied'` while
+   * `navigator.permissions.query` reports `'prompt'` for notifications. Real
+   * browsers keep these consistent, so a mismatch is a strong headless tell.
+   */
+  private async _detectNotificationMismatch(): Promise<void> {
+    if (this.env.Notification?.permission !== 'denied') {
+      return;
+    }
+
+    const permissions = this.env.navigator?.permissions;
+    if (typeof permissions?.query !== 'function') {
+      return;
+    }
+
+    try {
+      const status = await permissions.query({ name: 'notifications' });
+      if (status?.state === 'prompt') {
+        this.indicators.push('permission-mismatch');
+      }
+    } catch {
+      // Permission probing is best-effort; ignore failures.
     }
   }
 }
