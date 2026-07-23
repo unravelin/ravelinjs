@@ -49,14 +49,12 @@ export default class ChromeDriverDetector implements detection.Detector {
   /** Fixed-name ChromeDriver globals on `window` and `document`. */
   private _detectGlobals(): void {
     for (const target of [this.env, this.env.document]) {
-      if (!target) {
-        continue;
-      }
-
-      for (const global of CHROMEDRIVER_GLOBALS) {
-        const indicator = `global-${global}`;
-        if (global in target && !this.indicators.includes(indicator)) {
-          this.indicators.push(indicator);
+      if (target) {
+        for (const global of CHROMEDRIVER_GLOBALS) {
+          const indicator = `global-${global}`;
+          if (global in target && !this.indicators.includes(indicator)) {
+            this.indicators.push(indicator);
+          }
         }
       }
     }
@@ -65,21 +63,19 @@ export default class ChromeDriverDetector implements detection.Detector {
   /** Randomly-named ChromeDriver keys left on `window` and `document`. */
   private _detectInjectedKeys(): void {
     for (const target of [this.env, this.env.document]) {
-      if (!target) {
-        continue;
-      }
+      if (target) {
+        let keys: string[];
+        try {
+          keys = Object.getOwnPropertyNames(target);
+        } catch {
+          continue;
+        }
 
-      let keys: string[];
-      try {
-        keys = Object.getOwnPropertyNames(target);
-      } catch {
-        continue;
-      }
-
-      for (const key of keys) {
-        const indicator = `injected-key-${key}`;
-        if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this.indicators.includes(indicator)) {
-          this.indicators.push(indicator);
+        for (const key of keys) {
+          const indicator = `injected-key-${key}`;
+          if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this.indicators.includes(indicator)) {
+            this.indicators.push(indicator);
+          }
         }
       }
     }
