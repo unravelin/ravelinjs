@@ -28,7 +28,7 @@ describe('WebDriverDetector', function () {
     });
     const result = await new WebDriverDetector(env).detect();
 
-    expect(result.indicators).to.include('navigator-webdriver');
+    const webdriver = result.indicators.find(indicator => indicator.id === 'navigator-webdriver');
   });
 
   it('detects document webdriver attribute', async function () {
@@ -41,6 +41,8 @@ describe('WebDriverDetector', function () {
     });
     const result = await new WebDriverDetector(env).detect();
 
-    expect(result.indicators).to.include('document-element-webdriver-attr');
+    expect(result.indicators.map(indicator => indicator.id)).to.include(
+      'document-element-webdriver-attr'
+    );
   });
 });

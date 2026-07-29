@@ -16,9 +16,18 @@ declare namespace detection {
     precedence: number;
   }
 
+  interface Indicator {
+    id: string;
+    /**
+     * Likelihood the indicator reflects a bot rather than a human, where 100
+     * means definitely a bot and 0 means definitely a human.
+     */
+    confidence: number;
+  }
+
   interface DetectionResult {
     /** Indicators that triggered. */
-    indicators: string[];
+    indicators: Indicator[];
     /** True if any indicator triggered. */
     triggered?: boolean;
   }

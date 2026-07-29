@@ -6,8 +6,8 @@ export interface BotDetectionResult {
   verdict: detection.Verdict;
   /** The detected signal. */
   signal?: detection.Signal;
-  /** Indicators that triggered. */
-  indicators?: Partial<Record<detection.Signal, string[]>>;
+  /** Indicators that triggered, keyed by signal. */
+  indicators?: Partial<Record<detection.Signal, detection.Indicator[]>>;
 }
 
 export interface BotDetectorOptions {

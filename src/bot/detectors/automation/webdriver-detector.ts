@@ -11,7 +11,7 @@ export default class WebDriverDetector implements detection.Detector {
   public readonly precedence = 10;
 
   public triggered = false;
-  public indicators: string[] = [];
+  public indicators: detection.Indicator[] = [];
 
   private readonly env: detection.Environment;
 
@@ -22,13 +22,14 @@ export default class WebDriverDetector implements detection.Detector {
   public async detect(): Promise<detection.DetailedDetectionResult> {
     const nav = this.env.navigator || ({} as Navigator);
 
+    // The standard automation flag; no human browser sets it.
     if (nav.webdriver) {
-      this.indicators.push('navigator-webdriver');
+      this.indicators.push({ id: 'navigator-webdriver', confidence: 100 });
     }
 
     const doc = this.env.document;
     if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      this.indicators.push('document-element-webdriver-attr');
+      this.indicators.push({ id: 'document-element-webdriver-attr', confidence: 100 });
     }
 
     this.triggered = this.indicators.length > 0;
