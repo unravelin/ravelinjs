@@ -77,7 +77,7 @@ export class BotDetector {
     let verdict: detection.Verdict = 'human';
     if (triggered.length === 1) {
       // If only one signal is triggered, it's suspicious.
-      verdict = 'suspicious';
+      verdict = 'suspected_bot';
     } else if (triggered.length > 1) {
       // If multiple signals are triggered, we can assume it's a bot.
       verdict = 'bot';

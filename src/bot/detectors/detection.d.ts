@@ -5,7 +5,7 @@ declare namespace detection {
 
   // Using an enum allows us to possibly extend to add more in the future. For
   // example, we could add 'agent' if we add support for agent detection.
-  type Verdict = 'bot' | 'suspicious' | 'human';
+  type Verdict = 'bot' | 'suspected_bot' | 'human';
 
   interface DetectorMetadata {
     /** The signal name that a detector is checking for. */
