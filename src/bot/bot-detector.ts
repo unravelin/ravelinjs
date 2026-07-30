@@ -74,12 +74,17 @@ export class BotDetector {
         ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
         : undefined;
 
-    let verdict: detection.Verdict = 'human';
-    if (triggered.length === 1) {
-      // If only one signal is triggered, it's suspicious.
-      verdict = 'suspectedBot';
-    } else if (triggered.length > 1) {
-      // If multiple signals are triggered, we can assume it's a bot.
+    let score = 0;
+    for (const result of triggered) {
+      score = Math.min(
+        score,
+        result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0),
+        100
+      );
+    }
+
+    let verdict: detection.Verdict;
+    if (score > 90) {
       verdict = 'bot';
     } else if (score > 50) {
       verdict = 'suspected_bot';
