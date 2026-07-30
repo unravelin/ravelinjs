@@ -24,12 +24,12 @@ export default class WebDriverDetector implements detection.Detector {
 
     // The standard automation flag; no human browser sets it.
     if (nav.webdriver) {
-      this.indicators.push({ id: 'navigator-webdriver', confidence: 100 });
+      this.indicators.push({ id: 'navigator-webdriver', confidence: 90 });
     }
 
     const doc = this.env.document;
     if (doc?.documentElement?.hasAttribute?.('webdriver')) {
-      this.indicators.push({ id: 'document-element-webdriver-attr', confidence: 100 });
+      this.indicators.push({ id: 'document-element-webdriver-attr', confidence: 90 });
     }
 
     this.triggered = this.indicators.length > 0;

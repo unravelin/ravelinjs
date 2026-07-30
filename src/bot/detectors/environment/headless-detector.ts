@@ -51,12 +51,12 @@ export default class HeadlessDetector implements detection.Detector {
 
     const appVersion = nav.appVersion || '';
     if (/headless/i.test(appVersion)) {
-      this.indicators.push({ id: 'headless-app-version', confidence: 100 });
+      this.indicators.push({ id: 'headless-app-version', confidence: 90 });
     }
 
     const userAgent = nav.userAgent || '';
     if (/HeadlessChrome/i.test(userAgent)) {
-      this.indicators.push({ id: 'headless-chrome-user-agent', confidence: 100 });
+      this.indicators.push({ id: 'headless-chrome-user-agent', confidence: 90 });
     }
 
     if (nav.languages && nav.languages.length === 0) {

@@ -56,9 +56,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id))
-      .map(indicator => indicator.id)
-      .to.include('no-languages');
+    expect(result.indicators.map(indicator => indicator.id)).to.include('no-languages');
   });
 
   it('detects empty navigator.plugins', async function () {

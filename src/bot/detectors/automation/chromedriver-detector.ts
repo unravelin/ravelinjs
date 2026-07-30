@@ -54,7 +54,7 @@ export default class ChromeDriverDetector implements detection.Detector {
           const id = `global-${global}`;
           if (global in target && !this._has(id)) {
             // A fixed ChromeDriver global is a direct automation artifact.
-            this.indicators.push({ id, confidence: 100 });
+            this.indicators.push({ id, confidence: 95 });
           }
         }
       }
@@ -76,7 +76,7 @@ export default class ChromeDriverDetector implements detection.Detector {
           const id = `injected-key-${key}`;
           if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this._has(id)) {
             // A `$cdc_`/`wdc_` key is a recognisable ChromeDriver signature.
-            this.indicators.push({ id, confidence: 100 });
+            this.indicators.push({ id, confidence: 95 });
           }
         }
       }
