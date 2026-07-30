@@ -7,7 +7,7 @@ export interface BotDetectionResult {
   /** The detected signal. */
   signal?: detection.Signal;
   /** Indicators that triggered, keyed by signal. */
-  indicators?: Partial<Record<detection.Signal, detection.Indicator[]>>;
+  indicators?: Partial<Record<detection.Signal, string[]>>;
 }
 
 export interface BotDetectorOptions {
@@ -74,20 +74,19 @@ export class BotDetector {
         ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
         : undefined;
 
-    let score = 0;
-    for (const result of triggered) {
-      score = Math.min(
-        score,
-        result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0),
-        100
-      );
-    }
+    // Sum all of the confidence values for all indicators. No need to normalise
+    // to 100 as any value greater than 90 is considered a bot.
+    const score = triggered.reduce(
+      (sum, result) =>
+        sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0),
+      0
+    );
 
     let verdict: detection.Verdict;
     if (score > 90) {
       verdict = 'bot';
     } else if (score > 50) {
-      verdict = 'suspected_bot';
+      verdict = 'suspectedBot';
     } else {
       verdict = 'human';
     }
@@ -97,7 +96,13 @@ export class BotDetector {
       signal: primary?.signal,
       indicators:
         triggered.length > 0
-          ? triggered.reduce((acc, result) => ({ ...acc, [result.signal]: result.indicators }), {})
+          ? triggered.reduce(
+              (acc, result) => ({
+                ...acc,
+                [result.signal]: result.indicators.map(indicator => indicator.id),
+              }),
+              {}
+            )
           : undefined,
     };
   }
