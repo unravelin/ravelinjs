@@ -81,6 +81,10 @@ export class BotDetector {
     } else if (triggered.length > 1) {
       // If multiple signals are triggered, we can assume it's a bot.
       verdict = 'bot';
+    } else if (score > 50) {
+      verdict = 'suspected_bot';
+    } else {
+      verdict = 'human';
     }
 
     return {
