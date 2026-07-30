@@ -51,12 +51,12 @@ export default class HeadlessDetector implements detection.Detector {
 
     const appVersion = nav.appVersion || '';
     if (/headless/i.test(appVersion)) {
-      this.indicators.push({ id: 'headless-app-version', confidence: 90 });
+      this.indicators.push({ id: 'headless-app-version', confidence: 60 });
     }
 
     const userAgent = nav.userAgent || '';
     if (/HeadlessChrome/i.test(userAgent)) {
-      this.indicators.push({ id: 'headless-chrome-user-agent', confidence: 90 });
+      this.indicators.push({ id: 'headless-chrome-user-agent', confidence: 60 });
     }
 
     if (nav.languages && nav.languages.length === 0) {
@@ -100,7 +100,7 @@ export default class HeadlessDetector implements detection.Detector {
       const renderer = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '');
       if (SOFTWARE_RENDERER_PATTERN.test(renderer)) {
         // GPU-less rendering is typical of headless, but also real VMs/servers.
-        this.indicators.push({ id: 'software-webgl-renderer', confidence: 70 });
+        this.indicators.push({ id: 'software-webgl-renderer', confidence: 60 });
       }
     } catch {
       // Reading GPU info can throw in locked-down contexts; ignore.
@@ -126,7 +126,7 @@ export default class HeadlessDetector implements detection.Detector {
       const status = await permissions.query({ name: 'notifications' });
       if (status?.state === 'prompt') {
         // A well-established headless Chrome inconsistency.
-        this.indicators.push({ id: 'permission-mismatch', confidence: 80 });
+        this.indicators.push({ id: 'permission-mismatch', confidence: 70 });
       }
     } catch {
       // Permission probing is best-effort; ignore failures.
