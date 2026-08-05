@@ -94,7 +94,8 @@ export class Track {
     this._attach({
       target: document,
       event: 'paste',
-      handler: this.core.bind(this.paste, this),
+      // The paste listener is only ever invoked with a ClipboardEvent.
+      handler: this.core.bind(this.paste, this) as (e: Event) => unknown,
     });
 
     this._attach({

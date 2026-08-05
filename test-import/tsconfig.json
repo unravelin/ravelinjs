@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
-  "rootDir": ".",
   "compilerOptions": {
     "noEmit": true,
+    "rootDir": ".",
     "target": "es2022",
     "lib": ["es2022", "dom"],
     "module": "esnext",
@@ -14,8 +14,5 @@
     "noUnusedLocals": true,
     "noImplicitThis": true
   },
-  "exclude": [
-    "src",
-    "node_modules"
-  ]
+  "exclude": ["src", "node_modules"]
 }

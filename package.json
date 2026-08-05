@@ -79,17 +79,17 @@
     "prettier": "3.8.0",
     "replace-in-file": "8.4.0",
     "rollup": "4.57.0",
-    "rollup-plugin-dts": "6.3.0",
+    "rollup-plugin-dts": "6.4.1",
     "rollup-plugin-generate-package-json": "3.2.0",
     "rollup-plugin-license": "3.6.0",
     "selenium-webdriver": "4.39.0",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.53.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.64.0",
     "xhook": "1.6.0",
     "yaml": "2.8.0"
   },
   "dependencies": {
-    "detectincognitojs": "1.6.2"
+    "detectincognitojs": "1.7.0"
   },
   "np": {
     "packageManager": "npm",
