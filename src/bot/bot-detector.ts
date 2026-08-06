@@ -76,11 +76,9 @@ export class BotDetector {
 
     // Sum all of the confidence values for all indicators. No need to normalise
     // to 100 as any value greater than 90 is considered a bot.
-    const score = triggered.reduce(
-      (sum, result) =>
-        sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0),
-      0
-    );
+    const score = triggered.reduce((sum, result) => {
+      return sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
+    }, 0);
 
     let verdict: detection.Verdict;
     if (score > 90) {
