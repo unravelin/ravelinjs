@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import WebDriverDetector from '../../../../src/bot/detectors/automation/webdriver-detector.ts';
-import { getIds } from '../../../../src/bot/detectors/utils.ts';
-import { makeEnv } from '../detector-test.utils.mjs';
+import { getIds, makeEnv } from '../detector-test.utils.mjs';
 
 describe('WebDriverDetector', function () {
   it('exposes detector metadata', async function () {

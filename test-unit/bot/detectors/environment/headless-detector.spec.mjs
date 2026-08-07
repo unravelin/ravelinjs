@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import HeadlessDetector from '../../../../src/bot/detectors/environment/headless-detector.ts';
-import { getIds } from '../../../../src/bot/detectors/utils.ts';
-import { makeEnv } from '../detector-test.utils.mjs';
+import { getIds, makeEnv } from '../detector-test.utils.mjs';
 
 describe('HeadlessDetector', function () {
   it('does not trigger when no headless artifacts are present', async function () {

@@ -19,3 +19,7 @@ export function makeEnv(overrides = {}) {
     ...rest,
   };
 }
+
+export function getIds(indicators) {
+  return indicators.map(indicator => indicator.id);
+}

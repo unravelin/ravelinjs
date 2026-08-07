@@ -1,6 +1,5 @@
 import createAutomationDetectors from './detectors/automation';
 import createEnvironmentDetectors from './detectors/environment';
-import { getIds } from './detectors/utils';
 
 export interface BotDetectionResult {
   /** The verdict of the detection result. */
@@ -93,7 +92,7 @@ export class BotDetector {
     const indicators =
       triggered.length > 0
         ? triggered.reduce<Partial<Record<detection.Signal, string[]>>>((acc, result) => {
-            acc[result.signal] = getIds(result.indicators);
+            acc[result.signal] = result.indicators.map(indicator => indicator.id);
             return acc;
           }, {})
         : undefined;

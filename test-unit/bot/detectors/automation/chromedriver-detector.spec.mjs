@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import ChromeDriverDetector from '../../../../src/bot/detectors/automation/chromedriver-detector.ts';
-import { getIds } from '../../../../src/bot/detectors/utils.ts';
-import { makeEnv } from '../detector-test.utils.mjs';
+import { getIds, makeEnv } from '../detector-test.utils.mjs';
 
 describe('ChromeDriverDetector', function () {
   it('does not trigger when no ChromeDriver artifacts are present', async function () {
