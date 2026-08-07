@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import HeadlessDetector from '../../../../src/bot/detectors/environment/headless-detector.ts';
+import { getIds } from '../../../../src/bot/detectors/utils.ts';
 import { makeEnv } from '../detector-test.utils.mjs';
 
 describe('HeadlessDetector', function () {
@@ -14,7 +15,7 @@ describe('HeadlessDetector', function () {
     const env = makeEnv({ outerWidth: 0, outerHeight: 0 });
     const result = await new HeadlessDetector(env).detect();
 
-    expect(result.indicators.map(indicator => indicator.id)).to.include('zero-outer-dimensions');
+    expect(getIds(result.indicators)).to.include('zero-outer-dimensions');
   });
 
   it('detects headless in appVersion', async function () {
@@ -27,7 +28,7 @@ describe('HeadlessDetector', function () {
     });
     const result = await new HeadlessDetector(env).detect();
 
-    expect(result.indicators.map(indicator => indicator.id)).to.include('headless-app-version');
+    expect(getIds(result.indicators)).to.include('headless-app-version');
   });
 
   it('detects HeadlessChrome in the user agent', async function () {
@@ -40,9 +41,7 @@ describe('HeadlessDetector', function () {
     });
     const result = await new HeadlessDetector(env).detect();
 
-    expect(result.indicators.map(indicator => indicator.id)).to.include(
-      'headless-chrome-user-agent'
-    );
+    expect(getIds(result.indicators)).to.include('headless-chrome-user-agent');
   });
 
   it('detects no-languages', async function () {
@@ -56,7 +55,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id)).to.include('no-languages');
+    expect(getIds(result.indicators)).to.include('no-languages');
   });
 
   it('detects empty navigator.plugins', async function () {
@@ -70,7 +69,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id)).to.include('no-plugins');
+    expect(getIds(result.indicators)).to.include('no-plugins');
   });
 
   it('detects the Notification permission inconsistency', async function () {
@@ -88,7 +87,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id)).to.include('permission-mismatch');
+    expect(getIds(result.indicators)).to.include('permission-mismatch');
   });
 
   it('does not flag consistent notification permissions', async function () {
@@ -105,7 +104,7 @@ describe('HeadlessDetector', function () {
     });
     const result = await new HeadlessDetector(env).detect();
 
-    expect(result.indicators.map(indicator => indicator.id)).to.not.include('permission-mismatch');
+    expect(getIds(result.indicators)).to.not.include('permission-mismatch');
   });
 
   it('detects a software WebGL renderer', async function () {
@@ -122,7 +121,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id)).to.include('software-webgl-renderer');
+    expect(getIds(result.indicators)).to.include('software-webgl-renderer');
   });
 
   it('does not flag a hardware WebGL renderer', async function () {
@@ -138,9 +137,7 @@ describe('HeadlessDetector', function () {
     });
     const result = await new HeadlessDetector(env).detect();
 
-    expect(result.indicators.map(indicator => indicator.id)).to.not.include(
-      'software-webgl-renderer'
-    );
+    expect(getIds(result.indicators)).to.not.include('software-webgl-renderer');
   });
 
   it('does not trigger when only one outer dimension is zero', async function () {
@@ -148,9 +145,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(false);
-    expect(result.indicators.map(indicator => indicator.id)).to.not.include(
-      'zero-outer-dimensions'
-    );
+    expect(getIds(result.indicators)).to.not.include('zero-outer-dimensions');
   });
 
   it('reports multiple indicators when several headless artifacts are present', async function () {
@@ -167,7 +162,7 @@ describe('HeadlessDetector', function () {
     const result = await new HeadlessDetector(env).detect();
 
     expect(result.triggered).to.equal(true);
-    expect(result.indicators.map(indicator => indicator.id)).to.include.members([
+    expect(getIds(result.indicators)).to.include.members([
       'zero-outer-dimensions',
       'headless-app-version',
       'headless-chrome-user-agent',
