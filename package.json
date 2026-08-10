@@ -89,7 +89,7 @@
     "yaml": "2.8.0"
   },
   "dependencies": {
-    "detectincognitojs": "1.7.0"
+    "detectincognitojs": "1.9.0"
   },
   "np": {
     "packageManager": "npm",
