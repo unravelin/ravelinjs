@@ -6,7 +6,7 @@ export interface BotDetectionResult {
   verdict: detection.Verdict;
   /** The detected signal. */
   signal?: detection.Signal;
-  /** Indicators that triggered. */
+  /** Indicators that triggered, keyed by signal. */
   indicators?: Partial<Record<detection.Signal, string[]>>;
 }
 
@@ -74,22 +74,33 @@ export class BotDetector {
         ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
         : undefined;
 
-    let verdict: detection.Verdict = 'human';
-    if (triggered.length === 1) {
-      // If only one signal is triggered, it's suspicious.
-      verdict = 'suspectedBot';
-    } else if (triggered.length > 1) {
-      // If multiple signals are triggered, we can assume it's a bot.
+    // Sum all of the confidence values for all indicators. No need to normalise
+    // to 100 as any value greater than 90 is considered a bot.
+    const score = triggered.reduce((sum, result) => {
+      return sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
+    }, 0);
+
+    let verdict: detection.Verdict;
+    if (score > 90) {
       verdict = 'bot';
+    } else if (score > 50) {
+      verdict = 'suspectedBot';
+    } else {
+      verdict = 'human';
     }
+
+    const indicators =
+      triggered.length > 0
+        ? triggered.reduce<Partial<Record<detection.Signal, string[]>>>((acc, result) => {
+            acc[result.signal] = result.indicators.map(indicator => indicator.id);
+            return acc;
+          }, {})
+        : undefined;
 
     return {
       verdict,
       signal: primary?.signal,
-      indicators:
-        triggered.length > 0
-          ? triggered.reduce((acc, result) => ({ ...acc, [result.signal]: result.indicators }), {})
-          : undefined,
+      indicators,
     };
   }
 }

@@ -17,7 +17,7 @@ export default class HeadlessDetector implements detection.Detector {
   public readonly precedence = 10;
 
   public triggered = false;
-  public indicators: string[] = [];
+  public indicators: detection.Indicator[] = [];
 
   private readonly env: detection.Environment;
 
@@ -45,25 +45,27 @@ export default class HeadlessDetector implements detection.Detector {
     const nav = this.env.navigator || ({} as Navigator);
 
     if (this.env.outerWidth === 0 && this.env.outerHeight === 0) {
-      this.indicators.push('zero-outer-dimensions');
+      // Common headless tell, but legitimately possible before the window sizes.
+      this.indicators.push({ id: 'zero-outer-dimensions', confidence: 30 });
     }
 
     const appVersion = nav.appVersion || '';
     if (/headless/i.test(appVersion)) {
-      this.indicators.push('headless-app-version');
+      this.indicators.push({ id: 'headless-app-version', confidence: 60 });
     }
 
     const userAgent = nav.userAgent || '';
     if (/HeadlessChrome/i.test(userAgent)) {
-      this.indicators.push('headless-chrome-user-agent');
+      this.indicators.push({ id: 'headless-chrome-user-agent', confidence: 60 });
     }
 
     if (nav.languages && nav.languages.length === 0) {
-      this.indicators.push('no-languages');
+      this.indicators.push({ id: 'no-languages', confidence: 30 });
     }
 
     if (nav.plugins && nav.plugins.length === 0) {
-      this.indicators.push('no-plugins');
+      // Weak on its own: modern non-Chromium browsers legitimately report none.
+      this.indicators.push({ id: 'no-plugins', confidence: 30 });
     }
   }
 
@@ -97,7 +99,8 @@ export default class HeadlessDetector implements detection.Detector {
 
       const renderer = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '');
       if (SOFTWARE_RENDERER_PATTERN.test(renderer)) {
-        this.indicators.push('software-webgl-renderer');
+        // GPU-less rendering is typical of headless, but also real VMs/servers.
+        this.indicators.push({ id: 'software-webgl-renderer', confidence: 60 });
       }
     } catch {
       // Reading GPU info can throw in locked-down contexts; ignore.
@@ -122,7 +125,8 @@ export default class HeadlessDetector implements detection.Detector {
     try {
       const status = await permissions.query({ name: 'notifications' });
       if (status?.state === 'prompt') {
-        this.indicators.push('permission-mismatch');
+        // A well-established headless Chrome inconsistency.
+        this.indicators.push({ id: 'permission-mismatch', confidence: 70 });
       }
     } catch {
       // Permission probing is best-effort; ignore failures.

@@ -24,7 +24,7 @@ export default class ChromeDriverDetector implements detection.Detector {
   public readonly precedence = 25;
 
   public triggered = false;
-  public indicators: string[] = [];
+  public indicators: detection.Indicator[] = [];
 
   private readonly env: detection.Environment;
 
@@ -51,9 +51,10 @@ export default class ChromeDriverDetector implements detection.Detector {
     for (const target of [this.env, this.env.document]) {
       if (target) {
         for (const global of CHROMEDRIVER_GLOBALS) {
-          const indicator = `global-${global}`;
-          if (global in target && !this.indicators.includes(indicator)) {
-            this.indicators.push(indicator);
+          const id = `global-${global}`;
+          if (global in target && !this._has(id)) {
+            // A fixed ChromeDriver global is a direct automation artifact.
+            this.indicators.push({ id, confidence: 95 });
           }
         }
       }
@@ -72,12 +73,18 @@ export default class ChromeDriverDetector implements detection.Detector {
         }
 
         for (const key of keys) {
-          const indicator = `injected-key-${key}`;
-          if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this.indicators.includes(indicator)) {
-            this.indicators.push(indicator);
+          const id = `injected-key-${key}`;
+          if (CHROMEDRIVER_KEY_PATTERN.test(key) && !this._has(id)) {
+            // A `$cdc_`/`wdc_` key is a recognisable ChromeDriver signature.
+            this.indicators.push({ id, confidence: 95 });
           }
         }
       }
     }
+  }
+
+  /** Whether an indicator with the given id has already been recorded. */
+  private _has(id: string): boolean {
+    return this.indicators.some(indicator => indicator.id === id);
   }
 }

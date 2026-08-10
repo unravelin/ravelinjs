@@ -230,7 +230,7 @@ describe('ravelinjs.track', () => {
       });
     } else if (platform.browserName.toLowerCase() === 'firefox') {
       expect(loadEvent.bodyJSON.events[0].eventMeta.bot).to.containSubset({
-        verdict: 'suspectedBot',
+        verdict: 'bot',
         signal: 'webdriver',
       });
     }

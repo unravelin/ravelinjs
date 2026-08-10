@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import WebDriverDetector from '../../../../src/bot/detectors/automation/webdriver-detector.ts';
-import { makeEnv } from '../detector-test.utils.mjs';
+import { getIds, makeEnv } from '../detector-test.utils.mjs';
 
 describe('WebDriverDetector', function () {
   it('exposes detector metadata', async function () {
@@ -28,7 +28,7 @@ describe('WebDriverDetector', function () {
     });
     const result = await new WebDriverDetector(env).detect();
 
-    expect(result.indicators).to.include('navigator-webdriver');
+    expect(getIds(result.indicators)).to.include('navigator-webdriver');
   });
 
   it('detects document webdriver attribute', async function () {
@@ -41,6 +41,6 @@ describe('WebDriverDetector', function () {
     });
     const result = await new WebDriverDetector(env).detect();
 
-    expect(result.indicators).to.include('document-element-webdriver-attr');
+    expect(getIds(result.indicators)).to.include('document-element-webdriver-attr');
   });
 });
