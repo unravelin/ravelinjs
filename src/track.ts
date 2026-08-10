@@ -1,4 +1,5 @@
 import { detectIncognito } from 'detectincognitojs';
+import { BotDetectionResult, BotDetector } from './bot/bot-detector';
 import type { Core, CoreConfig } from './core';
 import { uuid, type Dictionary } from './utils';
 
@@ -38,6 +39,7 @@ export class Track {
 
   private _listeners: Listener[] = [];
   private _incognitoDetected?: Promise<boolean>;
+  private _botDetector?: BotDetector;
 
   /**
    * @param core The Core library instance.
@@ -131,11 +133,12 @@ export class Track {
    * @param props Additional properties.
    */
   private _send(type: string, name: string, props?: Dictionary<any>): Promise<void> {
-    const promises = [this.core.ids(), this.incognitoDetected()] as const;
+    const promises = [this.core.ids(), this.incognitoDetected(), this.detectBot()] as const;
 
     return Promise.all(promises).then(result => {
       const ids = result[0];
       const incognitoDetected = result[1];
+      const botDetectionResult = result[2];
 
       return this.core
         .send('POST', 'z', {
@@ -157,6 +160,7 @@ export class Track {
                 referrer: document.referrer || undefined,
                 clientEventTimeMilliseconds: Date.now(),
                 incognitoDetected: incognitoDetected,
+                bot: botDetectionResult,
                 timezoneOffset: new Date().getTimezoneOffset(),
               },
             },
@@ -182,6 +186,18 @@ export class Track {
       .catch(() => false);
 
     return this._incognitoDetected;
+  }
+
+  /**
+   * Returns a promise-wrapped object indicating if a track event
+   * was triggered by a suspected bot.
+   */
+  public detectBot(): Promise<BotDetectionResult> {
+    if (!this._botDetector) {
+      this._botDetector = new BotDetector();
+    }
+
+    return this._botDetector.detect();
   }
 
   /**

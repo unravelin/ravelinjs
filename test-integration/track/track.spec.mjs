@@ -174,6 +174,8 @@ describe('ravelinjs.track', () => {
   });
 
   it('sends page-load events', async () => {
+    const platform = getCurrentPlatform();
+
     const cookies = await driver.manage().getCookies();
 
     const sessionIdCookie = cookies.find(c => c.name === 'ravelinSessionId');
@@ -218,6 +220,15 @@ describe('ravelinjs.track', () => {
         // "ravelinWindowId": {"$regex": "^[0-9a-z-]{36}$"}
       },
     });
+
+    // Safari based bots currently pass detection.
+    // Further signals should be added to detect this.
+    if (platform.browserName.toLowerCase() !== 'safari') {
+      expect(loadEvent.bodyJSON.events[0].eventMeta.bot).to.containSubset({
+        verdict: 'bot',
+        signal: 'webdriver',
+      });
+    }
   });
 
   it('disables and re-enables tracking', async () => {
