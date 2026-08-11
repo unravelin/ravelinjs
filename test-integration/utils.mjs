@@ -22,7 +22,11 @@ export function buildDriver() {
   if (process.env.LOCAL_BROWSER === 'true') {
     // Use local headless chrome browser
     const options = new chrome.Options();
-    options.addArguments('--headless=new');
+    options.addArguments('--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu');
+
+    if (process.env.CHROME_BIN) {
+      options.setChromeBinaryPath(process.env.CHROME_BIN);
+    }
 
     return new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
   }
