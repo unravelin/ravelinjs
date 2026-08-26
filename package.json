@@ -26,7 +26,7 @@
     "lint:ts": "eslint -f codeframe --max-warnings 0",
     "lint:prettier": "prettier --write --experimental-cli --log-level warn '**/*.{ts,js,mjs}'",
     "test": "npm run test:bot && npm run test:integration:local && npm run test:import",
-    "test:bot": "NODE_OPTIONS='--experimental-strip-types' mocha './test-unit/bot/**/*/*.spec.mjs'",
+    "test:bot": "mocha './test-unit/bot/**/*/*.spec.mjs'",
     "test:unit": "npm run test:bot && karma start ./test-unit/karma.conf.js --single-run",
     "test:unit:watch": "karma start ./test-unit/karma.conf.js --auto",
     "test:integration": "node ./test-integration/run.mjs './test-integration/**/*.spec.mjs'",
@@ -91,6 +91,11 @@
   "dependencies": {
     "detectincognitojs": "1.7.0"
   },
+  "allowScripts": {
+    "aws-sdk": false,
+    "fsevents": false,
+    "protobufjs": false
+  },
   "np": {
     "packageManager": "npm",
     "branch": "v2",
@@ -122,10 +127,10 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "22.16.0"
+      "version": "24.19.0"
     }
   },
   "volta": {
-    "node": "22.16.0"
+    "node": "24.19.0"
   }
 }
