@@ -1,6 +1,5 @@
 import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
@@ -90,10 +89,10 @@ const builds = bundles
         }),
       },
       {
-        /* TypeScript declaration files for the UMD build.
-         * These are built into the `dist/types` folder by the UMD build step
-         * and the dts plugin merges them into a single file per RavelinJS module.
-         * The `dist/types` folder is then deleted by the build script. */
+        // TypeScript declaration files for the UMD build.
+        // These are built into the `dist/types` folder by the UMD build step
+        // and the dts plugin merges them into a single file per RavelinJS module.
+        // The `dist/types` folder is then deleted by the build script.
         input: `dist/types/bundle/${fileName}.d.ts`,
         output: { file: `dist/${fileName}.d.ts`, format: 'es' },
         plugins: [dts()],
@@ -124,26 +123,24 @@ const exportsConfig = bundles.reduce((acc, bundle) => {
   return acc;
 }, {});
 
-builds.push({
-  input: 'package.json',
-  output: { dir: 'dist' },
-  plugins: [
-    json(),
-    generatePackageJson({
-      baseContents: pkg => ({
-        name: pkg.name,
-        version: pkg.version,
-        license: pkg.license,
-        description: pkg.description,
-        homepage: pkg.homepage,
-        bugs: pkg.bugs,
-        repository: pkg.repository,
-        dependencies: pkg.dependencies,
-        exports: exportsConfig,
-        browserslist: pkg.browserslist,
-      }),
+// Attach the package.json generation plugin to the last build
+// so that it runs after all other builds have completed.
+builds.at(-1).plugins.push(
+  generatePackageJson({
+    outputFolder: 'dist',
+    baseContents: pkg => ({
+      name: pkg.name,
+      version: pkg.version,
+      license: pkg.license,
+      description: pkg.description,
+      homepage: pkg.homepage,
+      bugs: pkg.bugs,
+      repository: pkg.repository,
+      dependencies: pkg.dependencies,
+      exports: exportsConfig,
+      browserslist: pkg.browserslist,
     }),
-  ],
-});
+  })
+);
 
 export default builds;
