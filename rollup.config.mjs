@@ -140,7 +140,7 @@ builds.push({
         repository: pkg.repository,
         dependencies: pkg.dependencies,
         exports: exportsConfig,
-        engines: pkg.engines,
+        browserslist: pkg.browserslist,
       }),
     }),
   ],

@@ -121,9 +121,9 @@
       "@ianvs/prettier-plugin-sort-imports"
     ]
   },
-  "engines": {
-    "node": ">=22.x"
-  },
+  "browserslist": [
+    "baseline 2022"
+  ],
   "devEngines": {
     "runtime": {
       "name": "node",
