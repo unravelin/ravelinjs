@@ -24,7 +24,7 @@ is meant to do what.
 
 ## 2. Use the expected Node.js v24.
 
-CI runs [node:24.19.0-alpine](.cloudbuild/ci.yaml).
+CI runs [node:24.20.0-alpine](.cloudbuild/ci.yaml).
 
 If you use [Volta](https://volta.sh/) to manage your Node/NPM installation, you
 should find the package.json is already configured to use Node v24.

@@ -3,7 +3,7 @@ tags:
   - ravelinjs
 
 substitutions:
-  _NODE: node:24.19.0-alpine
+  _NODE: node:24.20.0-alpine
 
 availableSecrets:
   secretManager:
