@@ -139,6 +139,61 @@ describe('HeadlessDetector', function () {
     expect(getIds(result.indicators)).to.not.include('software-webgl-renderer');
   });
 
+  it('detects the fixed container display geometry on a GPU-less browser', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            getExtension: () => ({ UNMASKED_RENDERER_WEBGL: 37446 }),
+            getParameter: () => 'Mesa/llvmpipe',
+          }),
+        }),
+      },
+      screen: { width: 1280, height: 800 },
+      devicePixelRatio: 1,
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(result.triggered).to.equal(true);
+    expect(getIds(result.indicators)).to.include('virtual-display-geometry');
+  });
+
+  it('does not flag container geometry on a hardware GPU', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            getExtension: () => ({ UNMASKED_RENDERER_WEBGL: 37446 }),
+            getParameter: () => 'NVIDIA GeForce RTX 3080',
+          }),
+        }),
+      },
+      screen: { width: 1280, height: 800 },
+      devicePixelRatio: 1,
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(getIds(result.indicators)).to.not.include('virtual-display-geometry');
+  });
+
+  it('does not flag a non-container resolution even when GPU-less', async function () {
+    const env = makeEnv({
+      document: {
+        createElement: () => ({
+          getContext: () => ({
+            getExtension: () => ({ UNMASKED_RENDERER_WEBGL: 37446 }),
+            getParameter: () => 'Mesa/llvmpipe',
+          }),
+        }),
+      },
+      screen: { width: 1920, height: 1080 },
+      devicePixelRatio: 1,
+    });
+    const result = await new HeadlessDetector(env).detect();
+
+    expect(getIds(result.indicators)).to.not.include('virtual-display-geometry');
+  });
+
   it('does not trigger when only one outer dimension is zero', async function () {
     const env = makeEnv({ outerWidth: 0, outerHeight: 1080 });
     const result = await new HeadlessDetector(env).detect();

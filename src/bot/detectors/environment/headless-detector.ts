@@ -1,13 +1,21 @@
 /**
  * @fileoverview Heuristics for headless and headless-like browser environments,
  * such as zero window dimensions, HeadlessChrome user agents, empty plugins or
- * languages, the Notification permission inconsistency, and software WebGL
- * renderers. The latter two catch headless Chromium (e.g. default Playwright and
- * Puppeteer) even when nothing else leaks.
+ * languages, the Notification permission inconsistency, software WebGL
+ * renderers, and the fixed virtual-display geometry of VM/container browsers
+ * (e.g. agent "computer use" sandboxes). The permission and WebGL tells catch
+ * headless Chromium (e.g. default Playwright and Puppeteer) even when nothing
+ * else leaks.
  */
 
 /** Renderer strings reported by GPU-less/software WebGL backends. */
 const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
+
+/** Fixed display sizes common to headless/VM (e.g. agent sandbox) containers. */
+const CONTAINER_RESOLUTIONS: ReadonlyArray<readonly [number, number]> = [
+  [1280, 800],
+  [1024, 768],
+];
 
 /**
  * Detects environment fingerprints commonly seen in headless automation.
@@ -101,6 +109,18 @@ export default class HeadlessDetector implements detection.Detector {
       if (SOFTWARE_RENDERER_PATTERN.test(renderer)) {
         // GPU-less rendering is typical of headless, but also real VMs/servers.
         this.indicators.push({ id: 'software-webgl-renderer', confidence: 60 });
+
+        const nav = this.env.navigator || ({} as Navigator);
+        const width = this.env.screen?.width;
+        const height = this.env.screen?.height;
+        const fixedResolution = CONTAINER_RESOLUTIONS.some(([w, h]) => w === width && h === height);
+        const unscaled = this.env.devicePixelRatio === 1;
+        const noTouch = (nav.maxTouchPoints ?? 0) === 0 && !('ontouchstart' in this.env);
+
+        if (fixedResolution && unscaled && noTouch) {
+          // A fixed container display size on a touchless, unscaled GPU-less browser.
+          this.indicators.push({ id: 'virtual-display-geometry', confidence: 30 });
+        }
       }
     } catch {
       // Reading GPU info can throw in locked-down contexts; ignore.
