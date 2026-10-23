@@ -1,11 +1,17 @@
 declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
-  type Signal = 'chromedriver' | 'headless' | 'webdriver';
 
-  // Using an enum allows us to possibly extend to add more in the future. For
-  // example, we could add 'agent' if we add support for agent detection.
-  type Verdict = 'bot' | 'suspectedBot' | 'human';
+  type Agent = 'claude' | 'cursor';
+  type Bot = 'chromedriver' | 'headless' | 'webdriver';
+
+  type Signal = Agent | Bot;
+  type Category = 'agent' | 'bot';
+
+  // 'agent' is a category verdict (a coding/agent browser surface), distinct
+  // from the confidence tiers below; it is reported whenever an agent detector
+  // triggers. See BotDetector._buildResult.
+  type Verdict = 'agent' | 'bot' | 'suspectedBot' | 'human';
 
   interface DetectorMetadata {
     /** The signal name that a detector is checking for. */
@@ -35,6 +41,9 @@ declare namespace detection {
   type DetailedDetectionResult = DetectorMetadata & DetectionResult;
 
   interface Detector extends DetailedDetectionResult {
+    signal: Signal;
+    category: Category;
+    precedence: number;
     detect(): Promise<DetailedDetectionResult>;
   }
 }

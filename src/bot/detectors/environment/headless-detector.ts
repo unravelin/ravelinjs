@@ -22,6 +22,7 @@ const CONTAINER_RESOLUTIONS: ReadonlyArray<readonly [number, number]> = [
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';
+  public readonly category = 'bot';
   public readonly precedence = 10;
 
   public triggered = false;

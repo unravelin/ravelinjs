@@ -8,6 +8,7 @@
  */
 export default class WebDriverDetector implements detection.Detector {
   public readonly signal = 'webdriver';
+  public readonly category = 'bot';
   public readonly precedence = 10;
 
   public triggered = false;
