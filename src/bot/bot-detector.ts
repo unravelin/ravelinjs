@@ -1,3 +1,4 @@
+import createAgentDetectors from './detectors/agent';
 import createAutomationDetectors from './detectors/automation';
 import createEnvironmentDetectors from './detectors/environment';
 
@@ -35,6 +36,7 @@ export class BotDetector {
     this.register([
       ...createAutomationDetectors(this._env),
       ...createEnvironmentDetectors(this._env),
+      ...createAgentDetectors(this._env),
     ]);
   }
 
@@ -69,21 +71,41 @@ export class BotDetector {
 
   private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
     const triggered = results.filter(result => result.triggered);
+
+    // When an agent surface is detected, it both decides the verdict and owns
+    // the primary signal, so pick the primary from the agent results in that
+    // case and fall back to all triggered results otherwise.
+    const agentTriggered = triggered.filter(result => this._isAgent(result.signal));
+    const primaryPool = agentTriggered.length > 0 ? agentTriggered : triggered;
     const primary =
-      triggered.length > 0
-        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
+      primaryPool.length > 0
+        ? primaryPool.reduce((best, result) =>
+            result.precedence > best.precedence ? result : best
+          )
         : undefined;
 
     // Sum all of the confidence values for all indicators. No need to normalise
     // to 100 as any value greater than 90 is considered a bot.
-    const score = triggered.reduce((sum, result) => {
-      return sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
-    }, 0);
+    const scores = triggered.reduce(
+      (scores, result) => {
+        scores[result.category] =
+          scores[result.category] +
+          result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
 
+        return scores;
+      },
+      { agent: 0, bot: 0 }
+    );
+
+    // An agent artifact is a category verdict and takes priority over the
+    // confidence tiers.
     let verdict: detection.Verdict;
-    if (score > 90) {
+    if (scores.agent > 90) {
+      verdict = 'agent';
+    } else if (scores.bot > 90) {
       verdict = 'bot';
-    } else if (score > 50) {
+    } else if (scores.bot > 50 || scores.agent > 50) {
+      // Should there be a suspectedAgent?
       verdict = 'suspectedBot';
     } else {
       verdict = 'human';
@@ -102,5 +124,14 @@ export class BotDetector {
       signal: primary?.signal,
       indicators,
     };
+  }
+
+  /**
+   * True when the signal is an agent surface (`detection.Agent`) rather than
+   * automation or environment.
+   */
+  private _isAgent(signal: detection.Signal): signal is detection.Agent {
+    const agents = { claude: true, cursor: true } satisfies Record<detection.Agent, true>;
+    return signal in agents;
   }
 }
