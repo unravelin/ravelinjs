@@ -16,6 +16,8 @@ declare namespace detection {
   interface DetectorMetadata {
     /** The signal name that a detector is checking for. */
     signal: Signal;
+    /** The category of this detector. */
+    category: Category;
     /** The precedence of the detection result. When building the bot detection result,
      * the highest precedence result will be used. If multiple results have the same precedence,
      * the first one will be used. (Higher numbers are higher precedence.) */
@@ -41,9 +43,6 @@ declare namespace detection {
   type DetailedDetectionResult = DetectorMetadata & DetectionResult;
 
   interface Detector extends DetailedDetectionResult {
-    signal: Signal;
-    category: Category;
-    precedence: number;
     detect(): Promise<DetailedDetectionResult>;
   }
 }

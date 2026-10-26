@@ -37,6 +37,7 @@ export default class WebDriverDetector implements detection.Detector {
 
     return {
       signal: this.signal,
+      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
