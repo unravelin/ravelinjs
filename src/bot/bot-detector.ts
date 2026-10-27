@@ -69,22 +69,44 @@ export class BotDetector {
 
   private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
     const triggered = results.filter(result => result.triggered);
-    const primary =
-      triggered.length > 0
-        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
-        : undefined;
+
+    // When an agent surface is detected, it both decides the verdict and owns
+    // the primary signal, so pick the primary from the agent results in that
+    // case and fall back to all triggered results otherwise.
+    const primaryResults: Partial<Record<detection.Category, detection.DetailedDetectionResult>> =
+      {};
 
     // Sum all of the confidence values for all indicators. No need to normalise
     // to 100 as any value greater than 90 is considered a bot.
-    const score = triggered.reduce((sum, result) => {
-      return sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
-    }, 0);
+    const scores = triggered.reduce(
+      (scores, result) => {
+        const currentResult = primaryResults[result.category];
+        primaryResults[result.category] =
+          result.precedence > (currentResult?.precedence ?? 0) ? result : currentResult;
 
+        scores[result.category] =
+          scores[result.category] +
+          result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
+
+        return scores;
+      },
+      { agent: 0, bot: 0 }
+    );
+
+    // An agent artifact is a category verdict and takes priority over the
+    // confidence tiers.
     let verdict: detection.Verdict;
-    if (score > 90) {
+    let primary: detection.DetailedDetectionResult | undefined;
+    if (scores.agent > 90) {
+      verdict = 'agent';
+      primary = primaryResults.agent;
+    } else if (scores.bot > 90) {
       verdict = 'bot';
-    } else if (score > 50) {
+      primary = primaryResults.bot;
+    } else if (scores.bot > 50 || scores.agent > 50) {
+      // Should there be a suspectedAgent?
       verdict = 'suspectedBot';
+      primary = primaryResults.bot;
     } else {
       verdict = 'human';
     }
