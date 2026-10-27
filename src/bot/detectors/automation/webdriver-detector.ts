@@ -8,6 +8,7 @@
  */
 export default class WebDriverDetector implements detection.Detector {
   public readonly signal = 'webdriver';
+  public readonly category = 'bot';
   public readonly precedence = 10;
 
   public triggered = false;
@@ -36,6 +37,7 @@ export default class WebDriverDetector implements detection.Detector {
 
     return {
       signal: this.signal,
+      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
