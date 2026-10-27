@@ -2,7 +2,7 @@ declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
 
-  type Agent = 'claude' | 'cursor';
+  type Agent = 'claude' | 'cursor' | 'muse';
   type Bot = 'chromedriver' | 'headless' | 'webdriver';
 
   type Signal = Agent | Bot;
