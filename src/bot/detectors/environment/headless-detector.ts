@@ -8,6 +8,8 @@
  * else leaks.
  */
 
+import { readUnmaskedRenderer } from '../utils';
+
 /** Renderer strings reported by GPU-less/software WebGL backends. */
 const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
 
