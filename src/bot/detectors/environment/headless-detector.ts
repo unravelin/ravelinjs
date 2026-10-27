@@ -14,6 +14,7 @@ const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';
+  public readonly category = 'bot';
   public readonly precedence = 10;
 
   public triggered = false;
@@ -34,6 +35,7 @@ export default class HeadlessDetector implements detection.Detector {
 
     return {
       signal: this.signal,
+      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
