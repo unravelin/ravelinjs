@@ -84,31 +84,10 @@ export default class HeadlessDetector implements detection.Detector {
    * environment, typical of headless Chromium.
    */
   private _detectSoftwareWebGL(): void {
-    const doc = this.env.document;
-    if (typeof doc?.createElement !== 'function') {
-      return;
-    }
-
-    let gl: WebGLRenderingContext | null;
     try {
-      const canvas = doc.createElement('canvas');
-      gl = (canvas.getContext('webgl') ||
-        canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
-    } catch {
-      return;
-    }
-    if (!gl) {
-      return;
-    }
+      const renderer = readUnmaskedRenderer(this.env);
 
-    try {
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-      if (!debugInfo) {
-        return;
-      }
-
-      const renderer = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '');
-      if (SOFTWARE_RENDERER_PATTERN.test(renderer)) {
+      if (renderer && SOFTWARE_RENDERER_PATTERN.test(renderer)) {
         // GPU-less rendering is typical of headless, but also real VMs/servers.
         this.indicators.push({ id: 'software-webgl-renderer', confidence: 60 });
 
