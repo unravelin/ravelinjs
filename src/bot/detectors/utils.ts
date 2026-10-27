@@ -3,7 +3,7 @@
  * extension is unavailable or reading it throws. Creates one context and lets
  * it go. Only called once the cheaper clauses already hold.
  */
-function readUnmaskedRenderer(env: detection.Environment): string | null {
+export function readUnmaskedRenderer(env: detection.Environment): string | null {
   const doc = env.document;
   if (typeof doc?.createElement !== 'function') {
     return null;

@@ -75,19 +75,17 @@ export class BotDetector {
     // When an agent surface is detected, it both decides the verdict and owns
     // the primary signal, so pick the primary from the agent results in that
     // case and fall back to all triggered results otherwise.
-    const agentTriggered = triggered.filter(result => this._isAgent(result.signal));
-    const primaryPool = agentTriggered.length > 0 ? agentTriggered : triggered;
-    const primary =
-      primaryPool.length > 0
-        ? primaryPool.reduce((best, result) =>
-            result.precedence > best.precedence ? result : best
-          )
-        : undefined;
+    const primaryResults: Partial<Record<detection.Category, detection.DetailedDetectionResult>> =
+      {};
 
     // Sum all of the confidence values for all indicators. No need to normalise
     // to 100 as any value greater than 90 is considered a bot.
     const scores = triggered.reduce(
       (scores, result) => {
+        const currentResult = primaryResults[result.category];
+        primaryResults[result.category] =
+          result.precedence > (currentResult?.precedence ?? 0) ? result : currentResult;
+
         scores[result.category] =
           scores[result.category] +
           result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
@@ -100,13 +98,17 @@ export class BotDetector {
     // An agent artifact is a category verdict and takes priority over the
     // confidence tiers.
     let verdict: detection.Verdict;
+    let primary: detection.DetailedDetectionResult | undefined;
     if (scores.agent > 90) {
       verdict = 'agent';
+      primary = primaryResults.agent;
     } else if (scores.bot > 90) {
       verdict = 'bot';
+      primary = primaryResults.bot;
     } else if (scores.bot > 50 || scores.agent > 50) {
       // Should there be a suspectedAgent?
       verdict = 'suspectedBot';
+      primary = primaryResults.bot;
     } else {
       verdict = 'human';
     }
@@ -124,14 +126,5 @@ export class BotDetector {
       signal: primary?.signal,
       indicators,
     };
-  }
-
-  /**
-   * True when the signal is an agent surface (`detection.Agent`) rather than
-   * automation or environment.
-   */
-  private _isAgent(signal: detection.Signal): signal is detection.Agent {
-    const agents = { claude: true, cursor: true } satisfies Record<detection.Agent, true>;
-    return signal in agents;
   }
 }
