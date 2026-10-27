@@ -1,3 +1,4 @@
+import createAgentDetectors from './detectors/agent';
 import createAutomationDetectors from './detectors/automation';
 import createEnvironmentDetectors from './detectors/environment';
 
@@ -33,6 +34,7 @@ export class BotDetector {
     // TODO: In the future, we can add different categories of detectors. We could
     // also allow these to be configurable by passing in options to this constructor.
     this.register([
+      ...createAgentDetectors(this._env),
       ...createAutomationDetectors(this._env),
       ...createEnvironmentDetectors(this._env),
     ]);
