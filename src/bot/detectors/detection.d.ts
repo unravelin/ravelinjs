@@ -7,10 +7,6 @@ declare namespace detection {
 
   type Signal = Agent | Bot;
   type Category = 'agent' | 'bot';
-
-  // 'agent' is a category verdict (a coding/agent browser surface), distinct
-  // from the confidence tiers below; it is reported whenever an agent detector
-  // triggers. See BotDetector._buildResult.
   type Verdict = 'agent' | 'bot' | 'suspectedBot' | 'human';
 
   interface DetectorMetadata {
