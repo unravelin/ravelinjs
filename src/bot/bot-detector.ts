@@ -72,14 +72,11 @@ export class BotDetector {
   private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
     const triggered = results.filter(result => result.triggered);
 
-    // When an agent surface is detected, it both decides the verdict and owns
-    // the primary signal, so pick the primary from the agent results in that
-    // case and fall back to all triggered results otherwise.
     const primaryResults: Partial<Record<detection.Category, detection.DetailedDetectionResult>> =
       {};
 
-    // Sum all of the confidence values for all indicators. No need to normalise
-    // to 100 as any value greater than 90 is considered a bot.
+    // Sum all of the confidence values for all indicators based on signal caegory.
+    // No need to normalise to 100 as any value greater than 90 is considered an agent/bot.
     const scores = triggered.reduce(
       (scores, result) => {
         const currentResult = primaryResults[result.category];
@@ -95,8 +92,8 @@ export class BotDetector {
       { agent: 0, bot: 0 }
     );
 
-    // An agent artifact is a category verdict and takes priority over the
-    // confidence tiers.
+    // An agent verdict is a superset of a bot verdict so return that
+    // if thresholds are met.
     let verdict: detection.Verdict;
     let primary: detection.DetailedDetectionResult | undefined;
     if (scores.agent > 90) {
@@ -106,9 +103,9 @@ export class BotDetector {
       verdict = 'bot';
       primary = primaryResults.bot;
     } else if (scores.bot > 50 || scores.agent > 50) {
-      // Should there be a suspectedAgent?
+      // Catch all for suspicious automation activity.
       verdict = 'suspectedBot';
-      primary = primaryResults.bot;
+      primary = primaryResults.agent ?? primaryResults.bot;
     } else {
       verdict = 'human';
     }
