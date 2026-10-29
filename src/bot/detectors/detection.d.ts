@@ -2,12 +2,12 @@ declare namespace detection {
   /** Global object used for property reads (defaults to `globalThis`; inject a stub in tests). */
   type Environment = Window & typeof globalThis;
 
-  type Agent = 'claude' | 'cursor' | 'muse';
+  type Agent = 'cursor';
   type Bot = 'chromedriver' | 'headless' | 'webdriver';
 
   type Signal = Agent | Bot;
   type Category = 'agent' | 'bot';
-  type Verdict = 'agent' | 'bot' | 'suspectedBot' | 'human';
+  type Verdict = 'bot' | 'suspectedBot' | 'human';
 
   interface DetectorMetadata {
     /** The signal name that a detector is checking for. */

@@ -92,20 +92,18 @@ export class BotDetector {
       { agent: 0, bot: 0 }
     );
 
-    // An agent verdict is a superset of a bot verdict so return that
-    // if thresholds are met.
+    // A verdict of bot implies automation. To differentiate suspected agent vs bot
+    // traffic we add the category to the returned results, with precedence given
+    // to the agent category.
     let verdict: detection.Verdict;
-    let primary: detection.DetailedDetectionResult | undefined;
-    if (scores.agent > 90) {
-      verdict = 'agent';
-      primary = primaryResults.agent;
-    } else if (scores.bot > 90) {
+    let category: detection.Category | undefined;
+    if (scores.agent > 90 || scores.bot > 90) {
       verdict = 'bot';
-      primary = primaryResults.bot;
+      category = scores.agent > 90 ? 'agent' : 'bot';
     } else if (scores.bot > 50 || scores.agent > 50) {
-      // Catch all for suspicious automation activity.
+      // Suspicious automation activity.
       verdict = 'suspectedBot';
-      primary = primaryResults.agent ?? primaryResults.bot;
+      category = scores.agent > 50 ? 'agent' : 'bot';
     } else {
       verdict = 'human';
     }
@@ -120,7 +118,7 @@ export class BotDetector {
 
     return {
       verdict,
-      signal: primary?.signal,
+      signal: primaryResults[category!]?.signal,
       indicators,
     };
   }
