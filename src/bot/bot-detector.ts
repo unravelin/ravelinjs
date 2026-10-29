@@ -1,3 +1,4 @@
+import createAgentDetectors from './detectors/agent';
 import createAutomationDetectors from './detectors/automation';
 import createEnvironmentDetectors from './detectors/environment';
 
@@ -33,6 +34,7 @@ export class BotDetector {
     // TODO: In the future, we can add different categories of detectors. We could
     // also allow these to be configurable by passing in options to this constructor.
     this.register([
+      ...createAgentDetectors(this._env),
       ...createAutomationDetectors(this._env),
       ...createEnvironmentDetectors(this._env),
     ]);
@@ -69,22 +71,39 @@ export class BotDetector {
 
   private _buildResult(results: detection.DetailedDetectionResult[]): BotDetectionResult {
     const triggered = results.filter(result => result.triggered);
-    const primary =
-      triggered.length > 0
-        ? triggered.reduce((best, result) => (result.precedence > best.precedence ? result : best))
-        : undefined;
 
-    // Sum all of the confidence values for all indicators. No need to normalise
-    // to 100 as any value greater than 90 is considered a bot.
-    const score = triggered.reduce((sum, result) => {
-      return sum + result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
-    }, 0);
+    const primaryResults: Partial<Record<detection.Category, detection.DetailedDetectionResult>> =
+      {};
 
+    // Sum all of the confidence values for all indicators based on signal caegory.
+    // No need to normalise to 100 as any value greater than 90 is considered an agent/bot.
+    const scores = triggered.reduce(
+      (scores, result) => {
+        const currentResult = primaryResults[result.category];
+        primaryResults[result.category] =
+          result.precedence > (currentResult?.precedence ?? 0) ? result : currentResult;
+
+        scores[result.category] =
+          scores[result.category] +
+          result.indicators.reduce((sum, indicator) => sum + indicator.confidence, 0);
+
+        return scores;
+      },
+      { agent: 0, bot: 0 }
+    );
+
+    // A verdict of bot implies automation. To differentiate suspected agent vs bot
+    // traffic we add the category to the returned results, with precedence given
+    // to the agent category.
     let verdict: detection.Verdict;
-    if (score > 90) {
+    let category: detection.Category | undefined;
+    if (scores.agent > 90 || scores.bot > 90) {
       verdict = 'bot';
-    } else if (score > 50) {
+      category = scores.agent > 90 ? 'agent' : 'bot';
+    } else if (scores.bot > 50 || scores.agent > 50) {
+      // Suspicious automation activity.
       verdict = 'suspectedBot';
+      category = scores.agent > 50 ? 'agent' : 'bot';
     } else {
       verdict = 'human';
     }
@@ -99,7 +118,7 @@ export class BotDetector {
 
     return {
       verdict,
-      signal: primary?.signal,
+      signal: primaryResults[category!]?.signal,
       indicators,
     };
   }

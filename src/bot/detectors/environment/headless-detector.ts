@@ -6,14 +6,23 @@
  * Puppeteer) even when nothing else leaks.
  */
 
+import { readUnmaskedRenderer } from '../utils';
+
 /** Renderer strings reported by GPU-less/software WebGL backends. */
 const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|mesa|software/i;
+
+/** Fixed display sizes common to headless/VM (e.g. agent sandbox) containers. */
+const CONTAINER_RESOLUTIONS: ReadonlyArray<readonly [number, number]> = [
+  [1280, 800],
+  [1024, 768],
+];
 
 /**
  * Detects environment fingerprints commonly seen in headless automation.
  */
 export default class HeadlessDetector implements detection.Detector {
   public readonly signal = 'headless';
+  public readonly category = 'bot';
   public readonly precedence = 10;
 
   public triggered = false;
@@ -34,6 +43,7 @@ export default class HeadlessDetector implements detection.Detector {
 
     return {
       signal: this.signal,
+      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,
@@ -74,33 +84,24 @@ export default class HeadlessDetector implements detection.Detector {
    * environment, typical of headless Chromium.
    */
   private _detectSoftwareWebGL(): void {
-    const doc = this.env.document;
-    if (typeof doc?.createElement !== 'function') {
-      return;
-    }
-
-    let gl: WebGLRenderingContext | null;
     try {
-      const canvas = doc.createElement('canvas');
-      gl = (canvas.getContext('webgl') ||
-        canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
-    } catch {
-      return;
-    }
-    if (!gl) {
-      return;
-    }
+      const renderer = readUnmaskedRenderer(this.env);
 
-    try {
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-      if (!debugInfo) {
-        return;
-      }
-
-      const renderer = String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '');
-      if (SOFTWARE_RENDERER_PATTERN.test(renderer)) {
+      if (renderer && SOFTWARE_RENDERER_PATTERN.test(renderer)) {
         // GPU-less rendering is typical of headless, but also real VMs/servers.
         this.indicators.push({ id: 'software-webgl-renderer', confidence: 60 });
+
+        const nav = this.env.navigator || ({} as Navigator);
+        const width = this.env.screen?.width;
+        const height = this.env.screen?.height;
+        const fixedResolution = CONTAINER_RESOLUTIONS.some(([w, h]) => w === width && h === height);
+        const unscaled = this.env.devicePixelRatio === 1;
+        const noTouch = (nav.maxTouchPoints ?? 0) === 0 && !('ontouchstart' in this.env);
+
+        if (fixedResolution && unscaled && noTouch) {
+          // A fixed container display size on a touchless, unscaled GPU-less browser.
+          this.indicators.push({ id: 'virtual-display-geometry', confidence: 30 });
+        }
       }
     } catch {
       // Reading GPU info can throw in locked-down contexts; ignore.
