@@ -23,6 +23,10 @@ export function buildDriver() {
     // Use local headless chrome browser
     const options = new chrome.Options();
     options.addArguments('--headless=new');
+    // Setting a browser version makes Selenium Manager download and use Chrome for
+    // Testing (cached in ~/.cache/selenium) rather than any locally installed Chrome.
+    // Override with CHROME_VERSION, e.g. "beta", "dev", "canary" or "131".
+    options.setBrowserVersion(process.env.CHROME_VERSION || 'stable');
 
     return new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
   }
