@@ -23,12 +23,6 @@ export function buildDriver() {
     // Use local headless chrome browser
     const options = new chrome.Options();
     options.addArguments('--headless=new');
-    // Always use Chrome for Testing rather than any locally installed Chrome.
-    // Selenium Manager (spawned by Selenium with this process's environment) reads
-    // SE_FORCE_BROWSER_DOWNLOAD and downloads Chrome for Testing into
-    // ~/.cache/selenium, reusing the cached copy on later runs.
-    // Set SE_FORCE_BROWSER_DOWNLOAD=false to use an installed Chrome instead.
-    process.env.SE_FORCE_BROWSER_DOWNLOAD ??= 'true';
     // Tell Selenium Manager which Chrome version or channel to use (default "stable").
     // Override with CHROME_VERSION, e.g. "beta", "dev", "canary" or "131".
     options.setBrowserVersion(process.env.CHROME_VERSION || 'stable');
