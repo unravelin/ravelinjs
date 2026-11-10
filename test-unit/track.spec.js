@@ -1,4 +1,4 @@
-/* globals isolate keysMatch */
+/* globals isolate keysMatch isIOS */
 
 describe('ravelin.track', function () {
   const expectedVersion = /^\d+.\d+.\d+(-.+)?-ravelinjs$/;
@@ -149,6 +149,11 @@ describe('ravelin.track', function () {
     });
 
     it('sends resize events', function (done) {
+      // iOS Safari doesn't support resizing the window, so the synthetic resize
+      // never produces the expected event. The integration test in
+      // test-integration/track/track.spec.mjs covers resize where supported.
+      if (isIOS()) this.skip();
+
       const key = this.test.fullTitle();
       const props = {
         resolutionOld: { w: window.outerWidth, h: window.outerHeight },
@@ -334,8 +339,6 @@ describe('ravelin.track', function () {
   });
 
   describe('#paste', function () {
-    // IE8 doesn't support createEvent or paste handling at all.
-    const capable = !!document.createEvent;
     // Safari is difficult to craft a paste event for?
     const capableContent = !!fakePasteEvent('text/plain', 'test').clipboardData;
 
@@ -563,8 +566,6 @@ describe('ravelin.track', function () {
       },
     ]).each(function (n, test) {
       it('sends redacted paste events of ' + JSON.stringify(test), function (done) {
-        if (!capable) this.skip();
-
         const key = this.test.fullTitle();
         xhook.before(function (req) {
           if (!keysMatch(req, key)) return { status: 204 };
@@ -616,8 +617,6 @@ describe('ravelin.track', function () {
     });
 
     it('sends empty paste events from sensitive fields', function (done) {
-      if (!capable) this.skip();
-
       const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
@@ -663,8 +662,6 @@ describe('ravelin.track', function () {
     });
 
     it('sends empty paste events from password fields', function (done) {
-      if (!capable) this.skip();
-
       const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
@@ -708,8 +705,6 @@ describe('ravelin.track', function () {
     });
 
     it('sends empty paste events from custom sensitive fields', function (done) {
-      if (!capable) this.skip();
-
       const key = this.test.fullTitle();
       xhook.before(function (req) {
         if (!keysMatch(req, key)) return { status: 204 };
