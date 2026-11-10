@@ -62,11 +62,11 @@ export function buildBrowserStackConfig() {
         browserName: 'Safari',
         browserVersion: '18.4',
       },
-      // Safari on iOS 17 (2024)
+      // Safari on iOS 26 (2025)
       {
         browserName: 'safari',
-        osVersion: 17,
-        deviceName: 'iPhone 15',
+        osVersion: 26,
+        deviceName: 'iPhone 17',
       },
       // Chrome on Android 13 (2022)
       {
