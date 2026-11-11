@@ -1,11 +1,13 @@
-import 'dotenv/config';
 import { spawn } from 'child_process';
+import 'dotenv/config';
 import { checkCertsExist, startServer, stopServer } from './server.mjs';
 
 // Indicate to Selenium to use a local browser
 process.env.LOCAL_BROWSER = 'true';
 // Override BrowserStack config to use the local server
 process.env.LOCAL_URL = 'https://localhost:3000';
+// Force Selenium to download and use Chrome For Testing.
+process.env.SE_FORCE_BROWSER_DOWNLOAD = 'true';
 
 const testPath = process.argv[2];
 

@@ -23,6 +23,9 @@ export function buildDriver() {
     // Use local headless chrome browser
     const options = new chrome.Options();
     options.addArguments('--headless=new');
+    // Tell Selenium Manager which Chrome version or channel to use (default "stable").
+    // Override with CHROME_VERSION, e.g. "beta", "dev", "canary" or "131".
+    options.setBrowserVersion(process.env.CHROME_VERSION || 'stable');
 
     return new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build();
   }

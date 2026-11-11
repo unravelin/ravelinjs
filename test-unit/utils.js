@@ -27,6 +27,18 @@ function isolate(cfg) {
   return cfg;
 }
 
+/**
+ * isIOS returns whether the tests are running on an iPhone, iPad or iPod.
+ * iPadOS reports a Macintosh user agent by default, so it is detected by
+ * touch support instead.
+ * @returns {boolean}
+ */
+function isIOS() {
+  var ua = window.navigator.userAgent;
+  if (/iP(hone|ad|od)/.test(ua)) return true;
+  return /Macintosh/.test(ua) && window.navigator.maxTouchPoints > 1;
+}
+
 function keysMatch(req, key) {
   var i = req.url.indexOf('?');
   if (i === -1) return false;
