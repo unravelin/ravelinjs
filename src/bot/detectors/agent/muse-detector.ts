@@ -29,9 +29,7 @@ type CredentialMethod = [owner: unknown, name: string];
 export default class MuseDetector implements detection.Detector {
   public readonly signal = 'muse';
   public readonly category = 'agent';
-  // Between Cursor (25) and Claude (30): a specific agent surface that should
-  // own the primary label over the generic headless/webdriver signals.
-  public readonly precedence = 28;
+  public readonly precedence = 25;
 
   public triggered = false;
   public indicators: detection.Indicator[] = [];
