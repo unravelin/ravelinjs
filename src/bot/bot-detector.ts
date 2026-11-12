@@ -7,7 +7,7 @@ export interface BotDetectionResult {
   verdict: detection.Verdict;
   /** The detected signal. */
   signal?: detection.Signal;
-  /** The category for the detection, either 'agent' or 'bot'. */
+  /** The category for the detection; either 'agent' or 'bot'. */
   category?: detection.Category;
   /** Indicators that triggered, keyed by signal. */
   indicators?: Partial<Record<detection.Signal, string[]>>;
