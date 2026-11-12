@@ -1,0 +1,5 @@
+import CursorDetector from './cursor-detector';
+
+export default function createAgentDetectors(env: detection.Environment): detection.Detector[] {
+  return [new CursorDetector(env)];
+}

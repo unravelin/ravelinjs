@@ -21,6 +21,7 @@ const CHROMEDRIVER_KEY_PATTERN = /^\$?(?:cdc|wdc)_/;
  */
 export default class ChromeDriverDetector implements detection.Detector {
   public readonly signal = 'chromedriver';
+  public readonly category = 'bot';
   public readonly precedence = 25;
 
   public triggered = false;
@@ -40,6 +41,7 @@ export default class ChromeDriverDetector implements detection.Detector {
 
     return {
       signal: this.signal,
+      category: this.category,
       precedence: this.precedence,
       triggered: this.triggered,
       indicators: this.indicators,

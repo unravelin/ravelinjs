@@ -226,11 +226,13 @@ describe('ravelinjs.track', () => {
     if (platform.browserName.toLowerCase() === 'chrome') {
       expect(loadEvent.bodyJSON.events[0].eventMeta.bot).to.containSubset({
         verdict: 'bot',
+        category: 'bot',
         signal: 'chromedriver',
       });
     } else if (platform.browserName.toLowerCase() === 'firefox') {
       expect(loadEvent.bodyJSON.events[0].eventMeta.bot).to.containSubset({
         verdict: 'bot',
+        category: 'bot',
         signal: 'webdriver',
       });
     }
